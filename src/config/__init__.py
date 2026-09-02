@@ -1,0 +1,1 @@
+"""Configuração executável do projeto."""

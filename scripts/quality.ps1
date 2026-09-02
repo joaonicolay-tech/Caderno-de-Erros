@@ -6,7 +6,20 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$uvCommand = Get-Command uv -ErrorAction Stop
+$toolsDirectory = Join-Path $PSScriptRoot "..\.tools"
+$env:UV_CACHE_DIR = Join-Path $toolsDirectory "cache"
+$env:UV_PYTHON_INSTALL_DIR = Join-Path $toolsDirectory "python"
+
+$uvCommand = Get-Command uv -ErrorAction SilentlyContinue
+if ($null -eq $uvCommand) {
+    $workspaceUv = Join-Path $PSScriptRoot "..\.tools\uv\uv.exe"
+    if (-not (Test-Path -LiteralPath $workspaceUv -PathType Leaf)) {
+        throw "uv 0.12.7 não encontrado no PATH nem em .tools/uv/uv.exe."
+    }
+    $uvExecutable = (Get-Item -LiteralPath $workspaceUv).FullName
+} else {
+    $uvExecutable = $uvCommand.Source
+}
 
 function Invoke-Tool {
     param(
@@ -18,7 +31,7 @@ function Invoke-Tool {
     )
 
     Write-Host "==> $Step"
-    & $uvCommand.Source @Arguments
+    & $uvExecutable @Arguments
     if ($LASTEXITCODE -ne 0) {
         throw "Falha na etapa '$Step' (código $LASTEXITCODE)."
     }
@@ -32,6 +45,41 @@ Invoke-Tool "validar runtime" @(
     "python",
     "-c",
     "import django, sqlite3, sys; sample = 'quest\u00e3o'; assert sys.version_info[:3] == (3, 13, 15); assert django.get_version() == '5.2.17'; assert sqlite3.sqlite_version_info == (3, 53, 1); assert sample.encode('utf-8').decode('utf-8') == sample; print(f'Python={sys.version.split()[0]} Django={django.get_version()} SQLite={sqlite3.sqlite_version}')"
+)
+Invoke-Tool "verificar perfil de desenvolvimento" @(
+    "run", "--locked", "python", "manage.py", "check",
+    "--settings=config.settings.development"
+)
+Invoke-Tool "verificar perfil de teste" @(
+    "run", "--locked", "python", "manage.py", "check",
+    "--settings=config.settings.test"
+)
+
+$hadProductionSecret = Test-Path -LiteralPath "Env:CEI_SECRET_KEY"
+$previousProductionSecret = [Environment]::GetEnvironmentVariable("CEI_SECRET_KEY", "Process")
+try {
+    if (-not $hadProductionSecret) {
+        $env:CEI_SECRET_KEY = [Guid]::NewGuid().ToString("N") + [Guid]::NewGuid().ToString("N")
+    }
+    Invoke-Tool "verificar perfil de produção local" @(
+        "run", "--locked", "python", "manage.py", "check",
+        "--settings=config.settings.production_local"
+    )
+} finally {
+    if ($hadProductionSecret) {
+        $env:CEI_SECRET_KEY = $previousProductionSecret
+    } else {
+        Remove-Item -LiteralPath "Env:CEI_SECRET_KEY" -ErrorAction SilentlyContinue
+    }
+}
+
+Invoke-Tool "verificar migrações inesperadas" @(
+    "run", "--locked", "python", "manage.py", "makemigrations",
+    "--check", "--dry-run", "--settings=config.settings.test"
+)
+Invoke-Tool "migrar banco vazio isolado" @(
+    "run", "--locked", "python", "manage.py", "migrate",
+    "--noinput", "--settings=config.settings.test"
 )
 Invoke-Tool "verificar formatação" @("run", "--locked", "ruff", "format", "--check", ".")
 Invoke-Tool "executar lint" @("run", "--locked", "ruff", "check", ".")
@@ -50,7 +98,7 @@ if ($pythonFiles.Count -gt 0) {
         "--cov-report=term-missing"
     )
 } else {
-    Write-Host "==> validar executáveis de análise e testes (não há código Python na Etapa 1)"
+    Write-Host "==> validar executáveis de análise e testes (não há código Python)"
     Invoke-Tool "validar mypy" @("run", "--locked", "mypy", "--version")
     Invoke-Tool "validar pytest" @("run", "--locked", "pytest", "--version")
 }
@@ -86,4 +134,4 @@ if (-not $SkipVulnerabilityAudit) {
     )
 }
 
-Write-Host "Toolchain da Etapa 1 validada."
+Write-Host "Gate técnico da Etapa 2 validado."

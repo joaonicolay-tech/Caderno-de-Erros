@@ -2,7 +2,7 @@
 name = "caderno-de-erros-inteligente"
 version = "0.1.0"
 description = "Fundação local do Caderno de Erros Inteligente"
-readme = "README.md.txt"
+readme = "README.md"
 requires-python = "==3.13.15"
 dependencies = [
     "Django==5.2.17",
@@ -41,12 +41,14 @@ quote-style = "double"
 select = ["B", "C4", "DJ", "E4", "E7", "E9", "F", "I", "RUF", "S", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101"]
+"tests/**/*.py" = ["S101", "S104", "S603"]
+"src/config/settings/*.py" = ["F403", "F405"]
 
 [tool.mypy]
 python_version = "3.13"
 files = ["src", "tests"]
 mypy_path = "src"
+plugins = ["mypy_django_plugin.main"]
 strict = true
 show_error_codes = true
 show_error_context = true
@@ -57,7 +59,21 @@ exclude = ["^\\.tools/", "^\\.venv/", "^src/.*/migrations/"]
 minversion = "9.1"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = ["--strict-config", "--strict-markers", "--showlocals", "-ra"]
+pythonpath = ["src"]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+addopts = [
+    "--strict-config",
+    "--strict-markers",
+    "--showlocals",
+    "--basetemp=.pytest-tmp",
+    "-p",
+    "no:cacheprovider",
+    "-ra",
+]
+
+[tool.django-stubs]
+django_settings_module = "config.settings.test"
+strict_settings = true
 
 [tool.coverage.run]
 branch = true
