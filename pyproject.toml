@@ -1,0 +1,82 @@
+[project]
+name = "caderno-de-erros-inteligente"
+version = "0.1.0"
+description = "Fundação local do Caderno de Erros Inteligente"
+readme = "README.md.txt"
+requires-python = "==3.13.15"
+dependencies = [
+    "Django==5.2.17",
+]
+
+[dependency-groups]
+dev = [
+    "detect-secrets==1.5.0",
+    "django-stubs[compatible-mypy]==6.1.0",
+    "mypy==2.3.1",
+    "pip-audit==2.10.1",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "pytest-django==4.14.0",
+    "ruff==0.16.5",
+]
+
+[tool.uv]
+package = false
+required-version = "==0.12.7"
+required-environments = [
+    "sys_platform == 'win32' and platform_machine == 'AMD64'",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = [".tools", ".venv"]
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "lf"
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["B", "C4", "DJ", "E4", "E7", "E9", "F", "I", "RUF", "S", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
+[tool.mypy]
+python_version = "3.13"
+files = ["src", "tests"]
+mypy_path = "src"
+strict = true
+show_error_codes = true
+show_error_context = true
+pretty = true
+exclude = ["^\\.tools/", "^\\.venv/", "^src/.*/migrations/"]
+
+[tool.pytest.ini_options]
+minversion = "9.1"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = ["--strict-config", "--strict-markers", "--showlocals", "-ra"]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+omit = ["*/migrations/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.cei.toolchain]
+python = "3.13.15"
+django = "5.2.17"
+django-templates = "integrado ao Django 5.2.17"
+htmx = "2.0.10"
+htmx-sri = "sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" # pragma: allowlist secret -- SRI público
+sqlite = "3.53.1 (módulo sqlite3 do CPython fixado)"
+uv = "0.12.7"
+platform = "Windows 11 x64"
+chrome-reference = "152.0.7977.65"
+edge-reference = "152.0.4191.53"
+reference-date = "2026-09-01"
