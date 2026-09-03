@@ -4,7 +4,7 @@ from typing import Any
 
 from django.core.management.base import BaseCommand, CommandError, CommandParser
 
-from modules.accounts.services import bootstrap_local_workspace
+from shared.application.bootstrap import bootstrap_local_workspace
 
 
 class Command(BaseCommand):
@@ -28,6 +28,7 @@ class Command(BaseCommand):
         state = "criado" if result.created else "já existente"
         self.stdout.write(
             self.style.SUCCESS(
-                f"Workspace local {state}: {result.workspace.id} ({result.workspace.timezone_name})."
+                f"Workspace local {state}: {result.workspace.id} "
+                f"({result.workspace.timezone_name}); {len(result.categories)} categorias padrão."
             )
         )

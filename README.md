@@ -6,9 +6,9 @@ A documentação oficial do projeto está localizada em `/docs`.
 
 ## Estado atual
 
-A Etapa 3 da V0.1 fornece a identidade local com UUID, Workspace persistente,
-configuração de fuso IANA e abstrações temporais controláveis. Ainda não existem
-categorias, conteúdo de estudo, tentativas ou revisões.
+A Etapa 4 da V0.1 fornece a identidade local com UUID, Workspace persistente,
+configuração de fuso IANA, abstrações temporais e as dez categorias padrão.
+Ainda não existem conteúdo de estudo, tentativas ou revisões.
 
 Pré-requisitos do ambiente validado:
 
@@ -85,7 +85,8 @@ recusados. Não altere o endereço de escuta para expor a aplicação.
 ## Primeiro acesso local
 
 Migre o banco e escolha explicitamente o fuso IANA do espaço. O comando é
-idempotente: repeti-lo recupera o mesmo User/Workspace e preserva o fuso já salvo.
+idempotente: repeti-lo recupera o mesmo User/Workspace, preserva o fuso já salvo e
+mantém exatamente as dez categorias padrão com seus textos canônicos atuais.
 
 ```powershell
 uv run --locked python manage.py migrate
@@ -115,11 +116,12 @@ Falhas comuns:
 - lock desatualizado: não o regenere implicitamente; revise a mudança de
   dependência antes de executar `uv lock`.
 
-Categorias e seed, interface de configuração, backup/restauração, logging e health
-ainda não existem e serão implementados nas respectivas etapas.
+Interface de configuração, backup/restauração, logging e health ainda não existem
+e serão implementados nas respectivas etapas.
 
 Decisões técnicas:
 
 - [`ADR-001 — Toolchain`](docs/ADR-001_Toolchain_Reproduzivel_V0.1.md)
 - [`ADR-002 — Perfis e isolamento`](docs/ADR-002_Perfis_e_Isolamento_Django_V0.1.md)
 - [`ADR-003 — Identidade, Workspace e tempo`](docs/ADR-003_Identidade_Workspace_e_Tempo_V0.1.md)
+- [`ADR-004 — Categorias padrão e seed`](docs/ADR-004_Categorias_Padrao_e_Seed_V0.1.md)

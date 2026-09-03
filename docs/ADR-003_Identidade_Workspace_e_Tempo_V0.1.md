@@ -44,9 +44,9 @@ e pode ser informado explicitamente pelo chamador. A identidade local recebe sen
 inutilizável, pois o perfil estritamente local dispensa login conforme `RNF-012`.
 
 `FL-023` e `CT-129` completos também incluem as dez categorias padrão. A
-solicitação da Etapa 3 proíbe antecipar `ErrorCategory`; por isso, nesta etapa a
-atomicidade e a idempotência cobrem somente User/Workspace. A Etapa 4 deverá
-estender o mesmo caso de uso para incluir o seed antes da liberação da V0.1.
+solicitação da Etapa 3 proíbe antecipar `ErrorCategory`; por isso, naquela etapa a
+atomicidade e a idempotência cobriam somente User/Workspace. A Etapa 4, registrada
+no ADR-004, estendeu o mesmo caso de uso e completou essa pendência.
 
 ## Primeiro acesso e mudança de fuso
 
@@ -88,6 +88,7 @@ relógio global.
 
 ## Itens adiados
 
-`ErrorCategory` e seed, apresentação do primeiro acesso, autenticação remota,
-logging estruturado definitivo, health, backup/restauração e todos os módulos de
-conteúdo, tentativa, revisão e dashboard permanecem fora desta etapa.
+Apresentação do primeiro acesso, autenticação remota, logging estruturado
+definitivo, health, backup/restauração e todos os módulos de conteúdo, tentativa,
+revisão e dashboard permanecem fora desta etapa. `ErrorCategory` e seed foram
+implementados posteriormente pela Etapa 4/ADR-004.

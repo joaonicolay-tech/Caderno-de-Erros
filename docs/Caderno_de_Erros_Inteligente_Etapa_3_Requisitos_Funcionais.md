@@ -1049,3 +1049,25 @@ A Etapa 3 será concluída quando:
 - as decisões aprovadas puderem orientar os RNFs, regras, dados, fluxos e testes.
 
 A etapa foi aprovada integralmente em 30 de agosto de 2026. Os requisitos `RF-001` a `RF-071` e as decisões `RF-DEC-001` a `RF-DEC-014` passam a ser considerados congelados e somente poderão ser alterados mediante registro explícito e análise de impacto.
+
+---
+
+## 22. Errata controlada da V0.1 — `ERR-V01-009`
+
+Em 2 de setembro de 2026, foram aprovados os textos canônicos iniciais exigidos
+por `RF-029`. Esta errata preenche uma lacuna documental, sem criar funcionalidade
+ou alterar o escopo. Os códigos são imutáveis; nomes e descrições podem evoluir
+por decisão controlada sem mudança do código histórico.
+
+| Código | Nome | Descrição canônica inicial |
+|---|---|---|
+| `CONCEPTUAL` | Conceitual | Erro causado por compreensão incorreta, incompleta ou ausente de um conceito necessário para resolver a questão. |
+| `INTERPRETATION` | Interpretação | Erro causado pela compreensão incorreta do enunciado, texto, comando, gráfico, tabela ou informação apresentada. |
+| `CALCULATION` | Cálculo | Erro causado durante a execução de operações matemáticas, algébricas ou numéricas, apesar de o método ou conceito estar correto. |
+| `ATTENTION` | Atenção | Erro causado por distração, leitura apressada, troca de sinais, omissão de informação ou outro descuido de execução. |
+| `FORMULA_RULE` | Fórmula/regra | Erro causado pelo desconhecimento, esquecimento ou aplicação incorreta de uma fórmula, regra, propriedade ou convenção. |
+| `PROCEDURE` | Procedimento | Erro causado pela escolha, ordem ou execução inadequada das etapas necessárias para resolver a questão. |
+| `TRAP` | Pegadinha | Erro provocado por alternativa, formulação ou detalhe do enunciado que induz a uma interpretação ou resposta aparentemente correta, mas inadequada. |
+| `TIME_SHORTAGE` | Falta de tempo | Erro ou questão não concluída adequadamente porque o tempo disponível foi insuficiente para analisar ou resolver a questão. |
+| `GUESS` | Chute | Resposta escolhida sem conhecimento ou justificativa suficiente, baseada predominantemente em tentativa ou acaso. |
+| `OTHER` | Outra | Erro que não se enquadra adequadamente em nenhuma das demais categorias padrão. |

@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "modules.accounts.apps.AccountsConfig",
+    "modules.errors.apps.ErrorsConfig",
 ]
 
 MIDDLEWARE = [

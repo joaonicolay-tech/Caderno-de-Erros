@@ -21,10 +21,10 @@ from modules.accounts.services import (
     LOCAL_USER_ID,
     LOCAL_WORKSPACE_ID,
     TIMEZONE_CHANGE_NOTICE,
-    bootstrap_local_workspace,
     change_workspace_timezone,
     get_workspace_for_owner,
 )
+from shared.application.bootstrap import bootstrap_local_workspace
 from shared.domain.time import FixedClock, Instant
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -258,6 +258,7 @@ def test_first_accounts_migration_contains_custom_user_and_no_default_user_table
     tables = set(connection.introspection.table_names())
     assert "accounts_user" in tables
     assert "accounts_workspace" in tables
+    assert "errors_error_category" in tables
     assert "auth_user" not in tables
 
 
@@ -274,6 +275,7 @@ tables = set(connection.introspection.table_names())
 print(json.dumps({
     "custom_user": "accounts_user" in tables,
     "workspace": "accounts_workspace" in tables,
+    "categories": "errors_error_category" in tables,
     "default_user": "auth_user" in tables,
 }))
 """
@@ -291,4 +293,9 @@ print(json.dumps({
 
     assert result.returncode == 0, result.stderr
     snapshot = json.loads(result.stdout.strip().splitlines()[-1])
-    assert snapshot == {"custom_user": True, "workspace": True, "default_user": False}
+    assert snapshot == {
+        "custom_user": True,
+        "workspace": True,
+        "categories": True,
+        "default_user": False,
+    }

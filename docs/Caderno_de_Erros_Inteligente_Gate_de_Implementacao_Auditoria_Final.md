@@ -636,6 +636,7 @@ Esta execução trata somente a documentação necessária para iniciar a V0.1. 
 | `ERR-V01-006` | Backup/restauração V0.1 cobre banco vazio ou mínimo, manifesto e checksum em ambiente descartável. | Não equivale à exportação `CEI-EXPORT-1.0` nem à restauração pela interface. |
 | `ERR-V01-007` | Logging V0.1 é operacional, estruturado e sanitizado; `AuditEvent` funcional persistente não é entidade obrigatória desta versão. | Mantém somente as entidades exigidas pelo Gate: `User`, `Workspace` e `ErrorCategory`. |
 | `ERR-V01-008` | Versões de Python/Django/HTMX, ferramentas, estratégia CSS e demais parâmetros continuam decisões da Etapa 1 ou dos marcos já definidos. | A Etapa 0 não inicia spike nem congela tecnologia por iniciativa própria. |
+| `ERR-V01-009` | Ficam definidos os nomes e as descrições canônicas iniciais das dez categorias padrão de `RF-029`; códigos permanecem imutáveis e textos podem evoluir sem troca de código. | Fecha a lacuna textual de `RF-029` sem criar funcionalidade ou alterar o escopo da V0.1. |
 
 ## S.2 Status das correções
 
