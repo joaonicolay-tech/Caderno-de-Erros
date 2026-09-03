@@ -1,0 +1,1 @@
+"""Identidade e espaço individual."""

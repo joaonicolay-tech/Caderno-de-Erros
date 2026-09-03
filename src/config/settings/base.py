@@ -10,7 +10,11 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 LOCAL_ALLOWED_HOSTS = frozenset({"127.0.0.1", "localhost", "[::1]"})
 DATABASE_TIMEOUT_SECONDS = 5.0
 
-INSTALLED_APPS: list[str] = []
+INSTALLED_APPS = [
+    "django.contrib.contenttypes",
+    "django.contrib.auth",
+    "modules.accounts.apps.AccountsConfig",
+]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -41,6 +45,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+AUTH_USER_MODEL = "accounts.User"
 
 
 def local_allowed_hosts() -> list[str]:

@@ -43,6 +43,7 @@ select = ["B", "C4", "DJ", "E4", "E7", "E9", "F", "I", "RUF", "S", "UP"]
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S101", "S104", "S603"]
 "src/config/settings/*.py" = ["F403", "F405"]
+"src/**/migrations/*.py" = ["RUF012"]
 
 [tool.mypy]
 python_version = "3.13"

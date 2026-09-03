@@ -6,9 +6,9 @@ A documentação oficial do projeto está localizada em `/docs`.
 
 ## Estado atual
 
-A Etapa 2 da V0.1 fornece o projeto Django mínimo, com perfis separados de
-desenvolvimento, teste e produção local. Ainda não existem models ou
-funcionalidades de produto.
+A Etapa 3 da V0.1 fornece a identidade local com UUID, Workspace persistente,
+configuração de fuso IANA e abstrações temporais controláveis. Ainda não existem
+categorias, conteúdo de estudo, tentativas ou revisões.
 
 Pré-requisitos do ambiente validado:
 
@@ -82,6 +82,21 @@ pode ser informado por `CEI_PRODUCTION_LOCAL_DB`. `CEI_ALLOWED_HOSTS` aceita
 somente `127.0.0.1`, `localhost` e `[::1]`; `0.0.0.0` e nomes de rede são
 recusados. Não altere o endereço de escuta para expor a aplicação.
 
+## Primeiro acesso local
+
+Migre o banco e escolha explicitamente o fuso IANA do espaço. O comando é
+idempotente: repeti-lo recupera o mesmo User/Workspace e preserva o fuso já salvo.
+
+```powershell
+uv run --locked python manage.py migrate
+uv run --locked python manage.py bootstrap_local --timezone America/Sao_Paulo
+```
+
+Opcionalmente, informe `--workspace-name` e `--display-name`. Não existe fuso
+implícito derivado do sistema. Alterações posteriores são feitas pelo serviço de
+aplicação com confirmação e `lock_version`; a interface será adicionada em etapa
+própria.
+
 ## Qualidade e verificação
 
 O gate único executa checks dos três perfis, verifica ausência de migrações
@@ -100,10 +115,11 @@ Falhas comuns:
 - lock desatualizado: não o regenere implicitamente; revise a mudança de
   dependência antes de executar `uv lock`.
 
-Backup/restauração, logging, health e migrações de domínio ainda não existem e
-serão documentados nas respectivas etapas.
+Categorias e seed, interface de configuração, backup/restauração, logging e health
+ainda não existem e serão implementados nas respectivas etapas.
 
 Decisões técnicas:
 
 - [`ADR-001 — Toolchain`](docs/ADR-001_Toolchain_Reproduzivel_V0.1.md)
 - [`ADR-002 — Perfis e isolamento`](docs/ADR-002_Perfis_e_Isolamento_Django_V0.1.md)
+- [`ADR-003 — Identidade, Workspace e tempo`](docs/ADR-003_Identidade_Workspace_e_Tempo_V0.1.md)
