@@ -35,6 +35,7 @@
     "CT-104",
     "CT-123",
     "CT-127",
+    "CT-128",
     "CT-129",
     "CT-130",
     "CT-131",
@@ -59,7 +60,8 @@
     "ADR-005",
     "ADR-006",
     "ADR-007",
-    "ADR-008"
+    "ADR-008",
+    "ADR-009"
   ],
   "reference_scope": [
     "README.md",
@@ -70,10 +72,10 @@
     "docs/ADR-005_Logging_Correlacao_e_Health_Local_V0.1.md",
     "docs/ADR-006_Interface_Acessivel_da_Fundacao_V0.1.md",
     "docs/ADR-007_Backup_e_Restauracao_Minima_SQLite_V0.1.md",
-    "docs/ADR-008_Gate_Unico_de_Qualidade_V0.1.md"
+    "docs/ADR-008_Gate_Unico_de_Qualidade_V0.1.md",
+    "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md"
   ],
-  "stage9_pending_cases": [
-    "CT-127",
+  "promotion_pending_cases": [
     "CT-136"
   ],
   "test_evidence": {
@@ -130,9 +132,10 @@
       ]
     },
     "CT-127": {
-      "status": "stage9-pending",
+      "status": "executable",
       "evidence": [
         {"kind": "documentation", "target": "README.md"},
+        {"kind": "documentation", "target": "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md"},
         {"kind": "gate-step", "target": "sincronizar ambiente"}
       ]
     },
@@ -183,6 +186,7 @@
     "CT-136": {
       "status": "stage9-pending",
       "evidence": [
+        {"kind": "documentation", "target": "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md"},
         {"kind": "test", "target": "tests/test_interface.py::test_templates_use_native_keyboard_semantics_and_visible_focus"},
         {"kind": "test", "target": "tests/test_interface.py::test_layout_has_responsive_boundaries_without_horizontal_dependency"},
         {"kind": "test", "target": "tests/test_interface.py::test_documented_primary_colors_meet_text_contrast_target"}

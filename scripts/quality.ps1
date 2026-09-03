@@ -144,4 +144,4 @@ Invoke-Tool "auditar vulnerabilidades" @(
 )
 
 $gateStopwatch.Stop()
-Write-Host "Gate técnico da Etapa 8 validado em $([Math]::Round($gateStopwatch.Elapsed.TotalSeconds, 1)) s."
+Write-Host "Gate autoritativo da V0.1 validado em $([Math]::Round($gateStopwatch.Elapsed.TotalSeconds, 1)) s."

@@ -160,7 +160,7 @@ def _verify_test_target(root: Path, target: str) -> None:
 
 def verify_test_evidence(root: Path, manifest: Mapping[str, object]) -> None:
     raw_evidence = manifest.get("test_evidence")
-    raw_pending = manifest.get("stage9_pending_cases")
+    raw_pending = manifest.get("promotion_pending_cases")
     if not isinstance(raw_evidence, dict) or not isinstance(raw_pending, list):
         raise GateVerificationError("A matriz executável de testes está ausente.")
     evidence_map = cast(dict[str, object], raw_evidence)
@@ -189,8 +189,8 @@ def verify_test_evidence(root: Path, manifest: Mapping[str, object]) -> None:
         raise GateVerificationError(
             f"Matriz V0.1 incompleta ou excedente: {', '.join(difference)}."
         )
-    if pending_cases != {"CT-127", "CT-136"}:
-        raise GateVerificationError("Somente CT-127 e CT-136 podem depender da Etapa 9.")
+    if pending_cases != {"CT-136"}:
+        raise GateVerificationError("Somente CT-136 pode permanecer pendente de promoção.")
 
     gate_script = _text(root, "scripts/quality.ps1")
     for case_id, raw_entry in evidence_map.items():

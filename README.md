@@ -1,151 +1,183 @@
 # Caderno de Erros
 
-Sistema para registro, classificação e revisão de erros de estudo.
+Fundação executável local do Caderno de Erros Inteligente. A V0.1 fornece identidade e
+Workspace locais, fuso IANA, dez categorias padrão, interface mínima, diagnóstico,
+logging e backup/restauração técnica do SQLite. Ela ainda não é o produto de estudo.
 
-A documentação oficial do projeto está localizada em `/docs`.
+A documentação oficial está em [`docs/`](docs/).
 
-## Estado atual
+## 1. Pré-requisitos
 
-A Etapa 7 da V0.1 fornece identidade e Workspace locais, tempo/fuso, as dez
-categorias padrão, logging/diagnóstico, interface acessível e backup/restauração
-técnica mínima do SQLite. Ainda não existem conteúdo de estudo, tentativas ou
-revisões.
-
-Pré-requisitos do ambiente validado:
+Ambiente suportado e validado:
 
 - Windows 11 x64;
 - PowerShell 5.1 ou posterior;
 - Git;
+- acesso à internet na primeira sincronização;
 - `uv 0.12.7`.
 
-Instalação exata do `uv` no Windows:
+Não é necessário instalar Python ou dependências com `pip`: o `uv` obtém o CPython
+`3.13.15` fixado em [`.python-version`](.python-version) e cria `.venv` local.
+
+## 2. Instalar o uv
+
+Confira primeiro se a versão exata já está disponível:
+
+```powershell
+uv --version
+```
+
+Se necessário, instale a versão fixada pelo instalador oficial:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -c "irm https://astral.sh/uv/0.12.7/install.ps1 | iex"
 ```
 
-Preparação reproduzível:
+Feche e abra o PowerShell se o comando ainda não estiver no `PATH`.
+
+## 3. Obter e sincronizar o projeto
+
+Depois de clonar o repositório, entre em sua raiz — onde estão `pyproject.toml`,
+`uv.lock` e `manage.py` — e execute:
 
 ```powershell
 uv sync --locked
 ```
 
-O `uv` baixa automaticamente o CPython `3.13.15` fixado em `.python-version`.
-Não use `pip install` manual nem regenere o lock implicitamente. Atualizações são
-intencionais: altere as versões diretas, execute `uv lock` e valide novamente.
+O comando deve concluir sem modificar `uv.lock`. Não use `pip install` manual nem
+regenere o lock para contornar uma falha. Atualizações de dependência são mudanças
+intencionais que exigem novo lock e execução do gate.
 
-## Perfis Django
+## 4. Configuração segura e perfis
 
-### Desenvolvimento
+Há três perfis explícitos:
 
-O perfil padrão de `manage.py` usa SQLite em `var/development.sqlite3`, arquivo
-ignorado pelo Git, e o servidor é iniciado explicitamente apenas em localhost:
+| Perfil | Settings | Banco padrão | Uso |
+|---|---|---|---|
+| Desenvolvimento | `config.settings.development` | `var/development.sqlite3` | trabalho local |
+| Teste | `config.settings.test` | diretório temporário exclusivo | suíte automatizada |
+| Produção local | `config.settings.production_local` | `var/production_local.sqlite3` | execução loopback com `DEBUG=False` |
 
-```powershell
-New-Item -ItemType Directory -Force var
-uv run --locked python manage.py migrate
-uv run --locked python manage.py runserver 127.0.0.1:8000
-```
+Arquivos `.env`, bancos, backups e chaves não devem ser versionados. O perfil de teste
+ignora caminhos e segredos dos demais perfis e nunca deve apontar para um banco real.
 
-Para escolher outro arquivo local sem editar código:
+Para escolher outro banco de desenvolvimento sem editar código:
 
 ```powershell
 $env:CEI_DEVELOPMENT_DB = "C:\dados-locais\cei-development.sqlite3"
 ```
 
-### Testes
-
-pytest-django seleciona `config.settings.test` automaticamente. Esse perfil cria
-um arquivo SQLite em diretório temporário exclusivo e ignora caminhos de banco e
-chaves dos outros perfis:
-
-```powershell
-uv run --locked pytest
-```
-
-Nunca configure testes para usar `development.sqlite3` ou
-`production_local.sqlite3`.
-
-### Produção local
-
-O perfil de produção local mantém `DEBUG=False`, aceita somente hosts locais e
-exige chave externa. Gere uma chave apenas no processo atual e não a salve no
-repositório:
+Para produção local, gere uma chave somente no processo atual:
 
 ```powershell
 $env:CEI_SECRET_KEY = uv run --locked python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-New-Item -ItemType Directory -Force var
-uv run --locked python manage.py migrate --settings=config.settings.production_local
-uv run --locked python manage.py runserver 127.0.0.1:8000 --insecure --settings=config.settings.production_local
-Remove-Item -LiteralPath Env:CEI_SECRET_KEY
 ```
 
-O banco padrão desse perfil é `var/production_local.sqlite3`. Um caminho externo
-pode ser informado por `CEI_PRODUCTION_LOCAL_DB`. `CEI_ALLOWED_HOSTS` aceita
-somente `127.0.0.1`, `localhost` e `[::1]`; `0.0.0.0` e nomes de rede são
-recusados. Não altere o endereço de escuta para expor a aplicação.
-`--insecure` habilita somente os assets estáticos no servidor local com
-`DEBUG=False`; esse comando não é uma configuração de implantação remota.
+Opcionalmente, `CEI_PRODUCTION_LOCAL_DB` define outro arquivo de produção local.
+`CEI_ALLOWED_HOSTS` aceita somente `127.0.0.1`, `localhost` e `[::1]`. Nunca use uma
+chave dos exemplos como segredo e nunca exponha o servidor em `0.0.0.0`.
 
-## Primeiro acesso local
+## 5. Migração e bootstrap local
 
-Migre o banco e escolha explicitamente o fuso IANA do espaço. O comando é
-idempotente: repeti-lo recupera o mesmo User/Workspace, preserva o fuso já salvo e
-mantém exatamente as dez categorias padrão com seus textos canônicos atuais.
+No perfil padrão de desenvolvimento:
 
 ```powershell
+New-Item -ItemType Directory -Force var
 uv run --locked python manage.py migrate
 uv run --locked python manage.py bootstrap_local --timezone America/Sao_Paulo
 ```
 
-Opcionalmente, informe `--workspace-name` e `--display-name`. Não existe fuso
-implícito derivado do sistema. Alterações posteriores são feitas pelo serviço de
-aplicação com confirmação e `lock_version`, tanto pelo comando quanto pela
-interface local descrita a seguir.
+O fuso é um identificador IANA explícito; ele não é inferido do computador. O
+bootstrap é idempotente: cria ou recupera um único User UUID, um Workspace com locale
+`pt-BR` e exatamente dez categorias padrão. Também aceita `--workspace-name` e
+`--display-name`.
 
-Depois de migrar, também é possível iniciar o servidor e concluir esse fluxo pela
-interface em `http://127.0.0.1:8000/`:
+Para conferir o estado mínimo:
+
+```powershell
+uv run --locked python manage.py shell -c "from modules.accounts.models import User, Workspace; from modules.errors.models import ErrorCategory; w=Workspace.objects.get(); print(User.objects.count(), Workspace.objects.count(), w.locale, w.timezone_name, ErrorCategory.objects.count())"
+```
+
+O resultado esperado após o primeiro bootstrap com o exemplo é:
+`1 1 pt-BR America/Sao_Paulo 10`.
+
+## 6. Executar a aplicação
+
+### Desenvolvimento
 
 ```powershell
 uv run --locked python manage.py runserver 127.0.0.1:8000
 ```
 
-A tela solicita o fuso sem deduzi-lo do computador. Depois da criação, “Início”
-mostra a configuração efetiva e “Configurações” permite cancelar ou confirmar uma
-mudança. Conflitos de versão exigem nova confirmação e nunca sobrescrevem o valor
-silenciosamente.
+### Produção local
 
-## Logging e diagnóstico local
+Com `CEI_SECRET_KEY` definido conforme a seção 4:
 
-Os logs operacionais são emitidos como uma linha JSON por evento. Cada evento
-possui horário UTC, nível, código estável, UUID de correlação, operação, resultado
-e contexto técnico mínimo. Senhas, chaves, tokens, cabeçalhos de autorização,
-cookies, sessões, corpos, payloads e conteúdo de estudo são removidos por uma
-camada central antes da serialização.
+```powershell
+New-Item -ItemType Directory -Force var
+uv run --locked python manage.py migrate --settings=config.settings.production_local
+uv run --locked python manage.py bootstrap_local --timezone America/Sao_Paulo --settings=config.settings.production_local
+uv run --locked python manage.py runserver 127.0.0.1:8000 --insecure --settings=config.settings.production_local
+```
 
-O diagnóstico está disponível somente pela fronteira local:
+Ao encerrar, remova a chave do processo:
+
+```powershell
+Remove-Item -LiteralPath Env:CEI_SECRET_KEY
+```
+
+`--insecure` serve apenas os assets versionados no loopback com `DEBUG=False`; não é
+uma configuração de implantação remota.
+
+## 7. Primeiro acesso e configuração de fuso
+
+Abra <http://127.0.0.1:8000/>. Sem Workspace, a aplicação redireciona para
+`/primeiro-acesso/`, onde o fuso IANA deve ser escolhido. Se o bootstrap por comando
+já foi executado, “Início” mostra o estado efetivo.
+
+Em “Configurações” é possível cancelar ou confirmar uma mudança de fuso. Cancelar
+preserva o valor atual. Uma confirmação usa `lock_version`; conflito concorrente exige
+nova confirmação e nunca sobrescreve silenciosamente o valor mais recente.
+
+## 8. Health local
+
+Com o servidor em execução:
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:8000/health/
 ```
 
-Com aplicação e SQLite disponíveis, retorna HTTP `200` e estado `healthy`. Banco
-indisponível retorna HTTP `503` e estado `unhealthy`, sem caminho, configuração,
-segredo ou stack trace. Clientes não loopback recebem HTTP `403`. A resposta
-inclui `X-Correlation-ID`; clientes podem enviar um UUID nesse mesmo cabeçalho.
+Aplicação e SQLite disponíveis retornam HTTP `200` e `healthy`. Banco indisponível
+retorna HTTP `503` e `unhealthy`, sem caminho, segredo ou stack trace. Cliente não
+loopback recebe `403`. A resposta contém `X-Correlation-ID`.
 
-Os comandos técnicos também aceitam correlação explícita quando necessário:
+Logs operacionais são linhas JSON com horário UTC, nível, evento, correlação, operação
+e resultado. Uma camada central remove senhas, chaves, tokens, cookies, sessões,
+payloads, corpos e conteúdo privado antes da serialização.
+
+## 9. Testes e gate único
+
+Executar somente a suíte:
 
 ```powershell
-uv run --locked python manage.py migrate --correlation-id 12345678-1234-4234-8234-123456789abc
-uv run --locked python manage.py bootstrap_local --timezone America/Sao_Paulo --correlation-id 12345678-1234-4234-8234-123456789abc
+uv run --locked pytest
 ```
 
-## Backup e restauração técnica mínima
+Executar o gate autoritativo da V0.1:
 
-O backup usa o mecanismo consistente do próprio SQLite e gera um manifesto sidecar
-com formato `CEI-SQLITE-BACKUP` 1.0, instante UTC, tamanho e SHA-256. Crie o diretório
-de destino e informe um nome novo; arquivos existentes nunca são sobrescritos:
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\quality.ps1
+```
+
+O gate valida lock e runtime, sincroniza o ambiente, confere documentação, IDs e
+migrações históricas, testa os três perfis e um banco vazio, executa Ruff, mypy,
+pytest/cobertura, detect-secrets e pip-audit. Qualquer fase obrigatória retorna código
+diferente de zero e bloqueia a entrega. O mínimo documental é 80% de linhas para cada
+módulo atual de domínio/regras; a cobertura global é informativa.
+
+## 10. Backup, validação e restauração
+
+Com o banco de desenvolvimento migrado e inicializado:
 
 ```powershell
 New-Item -ItemType Directory -Force backups
@@ -153,21 +185,18 @@ uv run --locked python manage.py backup_sqlite --output backups\cei-v01.sqlite3
 uv run --locked python manage.py validate_backup --backup backups\cei-v01.sqlite3
 ```
 
-O manifesto será `backups\cei-v01.sqlite3.manifest.json`. Mantenha os dois arquivos
-juntos. O backup contém os mesmos dados privados do banco: restrinja seu acesso e,
-se ele sair do dispositivo protegido, aplique proteção adequada antes do transporte.
+O manifesto `backups\cei-v01.sqlite3.manifest.json` registra formato
+`CEI-SQLITE-BACKUP` 1.0, instante UTC, tamanho e SHA-256. Mantenha ambos juntos e
+proteja-os como o banco original.
 
-Restauração na V0.1 sempre usa um novo arquivo em diretório isolado. O comando valida
-manifesto, tamanho, checksum, integridade SQLite, migrações, identidade/Workspace,
-locale, fuso e as dez categorias antes de publicar o destino:
+Na V0.1, restaure sempre em um arquivo novo e isolado:
 
 ```powershell
 New-Item -ItemType Directory -Force recovery
 uv run --locked python manage.py restore_backup --backup backups\cei-v01.sqlite3 --destination recovery\validated.sqlite3
 ```
 
-Para provar a inicialização sem trocar o banco de desenvolvimento, aponte
-temporariamente o perfil para a cópia validada e remova a variável em seguida:
+Valide a inicialização sobre a cópia sem trocar o banco normal:
 
 ```powershell
 $env:CEI_DEVELOPMENT_DB = (Resolve-Path recovery\validated.sqlite3).Path
@@ -176,42 +205,39 @@ uv run --locked python manage.py shell -c "from modules.accounts.models import U
 Remove-Item -LiteralPath Env:CEI_DEVELOPMENT_DB
 ```
 
-Esses comandos não substituem o banco ativo nem recriam dados ausentes. Checksum
-inválido, versão desconhecida, migração divergente ou reconciliação incompleta falham
-antes da publicação. Use sempre destinos descartáveis para exercícios. RPO/RTO,
-retenção automática, rotação, scheduler, nuvem, exportação e restauração pela
-interface só entram nos marcos posteriores documentados.
+Checksum inválido, versão desconhecida, migração divergente ou reconciliação
+incompleta falham antes da publicação do destino.
 
-## Qualidade e verificação
+## 11. Solução de problemas
 
-O gate único executa checks dos três perfis, verifica lock, referências Markdown,
-IDs/rastreabilidade da V0.1, hashes das migrações aprovadas, ausência de migrações
-inesperadas, migra um banco vazio descartável, executa Ruff, mypy, pytest, aplica
-80% de linhas a cada módulo atual de domínio/regras, detecta segredos e audita
-dependências:
+- **`uv` não encontrado:** reabra o PowerShell após instalar e confirme `uv --version`.
+- **Versão de `uv` divergente:** reinstale exatamente `0.12.7`.
+- **Lock inconsistente:** não execute `uv lock` por conveniência; confirme que a revisão
+  correta do `uv.lock` foi obtida.
+- **Produção local não inicia:** defina `CEI_SECRET_KEY` no processo atual.
+- **Host recusado:** use `127.0.0.1` ou `localhost`, nunca uma interface de rede.
+- **Porta 8000 ocupada:** encerre o processo anterior ou use outra porta loopback,
+  como `127.0.0.1:8001`.
+- **Banco inesperado:** remova a variável de banco do processo e confira a tabela de
+  perfis; nunca apague um banco sem confirmar seu caminho absoluto e possuir backup.
+- **Backup já existe:** informe um nome novo; o comando não sobrescreve arquivos.
+- **Restauração recusada:** valide backup e manifesto juntos e use destino inexistente.
+- **Teste temporário bloqueado pelo Windows:** encerre processos Python que ainda
+  mantenham arquivos abertos e execute novamente; não redirecione testes para banco real.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\quality.ps1
-```
+## 12. Limitações conhecidas da V0.1
 
-Qualquer fase obrigatória retorna exit code diferente de zero e impede a mensagem
-final de sucesso. Não existe opção de pular auditoria de segurança no gate
-autoritativo. O relatório global de cobertura é informativo; não foi inventado um
-limiar global além da meta documental por módulo de domínio.
+- É uma fundação técnica e não deve ser usada para estudo real.
+- Não há questões, tentativas, revisões, dashboard, busca ou métricas.
+- Não há categorias pessoais, autenticação remota, API, notificações ou PWA.
+- O servidor é exclusivamente local; hospedagem e PostgreSQL pertencem a marcos futuros.
+- Backup/restauração são comandos técnicos; não há interface, agenda, rotação, nuvem ou
+  garantia de RPO/RTO nesta versão.
+- O HTMX está versionado, mas não é carregado até existir interação que o justifique.
+- O workflow de CI de um provedor será definido somente após escolha formal; o gate
+  Windows local é a fonte única atual.
 
-Falhas comuns:
-
-- `uv` em versão diferente: reinstale exatamente `0.12.7`;
-- produção local recusa iniciar: defina `CEI_SECRET_KEY` apenas no ambiente;
-- host recusado: use `127.0.0.1` ou `localhost`, nunca uma interface de rede;
-- lock desatualizado: não o regenere implicitamente; revise a mudança de
-  dependência antes de executar `uv lock`.
-
-Questões, revisões, dashboard, busca, métricas e links correspondentes não fazem
-parte da interface V0.1 atual. Telemetria remota, alertas, retenção automatizada,
-exportação e auditoria funcional persistente também permanecem posteriores.
-
-Decisões técnicas:
+## Decisões técnicas
 
 - [`ADR-001 — Toolchain`](docs/ADR-001_Toolchain_Reproduzivel_V0.1.md)
 - [`ADR-002 — Perfis e isolamento`](docs/ADR-002_Perfis_e_Isolamento_Django_V0.1.md)
@@ -221,3 +247,4 @@ Decisões técnicas:
 - [`ADR-006 — Interface acessível da fundação`](docs/ADR-006_Interface_Acessivel_da_Fundacao_V0.1.md)
 - [`ADR-007 — Backup e restauração mínima SQLite`](docs/ADR-007_Backup_e_Restauracao_Minima_SQLite_V0.1.md)
 - [`ADR-008 — Gate único de qualidade`](docs/ADR-008_Gate_Unico_de_Qualidade_V0.1.md)
+- [`ADR-009 — Validação final e promoção`](docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md)
