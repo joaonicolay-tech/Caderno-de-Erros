@@ -1,5 +1,8 @@
-"""Rotas raiz; capacidades web serão adicionadas somente em suas etapas."""
+"""Rotas raiz da fundação local."""
 
+from django.urls import include, path
 from django.urls.resolvers import URLPattern, URLResolver
 
-urlpatterns: list[URLPattern | URLResolver] = []
+urlpatterns: list[URLPattern | URLResolver] = [
+    path("", include("modules.operations.urls")),
+]

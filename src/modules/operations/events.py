@@ -1,0 +1,31 @@
+"""Códigos estáveis dos eventos operacionais exigidos na V0.1."""
+
+from enum import StrEnum
+
+
+class EventCode(StrEnum):
+    """Catálogo técnico mínimo; não representa auditoria funcional."""
+
+    APPLICATION_INITIALIZED = "APPLICATION_INITIALIZED"
+    LOCAL_ACCESS_REJECTED = "LOCAL_ACCESS_REJECTED"
+    HEALTH_CHECK_SUCCEEDED = "HEALTH_CHECK_SUCCEEDED"
+    HEALTH_CHECK_FAILED = "HEALTH_CHECK_FAILED"
+    BOOTSTRAP_STARTED = "BOOTSTRAP_STARTED"
+    BOOTSTRAP_SUCCEEDED = "BOOTSTRAP_SUCCEEDED"
+    BOOTSTRAP_FAILED = "BOOTSTRAP_FAILED"
+    CATEGORY_SEED_STARTED = "CATEGORY_SEED_STARTED"
+    CATEGORY_SEED_SUCCEEDED = "CATEGORY_SEED_SUCCEEDED"
+    CATEGORY_SEED_FAILED = "CATEGORY_SEED_FAILED"
+    MIGRATION_STARTED = "MIGRATION_STARTED"
+    MIGRATION_SUCCEEDED = "MIGRATION_SUCCEEDED"
+    MIGRATION_FAILED = "MIGRATION_FAILED"
+    BACKUP_FAILED = "BACKUP_FAILED"
+
+
+class EventOutcome(StrEnum):
+    """Resultados uniformes dos eventos técnicos."""
+
+    STARTED = "started"
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"
+    REJECTED = "rejected"

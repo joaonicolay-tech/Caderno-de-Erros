@@ -14,6 +14,7 @@ class Command(BaseCommand):
         parser.add_argument("--timezone", required=True, help="Identificador IANA escolhido.")
         parser.add_argument("--workspace-name", default="Meu espaço")
         parser.add_argument("--display-name", default="")
+        parser.add_argument("--correlation-id", help="UUID técnico opcional para correlação.")
 
     def handle(self, *args: Any, **options: Any) -> None:
         try:
@@ -21,6 +22,7 @@ class Command(BaseCommand):
                 timezone_id=options["timezone"],
                 workspace_name=options["workspace_name"],
                 display_name=options["display_name"],
+                correlation_id=options["correlation_id"],
             )
         except ValueError as error:
             raise CommandError(str(error)) from error

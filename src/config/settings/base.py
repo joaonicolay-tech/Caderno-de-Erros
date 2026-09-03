@@ -15,10 +15,12 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "modules.accounts.apps.AccountsConfig",
     "modules.errors.apps.ErrorsConfig",
+    "modules.operations.apps.OperationsConfig",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "modules.operations.middleware.LocalCorrelationMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
 ]
@@ -47,6 +49,28 @@ USE_TZ = True
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "structured": {"()": "modules.operations.structured_logging.StructuredJsonFormatter"}
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "structured",
+        }
+    },
+    "root": {"handlers": ["console"], "level": "WARNING"},
+    "loggers": {
+        "cei": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        }
+    },
+}
 
 
 def local_allowed_hosts() -> list[str]:
