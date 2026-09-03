@@ -184,13 +184,20 @@ interface só entram nos marcos posteriores documentados.
 
 ## Qualidade e verificação
 
-O gate único executa checks dos três perfis, verifica ausência de migrações
-inesperadas, migra um banco vazio descartável, executa Ruff, mypy, pytest,
-detecção de segredos e auditoria de dependências:
+O gate único executa checks dos três perfis, verifica lock, referências Markdown,
+IDs/rastreabilidade da V0.1, hashes das migrações aprovadas, ausência de migrações
+inesperadas, migra um banco vazio descartável, executa Ruff, mypy, pytest, aplica
+80% de linhas a cada módulo atual de domínio/regras, detecta segredos e audita
+dependências:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\quality.ps1
 ```
+
+Qualquer fase obrigatória retorna exit code diferente de zero e impede a mensagem
+final de sucesso. Não existe opção de pular auditoria de segurança no gate
+autoritativo. O relatório global de cobertura é informativo; não foi inventado um
+limiar global além da meta documental por módulo de domínio.
 
 Falhas comuns:
 
@@ -213,3 +220,4 @@ Decisões técnicas:
 - [`ADR-005 — Logging, correlação e health local`](docs/ADR-005_Logging_Correlacao_e_Health_Local_V0.1.md)
 - [`ADR-006 — Interface acessível da fundação`](docs/ADR-006_Interface_Acessivel_da_Fundacao_V0.1.md)
 - [`ADR-007 — Backup e restauração mínima SQLite`](docs/ADR-007_Backup_e_Restauracao_Minima_SQLite_V0.1.md)
+- [`ADR-008 — Gate único de qualidade`](docs/ADR-008_Gate_Unico_de_Qualidade_V0.1.md)

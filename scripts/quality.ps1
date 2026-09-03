@@ -1,14 +1,17 @@
 [CmdletBinding()]
-param(
-    [switch]$SkipVulnerabilityAudit
-)
+param()
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+$gateStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
 $toolsDirectory = Join-Path $PSScriptRoot "..\.tools"
 $env:UV_CACHE_DIR = Join-Path $toolsDirectory "cache"
 $env:UV_PYTHON_INSTALL_DIR = Join-Path $toolsDirectory "python"
+$qualityReportsDirectory = Join-Path $toolsDirectory "quality"
+$coverageReport = ".tools/quality/coverage.json"
+New-Item -ItemType Directory -Path $qualityReportsDirectory -Force | Out-Null
+Remove-Item -LiteralPath $coverageReport -ErrorAction SilentlyContinue
 
 $uvCommand = Get-Command uv -ErrorAction SilentlyContinue
 if ($null -eq $uvCommand) {
@@ -45,6 +48,9 @@ Invoke-Tool "validar runtime" @(
     "python",
     "-c",
     "import django, sqlite3, sys; sample = 'quest\u00e3o'; assert sys.version_info[:3] == (3, 13, 15); assert django.get_version() == '5.2.17'; assert sqlite3.sqlite_version_info == (3, 53, 1); assert sample.encode('utf-8').decode('utf-8') == sample; print(f'Python={sys.version.split()[0]} Django={django.get_version()} SQLite={sqlite3.sqlite_version}')"
+)
+Invoke-Tool "validar rastreabilidade e baseline documental" @(
+    "run", "--locked", "python", "scripts/verify_v01.py", "repository"
 )
 Invoke-Tool "verificar perfil de desenvolvimento" @(
     "run", "--locked", "python", "manage.py", "check",
@@ -95,7 +101,12 @@ if ($pythonFiles.Count -gt 0) {
         "--locked",
         "pytest",
         "--cov=src",
-        "--cov-report=term-missing"
+        "--cov-report=term-missing",
+        "--cov-report=json:$coverageReport"
+    )
+    Invoke-Tool "validar cobertura de domínio" @(
+        "run", "--locked", "python", "scripts/verify_v01.py", "coverage",
+        "--coverage-file", $coverageReport
     )
 } else {
     Write-Host "==> validar executáveis de análise e testes (não há código Python)"
@@ -124,14 +135,13 @@ if ($filesToScan.Count -gt 0) {
     Invoke-Tool "detectar segredos" $secretArguments
 }
 
-if (-not $SkipVulnerabilityAudit) {
-    Invoke-Tool "auditar vulnerabilidades" @(
-        "run",
-        "--locked",
-        "pip-audit",
-        "--local",
-        "--strict"
-    )
-}
+Invoke-Tool "auditar vulnerabilidades" @(
+    "run",
+    "--locked",
+    "pip-audit",
+    "--local",
+    "--strict"
+)
 
-Write-Host "Gate técnico da Etapa 7 validado."
+$gateStopwatch.Stop()
+Write-Host "Gate técnico da Etapa 8 validado em $([Math]::Round($gateStopwatch.Elapsed.TotalSeconds, 1)) s."

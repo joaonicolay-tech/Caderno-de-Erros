@@ -1,0 +1,141 @@
+from __future__ import annotations
+
+import copy
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+from scripts.verify_v01 import (
+    DEFINITION_SOURCES,
+    GateVerificationError,
+    collect_definitions,
+    load_json_object,
+    verify_coverage,
+    verify_markdown_links,
+    verify_migration_history,
+    verify_repository,
+    verify_test_evidence,
+)
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+MANIFEST_PATH = PROJECT_ROOT / "quality" / "v01-gate.json"
+
+
+def _manifest() -> dict[str, object]:
+    return load_json_object(MANIFEST_PATH)
+
+
+def _coverage_report(percent: int = 100) -> dict[str, object]:
+    manifest = _manifest()
+    policy = manifest["domain_coverage"]
+    assert isinstance(policy, dict)
+    paths = policy["files"]
+    assert isinstance(paths, list)
+    return {
+        "files": {
+            path: {"summary": {"covered_lines": percent, "num_statements": 100}}
+            for path in paths
+            if isinstance(path, str)
+        }
+    }
+
+
+def test_current_repository_satisfies_v01_contract() -> None:
+    verify_repository(PROJECT_ROOT, MANIFEST_PATH)
+
+
+def test_duplicate_json_key_is_blocking(tmp_path: Path) -> None:
+    duplicated = tmp_path / "duplicated.json"
+    duplicated.write_text('{"release": "V0.1", "release": "V0.2"}', encoding="utf-8")
+
+    with pytest.raises(GateVerificationError, match="duplicada"):
+        load_json_object(duplicated)
+
+
+def test_broken_local_markdown_link_is_blocking(tmp_path: Path) -> None:
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "README.md").write_text("[ausente](docs/ausente.md)\n", encoding="utf-8")
+
+    with pytest.raises(GateVerificationError, match="Links Markdown locais"):
+        verify_markdown_links(tmp_path)
+
+
+def test_duplicate_canonical_definition_is_blocking(tmp_path: Path) -> None:
+    for relative_path in DEFINITION_SOURCES.values():
+        source = PROJECT_ROOT / relative_path
+        destination = tmp_path / relative_path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(source.read_bytes())
+
+    rf_document = tmp_path / DEFINITION_SOURCES["RF"]
+    with rf_document.open("a", encoding="utf-8") as stream:
+        stream.write("\n### `RF-001` — definição duplicada de teste\n")
+
+    with pytest.raises(GateVerificationError, match="Definições canônicas duplicadas: RF-001"):
+        collect_definitions(tmp_path)
+
+
+def test_changed_historical_migration_is_blocking() -> None:
+    manifest = copy.deepcopy(_manifest())
+    hashes = manifest["migration_sha256"]
+    assert isinstance(hashes, dict)
+    first_migration = next(iter(hashes))
+    hashes[first_migration] = [0] * 32
+
+    with pytest.raises(GateVerificationError, match="Migrações históricas alteradas"):
+        verify_migration_history(PROJECT_ROOT, manifest)
+
+
+def test_missing_test_evidence_is_blocking() -> None:
+    manifest = copy.deepcopy(_manifest())
+    evidence = manifest["test_evidence"]
+    assert isinstance(evidence, dict)
+    case = evidence["CT-129"]
+    assert isinstance(case, dict)
+    case["evidence"] = [
+        {"kind": "test", "target": "tests/test_error_categories.py::test_inexistente"}
+    ]
+
+    with pytest.raises(GateVerificationError, match="Teste rastreado não existe"):
+        verify_test_evidence(PROJECT_ROOT, manifest)
+
+
+def test_domain_coverage_at_threshold_is_accepted(tmp_path: Path) -> None:
+    coverage_path = tmp_path / "coverage.json"
+    coverage_path.write_text(json.dumps(_coverage_report(80)), encoding="utf-8")
+
+    verify_coverage(PROJECT_ROOT, MANIFEST_PATH, coverage_path)
+
+
+def test_domain_coverage_below_threshold_returns_nonzero(tmp_path: Path) -> None:
+    coverage_path = tmp_path / "coverage.json"
+    coverage_path.write_text(json.dumps(_coverage_report(79)), encoding="utf-8")
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/verify_v01.py",
+            "coverage",
+            "--coverage-file",
+            str(coverage_path),
+        ],
+        cwd=PROJECT_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 1
+    assert "Cobertura de domínio abaixo de 80%" in completed.stderr
+
+
+def test_authoritative_gate_has_no_security_bypass() -> None:
+    gate = (PROJECT_ROOT / "scripts" / "quality.ps1").read_text(encoding="utf-8")
+
+    assert '$ErrorActionPreference = "Stop"' in gate
+    assert "SkipVulnerabilityAudit" not in gate
+    assert 'Invoke-Tool "detectar segredos"' in gate
+    assert 'Invoke-Tool "auditar vulnerabilidades"' in gate

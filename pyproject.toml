@@ -47,7 +47,7 @@ select = ["B", "C4", "DJ", "E4", "E7", "E9", "F", "I", "RUF", "S", "UP"]
 
 [tool.mypy]
 python_version = "3.13"
-files = ["src", "tests"]
+files = ["src", "tests", "scripts"]
 mypy_path = "src"
 plugins = ["mypy_django_plugin.main"]
 strict = true
