@@ -47,6 +47,11 @@ necessário e preservam o contexto exterior em chamadas aninhadas.
 Tentativas, ciclos, revisões, autorização remota, restauração, reconciliação e
 auditoria funcional serão catalogados somente quando suas capacidades existirem.
 
+**Atualização da Etapa 7 (ADR-007):** a capacidade técnica passou a existir e o
+catálogo foi ampliado somente com os eventos mínimos de criação/validação de backup
+e restauração isolada. `BACKUP_FAILED`, antes reservado, agora é emitido pelo caso de
+uso real; a sanitização e o contrato de correlação desta ADR permanecem inalterados.
+
 ## Contrato do diagnóstico local
 
 O contrato mínimo escolhido para resolver a abertura permitida por

@@ -6,9 +6,9 @@ A documentação oficial do projeto está localizada em `/docs`.
 
 ## Estado atual
 
-A Etapa 6 da V0.1 fornece identidade e Workspace locais, tempo/fuso, as dez
-categorias padrão, logging/diagnóstico e uma interface acessível para primeiro
-acesso e configuração. Ainda não existem conteúdo de estudo, tentativas ou
+A Etapa 7 da V0.1 fornece identidade e Workspace locais, tempo/fuso, as dez
+categorias padrão, logging/diagnóstico, interface acessível e backup/restauração
+técnica mínima do SQLite. Ainda não existem conteúdo de estudo, tentativas ou
 revisões.
 
 Pré-requisitos do ambiente validado:
@@ -141,6 +141,47 @@ uv run --locked python manage.py migrate --correlation-id 12345678-1234-4234-823
 uv run --locked python manage.py bootstrap_local --timezone America/Sao_Paulo --correlation-id 12345678-1234-4234-8234-123456789abc
 ```
 
+## Backup e restauração técnica mínima
+
+O backup usa o mecanismo consistente do próprio SQLite e gera um manifesto sidecar
+com formato `CEI-SQLITE-BACKUP` 1.0, instante UTC, tamanho e SHA-256. Crie o diretório
+de destino e informe um nome novo; arquivos existentes nunca são sobrescritos:
+
+```powershell
+New-Item -ItemType Directory -Force backups
+uv run --locked python manage.py backup_sqlite --output backups\cei-v01.sqlite3
+uv run --locked python manage.py validate_backup --backup backups\cei-v01.sqlite3
+```
+
+O manifesto será `backups\cei-v01.sqlite3.manifest.json`. Mantenha os dois arquivos
+juntos. O backup contém os mesmos dados privados do banco: restrinja seu acesso e,
+se ele sair do dispositivo protegido, aplique proteção adequada antes do transporte.
+
+Restauração na V0.1 sempre usa um novo arquivo em diretório isolado. O comando valida
+manifesto, tamanho, checksum, integridade SQLite, migrações, identidade/Workspace,
+locale, fuso e as dez categorias antes de publicar o destino:
+
+```powershell
+New-Item -ItemType Directory -Force recovery
+uv run --locked python manage.py restore_backup --backup backups\cei-v01.sqlite3 --destination recovery\validated.sqlite3
+```
+
+Para provar a inicialização sem trocar o banco de desenvolvimento, aponte
+temporariamente o perfil para a cópia validada e remova a variável em seguida:
+
+```powershell
+$env:CEI_DEVELOPMENT_DB = (Resolve-Path recovery\validated.sqlite3).Path
+uv run --locked python manage.py check
+uv run --locked python manage.py shell -c "from modules.accounts.models import User, Workspace; from modules.errors.models import ErrorCategory; assert (User.objects.count(), Workspace.objects.count(), ErrorCategory.objects.count()) == (1, 1, 10)"
+Remove-Item -LiteralPath Env:CEI_DEVELOPMENT_DB
+```
+
+Esses comandos não substituem o banco ativo nem recriam dados ausentes. Checksum
+inválido, versão desconhecida, migração divergente ou reconciliação incompleta falham
+antes da publicação. Use sempre destinos descartáveis para exercícios. RPO/RTO,
+retenção automática, rotação, scheduler, nuvem, exportação e restauração pela
+interface só entram nos marcos posteriores documentados.
+
 ## Qualidade e verificação
 
 O gate único executa checks dos três perfis, verifica ausência de migrações
@@ -159,10 +200,9 @@ Falhas comuns:
 - lock desatualizado: não o regenere implicitamente; revise a mudança de
   dependência antes de executar `uv lock`.
 
-Backup/restauração ainda não existe e será implementado em etapa própria.
 Questões, revisões, dashboard, busca, métricas e links correspondentes não fazem
-parte da interface V0.1 atual. Telemetria remota, alertas e auditoria funcional
-persistente também permanecem posteriores.
+parte da interface V0.1 atual. Telemetria remota, alertas, retenção automatizada,
+exportação e auditoria funcional persistente também permanecem posteriores.
 
 Decisões técnicas:
 
@@ -172,3 +212,4 @@ Decisões técnicas:
 - [`ADR-004 — Categorias padrão e seed`](docs/ADR-004_Categorias_Padrao_e_Seed_V0.1.md)
 - [`ADR-005 — Logging, correlação e health local`](docs/ADR-005_Logging_Correlacao_e_Health_Local_V0.1.md)
 - [`ADR-006 — Interface acessível da fundação`](docs/ADR-006_Interface_Acessivel_da_Fundacao_V0.1.md)
+- [`ADR-007 — Backup e restauração mínima SQLite`](docs/ADR-007_Backup_e_Restauracao_Minima_SQLite_V0.1.md)

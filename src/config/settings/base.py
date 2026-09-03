@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "modules.accounts.apps.AccountsConfig",
     "modules.errors.apps.ErrorsConfig",
     "modules.operations.apps.OperationsConfig",
+    "modules.data_management.apps.DataManagementConfig",
 ]
 
 MIDDLEWARE = [

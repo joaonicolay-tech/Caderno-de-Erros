@@ -134,4 +134,4 @@ if (-not $SkipVulnerabilityAudit) {
     )
 }
 
-Write-Host "Gate técnico da Etapa 6 validado."
+Write-Host "Gate técnico da Etapa 7 validado."
