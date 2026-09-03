@@ -5,4 +5,5 @@ from django.urls.resolvers import URLPattern, URLResolver
 
 urlpatterns: list[URLPattern | URLResolver] = [
     path("", include("modules.operations.urls")),
+    path("", include("modules.accounts.urls")),
 ]

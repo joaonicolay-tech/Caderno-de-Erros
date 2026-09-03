@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Início — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <section aria-labelledby="page-title">
+    <p class="eyebrow">Fundação local V0.1</p>
+    <h1 id="page-title">Seu espaço está pronto</h1>
+    <p>A base local foi inicializada. Funcionalidades de estudo ainda não fazem parte desta versão.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="workspace-title">
+    <h2 id="workspace-title">Configuração atual</h2>
+    <dl class="summary-list">
+      <div><dt>Espaço</dt><dd>{{ workspace.name }}</dd></div>
+      <div><dt>Idioma</dt><dd>Português (Brasil)</dd></div>
+      <div><dt>Fuso horário</dt><dd><code>{{ workspace.timezone_name }}</code></dd></div>
+      <div><dt>Hoje nesse fuso</dt><dd>{{ today }}</dd></div>
+    </dl>
+    <p><a class="button-link" href="{% url 'accounts:settings' %}">Alterar fuso horário</a></p>
+  </section>
+{% endblock %}

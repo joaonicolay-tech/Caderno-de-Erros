@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Primeiro acesso — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <section class="narrow" aria-labelledby="page-title">
+    <p class="eyebrow">Primeiro acesso</p>
+    <h1 id="page-title">Configure seu espaço local</h1>
+    <p>Escolha explicitamente o fuso usado para determinar “hoje”. O sistema não usa silenciosamente o fuso do computador.</p>
+
+    {% if form.non_field_errors %}
+      <div class="feedback feedback-error" role="alert" tabindex="-1" autofocus>
+        <strong>Não foi possível concluir:</strong>
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="field-group{% if form.timezone_name.errors %} field-error{% endif %}">
+        <label for="{{ form.timezone_name.id_for_label }}">{{ form.timezone_name.label }}</label>
+        {{ form.timezone_name }}
+        <p class="field-help" id="timezone-help">{{ form.timezone_name.help_text }}</p>
+        <div id="timezone-errors">
+          {{ form.timezone_name.errors }}
+        </div>
+      </div>
+      <button type="submit">Criar espaço local</button>
+    </form>
+  </section>
+{% endblock %}

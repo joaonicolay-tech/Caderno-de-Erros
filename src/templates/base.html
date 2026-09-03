@@ -1,0 +1,35 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Caderno de Erros{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo-principal">Ir para o conteúdo principal</a>
+  <header class="site-header">
+    <div class="shell header-content">
+      <a class="brand" href="{% url 'accounts:home' %}">Caderno de Erros</a>
+      <nav aria-label="Navegação principal">
+        <ul class="nav-list">
+          <li><a href="{% url 'accounts:home' %}">Início</a></li>
+          {% if workspace %}
+            <li><a href="{% url 'accounts:settings' %}">Configurações</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="conteudo-principal" class="shell main-content" tabindex="-1">
+    {% if feedback %}
+      <p class="feedback feedback-success" role="status"><strong>Sucesso:</strong> {{ feedback }}</p>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <div class="shell">Aplicação local — V0.1</div>
+  </footer>
+</body>
+</html>

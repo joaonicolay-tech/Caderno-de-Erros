@@ -1,11 +1,15 @@
 """Casos de uso transacionais de primeiro acesso e configuração."""
 
+import logging
 import uuid
 from dataclasses import dataclass
 
 from django.db import IntegrityError, transaction
 from django.db.models import F
 
+from modules.operations.correlation import correlation_scope
+from modules.operations.events import EventCode, EventOutcome
+from modules.operations.structured_logging import emit_event
 from shared.domain.time import Clock, SystemClock, TimeZoneId
 
 from .exceptions import LocalBootstrapConflict, WorkspaceAccessDenied, WorkspaceConcurrencyError
@@ -125,26 +129,74 @@ def change_workspace_timezone(
 ) -> TimezoneChangeResult:
     """Confirme a mudança com autorização e compare-and-swap de lock_version."""
     timezone_name = _timezone_value(timezone_id)
-    workspace = get_workspace_for_owner(
-        actor_user_id=actor_user_id,
-        workspace_id=workspace_id,
-    )
-    if not confirmed or workspace.timezone_name == timezone_name:
-        return TimezoneChangeResult(workspace=workspace, changed=False)
+    with correlation_scope():
+        try:
+            workspace = get_workspace_for_owner(
+                actor_user_id=actor_user_id,
+                workspace_id=workspace_id,
+            )
+            if not confirmed:
+                emit_event(
+                    EventCode.TIMEZONE_CHANGE_CANCELLED,
+                    operation="workspace.change_timezone",
+                    outcome=EventOutcome.CANCELLED,
+                    context={"workspace_id": str(workspace.id)},
+                )
+                return TimezoneChangeResult(workspace=workspace, changed=False)
+            if workspace.timezone_name == timezone_name:
+                emit_event(
+                    EventCode.TIMEZONE_CHANGE_SUCCEEDED,
+                    operation="workspace.change_timezone",
+                    outcome=EventOutcome.SUCCEEDED,
+                    context={"workspace_id": str(workspace.id), "changed": False},
+                )
+                return TimezoneChangeResult(workspace=workspace, changed=False)
 
-    current_clock = clock or SystemClock()
-    updated = Workspace.objects.filter(
-        pk=workspace.id,
-        owner_user_id=actor_user_id,
-        lock_version=expected_lock_version,
-    ).update(
-        timezone_name=timezone_name,
-        lock_version=F("lock_version") + 1,
-        updated_at=current_clock.now().value,
-    )
-    if updated != 1:
-        raise WorkspaceConcurrencyError(
-            "O Workspace mudou desde a confirmação; recarregue o valor atual."
+            current_clock = clock or SystemClock()
+            updated = Workspace.objects.filter(
+                pk=workspace.id,
+                owner_user_id=actor_user_id,
+                lock_version=expected_lock_version,
+            ).update(
+                timezone_name=timezone_name,
+                lock_version=F("lock_version") + 1,
+                updated_at=current_clock.now().value,
+            )
+            if updated != 1:
+                emit_event(
+                    EventCode.TIMEZONE_CHANGE_CONFLICT,
+                    operation="workspace.change_timezone",
+                    outcome=EventOutcome.REJECTED,
+                    level=logging.WARNING,
+                    context={
+                        "workspace_id": str(workspace.id),
+                        "error_code": "CONCURRENCY_CONFLICT",
+                    },
+                )
+                raise WorkspaceConcurrencyError(
+                    "O Workspace mudou desde a confirmação; recarregue o valor atual."
+                )
+            workspace.refresh_from_db()
+        except (WorkspaceAccessDenied, WorkspaceConcurrencyError):
+            raise
+        except Exception as error:
+            emit_event(
+                EventCode.TIMEZONE_CHANGE_FAILED,
+                operation="workspace.change_timezone",
+                outcome=EventOutcome.FAILED,
+                level=logging.ERROR,
+                context={
+                    "workspace_id": str(workspace_id),
+                    "error_code": "TIMEZONE_CHANGE_FAILURE",
+                    "error_type": type(error).__name__,
+                },
+            )
+            raise
+
+        emit_event(
+            EventCode.TIMEZONE_CHANGE_SUCCEEDED,
+            operation="workspace.change_timezone",
+            outcome=EventOutcome.SUCCEEDED,
+            context={"workspace_id": str(workspace.id), "changed": True},
         )
-    workspace.refresh_from_db()
-    return TimezoneChangeResult(workspace=workspace, changed=True)
+        return TimezoneChangeResult(workspace=workspace, changed=True)

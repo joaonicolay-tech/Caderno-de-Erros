@@ -6,9 +6,10 @@ A documentação oficial do projeto está localizada em `/docs`.
 
 ## Estado atual
 
-A Etapa 5 da V0.1 fornece identidade e Workspace locais, tempo/fuso, as dez
-categorias padrão, logging estruturado e sanitizado, correlação e diagnóstico
-local. Ainda não existem conteúdo de estudo, tentativas ou revisões.
+A Etapa 6 da V0.1 fornece identidade e Workspace locais, tempo/fuso, as dez
+categorias padrão, logging/diagnóstico e uma interface acessível para primeiro
+acesso e configuração. Ainda não existem conteúdo de estudo, tentativas ou
+revisões.
 
 Pré-requisitos do ambiente validado:
 
@@ -75,7 +76,7 @@ repositório:
 $env:CEI_SECRET_KEY = uv run --locked python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 New-Item -ItemType Directory -Force var
 uv run --locked python manage.py migrate --settings=config.settings.production_local
-uv run --locked python manage.py runserver 127.0.0.1:8000 --settings=config.settings.production_local
+uv run --locked python manage.py runserver 127.0.0.1:8000 --insecure --settings=config.settings.production_local
 Remove-Item -LiteralPath Env:CEI_SECRET_KEY
 ```
 
@@ -83,6 +84,8 @@ O banco padrão desse perfil é `var/production_local.sqlite3`. Um caminho exter
 pode ser informado por `CEI_PRODUCTION_LOCAL_DB`. `CEI_ALLOWED_HOSTS` aceita
 somente `127.0.0.1`, `localhost` e `[::1]`; `0.0.0.0` e nomes de rede são
 recusados. Não altere o endereço de escuta para expor a aplicação.
+`--insecure` habilita somente os assets estáticos no servidor local com
+`DEBUG=False`; esse comando não é uma configuração de implantação remota.
 
 ## Primeiro acesso local
 
@@ -97,8 +100,20 @@ uv run --locked python manage.py bootstrap_local --timezone America/Sao_Paulo
 
 Opcionalmente, informe `--workspace-name` e `--display-name`. Não existe fuso
 implícito derivado do sistema. Alterações posteriores são feitas pelo serviço de
-aplicação com confirmação e `lock_version`; a interface será adicionada em etapa
-própria.
+aplicação com confirmação e `lock_version`, tanto pelo comando quanto pela
+interface local descrita a seguir.
+
+Depois de migrar, também é possível iniciar o servidor e concluir esse fluxo pela
+interface em `http://127.0.0.1:8000/`:
+
+```powershell
+uv run --locked python manage.py runserver 127.0.0.1:8000
+```
+
+A tela solicita o fuso sem deduzi-lo do computador. Depois da criação, “Início”
+mostra a configuração efetiva e “Configurações” permite cancelar ou confirmar uma
+mudança. Conflitos de versão exigem nova confirmação e nunca sobrescrevem o valor
+silenciosamente.
 
 ## Logging e diagnóstico local
 
@@ -144,9 +159,10 @@ Falhas comuns:
 - lock desatualizado: não o regenere implicitamente; revise a mudança de
   dependência antes de executar `uv lock`.
 
-Interface de configuração e backup/restauração ainda não existem e serão
-implementados nas respectivas etapas. Telemetria remota, métricas, alertas e
-auditoria funcional persistente não pertencem à Etapa 5.
+Backup/restauração ainda não existe e será implementado em etapa própria.
+Questões, revisões, dashboard, busca, métricas e links correspondentes não fazem
+parte da interface V0.1 atual. Telemetria remota, alertas e auditoria funcional
+persistente também permanecem posteriores.
 
 Decisões técnicas:
 
@@ -155,3 +171,4 @@ Decisões técnicas:
 - [`ADR-003 — Identidade, Workspace e tempo`](docs/ADR-003_Identidade_Workspace_e_Tempo_V0.1.md)
 - [`ADR-004 — Categorias padrão e seed`](docs/ADR-004_Categorias_Padrao_e_Seed_V0.1.md)
 - [`ADR-005 — Logging, correlação e health local`](docs/ADR-005_Logging_Correlacao_e_Health_Local_V0.1.md)
+- [`ADR-006 — Interface acessível da fundação`](docs/ADR-006_Interface_Acessivel_da_Fundacao_V0.1.md)

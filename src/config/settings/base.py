@@ -11,6 +11,7 @@ LOCAL_ALLOWED_HOSTS = frozenset({"127.0.0.1", "localhost", "[::1]"})
 DATABASE_TIMEOUT_SECONDS = 5.0
 
 INSTALLED_APPS = [
+    "django.contrib.staticfiles",
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "modules.accounts.apps.AccountsConfig",
@@ -30,7 +31,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "src" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [],
@@ -47,6 +48,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "src" / "static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
 

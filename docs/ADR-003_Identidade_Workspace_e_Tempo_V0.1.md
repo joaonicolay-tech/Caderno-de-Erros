@@ -88,7 +88,8 @@ relógio global.
 
 ## Itens adiados
 
-Apresentação do primeiro acesso, autenticação remota, backup/restauração e todos
-os módulos de conteúdo, tentativa, revisão e dashboard permanecem fora desta
-etapa. `ErrorCategory` e seed foram implementados posteriormente pela Etapa
-4/ADR-004; logging estruturado e health local, pela Etapa 5/ADR-005.
+Autenticação remota, backup/restauração e todos os módulos de conteúdo, tentativa,
+revisão e dashboard permanecem fora desta etapa. `ErrorCategory` e seed foram
+implementados posteriormente pela Etapa 4/ADR-004; logging estruturado e health
+local, pela Etapa 5/ADR-005; apresentação do primeiro acesso e configuração, pela
+Etapa 6/ADR-006.
