@@ -1,24 +1,24 @@
 # ADR-009 — Validação final e promoção da V0.1
 
-- **Status:** Aceita — promoção bloqueada
+- **Status:** Aceita — promoção concluída
 - **Data:** 2026-09-03
 - **Escopo:** Etapa 9 da V0.1
 - **Requisitos:** `RNF-053`, `RNF-056`, `RNF-063`, `RNF-080`
 - **Testes:** `CT-123`, `CT-127`, `CT-128`, `CT-136`
 - **Decisões relacionadas:** `ADR-001`, `ADR-006`, `ADR-007`, `ADR-008`,
   `RD-DEC-002`, `RD-DEC-011`
-- **Decisão final:** **NÃO PROMOVIDA**
+- **Decisão final:** **PROMOVIDA**
 
 ## Decisão
 
-A fundação está tecnicamente executável e a instalação limpa `CT-127` foi aprovada,
-mas a V0.1 não é promovida porque a evidência visual/manual obrigatória de `CT-136`
-não pôde ser executada em Chrome e Edge. Ambos estão instalados no ambiente, porém o
-canal de automação disponível não expôs navegador controlável. Os testes estruturais
-não substituem essa evidência P1.
+A fundação está tecnicamente executável, a instalação limpa `CT-127` foi aprovada e a
+checklist integral de `CT-136` foi executada manualmente com sucesso em Chrome e Edge.
+Depois da incorporação dessa evidência, o gate autoritativo foi executado novamente
+com exit code 0. Não resta P0/P1 aplicável nem defeito S1/S2 conhecido; todos os
+critérios obrigatórios da matriz estão em PASS. A V0.1 é, portanto, **PROMOVIDA**.
 
-Não foi criada tag, release ou publicação. Depois da aprovação humana de `CT-136`, o
-gate deverá ser executado novamente antes de uma decisão revisada de promoção.
+Esta decisão não publica release externa nem autoriza `push`. A situação da tag local
+é registrada separadamente após a verificação do estado Git.
 
 ## Instalação Windows limpa — CT-127
 
@@ -63,23 +63,28 @@ aplicável de `CT-127`.
 
 ## Browser, acessibilidade e CT-136
 
-Foram localizados Chrome `152.0.7977.65` e Edge `152.0.4191.53`, as versões registradas
-no `ADR-001`. A aplicação limpa estava disponível e saudável em loopback, mas a
-descoberta do canal de navegador retornou uma lista vazia. Não houve inspeção visual,
-navegação por teclado, alteração de zoom ou viewport nesses navegadores.
+Chrome `152.0.7977.65` e Edge `152.0.4191.53`, as versões registradas no `ADR-001`,
+foram validados manualmente. Em ambos, a checklist integral foi concluída sem falha:
+primeiro acesso, escolha explícita de `America/Sao_Paulo`, português/Unicode, tela
+inicial, ausência de links futuros, teclado, ordem e visibilidade de foco, skip link,
+labels, erros e feedback não dependente apenas de cor, cancelamento, confirmação,
+persistência, zoom de 200%, viewport aproximado de 360 px, desktop, responsividade e
+ausência de rolagem horizontal indevida.
 
 Portanto:
 
-- `CT-136`: **PENDENTE** de confirmação humana integral;
+- Chrome `152.0.7977.65`: **PASS**;
+- Edge `152.0.4191.53`: **PASS**;
+- `CT-136`: **PASS integral**;
 - parcela estrutural V0.1 relacionada a `CT-128`: **PASS** pelos testes automatizados
   de HTML semântico, contraste, foco e CSS responsivo;
 - `CT-128` completo: **N/A nesta versão**, pois seu gate autoritativo permanece em
   V0.4/V1 conforme o Plano de Testes.
 
-### Checklist manual obrigatória
+### Checklist manual executada
 
-Executar toda a lista separadamente no Chrome e no Edge acima, ou nas versões estáveis
-vigentes no momento da nova decisão, registrando navegador, versão, largura e resultado:
+A lista abaixo foi executada separadamente no Chrome e no Edge, com resultado PASS em
+todos os itens:
 
 1. Com banco novo, abrir `/` e confirmar redirecionamento para `/primeiro-acesso/`.
 2. Usar somente `Tab`, `Shift+Tab`, setas, espaço e `Enter`; confirmar que o skip link
@@ -99,8 +104,8 @@ vigentes no momento da nova decisão, registrando navegador, versão, largura e 
 11. Repetir com zoom de 200% e em largura ampla até 1920 px.
 12. Confirmar que sucesso, cancelamento, erro e conflito continuam compreensíveis sem cor.
 
-Qualquer falha mantém `CT-136` pendente e deve ser registrada como defeito com
-severidade antes de nova decisão.
+Nenhuma falha foi identificada. A evidência manual complementa, sem substituir, os
+testes estruturais automatizados já incorporados ao gate.
 
 ## Matriz objetiva de conclusão da V0.1
 
@@ -117,11 +122,11 @@ severidade antes de nova decisão.
 | Backup/restauração mínima | PASS | smoke limpo e `CT-132`/`CT-133` |
 | Smoke das capacidades V0.1 | PASS | `CT-123` |
 | Instalação Windows limpa | PASS | `CT-127` |
-| Browser/acessibilidade base | PENDENTE | `CT-136` sem Chrome/Edge controlável |
+| Browser/acessibilidade base | PASS | `CT-136` manual em Chrome e Edge |
 | Parcela estrutural V0.1 de responsividade | PASS | testes de interface; `CT-128` completo é futuro |
-| Gate autoritativo final | PASS | exit code 0; 91 testes; 43,9 s na cópia limpa |
+| Gate autoritativo final | PASS | exit code 0; 91 testes; reexecutado após `CT-136` |
 | P0 aplicável aberto | PASS | nenhum identificado |
-| P1 aplicável aberto | PENDENTE | falta evidência de `CT-136` |
+| P1 aplicável aberto | PASS | nenhum identificado |
 | Defeito S1/S2 aberto | PASS | nenhum identificado |
 | Migrações históricas preservadas | PASS | hashes e ausência de migração pendente |
 | Funcionalidade V0.2+ não antecipada | PASS | inspeção de módulos, rotas e navegação |
@@ -135,11 +140,8 @@ nos marcos definidos pelo Gate documental e não bloqueiam a V0.1. Questões,
 tentativas, revisões, dashboard, busca, categorias pessoais, autenticação remota, API,
 notificações, PWA e capacidades de V0.2+ não foram antecipadas.
 
-O único P1 aplicável que impede a promoção é a execução humana de `CT-136`. O menor
-conjunto para fechar a versão é:
-
-1. executar e registrar a checklist acima em Chrome e Edge;
-2. corrigir e repetir qualquer item que não passe;
-3. atualizar esta ADR com evidência, versões e decisão revisada;
-4. executar novamente `scripts/quality.ps1` e exigir exit code 0;
-5. somente então preparar a tag, sem push ou release externa não autorizada.
+Não permanece P0 ou P1 aplicável à conclusão da V0.1, nem defeito S1/S2 conhecido.
+Todos os critérios obrigatórios estão em PASS e a versão está formalmente promovida.
+As pendências listadas acima pertencem a versões posteriores e não alteram essa
+decisão. A criação de tag local depende de o commit correspondente conter toda esta
+evidência; nenhum `push` ou release externo integra esta decisão.

@@ -73,11 +73,10 @@
     "docs/ADR-006_Interface_Acessivel_da_Fundacao_V0.1.md",
     "docs/ADR-007_Backup_e_Restauracao_Minima_SQLite_V0.1.md",
     "docs/ADR-008_Gate_Unico_de_Qualidade_V0.1.md",
-    "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md"
+    "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md",
+    "docs/RELEASE_NOTES_V0.1.md"
   ],
-  "promotion_pending_cases": [
-    "CT-136"
-  ],
+  "promotion_pending_cases": [],
   "test_evidence": {
     "CT-001": {
       "status": "executable",
@@ -184,7 +183,7 @@
       ]
     },
     "CT-136": {
-      "status": "stage9-pending",
+      "status": "executable",
       "evidence": [
         {"kind": "documentation", "target": "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md"},
         {"kind": "test", "target": "tests/test_interface.py::test_templates_use_native_keyboard_semantics_and_visible_focus"},

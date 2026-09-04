@@ -4,7 +4,10 @@ Fundação executável local do Caderno de Erros Inteligente. A V0.1 fornece ide
 Workspace locais, fuso IANA, dez categorias padrão, interface mínima, diagnóstico,
 logging e backup/restauração técnica do SQLite. Ela ainda não é o produto de estudo.
 
-A documentação oficial está em [`docs/`](docs/).
+A V0.1 foi formalmente promovida em 3 de setembro de 2026 após instalação limpa,
+gate autoritativo e validação manual de Chrome/Edge. A documentação oficial está em
+[`docs/`](docs/) e as notas da versão estão em
+[`RELEASE_NOTES_V0.1.md`](docs/RELEASE_NOTES_V0.1.md).
 
 ## 1. Pré-requisitos
 

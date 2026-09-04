@@ -189,8 +189,8 @@ def verify_test_evidence(root: Path, manifest: Mapping[str, object]) -> None:
         raise GateVerificationError(
             f"Matriz V0.1 incompleta ou excedente: {', '.join(difference)}."
         )
-    if pending_cases != {"CT-136"}:
-        raise GateVerificationError("Somente CT-136 pode permanecer pendente de promoção.")
+    if pending_cases:
+        raise GateVerificationError("Nenhum CT da V0.1 pode permanecer pendente de promoção.")
 
     gate_script = _text(root, "scripts/quality.ps1")
     for case_id, raw_entry in evidence_map.items():
