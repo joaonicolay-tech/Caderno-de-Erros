@@ -6,9 +6,9 @@
 |---|---|
 | Documento | Especificação dos Fluxos Principais |
 | Projeto | Caderno de Erros Inteligente |
-| Versão | 1.0.1 — errata V0.1 |
+| Versão | 1.0.2 — errata V0.2 |
 | Data | 30 de agosto de 2026 |
-| Status | Aprovada; errata documental da V0.1 incorporada em 1º de setembro de 2026 |
+| Status | Aprovada; errata documental da V0.2 incorporada em 5 de setembro de 2026 |
 | Aprovação | Aprovada integralmente pelo responsável pelo produto em 30 de agosto de 2026 |
 | Base congelada | Visão 1.0; Escopo 1.0; RFs 1.0; RNFs 1.0; Regras de Negócio 1.0; SDD 1.0; Modelo de Dados 1.0 |
 | Próxima etapa após aprovação | Etapa 9 — Roadmap |
@@ -267,10 +267,10 @@ flowchart TB
 
 1. O sistema abre formulário sem criar tentativa.
 2. O estudante informa disciplina, assunto, subassunto opcional, enunciado, alternativas e resposta correta.
-3. Pode informar dificuldade, fonte, banca/prova, explicação, pegadinha, observações e tags.
+3. Pode informar dificuldade, fonte, banca/prova, explicação, pegadinha e observações; tags somente existirão na fase futura definida por `ERR-V02-001`.
 4. O sistema normaliza textos curtos, preserva conteúdo longo e valida limites.
 5. Valida hierarquia, ao menos duas alternativas distintas e um único gabarito.
-6. Cria `Question`, `QuestionRevision` v1, alternativas, origem e tags na mesma transação.
+6. Cria `Question`, `QuestionRevision` v1, alternativas e origem na mesma transação; associação de tags não integra o recorte V0.2.
 7. Marca a questão `ACTIVE` e apresenta seu detalhe.
 
 **Alternativas**
@@ -288,7 +288,7 @@ flowchart TB
 
 **Resultado:** questão ativa apta a receber tentativa, ou rascunho fora das métricas e revisões.
 
-**Transação:** criação do agregado inteiro; edição de tags/origem não pode deixar órfãos.
+**Transação:** criação do agregado inteiro; edição de origem não pode deixar órfãos. Tags seguem a fase futura de `ERR-V02-001`.
 
 **Rastreabilidade:** `RF-009`–`016`; `RN-011`–`018`; `MD-DEC-004`–`006`.
 
@@ -381,10 +381,10 @@ sequenceDiagram
 **Fluxo principal**
 
 1. O sistema carrega dados atuais e `lock_version`.
-2. O estudante altera enunciado, hierarquia, origem, dificuldade, explicação, pegadinha, observações ou tags.
+2. O estudante altera enunciado, hierarquia, origem, dificuldade, explicação, pegadinha ou observações; tags permanecem futuras conforme `ERR-V02-001`.
 3. O sistema classifica a mudança como metadado, enriquecimento, não crítica ou crítica.
 4. Valida limites, hierarquia e concorrência.
-5. Mudança de conteúdo cria nova `QuestionRevision`; metadado atualiza `Question`/origem/tags.
+5. Mudança de conteúdo cria nova `QuestionRevision`; metadado atualiza `Question`/origem. Tags não integram a V0.2.
 6. Registra auditoria quando sensível e atualiza projeções derivadas afetadas.
 7. Exibe a versão atualizada sem criar tentativa.
 
@@ -817,7 +817,7 @@ stateDiagram-v2
 **Fluxo principal**
 
 1. O sistema lista questões paginadas do espaço com ordenação estável.
-2. O estudante informa texto e/ou filtros: estado, hierarquia, dificuldade, origem, tag, resultado, categoria e situação de revisão.
+2. O estudante informa texto e/ou filtros disponíveis na fase: na V0.2, estado, disciplina, assunto e subassunto; dificuldade, origem, tag, resultado, categoria e situação de revisão não são filtros obrigatórios desta versão.
 3. O sistema valida critérios e combina conforme semântica explícita.
 4. Executa busca somente em dados do espaço e mostra filtros ativos.
 5. Exibe total, página e estado vazio; permite remover filtros e abrir detalhe.
@@ -968,7 +968,7 @@ Ausência de dados explica o que falta e oferece ação pertinente, sem apresent
 | Fluxos | Requisitos | Regras/arquitetura/dados |
 |---|---|---|
 | `FL-001` | `RF-004`–`008` | `RN-006`–`010`; Taxonomy. |
-| `FL-002`, `005`–`007` | `RF-009`–`020` | `RN-011`–`020`, `085`–`094`; Questions. |
+| `FL-002`, `005`–`007` | Planejamento integral `RF-009`–`020`; na V0.2, `RF-009`–`019` e somente os recortes de `FL-005`/`006` | Planejamento integral `RN-011`–`020`, `085`–`094`; recorte V0.2 em `ADR-010`; Questions. |
 | `FL-003`, `004`, `021` | `RF-021`–`027` | `RN-021`–`027`, `091`–`096`; AttemptService. |
 | `FL-003`, `008` | `RF-028`–`033` | `RN-028`–`032`; Errors. |
 | `FL-009`–`013` | `RF-034`–`046` | `RN-033`–`055`; ReviewCycleService. |
@@ -1097,3 +1097,23 @@ A Etapa 8 será concluída quando:
 - cada fluxo puder originar histórias de implementação e casos de teste sem decisão funcional essencial implícita.
 
 A etapa foi aprovada integralmente em 30 de agosto de 2026. A errata 1.0.1, registrada em 1º de setembro de 2026 para tratar `COR-P2-004`, acrescenta `FL-023` e `FL-DEC-015` sem alterar requisitos de produto. As decisões `FL-DEC-001` a `FL-DEC-015` passam a ser consideradas congeladas e somente poderão ser alteradas mediante registro explícito, nova versão quando aplicável e análise de impacto.
+
+---
+
+## 19. Errata controlada da V0.2 — recortes dos fluxos
+
+Conforme `ADR-010`, a leitura autoritativa da V0.2 é:
+
+| Fluxo | Recorte executável na V0.2 | Parcela futura |
+|---|---|---|
+| `FL-001` | Criar, consultar, editar e arquivar taxonomia; arquivar pai torna toda a cadeia indisponível para novos vínculos sem mudar automaticamente o estado dos descendentes | Exclusão física e efeitos em métricas: V1/V0.4 |
+| `FL-002` | Rascunho, ativação, alternativas, gabarito, origem e revisão de conteúdo; sem tags | Aptidão prática será usada somente quando Attempts existir na V0.3 |
+| `FL-004` | Conteúdo/metadados atuais, estado, classificação acadêmica, origem, dificuldade e versões de conteúdo; somente leitura | Tentativas e ciclo: V0.3; indicadores: V0.4 |
+| `FL-005` | Edição/enriquecimento, nova revisão imutável, origem e metadados; sem tags e sem efeitos derivados de aprendizagem | Bloqueio após tentativa: V0.3; correção auditável e recálculo: V1 |
+| `FL-006` | Confirmação, `ARCHIVED`, retirada da lista ativa e preservação das revisões de conteúdo | Suspensão de ciclo, revisão pendente e fila: V0.3; reativação: posterior |
+| `FL-020` | Ativas por padrão, acesso explícito a rascunhos/arquivadas, texto, disciplina, assunto, subassunto e paginação | Filtros de aprendizagem: V0.4; `SavedFilter`/`RF-066`: V0.5-A/V1; FTS após benchmark |
+
+Os passos gerais que citam tentativas, revisões, métricas, auditoria funcional ou
+tags permanecem válidos apenas para suas fases futuras. Eles não são
+pré-condição nem resultado do catálogo V0.2. Isso formaliza `ERR-V02-001`,
+`ERR-V02-004` e `ERR-V02-005` sem apagar o fluxo integral planejado.

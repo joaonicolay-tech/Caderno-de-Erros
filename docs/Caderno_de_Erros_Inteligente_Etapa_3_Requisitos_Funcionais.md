@@ -6,9 +6,9 @@
 |---|---|
 | Documento | Especificação de Requisitos Funcionais |
 | Projeto | Caderno de Erros Inteligente |
-| Versão | 1.0 — aprovada |
+| Versão | 1.0.1 — errata V0.2 |
 | Data | 30 de agosto de 2026 |
-| Status | Aprovada e congelada |
+| Status | Aprovada e congelada; errata de fase V0.2 incorporada em 5 de setembro de 2026 |
 | Aprovação | Aprovada integralmente pelo responsável pelo produto em 30 de agosto de 2026 |
 | Base congelada | Etapa 1 — Visão 1.0; Etapa 2 — Escopo 1.0 |
 | Próxima etapa após aprovação | Etapa 4 — Requisitos Não Funcionais |
@@ -923,7 +923,7 @@ Eles somente poderão receber requisitos funcionais executáveis após aprovaç�
 |---|---|
 | `ESC-MVP-001` a `ESC-MVP-003` — uso individual e configuração | `RF-001` a `RF-003` |
 | `ESC-MVP-004` — estrutura acadêmica | `RF-004` a `RF-008` |
-| `ESC-MVP-005` — cadastro de questão | `RF-009` a `RF-020` |
+| `ESC-MVP-005` — cadastro de questão | `RF-009` a `RF-019`; `RF-020` é V1 conforme sua própria definição |
 | `ESC-MVP-006` — tentativa inicial | `RF-021` a `RF-024` |
 | `ESC-MVP-007` e `ESC-MVP-008` — erro e aprendizado | `RF-028` a `RF-033`, `RF-014` e `RF-015` |
 | `ESC-MVP-009` a `ESC-MVP-011` — revisão | `RF-034` a `RF-046` |
@@ -1071,3 +1071,26 @@ por decisão controlada sem mudança do código histórico.
 | `TIME_SHORTAGE` | Falta de tempo | Erro ou questão não concluída adequadamente porque o tempo disponível foi insuficiente para analisar ou resolver a questão. |
 | `GUESS` | Chute | Resposta escolhida sem conhecimento ou justificativa suficiente, baseada predominantemente em tentativa ou acaso. |
 | `OTHER` | Outra | Erro que não se enquadra adequadamente em nenhuma das demais categorias padrão. |
+
+---
+
+## 23. Errata controlada da V0.2 — `ERR-V02-002`, `004` e `005`
+
+Esta seção não altera o texto integral dos requisitos congelados. Ela define a
+parcela que constitui entrega da V0.2, conforme `ADR-010`.
+
+| Requisito | Leitura autoritativa V0.2 | Parcela posterior |
+|---|---|---|
+| `RF-016` | Detalhe mostra conteúdo e metadados atuais, estado, classificação acadêmica, origem, dificuldade e revisões de conteúdo, sem valores fictícios | Tentativa/ciclo/histórico de aprendizagem: V0.3; indicadores: V0.4 |
+| `RF-017` | Editar conteúdo, hierarquia válida, origem, dificuldade, explicação, pegadinha e observações; nova revisão preserva as anteriores | Preservação de tentativas e atualização de métricas/dashboard só podem ser comprovadas após V0.3/V0.4 |
+| `RF-018` | Sem `Attempt` na V0.2, alteração de alternativas/gabarito é permitida apenas no estado estrutural sem tentativa e sempre cria revisão válida | Bloqueio com tentativa: V0.3; correção auditável: V1 |
+| `RF-019` | Confirmar arquivamento, marcar a questão, retirar das ativas e preservar revisões de conteúdo | Tentativas, ciclo, revisão pendente e fila: V0.3 |
+| `RF-020` | Não aplicável | V1, sem qualquer implementação antecipada |
+| `RF-063` | Ativas por padrão; acesso explícito e distinguível a rascunhos e arquivadas; paginação | Consultas analíticas posteriores |
+| `RF-064` | Busca textual simples e limpeza da busca | FTS somente após benchmark e nova decisão |
+| `RF-065` | Disciplina, assunto e subassunto; opções hierárquicas; filtros visíveis; estado vazio; contagem correspondente | Revisão, resultado e erro: V0.4 |
+| `RF-066` | Não aplicável | Combinar/limpar genericamente na V0.5-A; salvar na V1 |
+
+Estado da questão é filtro/lista de `RF-063`, não ampliação de `RF-065`.
+Origem e dificuldade podem aparecer no catálogo, mas não são filtros
+obrigatórios. Tags ficam fora por `ERR-V02-001`.

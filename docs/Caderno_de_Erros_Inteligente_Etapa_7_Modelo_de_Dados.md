@@ -6,9 +6,9 @@
 |---|---|
 | Documento | Modelo Conceitual e Lógico de Dados |
 | Projeto | Caderno de Erros Inteligente |
-| Versão | 1.0 — aprovada |
+| Versão | 1.0.1 — errata V0.2 |
 | Data | 30 de agosto de 2026 |
-| Status | Aprovada e congelada |
+| Status | Aprovada e congelada; recorte de entidades V0.2 incorporado em 5 de setembro de 2026 |
 | Aprovação | Aprovada integralmente pelo responsável pelo produto em 30 de agosto de 2026 |
 | Base congelada | Visão 1.0; Escopo 1.0; RFs 1.0; RNFs 1.0; Regras de Negócio 1.0; SDD 1.0 |
 | Próxima etapa após aprovação | Etapa 8 — Fluxos Principais |
@@ -158,7 +158,8 @@ flowchart TB
 | Identidade | `User`, `Workspace` | MVP |
 | Taxonomia | `Discipline`, `Subject`, `Subsubject` | MVP |
 | Origem | `Board`, `Exam`, `Source`, `QuestionOrigin` | MVP |
-| Questões | `Question`, `QuestionRevision`, `Alternative`, `Tag`, `QuestionTag` | MVP |
+| Questões | `Question`, `QuestionRevision`, `Alternative` | V0.2 |
+| Organização futura | `Tag`, `QuestionTag` | V0.5-A/V1, após RF/RN/CT próprios |
 | Aprendizagem | `Attempt`, `ErrorCategory`, `ErrorClassification`, `ErrorClassificationRevision` | MVP |
 | Revisões | `ReviewCycle`, `Review`; `ReviewScheduleChange` | MVP; reagendamento V1 |
 | Confiabilidade | `OperationReceipt`, `AuditEvent` | MVP/V1 |
@@ -317,7 +318,10 @@ Campos: `id`; `workspace_id`; `question_revision_id`; `position SMALLINT`; `labe
 
 Relação `QuestionRevision 1:2..N Alternative`. Posição e texto normalizado são únicos por revisão. O gabarito é o ponteiro único de `QuestionRevision`; não existe `Alternative.is_correct`. A alternativa se torna imutável ao publicar a versão. Índices únicos por posição e texto.
 
-### 6.8 `Tag` e `QuestionTag`
+### 6.8 `Tag` e `QuestionTag` — desenho futuro V0.5-A/V1
+
+Estas entidades não são criadas nem usadas na V0.2. A definição é preservada
+somente como desenho futuro condicionado a requisito, regra e teste próprios.
 
 `Tag`: `id`, `workspace_id`, `name/name_key`, `status`, datas. Nome ativo único por espaço.
 
@@ -784,7 +788,7 @@ Revisão 10/09 → 15/09 recebe evento, mantém `first_due_date=10/09` e passa `
 |---|---|---|
 | Usuário/espaço | `RF-001`–`003`; `RN-001`–`005`; `RNF-013`, `030`, `067` | Accounts/Workspace e segurança. |
 | Hierarquia | `RF-004`–`008`; `RN-006`–`010` | Taxonomy. |
-| Origem/questões/versões | `RF-009`–`020`; `RN-011`–`020`, `085`, `086`, `093` | Questions e QuestionCommandService. |
+| Origem/questões/versões | Planejamento integral `RF-009`–`020`; na V0.2, `RF-009`–`019`; regras V0.2 em `ADR-010` | Questions e QuestionCommandService. |
 | Tentativa | `RF-021`–`027`; `RN-021`–`027`; `RNF-025`, `026`, `028` | AttemptService e transações. |
 | Erros | `RF-028`–`033`; `RN-028`–`032` | Errors e CorrectionService. |
 | Ciclo/revisão | `RF-034`–`045`; `RN-033`–`051` | ReviewCycleService e `REV-FIXA-1.0`. |
@@ -910,3 +914,53 @@ Cobrir fuso, atraso, reinício, edição, diagnóstico e reenvio idempotente.
 A Etapa 7 será concluída quando entidades, campos, tipos, obrigatoriedade, cardinalidades, ações referenciais, invariantes, índices e históricos estiverem aprovados; métricas continuarem explicáveis; exportação/restauração tiverem identidade e ordem; e o modelo puder orientar fluxos e migrações sem ambiguidade relevante.
 
 A etapa foi aprovada integralmente em 30 de agosto de 2026. As decisões `MD-DEC-001` a `MD-DEC-017` passam a ser consideradas congeladas e somente poderão ser alteradas mediante registro explícito, nova versão quando aplicável e análise de impacto.
+
+---
+
+## 27. Errata controlada do modelo V0.2
+
+### 27.1 Entidades e fases
+
+Entram na V0.2: `Discipline`, `Subject`, `Subsubject`, `Board`, `Exam`, `Source`,
+`Question`, `QuestionRevision`, `Alternative` e `QuestionOrigin`.
+
+Ficam adiadas: `Tag`, `QuestionTag`, `Attempt`, `ErrorClassification`,
+`ErrorClassificationRevision`, `ReviewCycle`, `Review`,
+`ReviewScheduleChange`, `SavedFilter` e todas as entidades de analytics,
+domínio, prioridade e snapshots. A existência de `ErrorCategory` na baseline
+V0.1 não antecipa classificação de erro.
+
+### 27.2 Origem
+
+Origem segue `ERR-V02-006`: é opcional, pertence ao mesmo Workspace, usa os
+limites da seção 3.6 e é criada/reutilizada no contexto da questão.
+`QuestionOrigin` é único por questão; `exam_id` e `board_id` não coexistem e a
+banca deriva de `Exam` quando há prova. FKs usam `PROTECT`.
+
+### 27.3 Rascunho e revisão
+
+Conforme `ERR-V02-007`, um rascunho apenas com `draft_title` pode existir sem
+`QuestionRevision`. Qualquer conteúdo versionável persistido cria revisão
+imutável. Edição cria outra revisão e troca `is_current` atomicamente. A
+alternativa correta pertence à própria revisão. Essa leitura resolve a lacuna
+sem acrescentar campo de publicação e é compatível com `MD-DEC-004` e
+`MD-DEC-006`.
+
+### 27.4 Migrations futuras congeladas
+
+1. `taxonomy/0001_initial`: taxonomia, dependente de `accounts/0001_initial`.
+2. `questions/0001_origin_catalog`: `Board`, `Exam`, `Source`, dependente de
+   Accounts.
+3. `questions/0002_question_catalog`: questão, revisão, alternativa e origem da
+   questão, dependente das duas anteriores. O FK de gabarito é acrescentado
+   somente após criar Alternative; constraints e índices são aplicados depois.
+
+Constraints locais cobrem estados, faixas estáticas, unicidades, revisão corrente,
+posição/texto de alternativa e cardinalidade 0..1 da origem. Mesmo Workspace,
+hierarquia completa/ativa, validade da questão ativa e gabarito da própria
+revisão são invariantes adicionais do serviço, porque `CHECK` SQLite não lê
+outras tabelas. O mínimo de ano 1900 pode ser constraint; o máximo dinâmico de
+ano corrente do Workspace + 2 usa `Clock`/`Calendar` no serviço.
+
+As migrations V0.1 não serão alteradas. Fixture de demonstração não será data
+migration nem será carregada automaticamente.

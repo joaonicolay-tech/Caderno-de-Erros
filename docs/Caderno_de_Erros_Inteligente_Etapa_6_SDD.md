@@ -6,9 +6,9 @@
 |---|---|
 | Documento | Descrição do Projeto de Software — SDD |
 | Projeto | Caderno de Erros Inteligente |
-| Versão | 1.0 — aprovada |
+| Versão | 1.0.1 — errata V0.2 |
 | Data | 30 de agosto de 2026 |
-| Status | Aprovada e congelada |
+| Status | Aprovada e congelada; recorte arquitetural V0.2 incorporado em 5 de setembro de 2026 |
 | Aprovação | Aprovada integralmente pelo responsável pelo produto em 30 de agosto de 2026 |
 | Base congelada | Visão 1.0; Escopo 1.0; RFs 1.0; RNFs 1.0; Regras de Negócio 1.0 |
 | Próxima etapa após aprovação | Etapa 7 — Modelo de Dados |
@@ -1218,3 +1218,39 @@ A Etapa 6 será concluída quando:
 - a arquitetura puder orientar o Modelo de Dados sem antecipá-lo indevidamente.
 
 A etapa foi aprovada integralmente em 30 de agosto de 2026. As decisões arquiteturais `SDD-ADR-001` a `SDD-ADR-012` passam a ser consideradas congeladas e somente poderão ser alteradas mediante registro explícito, nova versão quando aplicável e análise de impacto.
+
+---
+
+## 32. Recorte arquitetural controlado da V0.2
+
+Conforme `ADR-010`:
+
+- `SDD-MOD-002` implementará Taxonomy somente quando a Etapa 1 começar;
+- `SDD-MOD-003` implementará Questions e abrigará `Board`, `Exam`, `Source` e
+  `QuestionOrigin`; não existirá módulo funcional independente de origem;
+- `SDD-MOD-009` será criado apenas na etapa de busca e lerá exclusivamente
+  Questions/Taxonomy na V0.2; a dependência de Reviews permanece futura;
+- `SDD-SVC-001` é a fronteira de escrita de rascunho, ativação, edição,
+  versionamento e arquivamento de questão;
+- serviço interno de origem normaliza/cria/reusa referências no contexto da
+  questão, sem oferecer administração independente;
+- CRUD simples pode usar ORM dentro do módulo, mas views permanecem finas e
+  escrita que altera o agregado passa pelo serviço;
+- busca V0.2 usa ORM, índices e paginação; `SearchBackend` não implementa FTS;
+- não serão criados Attempts, Reviews, Analytics, Mastery, SavedFilter, tags ou
+  pacotes vazios para fases futuras.
+
+### 32.1 Invariantes e transações
+
+Uma transação de questão deve validar o Workspace, a hierarquia, o estado da
+taxonomia, a revisão corrente, as alternativas e o gabarito. O SQLite cobre
+constraints locais; relações que exigem ler outra tabela também são verificadas
+no serviço. Trocar a revisão corrente e persistir a nova versão é operação
+atômica, com `lock_version` para impedir sobrescrita silenciosa.
+
+### 32.2 Evolução do gate
+
+O gate V0.2 terá manifesto próprio e manterá os hashes históricos V0.1 como
+conjunto protegido. `quality/v01-gate.json` e `scripts/verify_v01.py` não serão
+substituídos. A implementação do novo gate ocorrerá em etapa posterior, sem
+mudança de ferramenta ou dependência nesta Etapa 0.

@@ -6,9 +6,9 @@
 |---|---|
 | Documento | Roadmap Incremental de Produto e Engenharia |
 | Projeto | Caderno de Erros Inteligente |
-| Versão | 1.0.1 — errata V0.1 |
+| Versão | 1.0.2 — errata V0.2 |
 | Data | 30 de agosto de 2026 |
-| Status | Aprovada; errata documental da V0.1 incorporada em 1º de setembro de 2026 |
+| Status | Aprovada; errata documental da V0.2 incorporada em 5 de setembro de 2026 |
 | Base congelada | Visão 1.0; Escopo 1.0; RFs 1.0; RNFs 1.0; Regras de Negócio 1.0; SDD 1.0; Modelo de Dados 1.0; Fluxos 1.0 |
 | Próxima etapa após aprovação | Etapa 10 — Plano de Testes |
 
@@ -214,7 +214,7 @@ Permitir organizar e cadastrar o material de estudo com dados corretos, versiona
 
 - gestão de disciplina, assunto e subassunto;
 - normalização e prevenção de duplicidades;
-- fonte, banca, prova e tags;
+- fonte, banca e prova, criadas/reutilizadas no contexto da questão;
 - cadastro rápido de questão;
 - rascunho e ativação;
 - alternativas ordenadas e exatamente um gabarito;
@@ -241,7 +241,7 @@ Permitir organizar e cadastrar o material de estudo com dados corretos, versiona
 3. Ativar questão com os mínimos aprovados.
 4. Rejeitar alternativas vazias, indistinguíveis ou gabarito inválido.
 5. Criar nova revisão ao editar conteúdo, preservando a anterior.
-6. Editar origem/dificuldade/tags sem criar tentativa.
+6. Editar origem/dificuldade sem criar tentativa.
 7. Arquivar e ainda consultar a questão.
 8. Operar formulários essenciais por teclado.
 9. Passar testes de constraints em SQLite.
@@ -264,6 +264,8 @@ Permitir organizar e cadastrar o material de estudo com dados corretos, versiona
 - fila do dia;
 - dashboard e domínio;
 - correção crítica após tentativa;
+- tags e filtros salvos;
+- exclusão física e reativação;
 - importação em massa, OCR ou anexos.
 
 ### 5.7 Evidência para avançar
@@ -789,7 +791,7 @@ Resultado do spike é decisão, protótipo descartável ou teste; não vira arqu
 | Versão | Requisitos/fluxos principais | Regras/arquitetura |
 |---|---|---|
 | V0.1 | `RF-001`–`003`; base de `RF-067`–`068` | RNFs de configuração, segurança, testabilidade; SDD módulos/configuração. |
-| V0.2 | `RF-004`–`020`, `063`–`065`; `FL-001`, `002`, `004`–`006`, parte do `020` | `RN-006`–`020`, `085`–`094`; modelo de questão/versionamento. |
+| V0.2 | `RF-004`–`019`, `063`, `064` e recorte de `065`; `FL-001`, `002` e recortes de `004`–`006`, `020` | `RN-006`–`020`, `086` e recorte de `087`; modelo de questão/versionamento; `ADR-010`. |
 | V0.3 | `RF-021`–`046`; `FL-003`, `008`–`013` | `RN-021`–`055`; `REV-FIXA-1.0`; idempotência. |
 | V0.4 | `RF-047`–`056`, `063`–`068`; `FL-014`–`016`, `020`, backup técnico `022` | `RN-056`–`067`; RNFs de liberação do MVP. |
 | V0.5 | `RF-027`, `033`, `045`, `046`, `057`–`062`, `066`, `069`–`071`; `FL-007`, `012`, `017`–`019`, `021`, `022` | `RN-068`–`100`; `DOM-HEUR-1.0`; `PRI-HEUR-1.0`; exportação. |
@@ -949,3 +951,26 @@ A Etapa 9 será concluída quando:
 Após a aprovação desta etapa, será produzida a **Etapa 10 — Plano de Testes**. Depois da aprovação das dez etapas, a implementação poderá começar pela **V0.1 — Fundação executável**.
 
 A etapa foi aprovada integralmente em 30 de agosto de 2026. A errata 1.0.1, registrada em 1º de setembro de 2026, acrescenta a rastreabilidade técnica da V0.1 e explicita tags e scaffolding futuro como exclusões dessa versão, sem decidir a fase definitiva das tags nem alterar requisitos de produto. As decisões `RD-DEC-001` a `RD-DEC-015` permanecem congeladas e somente poderão ser alteradas mediante registro explícito e análise de impacto.
+
+---
+
+## 22. Errata controlada da V0.2
+
+Em 5 de setembro de 2026, `ADR-010` tornou autoritativa a fronteira do Catálogo
+de Conteúdo:
+
+- `ERR-V02-001`: tags foram retiradas da V0.2 e adiadas para V0.5-A/V1;
+- `ERR-V02-002`: a faixa V0.2 é `RF-004`–`019`, `RF-063`, `RF-064` e o
+  recorte taxonômico de `RF-065`; `RF-020` permanece V1 e `RF-066` não entra;
+- `ERR-V02-004`: `FL-004`–`006` são executados somente em seus recortes de
+  catálogo, sem aprendizagem;
+- `ERR-V02-005`: estados pertencem a `RF-063`, texto a `RF-064` e os filtros
+  obrigatórios de `RF-065` são disciplina, assunto e subassunto;
+- `ERR-V02-006` e `ERR-V02-007`: origem mínima e revisões imutáveis seguem o
+  contrato de `ADR-010`;
+- `ERR-V02-009`: a evolução de migrations e gate preserva integralmente a
+  baseline `v0.1.0`.
+
+Esta errata substitui apenas a leitura de fase da seção 5 e da matriz da seção
+14. O objetivo histórico da V0.2 — catálogo sem aprendizagem ou revisão — não
+foi alterado.

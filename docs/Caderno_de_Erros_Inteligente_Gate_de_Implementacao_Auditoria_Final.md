@@ -6,9 +6,9 @@
 |---|---|
 | Documento | Relatório do Gate de Implementação |
 | Projeto | Caderno de Erros Inteligente |
-| Versão | 1.0.1 — registro da Etapa 0 V0.1 |
+| Versão | 1.0.2 — registro da Etapa 0 V0.2 |
 | Data | 1º de setembro de 2026 |
-| Status | Auditoria concluída; saneamento V0.1 registrado em 1º de setembro de 2026 |
+| Status | Auditoria concluída; saneamento V0.2 registrado em 5 de setembro de 2026 |
 | Documentos auditados | Etapas 1 a 10, todas em versão 1.0 aprovada |
 | Decisão | **GO COM RESSALVAS** |
 | Nota de maturidade | **84/100** |
@@ -682,3 +682,50 @@ A matriz autoritativa detalhada está na seção 8.1 do Plano de Testes 1.0.1. O
 # **PROJETO LIBERADO PARA IMPLEMENTAÇÃO**
 
 **Escopo da liberação:** V0.1 — Fundação Executável, com as ressalvas e marcos de correção definidos neste relatório.
+
+---
+
+# T. Registro controlado — Etapa 0 da V0.2
+
+Este registro, datado de 5 de setembro de 2026, preserva integralmente o
+diagnóstico histórico do Gate e acrescenta o estado das pendências após
+`ADR-010`.
+
+## T.1 Erratas V0.2
+
+| Errata | Resultado |
+|---|---|
+| `ERR-V02-001` | `Tag` e `QuestionTag` retiradas da V0.2 e adiadas para V0.5-A/V1. |
+| `ERR-V02-002` | Faixa V0.2 corrigida para `RF-004`–`019`, `RF-063`, `RF-064` e recorte de `RF-065`; `RF-020` e `RF-066` ficam fora. |
+| `ERR-V02-003` | Rastreabilidade/fase dos CTs V0.2 corrigida no Plano de Testes e consolidada em `ADR-010`. |
+| `ERR-V02-004` | Recortes de `RF-016`–`019` e `FL-004`–`006` formalizados sem aprendizagem fictícia. |
+| `ERR-V02-005` | `RF-065` limitado a disciplina, assunto e subassunto; capacidades futuras separadas. |
+| `ERR-V02-006` | Gestão mínima de origem definida dentro do contexto da questão. |
+| `ERR-V02-007` | Rascunho e conteúdo passam a usar revisões imutáveis conforme o Modelo. |
+| `ERR-V02-008` | `CT-137`–`CT-144` formalizados. |
+| `ERR-V02-009` | Contrato do futuro gate/migrations V0.2 definido sem enfraquecer a V0.1. |
+
+## T.2 Status das correções do Gate
+
+| Correção | Status após a Etapa 0 V0.2 | Evidência/limite |
+|---|---|---|
+| `COR-P1-001` | **Concluída para todas as capacidades da V0.2.** | Casos existentes corrigidos por semântica e fase; parcelas futuras permanecem explicitamente pendentes para seus marcos. A correção integral global ainda acompanha capacidades V0.3+. |
+| `COR-P1-003` | **Concluída.** | Tags formalmente adiadas por `ERR-V02-001`; não há model, migration, fluxo obrigatório ou teste de tags na V0.2. |
+| `COR-P1-004` | Pendente para V0.5-A. | Inclusão manual de questão correta em ciclo não pertence à V0.2. |
+| `COR-P1-005` | Pendente para V0.5-A. | Gestão de categorias pessoais não pertence à V0.2. |
+| `COR-P1-006` | Pendente para V0.5-A. | Reagendamento não pertence à V0.2. |
+
+## T.3 Decisão de liberação
+
+- Não existe P0/P1 documental aberto que impeça iniciar a Etapa 1 da V0.2.
+- A liberação abrange somente **V0.2 — Etapa 1 — Taxonomia e migrations**.
+- `Attempt`, respostas, erros, ciclos, revisões, fila, métricas, tags,
+  SavedFilter, exclusão física, reativação e demais capacidades posteriores
+  continuam proibidos.
+- O gate V0.1 permanece a verificação de regressão até que o gate V0.2 seja
+  implementado na etapa prevista.
+
+# **V0.2 — ETAPA 1 DOCUMENTALMENTE LIBERADA**
+
+**Limite:** a liberação não inicia a Etapa 1 automaticamente e não autoriza
+qualquer funcionalidade V0.3 ou posterior.

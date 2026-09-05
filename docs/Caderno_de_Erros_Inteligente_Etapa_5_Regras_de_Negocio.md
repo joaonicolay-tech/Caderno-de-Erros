@@ -6,9 +6,9 @@
 |---|---|
 | Documento | Catálogo de Regras de Negócio |
 | Projeto | Caderno de Erros Inteligente |
-| Versão | 1.0 — aprovada |
+| Versão | 1.0.1 — errata V0.2 |
 | Data | 30 de agosto de 2026 |
-| Status | Aprovada e congelada |
+| Status | Aprovada e congelada; errata de fase V0.2 incorporada em 5 de setembro de 2026 |
 | Aprovação | Aprovada integralmente pelo responsável pelo produto em 30 de agosto de 2026 |
 | Base congelada | Visão 1.0; Escopo 1.0; RFs 1.0; RNFs 1.0 |
 | Próxima etapa após aprovação | Etapa 6 — SDD |
@@ -1239,3 +1239,30 @@ A Etapa 5 será concluída quando:
 - todas as regras puderem orientar SDD, modelo de dados, fluxos e testes.
 
 A etapa foi aprovada integralmente em 30 de agosto de 2026. As regras `RN-001` a `RN-100` e as decisões `RN-DEC-001` a `RN-DEC-014` passam a ser consideradas congeladas e somente poderão ser alteradas mediante registro explícito, nova versão quando aplicável e análise de impacto.
+
+---
+
+## 23. Errata controlada da V0.2 — aplicação das regras
+
+`ADR-010` define os seguintes recortes sem modificar a regra integral futura:
+
+| Regra | Aplicação V0.2 | Parcela futura |
+|---|---|---|
+| `RN-006`–`RN-009` | Integral para taxonomia e vínculo de questão | N/A |
+| `RN-010` | Apenas a classificação atual da questão é persistida | Reagrupamento de desempenho: V0.4 |
+| `RN-011` | Rascunho não é ativo e não aparece na lista ativa | Tentativa/revisão/domínio/contagem: V0.3/V0.4 |
+| `RN-012`–`RN-015` | Integral | Efeitos de origem/dificuldade sobre análises não entram |
+| `RN-016` | Explicação, pegadinha e observações são enriquecíveis por nova revisão, sem criar tentativa | Comportamento após tentativa e indicador de aprendizado: V0.3/V0.4 |
+| `RN-017`, `RN-018` | Integral para estados e ausência de bloqueio semântico | N/A |
+| `RN-019` | Edição validada cria revisão quando altera conteúdo e não cria tentativa | Efeito em métricas: V0.4 |
+| `RN-020` | Permitir e versionar mudança crítica no estado sem tentativa | Bloqueio após tentativa: V0.3; correção: V1 |
+| `RN-085` | Não aplicável: trata história de aprendizagem | V0.3/V0.4 |
+| `RN-086` | Edição do catálogo não cria tentativa ou revisão de aprendizagem | Comprovação com entidades de aprendizagem: V0.3 |
+| `RN-087` | Arquivamento é a ação V0.2; conteúdo versionado permanece | Suspensão de revisões: V0.3 |
+| `RN-088`–`RN-090` | Não aplicáveis: nenhuma exclusão física na V0.2 | V1, após política de `RF-020` |
+| `RN-093` | Não aplicável | V1 |
+| `RN-094` | Somente fundamenta que item com vínculo deve ser arquivado; exclusão não é oferecida | Exclusão/migração de vínculo: V1 |
+
+Tags não recebem regra nova nesta versão. A leitura anterior do Roadmap que
+associava indiscriminadamente `RN-085`–`RN-094` à V0.2 foi corrigida por
+`ERR-V02-002` e `ERR-V02-004`.
