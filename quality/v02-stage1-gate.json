@@ -1,0 +1,238 @@
+{
+  "schema_version": 2,
+  "release": "V0.2 — Etapa 1",
+  "protected_baseline": "v0.1.0@cc7c382d2db8474eaee6005b71b7d01d40481611",
+  "required_identifiers": [
+    "RF-001", "RF-002", "RF-003", "RF-004", "RF-005", "RF-006", "RF-007", "RF-008",
+    "RF-029", "RF-067", "RF-068",
+    "RNF-013", "RNF-016", "RNF-027", "RNF-031", "RNF-033", "RNF-052", "RNF-056",
+    "RNF-057", "RNF-058", "RNF-066", "RNF-074", "RNF-075", "RNF-076", "RNF-077",
+    "RNF-078", "RNF-079", "RNF-080",
+    "RN-001", "RN-002", "RN-003", "RN-004", "RN-005", "RN-006", "RN-007", "RN-008",
+    "RN-009", "RN-029", "FL-001", "FL-022", "FL-023",
+    "CT-001", "CT-002", "CT-003", "CT-004", "CT-073", "CT-074", "CT-081", "CT-082",
+    "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-128", "CT-129", "CT-130",
+    "CT-131", "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137",
+    "ERR-V01-001", "ERR-V01-002", "ERR-V01-003", "ERR-V01-004", "ERR-V01-005",
+    "ERR-V01-006", "ERR-V01-007", "ERR-V01-008", "ERR-V01-009",
+    "ERR-V02-001", "ERR-V02-002", "ERR-V02-003", "ERR-V02-004", "ERR-V02-005",
+    "ERR-V02-006", "ERR-V02-007", "ERR-V02-008", "ERR-V02-009",
+    "ADR-001", "ADR-002", "ADR-003", "ADR-004", "ADR-005", "ADR-006", "ADR-007",
+    "ADR-008", "ADR-009", "ADR-010"
+  ],
+  "reference_scope": [
+    "README.md",
+    "docs/ADR-001_Toolchain_Reproduzivel_V0.1.md",
+    "docs/ADR-002_Perfis_e_Isolamento_Django_V0.1.md",
+    "docs/ADR-003_Identidade_Workspace_e_Tempo_V0.1.md",
+    "docs/ADR-004_Categorias_Padrao_e_Seed_V0.1.md",
+    "docs/ADR-005_Logging_Correlacao_e_Health_Local_V0.1.md",
+    "docs/ADR-006_Interface_Acessivel_da_Fundacao_V0.1.md",
+    "docs/ADR-007_Backup_e_Restauracao_Minima_SQLite_V0.1.md",
+    "docs/ADR-008_Gate_Unico_de_Qualidade_V0.1.md",
+    "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md",
+    "docs/ADR-010_Fronteira_Rastreabilidade_e_Dados_V0.2.md",
+    "docs/Caderno_de_Erros_Inteligente_Etapa_3_Requisitos_Funcionais.md",
+    "docs/Caderno_de_Erros_Inteligente_Etapa_4_Requisitos_Nao_Funcionais.md",
+    "docs/Caderno_de_Erros_Inteligente_Etapa_5_Regras_de_Negocio.md",
+    "docs/Caderno_de_Erros_Inteligente_Etapa_6_SDD.md",
+    "docs/Caderno_de_Erros_Inteligente_Etapa_7_Modelo_de_Dados.md",
+    "docs/Caderno_de_Erros_Inteligente_Etapa_8_Fluxos_Principais.md",
+    "docs/Caderno_de_Erros_Inteligente_Etapa_9_Roadmap (1).md",
+    "docs/Caderno_de_Erros_Inteligente_Etapa_10_Plano_de_Testes.md",
+    "docs/RELEASE_NOTES_V0.1.md"
+  ],
+  "expected_test_cases": [
+    "CT-001", "CT-002", "CT-003", "CT-004", "CT-073", "CT-074", "CT-081", "CT-082",
+    "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-129", "CT-130", "CT-131",
+    "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137"
+  ],
+  "promotion_pending_cases": [],
+  "test_evidence": {
+    "CT-001": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_accounts.py::test_workspace_queries_and_changes_are_scoped_by_owner"}
+      ]
+    },
+    "CT-002": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_interface.py::test_valid_first_access_persists_timezone_and_shows_success"}
+      ]
+    },
+    "CT-003": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct003_normalizer_collapses_space_case_and_unicode_but_preserves_accents"},
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct003_active_uniqueness_uses_normalized_name_and_allows_archived_reuse"},
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct003_same_child_name_is_allowed_under_different_parents_only"}
+      ]
+    },
+    "CT-004": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct004_and_ct074_services_reject_cross_workspace_without_partial_data"},
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_composed_transaction_rolls_back_when_hierarchy_creation_fails"}
+      ]
+    },
+    "CT-073": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_accounts.py::test_first_accounts_migration_contains_custom_user_and_no_default_user_table"},
+        {"kind": "test", "target": "tests/test_error_categories.py::test_canonical_code_cannot_be_changed_or_duplicated_in_workspace"},
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct073_foreign_keys_reject_orphans_and_protect_hierarchy"}
+      ]
+    },
+    "CT-074": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_accounts.py::test_workspace_owner_foreign_key_is_enforced"},
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct004_and_ct074_services_reject_cross_workspace_without_partial_data"},
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct074_model_guard_rejects_cross_workspace_outside_services"}
+      ]
+    },
+    "CT-081": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_accounts.py::test_migrations_apply_from_an_empty_disposable_database"},
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_taxonomy_migration_is_single_initial_node_with_v01_dependency"},
+        {"kind": "gate-step", "target": "migrar banco vazio isolado"}
+      ]
+    },
+    "CT-082": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct082_and_ct122_upgrade_v01_data_to_taxonomy_initial"}
+      ]
+    },
+    "CT-099": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_operations.py::test_central_sanitization_removes_secret_and_private_payloads"},
+        {"kind": "gate-step", "target": "detectar segredos"}
+      ]
+    },
+    "CT-104": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "gate-step", "target": "auditar vulnerabilidades"}
+      ]
+    },
+    "CT-122": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct082_and_ct122_upgrade_v01_data_to_taxonomy_initial"}
+      ]
+    },
+    "CT-123": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "gate-step", "target": "executar testes e cobertura"},
+        {"kind": "test", "target": "tests/test_backup_restore.py::test_management_commands_are_available_and_validate_backup"}
+      ]
+    },
+    "CT-127": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "documentation", "target": "README.md"},
+        {"kind": "documentation", "target": "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md"},
+        {"kind": "gate-step", "target": "sincronizar ambiente"}
+      ]
+    },
+    "CT-129": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_error_categories.py::test_repeated_bootstrap_does_not_duplicate_and_preserves_codes_and_ids"}
+      ]
+    },
+    "CT-130": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_settings_profiles.py::test_test_profile_ignores_real_database_and_secret_environment"}
+      ]
+    },
+    "CT-131": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_operations.py::test_health_is_unhealthy_and_safe_when_database_is_unavailable"}
+      ]
+    },
+    "CT-132": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_backup_restore.py::test_ct132_creates_consistent_backup_and_minimal_manifest"}
+      ]
+    },
+    "CT-133": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_backup_restore.py::test_ct133_restores_and_reconciles_minimal_foundation"}
+      ]
+    },
+    "CT-134": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_operations.py::test_structured_log_has_required_fields_and_correlation"},
+        {"kind": "test", "target": "tests/test_backup_restore.py::test_invalid_backup_failure_log_is_correlated_and_sanitized"}
+      ]
+    },
+    "CT-135": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_time.py::test_calendar_produces_distinct_local_dates_for_same_instant"},
+        {"kind": "test", "target": "tests/test_time.py::test_fixed_clock_can_advance_without_changing_system_clock"}
+      ]
+    },
+    "CT-136": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "documentation", "target": "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md"},
+        {"kind": "test", "target": "tests/test_interface.py::test_templates_use_native_keyboard_semantics_and_visible_focus"},
+        {"kind": "test", "target": "tests/test_interface.py::test_layout_has_responsive_boundaries_without_horizontal_dependency"},
+        {"kind": "test", "target": "tests/test_interface.py::test_documented_primary_colors_meet_text_contrast_target"}
+      ]
+    },
+    "CT-137": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct137_rename_uses_lock_and_preserves_identity_and_timestamp"},
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct137_archive_preserves_descendant_states_and_effective_availability"},
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_subject_and_subsubject_archive_are_historical_and_workspace_scoped"}
+      ]
+    }
+  },
+  "domain_coverage": {
+    "minimum_line_percent": 80,
+    "files": [
+      "src/shared/domain/time.py",
+      "src/shared/application/bootstrap.py",
+      "src/modules/accounts/models.py",
+      "src/modules/accounts/services.py",
+      "src/modules/accounts/validators.py",
+      "src/modules/errors/catalog.py",
+      "src/modules/errors/models.py",
+      "src/modules/errors/services.py",
+      "src/modules/taxonomy/models.py",
+      "src/modules/taxonomy/services.py",
+      "src/modules/taxonomy/selectors.py",
+      "src/modules/taxonomy/validators.py"
+    ]
+  },
+  "historical_migration_sha256": {
+    "src/modules/accounts/migrations/0001_initial.py": [
+      82, 74, 213, 206, 119, 47, 122, 235, 186, 85, 218, 180, 142, 107, 73, 120,
+      193, 24, 121, 14, 147, 246, 251, 215, 194, 217, 246, 81, 76, 180, 234, 164
+    ],
+    "src/modules/errors/migrations/0001_initial.py": [
+      107, 41, 64, 70, 87, 216, 166, 0, 62, 39, 30, 255, 42, 49, 167, 245,
+      170, 114, 2, 171, 26, 16, 171, 120, 19, 142, 219, 254, 149, 134, 118, 234
+    ]
+  },
+  "current_migration_sha256": {
+    "src/modules/taxonomy/migrations/0001_initial.py": [
+      220, 90, 71, 0, 146, 253, 186, 222, 187, 195, 239, 220, 249, 236, 201, 182,
+      22, 74, 150, 108, 41, 245, 109, 222, 129, 201, 220, 68, 42, 57, 237, 70
+    ]
+  }
+}

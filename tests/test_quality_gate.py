@@ -22,6 +22,7 @@ from scripts.verify_v01 import (
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = PROJECT_ROOT / "quality" / "v01-gate.json"
+V02_STAGE1_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v02-stage1-gate.json"
 
 
 def _manifest() -> dict[str, object]:
@@ -43,8 +44,13 @@ def _coverage_report(percent: int = 100) -> dict[str, object]:
     }
 
 
-def test_current_repository_satisfies_v01_contract() -> None:
-    verify_repository(PROJECT_ROOT, MANIFEST_PATH)
+def test_current_repository_satisfies_v02_stage1_contract() -> None:
+    verify_repository(PROJECT_ROOT, V02_STAGE1_MANIFEST_PATH)
+
+
+def test_v01_manifest_remains_strict_about_later_migrations() -> None:
+    with pytest.raises(GateVerificationError, match="Conjunto de migrações protegido divergiu"):
+        verify_repository(PROJECT_ROOT, MANIFEST_PATH)
 
 
 def test_duplicate_json_key_is_blocking(tmp_path: Path) -> None:
@@ -79,13 +85,13 @@ def test_duplicate_canonical_definition_is_blocking(tmp_path: Path) -> None:
 
 
 def test_changed_historical_migration_is_blocking() -> None:
-    manifest = copy.deepcopy(_manifest())
-    hashes = manifest["migration_sha256"]
+    manifest = copy.deepcopy(load_json_object(V02_STAGE1_MANIFEST_PATH))
+    hashes = manifest["historical_migration_sha256"]
     assert isinstance(hashes, dict)
     first_migration = next(iter(hashes))
     hashes[first_migration] = [0] * 32
 
-    with pytest.raises(GateVerificationError, match="Migrações históricas alteradas"):
+    with pytest.raises(GateVerificationError, match="Migrações protegidas alteradas"):
         verify_migration_history(PROJECT_ROOT, manifest)
 
 

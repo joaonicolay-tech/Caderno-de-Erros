@@ -1,4 +1,4 @@
-"""Verificações bloqueantes de rastreabilidade, migrações e cobertura da V0.1."""
+"""Verificações bloqueantes de rastreabilidade, migrações e cobertura por manifesto."""
 
 from __future__ import annotations
 
@@ -20,6 +20,7 @@ DEFINITION_SOURCES = {
     "FL": "docs/Caderno_de_Erros_Inteligente_Etapa_8_Fluxos_Principais.md",
     "CT": "docs/Caderno_de_Erros_Inteligente_Etapa_10_Plano_de_Testes.md",
     "ERR-V01": "docs/Caderno_de_Erros_Inteligente_Gate_de_Implementacao_Auditoria_Final.md",
+    "ERR-V02": "docs/ADR-010_Fronteira_Rastreabilidade_e_Dados_V0.2.md",
 }
 DEFINITION_PATTERNS = {
     "RF": re.compile(r"^### `(RF-\d{3})`", re.MULTILINE),
@@ -28,10 +29,11 @@ DEFINITION_PATTERNS = {
     "FL": re.compile(r"^### `(FL-\d{3})`", re.MULTILINE),
     "CT": re.compile(r"^\| `(CT-\d{3})` \|", re.MULTILINE),
     "ERR-V01": re.compile(r"^\| `(ERR-V01-\d{3})` \|", re.MULTILINE),
+    "ERR-V02": re.compile(r"^### `(ERR-V02-\d{3})`", re.MULTILINE),
 }
 CORE_REFERENCE_PATTERN = re.compile(
     r"(?<![A-Z0-9-])(?:RF-\d{3}|RNF-\d{3}|RN-\d{3}|FL-\d{3}|CT-\d{3}|"
-    r"ERR-V01-\d{3}|ADR-\d{3})(?![A-Z0-9-])"
+    r"ERR-V01-\d{3}|ERR-V02-\d{3}|ADR-\d{3})(?![A-Z0-9-])"
 )
 MARKDOWN_LINK_PATTERN = re.compile(r"\]\((?P<target>[^)]+)\)")
 TEST_SELECTOR_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -142,7 +144,7 @@ def verify_references(root: Path, manifest: Mapping[str, object], definitions: s
                 invalid_references.append(f"{relative_path}: {identifier}")
     if invalid_references:
         raise GateVerificationError(
-            f"Referências a IDs inexistentes no escopo V0.1: {'; '.join(invalid_references)}."
+            f"Referências a IDs inexistentes no escopo: {'; '.join(invalid_references)}."
         )
 
 
@@ -165,7 +167,7 @@ def verify_test_evidence(root: Path, manifest: Mapping[str, object]) -> None:
         raise GateVerificationError("A matriz executável de testes está ausente.")
     evidence_map = cast(dict[str, object], raw_evidence)
     pending_cases = set(cast(list[str], raw_pending))
-    expected_cases = {
+    v01_expected_cases = {
         "CT-001",
         "CT-002",
         "CT-073",
@@ -184,13 +186,24 @@ def verify_test_evidence(root: Path, manifest: Mapping[str, object]) -> None:
         "CT-135",
         "CT-136",
     }
+    raw_expected_cases = manifest.get("expected_test_cases")
+    if raw_expected_cases is None:
+        expected_cases = v01_expected_cases
+    elif isinstance(raw_expected_cases, list) and all(
+        isinstance(item, str) for item in raw_expected_cases
+    ):
+        expected_cases = set(cast(list[str], raw_expected_cases))
+        if len(expected_cases) != len(raw_expected_cases):
+            raise GateVerificationError("expected_test_cases contém duplicação.")
+    else:
+        raise GateVerificationError("expected_test_cases precisa ser uma lista de CTs.")
     if set(evidence_map) != expected_cases:
         difference = sorted(set(evidence_map) ^ expected_cases)
         raise GateVerificationError(
-            f"Matriz V0.1 incompleta ou excedente: {', '.join(difference)}."
+            f"Matriz executável incompleta ou excedente: {', '.join(difference)}."
         )
     if pending_cases:
-        raise GateVerificationError("Nenhum CT da V0.1 pode permanecer pendente de promoção.")
+        raise GateVerificationError("Nenhum CT do marco pode permanecer pendente de promoção.")
 
     gate_script = _text(root, "scripts/quality.ps1")
     for case_id, raw_entry in evidence_map.items():
@@ -230,8 +243,7 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def verify_migration_history(root: Path, manifest: Mapping[str, object]) -> None:
-    raw_hashes = manifest.get("migration_sha256")
+def _migration_hashes(raw_hashes: object) -> dict[str, str]:
     if not isinstance(raw_hashes, dict):
         raise GateVerificationError("Manifesto de hashes das migrações é inválido.")
     expected_hashes: dict[str, str] = {}
@@ -244,6 +256,22 @@ def verify_migration_history(root: Path, manifest: Mapping[str, object]) -> None
         ):
             raise GateVerificationError("Manifesto de hashes das migrações é inválido.")
         expected_hashes[raw_path] = bytes(cast(list[int], raw_bytes)).hex()
+    return expected_hashes
+
+
+def verify_migration_history(root: Path, manifest: Mapping[str, object]) -> None:
+    raw_legacy_hashes = manifest.get("migration_sha256")
+    if raw_legacy_hashes is not None:
+        expected_hashes = _migration_hashes(raw_legacy_hashes)
+    else:
+        historical_hashes = _migration_hashes(manifest.get("historical_migration_sha256"))
+        current_hashes = _migration_hashes(manifest.get("current_migration_sha256"))
+        overlap = sorted(set(historical_hashes) & set(current_hashes))
+        if overlap:
+            raise GateVerificationError(
+                f"Migrações repetidas entre histórico e marco atual: {', '.join(overlap)}."
+            )
+        expected_hashes = historical_hashes | current_hashes
     discovered = {
         path.relative_to(root).as_posix()
         for path in (root / "src" / "modules").glob("*/migrations/[0-9]*.py")
@@ -251,7 +279,7 @@ def verify_migration_history(root: Path, manifest: Mapping[str, object]) -> None
     if discovered != set(expected_hashes):
         difference = sorted(discovered ^ set(expected_hashes))
         raise GateVerificationError(
-            f"Conjunto de migrações históricas divergiu: {', '.join(difference)}."
+            f"Conjunto de migrações protegido divergiu: {', '.join(difference)}."
         )
     changed = [
         relative_path
@@ -259,7 +287,7 @@ def verify_migration_history(root: Path, manifest: Mapping[str, object]) -> None
         if _sha256(root / relative_path) != expected_hash
     ]
     if changed:
-        raise GateVerificationError(f"Migrações históricas alteradas: {', '.join(changed)}.")
+        raise GateVerificationError(f"Migrações protegidas alteradas: {', '.join(changed)}.")
 
 
 def verify_repository(root: Path, manifest_path: Path) -> None:
@@ -330,15 +358,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     arguments = build_parser().parse_args(argv)
     root = arguments.root.resolve()
     manifest_path = (arguments.manifest or root / "quality" / "v01-gate.json").resolve()
+    release = str(load_json_object(manifest_path).get("release", "release desconhecida"))
     try:
         if arguments.command == "repository":
             verify_repository(root, manifest_path)
-            print("Rastreabilidade, Markdown e migrações históricas da V0.1: OK")
+            print(f"Rastreabilidade, Markdown e migrações protegidas de {release}: OK")
         else:
             if arguments.coverage_file is None:
                 raise GateVerificationError("--coverage-file é obrigatório para cobertura.")
             verify_coverage(root, manifest_path, arguments.coverage_file.resolve())
-            print("Cobertura de domínio/regras da V0.1 (mínimo 80% por módulo): OK")
+            print(f"Cobertura de domínio/regras de {release} (mínimo 80% por módulo): OK")
     except GateVerificationError as error:
         print(f"ERRO: {error}", file=sys.stderr)
         return 1

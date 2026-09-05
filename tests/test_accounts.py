@@ -276,6 +276,9 @@ print(json.dumps({
     "custom_user": "accounts_user" in tables,
     "workspace": "accounts_workspace" in tables,
     "categories": "errors_error_category" in tables,
+    "discipline": "taxonomy_discipline" in tables,
+    "subject": "taxonomy_subject" in tables,
+    "subsubject": "taxonomy_subsubject" in tables,
     "default_user": "auth_user" in tables,
 }))
 """
@@ -297,5 +300,8 @@ print(json.dumps({
         "custom_user": True,
         "workspace": True,
         "categories": True,
+        "discipline": True,
+        "subject": True,
+        "subsubject": True,
         "default_user": False,
     }

@@ -254,3 +254,32 @@ A Etapa 1 — Taxonomia e migrations está liberada quando:
 - os hashes das migrations V0.1 permanecerem iguais;
 - não existir código, módulo ou migration V0.2 criado durante a Etapa 0;
 - não houver P0/P1 documental aberto aplicável ao início da taxonomia.
+
+## 8. Registro de implementação da Etapa 1
+
+A evolução de schema exigiu ativar a extensão retrocompatível prevista por
+`ERR-V02-009`. O manifesto intermediário `quality/v02-stage1-gate.json` separa
+explicitamente `historical_migration_sha256`, com os hashes imutáveis da V0.1,
+de `current_migration_sha256`, com `taxonomy/0001_initial`. O conjunto unido
+continua exato: migration ausente, adicional ou alterada bloqueia o gate.
+
+`scripts/verify_v01.py` permanece com `quality/v01-gate.json` como padrão e
+mantém o contrato estrito da baseline histórica. Quando recebe um manifesto
+posterior, aceita a matriz de CTs declarada pelo marco e a separação dos hashes,
+sem permitir modificação das migrations protegidas. O gate corrente passa o
+manifesto intermediário de forma explícita; isso não cria o manifesto final da
+V0.2 nem promove a release.
+
+Para `RF-004`–`RF-008`, `RN-006`–`RN-009` e `SDD-MOD-002`, a implementação
+adota unicidade parcial dos nomes `ACTIVE`. Assim, um nome arquivado pode ser
+reutilizado por um novo item ativo, enquanto o registro anterior e seus vínculos
+permanecem preservados. Não existe serviço de exclusão física na V0.2.
+
+A integridade de Workspace entre tabelas é validada no serviço transacional e
+também no caminho ORM normal dos models; FKs, estados, coerência de
+`archived_at`, `lock_version`, unicidades e `PROTECT` ficam no SQLite sempre que
+expressáveis. Selectors de disponibilidade exigem toda a cadeia ancestral ativa,
+sem modificar automaticamente o estado dos descendentes. As evidências
+automatizadas deste marco estão vinculadas a `CT-003`, `CT-004`, `CT-073`,
+`CT-074`, `CT-081`, `CT-082`, `CT-122` e à parcela de domínio/persistência de
+`CT-137` no manifesto intermediário.

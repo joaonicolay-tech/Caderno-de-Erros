@@ -10,6 +10,7 @@ $env:UV_CACHE_DIR = Join-Path $toolsDirectory "cache"
 $env:UV_PYTHON_INSTALL_DIR = Join-Path $toolsDirectory "python"
 $qualityReportsDirectory = Join-Path $toolsDirectory "quality"
 $coverageReport = ".tools/quality/coverage.json"
+$gateManifest = "quality/v02-stage1-gate.json"
 New-Item -ItemType Directory -Path $qualityReportsDirectory -Force | Out-Null
 Remove-Item -LiteralPath $coverageReport -ErrorAction SilentlyContinue
 
@@ -50,7 +51,8 @@ Invoke-Tool "validar runtime" @(
     "import django, sqlite3, sys; sample = 'quest\u00e3o'; assert sys.version_info[:3] == (3, 13, 15); assert django.get_version() == '5.2.17'; assert sqlite3.sqlite_version_info == (3, 53, 1); assert sample.encode('utf-8').decode('utf-8') == sample; print(f'Python={sys.version.split()[0]} Django={django.get_version()} SQLite={sqlite3.sqlite_version}')"
 )
 Invoke-Tool "validar rastreabilidade e baseline documental" @(
-    "run", "--locked", "python", "scripts/verify_v01.py", "repository"
+    "run", "--locked", "python", "scripts/verify_v01.py", "repository",
+    "--manifest", $gateManifest
 )
 Invoke-Tool "verificar perfil de desenvolvimento" @(
     "run", "--locked", "python", "manage.py", "check",
@@ -106,7 +108,7 @@ if ($pythonFiles.Count -gt 0) {
     )
     Invoke-Tool "validar cobertura de domínio" @(
         "run", "--locked", "python", "scripts/verify_v01.py", "coverage",
-        "--coverage-file", $coverageReport
+        "--manifest", $gateManifest, "--coverage-file", $coverageReport
     )
 } else {
     Write-Host "==> validar executáveis de análise e testes (não há código Python)"
@@ -144,4 +146,4 @@ Invoke-Tool "auditar vulnerabilidades" @(
 )
 
 $gateStopwatch.Stop()
-Write-Host "Gate autoritativo da V0.1 validado em $([Math]::Round($gateStopwatch.Elapsed.TotalSeconds, 1)) s."
+Write-Host "Gate autoritativo da V0.2 Etapa 1 validado em $([Math]::Round($gateStopwatch.Elapsed.TotalSeconds, 1)) s."
