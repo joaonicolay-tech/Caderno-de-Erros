@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "release": "V0.2 — Etapa 1",
+  "release": "V0.2 — Etapa 2",
   "protected_baseline": "v0.1.0@cc7c382d2db8474eaee6005b71b7d01d40481611",
   "required_identifiers": [
     "RF-001", "RF-002", "RF-003", "RF-004", "RF-005", "RF-006", "RF-007", "RF-008",
@@ -11,7 +11,7 @@
     "RN-001", "RN-002", "RN-003", "RN-004", "RN-005", "RN-006", "RN-007", "RN-008",
     "RN-009", "RN-029", "FL-001", "FL-022", "FL-023",
     "CT-001", "CT-002", "CT-003", "CT-004", "CT-073", "CT-074", "CT-081", "CT-082",
-    "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-128", "CT-129", "CT-130",
+    "CT-094", "CT-095", "CT-096", "CT-097", "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-128", "CT-129", "CT-130",
     "CT-131", "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137",
     "ERR-V01-001", "ERR-V01-002", "ERR-V01-003", "ERR-V01-004", "ERR-V01-005",
     "ERR-V01-006", "ERR-V01-007", "ERR-V01-008", "ERR-V01-009",
@@ -44,7 +44,7 @@
   ],
   "expected_test_cases": [
     "CT-001", "CT-002", "CT-003", "CT-004", "CT-073", "CT-074", "CT-081", "CT-082",
-    "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-129", "CT-130", "CT-131",
+    "CT-094", "CT-095", "CT-096", "CT-097", "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-129", "CT-130", "CT-131",
     "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137"
   ],
   "promotion_pending_cases": [],
@@ -104,6 +104,31 @@
       "status": "executable",
       "evidence": [
         {"kind": "test", "target": "tests/test_taxonomy.py::test_ct082_and_ct122_upgrade_v01_data_to_taxonomy_initial"}
+      ]
+    },
+    "CT-094": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_ct003_and_ct094_duplicate_form_preserves_input_and_associates_error"},
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_ct137_complete_create_edit_and_hierarchical_navigation"}
+      ]
+    },
+    "CT-095": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_ct004_and_ct095_foreign_or_unknown_ids_return_safe_404"}
+      ]
+    },
+    "CT-096": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_ct096_mutations_keep_csrf_and_http_method_protection"}
+      ]
+    },
+    "CT-097": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_ct097_user_html_is_escaped_in_lists_context_and_attributes"}
       ]
     },
     "CT-099": {
@@ -198,7 +223,10 @@
       "evidence": [
         {"kind": "test", "target": "tests/test_taxonomy.py::test_ct137_rename_uses_lock_and_preserves_identity_and_timestamp"},
         {"kind": "test", "target": "tests/test_taxonomy.py::test_ct137_archive_preserves_descendant_states_and_effective_availability"},
-        {"kind": "test", "target": "tests/test_taxonomy.py::test_subject_and_subsubject_archive_are_historical_and_workspace_scoped"}
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_subject_and_subsubject_archive_are_historical_and_workspace_scoped"},
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_ct137_complete_create_edit_and_hierarchical_navigation"},
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_archive_requires_confirmation_can_cancel_and_preserves_descendants"},
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_subject_and_subsubject_archive_flows_remain_historical"}
       ]
     }
   },

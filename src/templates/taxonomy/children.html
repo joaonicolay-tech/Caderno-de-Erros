@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumbs" aria-label="Trilha de navegação">
+    <ol>
+      {% for label, url in breadcrumbs %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
+      <li aria-current="page">{{ title }}</li>
+    </ol>
+  </nav>
+
+  <section aria-labelledby="page-title">
+    <p class="eyebrow">Taxonomia</p>
+    <h1 id="page-title">{{ title }}</h1>
+    {% if level == "subject" %}
+      <p>Disciplina: <strong>{{ parent.name }}</strong></p>
+    {% else %}
+      <p><strong>{{ discipline.name }}</strong> → <strong>{{ parent.name }}</strong> → Subassuntos</p>
+    {% endif %}
+
+    {% if not parent_available %}
+      <div class="notice" role="status">
+        <strong>Contexto indisponível:</strong>
+        este item ou um ancestral está arquivado. Os descendentes continuam preservados,
+        mas não podem ser usados em novos vínculos.
+      </div>
+    {% endif %}
+
+    <div class="toolbar" aria-label="Ações de {{ title|lower }}">
+      {% if parent_available and not show_archived %}
+        <a class="button-link" href="{{ new_url }}">Novo {{ item_singular }}</a>
+      {% endif %}
+      <div class="view-switch" aria-label="Filtrar por estado">
+        <a href="{{ active_url }}"{% if not show_archived %} aria-current="page"{% endif %}>Ativos</a>
+        <a href="{{ archived_url }}"{% if show_archived %} aria-current="page"{% endif %}>Arquivados</a>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="items-title">
+    <h2 id="items-title">{{ item_plural|capfirst }} {% if show_archived %}arquivados{% else %}ativos{% endif %}</h2>
+    {% if items %}
+      <ul class="taxonomy-list">
+        {% for item in items %}
+          <li class="taxonomy-card">
+            <div>
+              <h3>{{ item.name }}</h3>
+              <p class="status-badge status-{{ item.status|lower }}">
+                Estado: {{ item.get_status_display }}
+                {% if not parent_available and item.status == "ACTIVE" %}
+                  — indisponível devido ao ancestral arquivado
+                {% endif %}
+              </p>
+            </div>
+            <div class="item-actions" aria-label="Ações de {{ item.name }}">
+              {% if level == "subject" %}
+                <a href="{% url 'taxonomy:subsubject-list' item.id %}">Ver subassuntos</a>
+                <a href="{% url 'taxonomy:subject-edit' item.id %}">Editar</a>
+                {% if item.status == "ACTIVE" %}<a href="{% url 'taxonomy:subject-archive' item.id %}">Arquivar</a>{% endif %}
+              {% else %}
+                <a href="{% url 'taxonomy:subsubject-edit' item.id %}">Editar</a>
+                {% if item.status == "ACTIVE" %}<a href="{% url 'taxonomy:subsubject-archive' item.id %}">Arquivar</a>{% endif %}
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty-state" role="status">Nenhum {{ item_singular }} {% if show_archived %}arquivado{% else %}ativo{% endif %} neste contexto.</p>
+    {% endif %}
+    <p><a href="{{ return_url }}">← Voltar</a></p>
+  </section>
+{% endblock %}

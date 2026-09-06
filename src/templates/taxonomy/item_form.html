@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumbs" aria-label="Trilha de navegação">
+    <ol>
+      {% for label, url in breadcrumbs %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
+      <li aria-current="page">{{ title }}</li>
+    </ol>
+  </nav>
+
+  <section class="narrow" aria-labelledby="page-title">
+    <p class="eyebrow">{{ eyebrow }}</p>
+    <h1 id="page-title">{{ title }}</h1>
+    {% if context_notice %}<p class="context-line">{{ context_notice }}</p>{% endif %}
+
+    {% if form.non_field_errors %}
+      <div class="feedback feedback-error" role="alert" tabindex="-1">
+        <strong>Não foi possível salvar:</strong>
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.lock_version %}{{ form.lock_version }}{% endif %}
+      <div class="field-group{% if form.name.errors %} field-error{% endif %}">
+        <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+        {{ form.name }}
+        <p class="field-help" id="name-help">{{ form.name.help_text }}</p>
+        <div id="name-errors">{{ form.name.errors }}</div>
+      </div>
+      <div class="button-row">
+        <button type="submit">{{ submit_label }}</button>
+        <a class="button-link button-secondary" href="{{ return_url }}">Cancelar</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

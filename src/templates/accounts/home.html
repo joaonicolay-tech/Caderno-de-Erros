@@ -4,9 +4,9 @@
 
 {% block content %}
   <section aria-labelledby="page-title">
-    <p class="eyebrow">Fundação local V0.1</p>
+    <p class="eyebrow">Espaço local</p>
     <h1 id="page-title">Seu espaço está pronto</h1>
-    <p>A base local foi inicializada. Funcionalidades de estudo ainda não fazem parte desta versão.</p>
+    <p>A base local foi inicializada. A organização da taxonomia acadêmica está disponível.</p>
   </section>
 
   <section class="panel" aria-labelledby="workspace-title">
@@ -18,5 +18,11 @@
       <div><dt>Hoje nesse fuso</dt><dd>{{ today }}</dd></div>
     </dl>
     <p><a class="button-link" href="{% url 'accounts:settings' %}">Alterar fuso horário</a></p>
+  </section>
+
+  <section class="panel" aria-labelledby="taxonomy-title">
+    <h2 id="taxonomy-title">Organização acadêmica</h2>
+    <p>Gerencie disciplinas, assuntos e subassuntos sem apagar o histórico.</p>
+    <p><a class="button-link" href="{% url 'taxonomy:index' %}">Abrir taxonomia</a></p>
   </section>
 {% endblock %}

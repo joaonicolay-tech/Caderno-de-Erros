@@ -122,7 +122,7 @@ def test_initialized_home_only_links_existing_capabilities_and_preserves_unicode
     assert response.status_code == 200
     assert "Seu espaço está pronto" in html
     assert "Português (Brasil)" in html
-    assert links == {"/", "/configuracoes/", "#conteudo-principal"}
+    assert links == {"/", "/configuracoes/", "/taxonomy/", "#conteudo-principal"}
     for forbidden_path in (
         "/questoes/",
         "/revisoes/",

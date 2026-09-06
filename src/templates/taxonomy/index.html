@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Taxonomia — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <section aria-labelledby="page-title">
+    <p class="eyebrow">Organização acadêmica</p>
+    <h1 id="page-title">Taxonomia</h1>
+    <p>Organize disciplinas, assuntos e subassuntos do seu espaço.</p>
+
+    <div class="toolbar" aria-label="Ações da taxonomia">
+      {% if not show_archived %}
+        <a class="button-link" href="{% url 'taxonomy:discipline-create' %}">Nova disciplina</a>
+      {% endif %}
+      <div class="view-switch" aria-label="Filtrar por estado">
+        <a href="{% url 'taxonomy:index' %}"{% if not show_archived %} aria-current="page"{% endif %}>Ativas</a>
+        <a href="{% url 'taxonomy:index' %}?state=archived"{% if show_archived %} aria-current="page"{% endif %}>Arquivadas</a>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="items-title">
+    <h2 id="items-title">Disciplinas {% if show_archived %}arquivadas{% else %}ativas{% endif %}</h2>
+    {% if items %}
+      <ul class="taxonomy-list">
+        {% for item in items %}
+          <li class="taxonomy-card">
+            <div>
+              <h3>{{ item.name }}</h3>
+              <p class="status-badge status-{{ item.status|lower }}">Estado: {{ item.get_status_display }}</p>
+            </div>
+            <div class="item-actions" aria-label="Ações de {{ item.name }}">
+              <a href="{% url 'taxonomy:subject-list' item.id %}">Ver assuntos</a>
+              <a href="{% url 'taxonomy:discipline-edit' item.id %}">Editar</a>
+              {% if item.status == "ACTIVE" %}
+                <a href="{% url 'taxonomy:discipline-archive' item.id %}">Arquivar</a>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty-state" role="status">
+        {% if show_archived %}Nenhuma disciplina arquivada.{% else %}Nenhuma disciplina ativa. Crie a primeira para iniciar sua organização.{% endif %}
+      </p>
+    {% endif %}
+  </section>
+{% endblock %}

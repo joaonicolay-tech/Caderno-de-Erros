@@ -16,6 +16,7 @@
         <ul class="nav-list">
           <li><a href="{% url 'accounts:home' %}">Início</a></li>
           {% if workspace %}
+            <li><a href="{% url 'taxonomy:index' %}">Taxonomia</a></li>
             <li><a href="{% url 'accounts:settings' %}">Configurações</a></li>
           {% endif %}
         </ul>
@@ -29,7 +30,7 @@
     {% block content %}{% endblock %}
   </main>
   <footer class="site-footer">
-    <div class="shell">Aplicação local — V0.1</div>
+    <div class="shell">Aplicação local — catálogo em evolução</div>
   </footer>
 </body>
 </html>
