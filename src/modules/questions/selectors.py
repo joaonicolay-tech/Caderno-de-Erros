@@ -4,8 +4,15 @@ import uuid
 
 from django.db.models import Q, QuerySet
 
-from .exceptions import OriginCatalogNotFoundError
-from .models import Board, Exam, OriginStatus, Source
+from .exceptions import OriginCatalogNotFoundError, QuestionCatalogNotFoundError
+from .models import (
+    Board,
+    Exam,
+    OriginStatus,
+    Question,
+    QuestionRevision,
+    Source,
+)
 
 
 def list_boards(*, workspace_id: uuid.UUID) -> QuerySet[Board]:
@@ -92,3 +99,55 @@ def get_source(*, workspace_id: uuid.UUID, source_id: uuid.UUID) -> Source:
         return Source.objects.get(pk=source_id, workspace_id=workspace_id)
     except Source.DoesNotExist as error:
         raise OriginCatalogNotFoundError("Source não encontrada no Workspace.") from error
+
+
+def get_question(*, workspace_id: uuid.UUID, question_id: uuid.UUID) -> Question:
+    """Carregue o agregado atual sem revelar questões de outro Workspace."""
+    try:
+        return (
+            Question.objects.select_related(
+                "discipline",
+                "subject",
+                "subsubject",
+                "origin__source",
+                "origin__exam__board",
+                "origin__board",
+            )
+            .prefetch_related("revisions__alternatives")
+            .get(pk=question_id, workspace_id=workspace_id)
+        )
+    except Question.DoesNotExist as error:
+        raise QuestionCatalogNotFoundError("Questão não encontrada no Workspace.") from error
+
+
+def get_current_revision(
+    *, workspace_id: uuid.UUID, question_id: uuid.UUID
+) -> QuestionRevision | None:
+    """Retorne a única revisão corrente, quando o rascunho já possui conteúdo."""
+    return (
+        QuestionRevision.objects.filter(
+            workspace_id=workspace_id,
+            question_id=question_id,
+            question__workspace_id=workspace_id,
+            is_current=True,
+        )
+        .select_related("correct_alternative")
+        .prefetch_related("alternatives")
+        .first()
+    )
+
+
+def list_question_revisions(
+    *, workspace_id: uuid.UUID, question_id: uuid.UUID
+) -> QuerySet[QuestionRevision]:
+    """Liste snapshots históricos de conteúdo em ordem de versão."""
+    return (
+        QuestionRevision.objects.filter(
+            workspace_id=workspace_id,
+            question_id=question_id,
+            question__workspace_id=workspace_id,
+        )
+        .select_related("correct_alternative")
+        .prefetch_related("alternatives")
+        .order_by("version_number")
+    )

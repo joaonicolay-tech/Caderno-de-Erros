@@ -2,15 +2,16 @@
 
 Versão atual: V0.2
 Situação da versão: em andamento
-Etapa atual: Etapa 4 — Catálogo de Questões
-Status da etapa atual: liberada, não iniciada
+Etapa atual: nenhuma etapa nova formalmente liberada
+Status da etapa atual: aguardando revisão humana e liberação formal
 
 Etapas concluídas:
 
 - V0.2 — Etapa 0 — Saneamento e Baseline da V0.2;
 - V0.2 — Etapa 1 — Taxonomia e Migrations;
 - V0.2 — Etapa 2 — Gestão e Interface da Taxonomia;
-- V0.2 — Etapa 3 — Catálogo de Origem.
+- V0.2 — Etapa 3 — Catálogo de Origem;
+- V0.2 — Etapa 4 — Catálogo de Questões.
 
 Melhoria operacional:
 Etapa 6 — adoção definitiva do novo fluxo operacional concluída.
@@ -19,13 +20,14 @@ Baseline protegida:
 `v0.1.0` (`cc7c382d2db8474eaee6005b71b7d01d40481611`)
 
 Último gate:
-GREEN — gate autoritativo da V0.2 — Etapa 3
+GREEN — gate autoritativo da V0.2 — Etapa 4
 
 Testes:
-144 aprovados
+164 aprovados
 
 Coverage:
-85% global; metas específicas aplicáveis atendidas
+85% global; Questions Models 85%, Services 84%, Selectors 100% e Validators 90%;
+metas específicas aplicáveis atendidas
 
 Bloqueadores:
 Nenhum
@@ -37,7 +39,8 @@ Pendência planejada:
 Validação manual integral de `CT-142`, reservada à Etapa 8 da V0.2.
 
 Próximo objetivo:
-Executar, em novo chat, `tasks/current.md`: V0.2 — Etapa 4 — Catálogo de Questões.
+Aguardar revisão humana e liberação formal de nova tarefa. Nenhuma Etapa 5 está
+autorizada por `tasks/current.md` neste estado.
 
 ADRs relevantes:
 

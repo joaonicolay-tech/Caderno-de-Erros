@@ -44,7 +44,7 @@ def _coverage_report(percent: int = 100) -> dict[str, object]:
     }
 
 
-def test_current_repository_satisfies_v02_stage3_contract() -> None:
+def test_current_repository_satisfies_v02_stage4_contract() -> None:
     verify_repository(PROJECT_ROOT, V02_MANIFEST_PATH)
 
 

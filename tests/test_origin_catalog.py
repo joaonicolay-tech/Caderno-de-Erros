@@ -9,7 +9,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, connection, transaction
 from django.db.migrations.loader import MigrationLoader
@@ -480,7 +479,7 @@ def test_invalid_urls_source_type_and_workspace_are_rejected_without_partial_dat
 
 
 @pytest.mark.django_db
-def test_ct081_questions_migration_is_frozen_single_node_without_future_entities() -> None:
+def test_ct081_origin_migration_remains_frozen_as_questions_root() -> None:
     loader = MigrationLoader(connection)
     migration = loader.get_migration("questions", "0001_origin_catalog")
 
@@ -491,15 +490,11 @@ def test_ct081_questions_migration_is_frozen_single_node_without_future_entities
         "questions_exam",
         "questions_source",
     }.issubset(connection.introspection.table_names())
-    assert not {
-        "questions_question",
-        "questions_questionrevision",
-        "questions_alternative",
-        "questions_questionorigin",
-    }.intersection(connection.introspection.table_names())
-    for model_name in ("Question", "QuestionRevision", "Alternative", "QuestionOrigin"):
-        assert not apps.is_installed(f"modules.{model_name.lower()}")
-        assert apps.all_models["questions"].get(model_name.lower()) is None
+    assert [getattr(operation, "name", None) for operation in migration.operations[:3]] == [
+        "Board",
+        "Exam",
+        "Source",
+    ]
 
 
 def _run_upgrade_probe(*, from_taxonomy: bool) -> dict[str, object]:
