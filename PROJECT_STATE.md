@@ -2,8 +2,8 @@
 
 Versão atual: V0.2
 Situação da versão: em andamento
-Etapa atual: nenhuma tarefa de implementação formalmente liberada
-Status da etapa atual: aguardando liberação da próxima tarefa
+Etapa atual: V0.2 — Etapa 8 — Fixture, Acessibilidade, Backup, Integração e Regressão
+Status da etapa atual: formalmente liberada; ainda não iniciada
 
 Etapas concluídas:
 
@@ -38,12 +38,13 @@ P0/P1 aplicável aberto:
 Nenhum
 
 Pendência planejada:
-Validação manual integral de `CT-142`, reservada à Etapa 8 da V0.2.
+Executar a V0.2 — Etapa 8 — Fixture, Acessibilidade, Backup, Integração e
+Regressão. A tarefa está formalmente liberada em `tasks/current.md`, mas ainda
+não foi iniciada nesta execução.
 
 Próximo objetivo:
-Aguardar liberação formal de uma nova tarefa. A Etapa 8 não foi preparada nem
-autorizada neste encerramento; a validação manual integral de `CT-142` permanece
-planejada para ela.
+Em novo chat, executar exclusivamente a Etapa 8 autorizada. A promoção final da
+Etapa 9 não está autorizada.
 
 ADRs relevantes:
 
