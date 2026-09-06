@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Arquivar questão — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumbs" aria-label="Trilha de navegação">
+    <ol>
+      {% for label, url in breadcrumbs %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
+      <li aria-current="page">Arquivar questão</li>
+    </ol>
+  </nav>
+
+  <section class="narrow" aria-labelledby="page-title">
+    <p class="eyebrow">Confirmação</p>
+    <h1 id="page-title">Arquivar questão</h1>
+    <p class="notice">A questão sairá do conjunto ativo, mas sua identidade, origem, conteúdo e todas as revisões serão preservados. Esta versão não oferece reativação.</p>
+
+    {% if form.non_field_errors %}
+      <div class="feedback feedback-error" role="alert" tabindex="-1">
+        <strong>Não foi possível arquivar:</strong> {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.lock_version }}
+      <div class="check-group{% if form.confirm.errors %} field-error{% endif %}">
+        {{ form.confirm }}
+        <label for="{{ form.confirm.id_for_label }}">{{ form.confirm.label }}</label>
+        <p class="field-help" id="confirm-help">O arquivamento não exclui os dados da questão.</p>
+        <div id="confirm-errors">{{ form.confirm.errors }}</div>
+      </div>
+      <div class="button-row">
+        <button class="button-danger" type="submit">Arquivar questão</button>
+        <a class="button-link button-secondary" href="{% url 'questions:detail' question.id %}">Cancelar</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

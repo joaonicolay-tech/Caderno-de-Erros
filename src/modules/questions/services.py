@@ -1152,12 +1152,198 @@ def archive_question(
     return question
 
 
+def _revision_matches(
+    *,
+    revision: QuestionRevision | None,
+    stem: str | None,
+    alternatives: list[tuple[str, str | None, str]],
+    correct_alternative_position: int | None,
+    explanation: str | None,
+    trap_note: str | None,
+    notes: str | None,
+) -> bool:
+    """Compare a entrada normalizada com o snapshot corrente, sem o alterar."""
+    if revision is None:
+        return not _has_versioned_content(
+            stem=stem,
+            alternatives=alternatives,
+            explanation=explanation,
+            trap_note=trap_note,
+            notes=notes,
+        )
+    current_alternatives = list(revision.alternatives.order_by("position"))
+    current_answer = _revision_answer_position(
+        revision=revision,
+        alternatives=current_alternatives,
+    )
+    return (
+        revision.stem == stem
+        and revision.explanation == explanation
+        and revision.trap_note == trap_note
+        and revision.notes == notes
+        and [(item.text, item.label) for item in current_alternatives]
+        == [(text, label) for text, label, _text_key in alternatives]
+        and current_answer == correct_alternative_position
+    )
+
+
+def _revision_answer_position(
+    *, revision: QuestionRevision, alternatives: list[Alternative]
+) -> int | None:
+    return next(
+        (
+            alternative.position
+            for alternative in alternatives
+            if alternative.id == revision.correct_alternative_id
+        ),
+        None,
+    )
+
+
+def _classify_revision_change(
+    *,
+    revision: QuestionRevision | None,
+    alternatives: list[tuple[str, str | None, str]],
+    correct_alternative_position: int | None,
+    stem: str | None,
+) -> tuple[str, str | None]:
+    """Classifique de modo determinístico a mudança que será persistida."""
+    if revision is None:
+        return RevisionChangeKind.INITIAL, None
+    current_alternatives = list(revision.alternatives.order_by("position"))
+    current_answer = _revision_answer_position(
+        revision=revision,
+        alternatives=current_alternatives,
+    )
+    alternatives_changed = [(item.text, item.label) for item in current_alternatives] != [
+        (text, label) for text, label, _text_key in alternatives
+    ]
+    if alternatives_changed or current_answer != correct_alternative_position:
+        return (
+            RevisionChangeKind.CRITICAL_CORRECTION,
+            "Alternativas ou gabarito alterados antes de tentativas.",
+        )
+    if revision.stem == stem:
+        return RevisionChangeKind.ENRICHMENT, None
+    return RevisionChangeKind.NON_CRITICAL_EDIT, None
+
+
+@transaction.atomic
+def edit_question(
+    *,
+    workspace_id: uuid.UUID,
+    question_id: uuid.UUID,
+    expected_lock_version: int,
+    discipline_id: uuid.UUID | None,
+    subject_id: uuid.UUID | None,
+    subsubject_id: uuid.UUID | None = None,
+    difficulty: str | None = None,
+    draft_title: str | None = None,
+    stem: str | None = None,
+    alternatives: list[AlternativeInput | str] | tuple[AlternativeInput | str, ...] = (),
+    correct_alternative_position: int | None = None,
+    explanation: str | None = None,
+    trap_note: str | None = None,
+    notes: str | None = None,
+    origin: QuestionOriginInput | None = None,
+    clock: Clock | None = None,
+) -> Question:
+    """Edite metadados, origem e conteúdo como um único comando do agregado."""
+    question = _locked_question(workspace_id=workspace_id, question_id=question_id)
+    _check_question_lock(question, expected_lock_version)
+    if question.status == QuestionStatus.ARCHIVED:
+        raise QuestionCatalogStateConflictError("Questão arquivada não pode ser editada.")
+
+    workspace = _get_question_workspace(workspace_id)
+    _validate_difficulty(difficulty)
+    discipline, subject, subsubject = _get_taxonomy(
+        workspace_id=workspace_id,
+        discipline_id=discipline_id,
+        subject_id=subject_id,
+        subsubject_id=subsubject_id,
+        required=question.status == QuestionStatus.ACTIVE,
+    )
+    content = _normalize_revision_content(
+        stem=stem,
+        alternatives=alternatives,
+        correct_alternative_position=correct_alternative_position,
+        explanation=explanation,
+        trap_note=trap_note,
+        notes=notes,
+        change_kind=RevisionChangeKind.NON_CRITICAL_EDIT,
+        change_reason=None,
+    )
+    if question.status == QuestionStatus.ACTIVE:
+        _validate_active_revision(
+            stem=content[0],
+            alternatives=content[1],
+            correct_alternative_position=content[2],
+        )
+
+    current_revision = question.revisions.filter(is_current=True).first()
+    if not _revision_matches(
+        revision=current_revision,
+        stem=content[0],
+        alternatives=content[1],
+        correct_alternative_position=content[2],
+        explanation=content[3],
+        trap_note=content[4],
+        notes=content[5],
+    ):
+        if not _has_versioned_content(
+            stem=content[0],
+            alternatives=content[1],
+            explanation=content[3],
+            trap_note=content[4],
+            notes=content[5],
+        ):
+            raise QuestionCatalogValidationError("Uma revisão exige algum conteúdo versionável.")
+        change_kind, change_reason = _classify_revision_change(
+            revision=current_revision,
+            alternatives=content[1],
+            correct_alternative_position=content[2],
+            stem=content[0],
+        )
+        _create_revision(
+            question=question,
+            stem=content[0],
+            alternatives=content[1],
+            correct_alternative_position=content[2],
+            explanation=content[3],
+            trap_note=content[4],
+            notes=content[5],
+            change_kind=change_kind,
+            change_reason=change_reason,
+        )
+
+    _replace_origin(question=question, workspace=workspace, value=origin, clock=clock)
+    now = (clock or SystemClock()).now().value
+    updated = Question.objects.filter(
+        pk=question.id,
+        workspace_id=workspace_id,
+        lock_version=expected_lock_version,
+    ).update(
+        discipline=discipline,
+        subject=subject,
+        subsubject=subsubject,
+        difficulty=difficulty,
+        draft_title=_normalize_draft_title(draft_title),
+        lock_version=F("lock_version") + 1,
+        updated_at=now,
+    )
+    if updated != 1:
+        raise QuestionCatalogConcurrencyError("A questão mudou; recarregue a versão atual.")
+    question.refresh_from_db()
+    return question
+
+
 class QuestionCommandService:
     """Fronteira explícita de escrita do agregado Question."""
 
     create_draft = staticmethod(create_draft)
     create_active = staticmethod(create_active)
     complete_draft = staticmethod(complete_draft)
+    edit = staticmethod(edit_question)
     save_revision = staticmethod(save_revision)
     update_metadata = staticmethod(update_question_metadata)
     set_origin = staticmethod(set_question_origin)

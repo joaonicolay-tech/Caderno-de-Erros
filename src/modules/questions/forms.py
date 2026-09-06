@@ -220,3 +220,31 @@ class DraftActivationForm(QuestionQuickEntryForm):
     """Inclua a versão observada para impedir sobrescrita perdida ao ativar."""
 
     lock_version = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
+
+
+class QuestionEditForm(QuestionQuickEntryForm):
+    """Edite o agregado observado sem permitir sobrescrita concorrente."""
+
+    lock_version = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
+
+
+class QuestionArchiveForm(forms.Form):
+    """Exija confirmação explícita sobre a versão observada da questão."""
+
+    lock_version = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
+    confirm = forms.BooleanField(
+        label="Confirmo que desejo arquivar esta questão",
+        required=True,
+        error_messages={"required": "Confirme o arquivamento para continuar."},
+    )
+
+    def full_clean(self) -> None:
+        super().full_clean()
+        if "confirm" in self.errors:
+            self.fields["confirm"].widget.attrs.update(
+                {
+                    "aria-invalid": "true",
+                    "aria-describedby": "confirm-help confirm-errors",
+                    "autofocus": True,
+                }
+            )

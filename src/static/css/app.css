@@ -280,8 +280,46 @@ fieldset.form-section legend {
   color: var(--success);
 }
 
+.status-draft {
+  color: var(--primary);
+}
+
 .status-archived {
   color: var(--muted);
+}
+
+.page-actions {
+  margin-block-start: 1.5rem;
+}
+
+.button-danger {
+  background: var(--error);
+  border-color: var(--error);
+  color: #ffffff;
+}
+
+.button-danger:hover {
+  background: #6f1515;
+  color: #ffffff;
+}
+
+.preserve-lines {
+  white-space: pre-wrap;
+}
+
+.alternative-list,
+.revision-list {
+  padding-inline-start: 1.5rem;
+}
+
+.alternative-list li,
+.revision-list > li {
+  margin-block: 0.75rem;
+}
+
+.revision-list > li + li {
+  border-block-start: 0.0625rem solid #d8dde5;
+  padding-block-start: 1rem;
 }
 
 .context-line {

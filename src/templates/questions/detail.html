@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhe da questão — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumbs" aria-label="Trilha de navegação">
+    <ol>
+      {% for label, url in breadcrumbs %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
+      <li aria-current="page">Detalhe da questão</li>
+    </ol>
+  </nav>
+
+  <article aria-labelledby="page-title">
+    <p class="eyebrow">Catálogo de questões</p>
+    <h1 id="page-title">Detalhe da questão</h1>
+    <p class="status-badge status-{{ question.status|lower }}">Estado: {{ question.get_status_display }}</p>
+
+    <div class="button-row page-actions" aria-label="Ações da questão">
+      {% if question.status != "ARCHIVED" %}
+        <a class="button-link" href="{% url 'questions:edit' question.id %}">Editar questão</a>
+        <a class="button-link button-danger" href="{% url 'questions:archive' question.id %}">Arquivar questão</a>
+      {% endif %}
+      {% if question.status == "DRAFT" %}
+        <a class="button-link button-secondary" href="{% url 'questions:draft-activate' question.id %}">Completar e ativar</a>
+      {% endif %}
+    </div>
+
+    <section class="panel" aria-labelledby="classification-title">
+      <h2 id="classification-title">Classificação acadêmica</h2>
+      <dl class="summary-list">
+        <div><dt>Título provisório</dt><dd>{{ question.draft_title|default:"Não informado" }}</dd></div>
+        <div><dt>Disciplina</dt><dd>{% if question.discipline %}{{ question.discipline.name }}{% else %}Não informado{% endif %}</dd></div>
+        <div><dt>Assunto</dt><dd>{% if question.subject %}{{ question.subject.name }}{% else %}Não informado{% endif %}</dd></div>
+        <div><dt>Subassunto</dt><dd>{% if question.subsubject %}{{ question.subsubject.name }}{% else %}Não informado{% endif %}</dd></div>
+        <div><dt>Dificuldade</dt><dd>{% if question.difficulty %}{{ question.get_difficulty_display }}{% else %}Não informada{% endif %}</dd></div>
+      </dl>
+    </section>
+
+    <section class="panel" aria-labelledby="origin-title">
+      <h2 id="origin-title">Origem</h2>
+      {% if origin %}
+        <dl class="summary-list">
+          <div><dt>Fonte</dt><dd>{% if origin.source %}{{ origin.source.name }} ({{ origin.source.get_source_type_display }}){% else %}Não informada{% endif %}</dd></div>
+          <div><dt>Prova ou concurso</dt><dd>{% if origin.exam %}{{ origin.exam.name }}{% if origin.exam.year %}, {{ origin.exam.year }}{% endif %}{% else %}Não informado{% endif %}</dd></div>
+          <div><dt>Banca</dt><dd>{% if origin.exam and origin.exam.board %}{{ origin.exam.board.name }}{% elif origin.board %}{{ origin.board.name }}{% else %}Não informada{% endif %}</dd></div>
+          <div><dt>Ano de referência</dt><dd>{% if origin.exam and origin.exam.year %}{{ origin.exam.year }}{% elif origin.reference_year %}{{ origin.reference_year }}{% else %}Não informado{% endif %}</dd></div>
+          <div><dt>Referência textual</dt><dd>{{ origin.reference_text|default:"Não informada" }}</dd></div>
+        </dl>
+      {% else %}
+        <p>Não informada.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel" aria-labelledby="content-title">
+      <h2 id="content-title">Conteúdo atual</h2>
+      {% if current_revision %}
+        <dl class="summary-list">
+          <div><dt>Revisão atual</dt><dd>Versão {{ current_revision.version_number }}</dd></div>
+          <div><dt>Enunciado</dt><dd class="preserve-lines">{{ current_revision.stem|default:"Não informado" }}</dd></div>
+          <div><dt>Explicação</dt><dd class="preserve-lines">{{ current_revision.explanation|default:"Não informada" }}</dd></div>
+          <div><dt>Pegadinha</dt><dd class="preserve-lines">{{ current_revision.trap_note|default:"Não informada" }}</dd></div>
+          <div><dt>Observações</dt><dd class="preserve-lines">{{ current_revision.notes|default:"Não informadas" }}</dd></div>
+        </dl>
+        <h3>Alternativas</h3>
+        {% if current_revision.ordered_alternatives %}
+          <ol class="alternative-list">
+            {% for alternative in current_revision.ordered_alternatives %}
+              <li>
+                {% if alternative.label %}<strong>{{ alternative.label }}.</strong>{% endif %}
+                {{ alternative.text }}
+                {% if alternative.id == current_revision.correct_alternative_id %}<strong>— Gabarito</strong>{% endif %}
+              </li>
+            {% endfor %}
+          </ol>
+        {% else %}<p>Não informadas.</p>{% endif %}
+      {% else %}
+        <p>Conteúdo ainda não informado.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel" aria-labelledby="revisions-title">
+      <h2 id="revisions-title">Histórico de revisões de conteúdo</h2>
+      {% if revisions %}
+        <ol class="revision-list">
+          {% for revision in revisions %}
+            <li>
+              <article aria-labelledby="revision-{{ revision.version_number }}-title">
+                <h3 id="revision-{{ revision.version_number }}-title">Versão {{ revision.version_number }}{% if revision.is_current %} — atual{% endif %}</h3>
+                <p>Tipo de alteração: {{ revision.get_change_kind_display }}.</p>
+                <dl class="summary-list">
+                  <div><dt>Enunciado</dt><dd class="preserve-lines">{{ revision.stem|default:"Não informado" }}</dd></div>
+                  <div><dt>Explicação</dt><dd class="preserve-lines">{{ revision.explanation|default:"Não informada" }}</dd></div>
+                  <div><dt>Pegadinha</dt><dd class="preserve-lines">{{ revision.trap_note|default:"Não informada" }}</dd></div>
+                  <div><dt>Observações</dt><dd class="preserve-lines">{{ revision.notes|default:"Não informadas" }}</dd></div>
+                </dl>
+                {% if revision.ordered_alternatives %}
+                  <ol class="alternative-list">
+                    {% for alternative in revision.ordered_alternatives %}
+                      <li>{% if alternative.label %}<strong>{{ alternative.label }}.</strong>{% endif %} {{ alternative.text }}{% if alternative.id == revision.correct_alternative_id %} <strong>— Gabarito</strong>{% endif %}</li>
+                    {% endfor %}
+                  </ol>
+                {% else %}<p>Alternativas não informadas.</p>{% endif %}
+              </article>
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p>Nenhuma revisão de conteúdo registrada.</p>
+      {% endif %}
+    </section>
+  </article>
+{% endblock %}

@@ -41,7 +41,8 @@
       <div class="button-row">
         {% if not draft %}<button type="submit" name="action" value="draft" class="button-secondary">Salvar rascunho</button>{% endif %}
         <button type="submit" name="action" value="activate">Ativar questão</button>
-        <a class="button-link button-secondary" href="{% url 'accounts:home' %}">Cancelar</a>
+        <a class="button-link button-secondary" href="{{ cancel_url }}">Cancelar</a>
+        {% if draft %}<a href="{% url 'questions:detail' draft.id %}">Ver detalhe</a>{% endif %}
       </div>
     </form>
   </section>

@@ -45,6 +45,7 @@ from modules.questions.services import (
     create_or_reuse_board,
     create_or_reuse_exam,
     create_or_reuse_source,
+    edit_question,
     save_revision,
     set_question_origin,
     update_question_metadata,
@@ -220,6 +221,7 @@ def test_ct008_ct075_revision_switch_is_atomic_and_preserves_previous_snapshot()
     assert first.is_current is False
     assert second.is_current is True
     assert second.version_number == 2
+    assert second.change_kind == RevisionChangeKind.CRITICAL_CORRECTION
     assert question.lock_version == 2
     assert list(first.alternatives.order_by("position")) == first_alternatives
     assert QuestionRevision.objects.filter(question=question, is_current=True).count() == 1
@@ -548,6 +550,95 @@ def test_ct144_equal_stems_are_not_semantically_blocked() -> None:
 
     assert first.id != second.id
     assert Question.objects.count() == 2
+
+
+@pytest.mark.django_db
+def test_ct008_edit_command_versions_content_once_and_metadata_only_does_not() -> None:
+    workspace = _workspace(email="edit-command@example.test")
+    question = _active_question(workspace=workspace)
+    discipline, subject, subsubject = _taxonomy(workspace=workspace, suffix=" Nova")
+    first = question.revisions.get(is_current=True)
+    first_values = list(first.alternatives.order_by("position").values_list("text", flat=True))
+
+    edited = edit_question(
+        workspace_id=workspace.id,
+        question_id=question.id,
+        expected_lock_version=1,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        subsubject_id=subsubject.id,
+        difficulty=QuestionDifficulty.HARD,
+        stem="Quanto é 3 + 3?",
+        alternatives=["5", "6"],
+        correct_alternative_position=2,
+        explanation="Somamos três duas vezes.",
+    )
+    first.refresh_from_db()
+    second = edited.revisions.get(is_current=True)
+
+    assert edited.lock_version == 2
+    assert edited.discipline_id == discipline.id
+    assert first.is_current is False
+    assert (
+        list(first.alternatives.order_by("position").values_list("text", flat=True)) == first_values
+    )
+    assert second.version_number == 2
+    assert second.correct_alternative is not None
+    assert second.correct_alternative.question_revision_id == second.id
+
+    metadata_only = edit_question(
+        workspace_id=workspace.id,
+        question_id=question.id,
+        expected_lock_version=2,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        subsubject_id=subsubject.id,
+        difficulty=QuestionDifficulty.MEDIUM,
+        stem=second.stem,
+        alternatives=[
+            AlternativeInput(text=item.text, label=item.label)
+            for item in second.alternatives.order_by("position")
+        ],
+        correct_alternative_position=2,
+        explanation=second.explanation,
+    )
+
+    assert metadata_only.lock_version == 3
+    assert metadata_only.difficulty == QuestionDifficulty.MEDIUM
+    assert metadata_only.revisions.count() == 2
+    assert metadata_only.revisions.filter(is_current=True).count() == 1
+
+
+@pytest.mark.django_db
+def test_ct140_edit_command_rolls_back_revision_metadata_and_origin_on_late_failure() -> None:
+    workspace = _workspace(email="edit-rollback@example.test")
+    question = _active_question(workspace=workspace)
+    first = question.revisions.get(is_current=True)
+    original_discipline_id = question.discipline_id
+    discipline, subject, _ = _taxonomy(workspace=workspace, suffix=" Rollback")
+
+    with pytest.raises(QuestionCatalogValidationError, match="1900"):
+        edit_question(
+            workspace_id=workspace.id,
+            question_id=question.id,
+            expected_lock_version=1,
+            discipline_id=discipline.id,
+            subject_id=subject.id,
+            difficulty=QuestionDifficulty.HARD,
+            stem="Conteúdo que deve ser revertido",
+            alternatives=["A", "B"],
+            correct_alternative_position=1,
+            origin=QuestionOriginInput(reference_year=1899),
+        )
+
+    question.refresh_from_db()
+    first.refresh_from_db()
+    assert question.lock_version == 1
+    assert question.discipline_id == original_discipline_id
+    assert question.difficulty is None
+    assert question.revisions.count() == 1
+    assert first.is_current is True
+    assert not QuestionOrigin.objects.filter(question=question).exists()
 
 
 @pytest.mark.django_db(transaction=True)

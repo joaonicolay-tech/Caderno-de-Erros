@@ -2,10 +2,11 @@
 
 import uuid
 
-from django.db.models import Q, QuerySet
+from django.db.models import Prefetch, Q, QuerySet
 
 from .exceptions import OriginCatalogNotFoundError, QuestionCatalogNotFoundError
 from .models import (
+    Alternative,
     Board,
     Exam,
     OriginStatus,
@@ -148,6 +149,12 @@ def list_question_revisions(
             question__workspace_id=workspace_id,
         )
         .select_related("correct_alternative")
-        .prefetch_related("alternatives")
+        .prefetch_related(
+            Prefetch(
+                "alternatives",
+                queryset=Alternative.objects.order_by("position"),
+                to_attr="ordered_alternatives",
+            )
+        )
         .order_by("version_number")
     )

@@ -8,8 +8,24 @@ from django.test import Client
 from django.urls import reverse
 
 from modules.accounts.models import User, Workspace
-from modules.questions.models import Board, Question, QuestionOrigin, QuestionStatus, Source
-from modules.questions.services import update_question_metadata
+from modules.questions.models import (
+    Board,
+    Question,
+    QuestionDifficulty,
+    QuestionOrigin,
+    QuestionStatus,
+    Source,
+    SourceType,
+)
+from modules.questions.services import (
+    QuestionOriginInput,
+    archive_question,
+    create_active,
+    create_draft,
+    create_or_reuse_source,
+    set_question_origin,
+    update_question_metadata,
+)
 from modules.taxonomy.models import Discipline, Subject, Subsubject
 from modules.taxonomy.services import create_discipline, create_subject, create_subsubject
 from shared.application.bootstrap import bootstrap_local_workspace
@@ -79,7 +95,9 @@ def test_ct011_ct007_direct_active_creation_keeps_order_answer_and_feedback() ->
     question = Question.objects.get(workspace=workspace)
     revision = question.revisions.get(is_current=True)
     alternatives = list(revision.alternatives.order_by("position"))
-    assert response.redirect_chain == [(f"{reverse('questions:quick-entry')}?result=active", 302)]
+    assert response.redirect_chain == [
+        (f"{reverse('questions:detail', args=[question.id])}?result=created", 302)
+    ]
     assert "Questão ativa criada com sucesso" in response.content.decode("utf-8")
     assert question.status == QuestionStatus.ACTIVE
     assert [item.position for item in alternatives] == [1, 2]
@@ -260,8 +278,323 @@ def test_concurrent_draft_activation_preserves_input_and_current_state() -> None
     assert question.revisions.count() == 0
 
 
+@pytest.mark.django_db
+def test_ct139_detail_is_faithful_for_draft_active_and_archived_without_future_data() -> None:
+    workspace = _workspace()
+    discipline, subject, subsubject = _taxonomy(workspace)
+    draft = create_draft(
+        workspace_id=workspace.id,
+        draft_title='<script>alert("rascunho")</script>',
+    )
+    active = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        subsubject_id=subsubject.id,
+        difficulty=QuestionDifficulty.HARD,
+        stem="Enunciado ativo",
+        alternatives=["Errada", "Correta"],
+        correct_alternative_position=2,
+        explanation="Explicação persistida",
+    )
+    archived = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Enunciado arquivado",
+        alternatives=["A", "B"],
+        correct_alternative_position=1,
+    )
+    archive_question(
+        workspace_id=workspace.id,
+        question_id=archived.id,
+        expected_lock_version=archived.lock_version,
+    )
+    client = Client()
+
+    draft_html = client.get(reverse("questions:detail", args=[draft.id])).content.decode("utf-8")
+    active_html = client.get(reverse("questions:detail", args=[active.id])).content.decode("utf-8")
+    archived_html = client.get(reverse("questions:detail", args=[archived.id])).content.decode(
+        "utf-8"
+    )
+
+    assert "Estado: Rascunho" in draft_html
+    assert "Conteúdo ainda não informado" in draft_html
+    assert '<script>alert("rascunho")</script>' not in draft_html
+    assert "&lt;script&gt;alert(&quot;rascunho&quot;)&lt;/script&gt;" in draft_html
+    assert "Estado: Ativa" in active_html
+    assert "Enunciado ativo" in active_html
+    assert "Explicação persistida" in active_html
+    assert "Difícil" in active_html
+    assert "Estado: Arquivada" in archived_html
+    assert "Enunciado arquivado" in archived_html
+    for html in (draft_html, active_html, archived_html):
+        lowered = html.lower()
+        assert "tentativa" not in lowered
+        assert "ciclo" not in lowered
+        assert "fila" not in lowered
+        assert "métrica" not in lowered
+        assert "aprendizagem" not in lowered
+
+
+@pytest.mark.django_db
+def test_ct095_detail_edit_and_archive_never_expose_foreign_workspace_question() -> None:
+    _workspace()
+    owner = User.objects.create_user(email="foreign-detail@example.test")
+    foreign = Workspace.objects.create(owner_user=owner, name="Estrangeiro", timezone_name="UTC")
+    discipline, subject, _ = _taxonomy(foreign)
+    question = create_active(
+        workspace_id=foreign.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Conteúdo sigiloso",
+        alternatives=["A", "B"],
+        correct_alternative_position=1,
+    )
+
+    for route in ("questions:detail", "questions:edit", "questions:archive"):
+        response = Client().get(reverse(route, args=[question.id]))
+        assert response.status_code == 404
+        assert "Conteúdo sigiloso" not in response.content.decode("utf-8")
+
+
+@pytest.mark.django_db
+def test_ct008_edit_view_versions_content_preserves_previous_and_updates_origin() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    question = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Versão inicial",
+        alternatives=["Um", "Dois"],
+        correct_alternative_position=1,
+    )
+    first = question.revisions.get(is_current=True)
+    payload = _payload(discipline_id=discipline.id, subject_id=subject.id)
+    payload.update(
+        lock_version=str(question.lock_version),
+        stem="Versão enriquecida",
+        alternative_1="Três",
+        alternative_2="Quatro",
+        correct_alternative="2",
+        source_name="Livro <seguro>",
+        source_type=SourceType.BOOK,
+    )
+
+    response = Client().post(reverse("questions:edit", args=[question.id]), payload, follow=True)
+    question.refresh_from_db()
+    first.refresh_from_db()
+    current = question.revisions.get(is_current=True)
+    html = response.content.decode("utf-8")
+
+    assert response.redirect_chain == [
+        (f"{reverse('questions:detail', args=[question.id])}?result=edited", 302)
+    ]
+    assert question.lock_version == 2
+    assert question.revisions.count() == 2
+    assert question.revisions.filter(is_current=True).count() == 1
+    assert first.is_current is False and first.stem == "Versão inicial"
+    assert list(first.alternatives.order_by("position").values_list("text", flat=True)) == [
+        "Um",
+        "Dois",
+    ]
+    assert current.stem == "Versão enriquecida"
+    assert current.correct_alternative is not None
+    assert current.correct_alternative.text == "Quatro"
+    assert question.origin.source is not None
+    assert question.origin.source.name == "Livro <seguro>"
+    assert "Versão inicial" in html and "Versão enriquecida" in html
+    assert "Livro &lt;seguro&gt;" in html
+
+
+@pytest.mark.django_db
+def test_edit_view_validation_and_service_failure_preserve_input_and_rollback() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    question = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Original",
+        alternatives=["A", "B"],
+        correct_alternative_position=1,
+    )
+    payload = _payload(discipline_id=discipline.id, subject_id=subject.id)
+    payload.update(
+        lock_version=str(question.lock_version),
+        stem="Entrada preservada ç",
+        source_name="Fonte revertida",
+        source_type=SourceType.BOOK,
+        exam_name="Prova futura",
+        exam_year="9999",
+    )
+
+    response = Client().post(reverse("questions:edit", args=[question.id]), payload)
+    html = response.content.decode("utf-8")
+    question.refresh_from_db()
+
+    assert response.status_code == 200
+    assert "Entrada preservada ç" in html
+    assert 'aria-invalid="true"' in html
+    assert "autofocus" in html
+    assert question.lock_version == 1
+    assert question.revisions.count() == 1
+    assert question.revisions.get().stem == "Original"
+    assert not Source.objects.filter(workspace=workspace, name="Fonte revertida").exists()
+    assert not QuestionOrigin.objects.filter(question=question).exists()
+
+
+@pytest.mark.django_db
+def test_edit_view_stale_lock_preserves_input_and_returns_current_lock() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    question = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Original concorrente",
+        alternatives=["A", "B"],
+        correct_alternative_position=1,
+    )
+    stale = question.lock_version
+    update_question_metadata(
+        workspace_id=workspace.id,
+        question_id=question.id,
+        expected_lock_version=stale,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        difficulty=QuestionDifficulty.EASY,
+    )
+    payload = _payload(discipline_id=discipline.id, subject_id=subject.id)
+    payload.update(lock_version=str(stale), stem="Minha edição concorrente")
+
+    response = Client().post(reverse("questions:edit", args=[question.id]), payload)
+    html = response.content.decode("utf-8")
+    question.refresh_from_db()
+
+    assert response.status_code == 200
+    assert "A questão mudou" in html
+    assert "Minha edição concorrente" in html
+    assert 'name="lock_version" value="2"' in html
+    assert question.revisions.count() == 1
+    assert question.revisions.get().stem == "Original concorrente"
+
+
+@pytest.mark.django_db
+def test_ct010_archive_requires_confirmation_preserves_data_and_disables_mutations() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    question = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Questão para arquivar",
+        alternatives=["A", "B"],
+        correct_alternative_position=1,
+    )
+    source = create_or_reuse_source(
+        workspace_id=workspace.id,
+        source_type=SourceType.WEBSITE,
+        name="Portal",
+    )
+    set_question_origin(
+        workspace_id=workspace.id,
+        question_id=question.id,
+        expected_lock_version=1,
+        origin=QuestionOriginInput(source_id=source.id),
+    )
+    question.refresh_from_db()
+    archive_url = reverse("questions:archive", args=[question.id])
+    client = Client()
+
+    confirmation = client.get(archive_url)
+    missing = client.post(archive_url, {"lock_version": question.lock_version})
+    protected = Client(enforce_csrf_checks=True).post(
+        archive_url,
+        {"lock_version": question.lock_version, "confirm": "on"},
+    )
+    question.refresh_from_db()
+
+    assert confirmation.status_code == 200
+    assert "Esta versão não oferece reativação" in confirmation.content.decode("utf-8")
+    assert "Confirme o arquivamento" in missing.content.decode("utf-8")
+    assert "autofocus" in missing.content.decode("utf-8")
+    assert protected.status_code == 403
+    assert question.status == QuestionStatus.ACTIVE
+    assert client.put(archive_url).status_code == 405
+    assert client.put(reverse("questions:edit", args=[question.id])).status_code == 405
+    assert client.post(reverse("questions:detail", args=[question.id])).status_code == 405
+
+    stale = question.lock_version
+    update_question_metadata(
+        workspace_id=workspace.id,
+        question_id=question.id,
+        expected_lock_version=stale,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        difficulty=QuestionDifficulty.MEDIUM,
+    )
+    conflict = client.post(
+        archive_url,
+        {"lock_version": stale, "confirm": "on"},
+    )
+    question.refresh_from_db()
+    conflict_html = conflict.content.decode("utf-8")
+    assert "A questão mudou" in conflict_html
+    assert f'name="lock_version" value="{question.lock_version}"' in conflict_html
+    assert question.status == QuestionStatus.ACTIVE
+
+    archived = client.post(
+        archive_url,
+        {"lock_version": question.lock_version, "confirm": "on"},
+        follow=True,
+    )
+    question.refresh_from_db()
+    html = archived.content.decode("utf-8")
+
+    assert question.status == QuestionStatus.ARCHIVED
+    assert question.archived_at is not None
+    assert question.revisions.count() == 1
+    assert QuestionOrigin.objects.filter(question=question, source=source).exists()
+    assert "Questão arquivada" in html
+    assert "Editar questão" not in html and "Arquivar questão" not in html
+    assert client.get(reverse("questions:edit", args=[question.id])).status_code == 404
+    assert client.get(archive_url).status_code == 404
+
+
+@pytest.mark.django_db
+def test_draft_detail_and_edit_support_partial_versioned_content() -> None:
+    workspace = _workspace()
+    question = create_draft(workspace_id=workspace.id, draft_title="Rascunho parcial")
+    payload = _payload()
+    payload.update(
+        lock_version=str(question.lock_version),
+        draft_title="Rascunho parcial",
+        stem="Somente um enunciado por enquanto",
+        alternative_1="",
+        alternative_2="",
+        correct_alternative="",
+    )
+
+    response = Client().post(reverse("questions:edit", args=[question.id]), payload, follow=True)
+    question.refresh_from_db()
+
+    assert response.status_code == 200
+    assert question.status == QuestionStatus.DRAFT
+    assert question.revisions.count() == 1
+    assert question.revisions.get(is_current=True).stem == "Somente um enunciado por enquanto"
+    assert "Conteúdo atual" in response.content.decode("utf-8")
+
+
 def test_ct142_templates_remain_semantic_keyboard_accessible_and_responsive() -> None:
     template = (PROJECT_ROOT / "src" / "templates" / "questions" / "quick_entry.html").read_text(
+        encoding="utf-8"
+    )
+    detail = (PROJECT_ROOT / "src" / "templates" / "questions" / "detail.html").read_text(
+        encoding="utf-8"
+    )
+    archive = (PROJECT_ROOT / "src" / "templates" / "questions" / "archive_confirm.html").read_text(
         encoding="utf-8"
     )
     css = (PROJECT_ROOT / "src" / "static" / "css" / "app.css").read_text(encoding="utf-8")
@@ -274,3 +607,10 @@ def test_ct142_templates_remain_semantic_keyboard_accessible_and_responsive() ->
     assert 'name="action" value="activate"' in template
     assert "textarea" in css
     assert "flex-wrap: wrap" in css
+    assert "<article" in detail and "<section" in detail and "<dl" in detail
+    assert 'aria-label="Ações da questão"' in detail
+    assert "{% csrf_token %}" in archive
+    assert '<label for="{{ form.confirm.id_for_label }}">' in archive
+    assert 'role="alert"' in archive
+    assert not re.search(r'tabindex="[1-9]', detail + archive)
+    assert "overflow-wrap: anywhere" in css
