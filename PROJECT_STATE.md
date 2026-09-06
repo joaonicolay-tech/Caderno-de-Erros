@@ -2,8 +2,8 @@
 
 Versão atual: V0.2
 Situação da versão: em andamento
-Etapa atual: nenhuma etapa nova formalmente liberada
-Status da etapa atual: aguardando revisão humana e liberação formal
+Etapa atual: V0.2 — Etapa 7 — Listagem, Busca e Filtros de Conteúdo
+Status da etapa atual: formalmente liberada / não iniciada
 
 Etapas concluídas:
 
@@ -41,8 +41,9 @@ Pendência planejada:
 Validação manual integral de `CT-142`, reservada à Etapa 8 da V0.2.
 
 Próximo objetivo:
-Aguardar revisão humana e liberação formal de nova tarefa. A Etapa 7 ainda não
-está autorizada por `tasks/current.md` neste estado.
+Executar em novo chat a V0.2 — Etapa 7 — Listagem, Busca e Filtros de Conteúdo,
+conforme `tasks/current.md`. A etapa está formalmente liberada, mas ainda não foi
+iniciada.
 
 ADRs relevantes:
 
