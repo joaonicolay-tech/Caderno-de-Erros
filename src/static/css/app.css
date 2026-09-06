@@ -169,7 +169,10 @@ label {
 }
 
 input[type="text"],
-select {
+input[type="url"],
+input[type="number"],
+select,
+textarea {
   background: var(--surface);
   border: 0.125rem solid #657083;
   border-radius: 0.25rem;
@@ -178,6 +181,23 @@ select {
   min-height: 2.75rem;
   padding: 0.5rem;
   width: min(100%, 32rem);
+}
+
+textarea {
+  display: block;
+  resize: vertical;
+}
+
+fieldset.form-section {
+  border: 0.0625rem solid var(--border);
+  border-radius: 0.25rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+}
+
+fieldset.form-section legend {
+  font-weight: 750;
+  padding-inline: 0.25rem;
 }
 
 .breadcrumbs ol {

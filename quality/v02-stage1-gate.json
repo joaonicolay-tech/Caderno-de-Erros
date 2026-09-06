@@ -1,14 +1,14 @@
 {
   "schema_version": 2,
-  "release": "V0.2 — Etapa 4",
+  "release": "V0.2 — Etapa 5",
   "protected_baseline": "v0.1.0@cc7c382d2db8474eaee6005b71b7d01d40481611",
   "required_identifiers": [
     "RF-001", "RF-002", "RF-003", "RF-004", "RF-005", "RF-006", "RF-007", "RF-008",
     "RF-009", "RF-010", "RF-011", "RF-012", "RF-013", "RF-014", "RF-015",
     "RF-017", "RF-018", "RF-019", "RF-029", "RF-067", "RF-068",
-    "RNF-013", "RNF-016", "RNF-027", "RNF-031", "RNF-033", "RNF-052", "RNF-056",
+    "RNF-003", "RNF-007", "RNF-008", "RNF-010", "RNF-013", "RNF-016", "RNF-017", "RNF-027", "RNF-031", "RNF-032", "RNF-033", "RNF-044", "RNF-045", "RNF-046", "RNF-047", "RNF-048", "RNF-049", "RNF-052", "RNF-056",
     "RNF-057", "RNF-058", "RNF-066", "RNF-074", "RNF-075", "RNF-076", "RNF-077",
-    "RNF-078", "RNF-079", "RNF-080",
+    "RNF-063", "RNF-065", "RNF-078", "RNF-079", "RNF-080",
     "RN-001", "RN-002", "RN-003", "RN-004", "RN-005", "RN-006", "RN-007", "RN-008",
     "RN-009", "RN-011", "RN-012", "RN-013", "RN-014", "RN-015", "RN-016", "RN-017",
     "RN-018", "RN-019", "RN-020", "RN-029", "RN-086", "RN-087",
@@ -17,7 +17,7 @@
     "CT-010", "CT-011", "CT-012", "CT-073", "CT-074", "CT-075", "CT-081", "CT-082",
     "CT-094", "CT-095", "CT-096", "CT-097", "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-128", "CT-129", "CT-130",
     "CT-131", "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137", "CT-138",
-    "CT-139", "CT-140", "CT-144",
+    "CT-139", "CT-140", "CT-142", "CT-144",
     "ERR-V01-001", "ERR-V01-002", "ERR-V01-003", "ERR-V01-004", "ERR-V01-005",
     "ERR-V01-006", "ERR-V01-007", "ERR-V01-008", "ERR-V01-009",
     "ERR-V02-001", "ERR-V02-002", "ERR-V02-003", "ERR-V02-004", "ERR-V02-005",
@@ -50,9 +50,9 @@
   "expected_test_cases": [
     "CT-001", "CT-002", "CT-003", "CT-004", "CT-005", "CT-006", "CT-007", "CT-008",
     "CT-010", "CT-011", "CT-012", "CT-073", "CT-074", "CT-075", "CT-081", "CT-082",
-    "CT-094", "CT-095", "CT-096", "CT-097", "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-129", "CT-130", "CT-131",
+    "CT-094", "CT-095", "CT-096", "CT-097", "CT-099", "CT-104", "CT-122", "CT-123", "CT-124", "CT-127", "CT-129", "CT-130", "CT-131",
     "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137", "CT-138",
-    "CT-139", "CT-140", "CT-144"
+    "CT-139", "CT-140", "CT-142", "CT-144"
   ],
   "promotion_pending_cases": [],
   "test_evidence": {
@@ -329,6 +329,18 @@
       "status": "executable",
       "evidence": [
         {"kind": "test", "target": "tests/test_question_catalog.py::test_ct144_equal_stems_are_not_semantically_blocked"}
+      ]
+    },
+    "CT-124": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_question_interface.py::test_ct005_draft_can_be_completed_and_activated_without_duplicate"}
+      ]
+    },
+    "CT-142": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_question_interface.py::test_ct142_templates_remain_semantic_keyboard_accessible_and_responsive"}
       ]
     }
   },

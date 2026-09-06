@@ -35,6 +35,20 @@ def list_subjects(*, workspace_id: uuid.UUID, discipline_id: uuid.UUID) -> Query
     ).order_by("sort_order", "name_key", "id")
 
 
+def list_available_subjects(*, workspace_id: uuid.UUID) -> QuerySet[Subject]:
+    """Liste assuntos ativos para escolha no cadastro de questão."""
+    return (
+        Subject.objects.filter(
+            workspace_id=workspace_id,
+            status=TaxonomyStatus.ACTIVE,
+            discipline__workspace_id=workspace_id,
+            discipline__status=TaxonomyStatus.ACTIVE,
+        )
+        .select_related("discipline")
+        .order_by("discipline__sort_order", "name_key", "id")
+    )
+
+
 def list_archived_subjects(
     *, workspace_id: uuid.UUID, discipline_id: uuid.UUID
 ) -> QuerySet[Subject]:
@@ -70,6 +84,22 @@ def list_subsubjects(*, workspace_id: uuid.UUID, subject_id: uuid.UUID) -> Query
         subject__discipline__workspace_id=workspace_id,
         subject__discipline__status=TaxonomyStatus.ACTIVE,
     ).order_by("sort_order", "name_key", "id")
+
+
+def list_available_subsubjects(*, workspace_id: uuid.UUID) -> QuerySet[Subsubject]:
+    """Liste subassuntos cuja cadeia inteira está disponível para novos vínculos."""
+    return (
+        Subsubject.objects.filter(
+            workspace_id=workspace_id,
+            status=TaxonomyStatus.ACTIVE,
+            subject__workspace_id=workspace_id,
+            subject__status=TaxonomyStatus.ACTIVE,
+            subject__discipline__workspace_id=workspace_id,
+            subject__discipline__status=TaxonomyStatus.ACTIVE,
+        )
+        .select_related("subject__discipline")
+        .order_by("subject__name_key", "name_key", "id")
+    )
 
 
 def list_archived_subsubjects(

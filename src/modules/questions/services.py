@@ -67,8 +67,16 @@ class QuestionOriginInput:
     """Snapshot opcional dos metadados de origem de uma questão."""
 
     source_id: uuid.UUID | None = None
+    source_name: str | None = None
+    source_type: str | None = None
+    source_url: str | None = None
+    source_notes: str | None = None
     exam_id: uuid.UUID | None = None
+    exam_name: str | None = None
+    exam_year: int | None = None
     board_id: uuid.UUID | None = None
+    board_name: str | None = None
+    board_website_url: str | None = None
     reference_year: int | None = None
     reference_text: str | None = None
 
@@ -550,10 +558,80 @@ def _create_revision(
 def _origin_has_data(value: QuestionOriginInput) -> bool:
     return (
         value.source_id is not None
+        or bool(value.source_name and value.source_name.strip())
         or value.exam_id is not None
+        or bool(value.exam_name and value.exam_name.strip())
         or value.board_id is not None
+        or bool(value.board_name and value.board_name.strip())
         or value.reference_year is not None
         or bool(value.reference_text and value.reference_text.strip())
+    )
+
+
+def _resolve_catalog_origin(
+    *, workspace_id: uuid.UUID, value: QuestionOriginInput, clock: Clock | None
+) -> QuestionOriginInput:
+    """Crie/reuse referências informadas no cadastro dentro da transação da questão."""
+    if value.source_id is not None and value.source_name:
+        raise QuestionCatalogValidationError(
+            "Escolha uma fonte existente ou informe uma nova fonte."
+        )
+    if value.exam_id is not None and value.exam_name:
+        raise QuestionCatalogValidationError(
+            "Escolha uma prova existente ou informe uma nova prova."
+        )
+    if value.board_id is not None and value.board_name:
+        raise QuestionCatalogValidationError(
+            "Escolha uma banca existente ou informe uma nova banca."
+        )
+    if value.exam_id is not None and (value.board_id is not None or value.board_name):
+        raise QuestionCatalogValidationError(
+            "Uma prova existente já define sua banca, quando houver."
+        )
+    if (value.exam_id is not None or value.exam_name) and value.reference_year is not None:
+        raise QuestionCatalogValidationError(
+            "Com prova, o ano de referência deriva da própria prova."
+        )
+
+    source_id = value.source_id
+    if value.source_name and value.source_name.strip():
+        if value.source_type is None:
+            raise QuestionCatalogValidationError("Informe o tipo da nova fonte.")
+        source_id = create_or_reuse_source(
+            workspace_id=workspace_id,
+            source_type=value.source_type,
+            name=value.source_name,
+            locator_url=value.source_url,
+            notes=value.source_notes,
+        ).id
+
+    board_id = value.board_id
+    if value.board_name and value.board_name.strip():
+        board_id = create_or_reuse_board(
+            workspace_id=workspace_id,
+            name=value.board_name,
+            website_url=value.board_website_url,
+        ).id
+
+    exam_id = value.exam_id
+    if value.exam_name and value.exam_name.strip():
+        exam_id = create_or_reuse_exam(
+            workspace_id=workspace_id,
+            name=value.exam_name,
+            board_id=board_id,
+            year=value.exam_year,
+            clock=clock,
+        ).id
+        board_id = None
+    elif exam_id is not None:
+        board_id = None
+
+    return QuestionOriginInput(
+        source_id=source_id,
+        exam_id=exam_id,
+        board_id=board_id,
+        reference_year=value.reference_year,
+        reference_text=value.reference_text,
     )
 
 
@@ -612,9 +690,10 @@ def _replace_origin(
         if existing is not None:
             existing.delete()
         return None
+    resolved = _resolve_catalog_origin(workspace_id=workspace.id, value=value, clock=clock)
     source, exam, board, reference_text = _validate_origin_input(
         workspace=workspace,
-        value=value,
+        value=resolved,
         clock=clock,
     )
     if existing is None:
@@ -624,13 +703,13 @@ def _replace_origin(
             source=source,
             exam=exam,
             board=board,
-            reference_year=value.reference_year,
+            reference_year=resolved.reference_year,
             reference_text=reference_text,
         )
     existing.source = source
     existing.exam = exam
     existing.board = board
-    existing.reference_year = value.reference_year
+    existing.reference_year = resolved.reference_year
     existing.reference_text = reference_text
     existing.lock_version += 1
     existing.save()
@@ -800,6 +879,90 @@ def create_active(
         updated_at=now,
     )
     _replace_origin(question=question, workspace=workspace, value=origin, clock=clock)
+    question.refresh_from_db()
+    return question
+
+
+@transaction.atomic
+def complete_draft(
+    *,
+    workspace_id: uuid.UUID,
+    question_id: uuid.UUID,
+    expected_lock_version: int,
+    discipline_id: uuid.UUID,
+    subject_id: uuid.UUID,
+    stem: str,
+    alternatives: list[AlternativeInput | str] | tuple[AlternativeInput | str, ...],
+    correct_alternative_position: int,
+    subsubject_id: uuid.UUID | None = None,
+    difficulty: str | None = None,
+    draft_title: str | None = None,
+    explanation: str | None = None,
+    trap_note: str | None = None,
+    notes: str | None = None,
+    origin: QuestionOriginInput | None = None,
+    clock: Clock | None = None,
+) -> Question:
+    """Complete e ative um rascunho em uma única transação do agregado."""
+    question = _locked_question(workspace_id=workspace_id, question_id=question_id)
+    _check_question_lock(question, expected_lock_version)
+    if question.status != QuestionStatus.DRAFT:
+        raise QuestionCatalogStateConflictError("Somente um rascunho pode ser ativado neste fluxo.")
+    workspace = _get_question_workspace(workspace_id)
+    _validate_difficulty(difficulty)
+    discipline, subject, subsubject = _get_taxonomy(
+        workspace_id=workspace_id,
+        discipline_id=discipline_id,
+        subject_id=subject_id,
+        subsubject_id=subsubject_id,
+        required=True,
+    )
+    content = _normalize_revision_content(
+        stem=stem,
+        alternatives=alternatives,
+        correct_alternative_position=correct_alternative_position,
+        explanation=explanation,
+        trap_note=trap_note,
+        notes=notes,
+        change_kind=RevisionChangeKind.INITIAL,
+        change_reason=None,
+    )
+    _validate_active_revision(
+        stem=content[0],
+        alternatives=content[1],
+        correct_alternative_position=content[2],
+    )
+    _create_revision(
+        question=question,
+        stem=content[0],
+        alternatives=content[1],
+        correct_alternative_position=content[2],
+        explanation=content[3],
+        trap_note=content[4],
+        notes=content[5],
+        change_kind=RevisionChangeKind.INITIAL,
+        change_reason=content[6],
+    )
+    _replace_origin(question=question, workspace=workspace, value=origin, clock=clock)
+    now = (clock or SystemClock()).now().value
+    updated = Question.objects.filter(
+        pk=question.id,
+        workspace_id=workspace_id,
+        lock_version=expected_lock_version,
+    ).update(
+        discipline=discipline,
+        subject=subject,
+        subsubject=subsubject,
+        difficulty=difficulty,
+        draft_title=_normalize_draft_title(draft_title),
+        status=QuestionStatus.ACTIVE,
+        activated_at=now,
+        archived_at=None,
+        lock_version=F("lock_version") + 1,
+        updated_at=now,
+    )
+    if updated != 1:
+        raise QuestionCatalogConcurrencyError("A questão mudou; recarregue a versão atual.")
     question.refresh_from_db()
     return question
 
@@ -994,6 +1157,7 @@ class QuestionCommandService:
 
     create_draft = staticmethod(create_draft)
     create_active = staticmethod(create_active)
+    complete_draft = staticmethod(complete_draft)
     save_revision = staticmethod(save_revision)
     update_metadata = staticmethod(update_question_metadata)
     set_origin = staticmethod(set_question_origin)
