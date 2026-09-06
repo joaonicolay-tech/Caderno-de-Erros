@@ -11,6 +11,9 @@ $env:UV_PYTHON_INSTALL_DIR = Join-Path $toolsDirectory "python"
 $qualityReportsDirectory = Join-Path $toolsDirectory "quality"
 $coverageReport = ".tools/quality/coverage.json"
 $gateManifest = "quality/v02-stage1-gate.json"
+$pytestBaseTemp = Join-Path ([System.IO.Path]::GetTempPath()) (
+    "cei-pytest-" + [Guid]::NewGuid().ToString("N")
+)
 New-Item -ItemType Directory -Path $qualityReportsDirectory -Force | Out-Null
 Remove-Item -LiteralPath $coverageReport -ErrorAction SilentlyContinue
 
@@ -39,6 +42,39 @@ function Invoke-Tool {
     if ($LASTEXITCODE -ne 0) {
         throw "Falha na etapa '$Step' (código $LASTEXITCODE)."
     }
+}
+
+function Invoke-PipAudit {
+    $auditReport = Join-Path $qualityReportsDirectory (
+        "pip-audit-" + [Guid]::NewGuid().ToString("N") + ".json"
+    )
+
+    Write-Host "==> auditar vulnerabilidades"
+    & $uvExecutable "run" "--locked" "pip-audit" "--local" "--strict" "--format" "json" "--output" $auditReport
+    $auditExitCode = $LASTEXITCODE
+    if ($auditExitCode -eq 0) {
+        return
+    }
+
+    $vulnerabilityCount = 0
+    if (Test-Path -LiteralPath $auditReport -PathType Leaf) {
+        try {
+            $auditResult = Get-Content -Raw -LiteralPath $auditReport | ConvertFrom-Json
+            $vulnerabilityCount = @(
+                $auditResult.dependencies |
+                    ForEach-Object { $_.vulns } |
+                    Where-Object { $null -ne $_ }
+            ).Count
+        } catch {
+            throw "A auditoria de vulnerabilidades falhou sem produzir um relatorio JSON valido (codigo $auditExitCode)."
+        }
+    }
+
+    if ($vulnerabilityCount -gt 0) {
+        throw "A auditoria encontrou $vulnerabilityCount vulnerabilidade(s) conhecida(s) (codigo $auditExitCode)."
+    }
+
+    throw "A auditoria de vulnerabilidades nao foi concluida (codigo $auditExitCode; por exemplo, falha de rede ou de ferramenta)."
 }
 
 Invoke-Tool "validar lock" @("lock", "--check")
@@ -102,6 +138,7 @@ if ($pythonFiles.Count -gt 0) {
         "run",
         "--locked",
         "pytest",
+        "--basetemp=$pytestBaseTemp",
         "--cov=src",
         "--cov-report=term-missing",
         "--cov-report=json:$coverageReport"
@@ -137,13 +174,7 @@ if ($filesToScan.Count -gt 0) {
     Invoke-Tool "detectar segredos" $secretArguments
 }
 
-Invoke-Tool "auditar vulnerabilidades" @(
-    "run",
-    "--locked",
-    "pip-audit",
-    "--local",
-    "--strict"
-)
+Invoke-PipAudit
 
 $gateStopwatch.Stop()
 Write-Host "Gate autoritativo do projeto validado em $([Math]::Round($gateStopwatch.Elapsed.TotalSeconds, 1)) s."

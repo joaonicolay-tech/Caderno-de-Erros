@@ -22,10 +22,10 @@ Baseline protegida:
 `v0.1.0` (`cc7c382d2db8474eaee6005b71b7d01d40481611`)
 
 Último gate:
-GREEN — gate autoritativo da V0.2 — Etapa 6
+GREEN — correção operacional do isolamento temporário do pytest (pré-Etapa 7)
 
 Testes:
-182 aprovados
+183 aprovados
 
 Coverage:
 85% global; Questions Models 86%, Services 83%, Selectors 98%, Validators 90% e

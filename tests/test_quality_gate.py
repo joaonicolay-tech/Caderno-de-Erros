@@ -144,4 +144,14 @@ def test_authoritative_gate_has_no_security_bypass() -> None:
     assert '$ErrorActionPreference = "Stop"' in gate
     assert "SkipVulnerabilityAudit" not in gate
     assert 'Invoke-Tool "detectar segredos"' in gate
-    assert 'Invoke-Tool "auditar vulnerabilidades"' in gate
+    assert "Invoke-PipAudit" in gate
+    assert '"pip-audit" "--local" "--strict"' in gate
+
+
+def test_pytest_uses_an_isolated_temporary_directory_for_each_gate_run() -> None:
+    gate = (PROJECT_ROOT / "scripts" / "quality.ps1").read_text(encoding="utf-8")
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+
+    assert '"cei-pytest-" + [Guid]::NewGuid().ToString("N")' in gate
+    assert '"--basetemp=$pytestBaseTemp"' in gate
+    assert "--basetemp=.tools/pytest-tmp" not in pyproject
