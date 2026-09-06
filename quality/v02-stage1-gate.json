@@ -226,7 +226,8 @@
         {"kind": "test", "target": "tests/test_taxonomy.py::test_subject_and_subsubject_archive_are_historical_and_workspace_scoped"},
         {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_ct137_complete_create_edit_and_hierarchical_navigation"},
         {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_archive_requires_confirmation_can_cancel_and_preserves_descendants"},
-        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_subject_and_subsubject_archive_flows_remain_historical"}
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_subject_and_subsubject_archive_flows_remain_historical"},
+        {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_subject_and_subsubject_archive_can_be_cancelled_without_changes"}
       ]
     }
   },

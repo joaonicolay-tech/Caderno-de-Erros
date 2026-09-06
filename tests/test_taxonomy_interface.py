@@ -315,6 +315,41 @@ def test_subject_and_subsubject_archive_flows_remain_historical() -> None:
 
 
 @pytest.mark.django_db
+def test_subject_and_subsubject_archive_can_be_cancelled_without_changes() -> None:
+    workspace = _local_workspace()
+    discipline = create_discipline(workspace_id=workspace.id, name="Química")
+    subject = create_subject(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        name="Química orgânica",
+    )
+    subsubject = create_subsubject(
+        workspace_id=workspace.id,
+        subject_id=subject.id,
+        name="Hidrocarbonetos",
+    )
+    client = Client()
+
+    subject_response = client.post(
+        reverse("taxonomy:subject-archive", args=[subject.id]),
+        {"action": "cancel", "lock_version": subject.lock_version},
+        follow=True,
+    )
+    subsubject_response = client.post(
+        reverse("taxonomy:subsubject-archive", args=[subsubject.id]),
+        {"action": "cancel", "lock_version": subsubject.lock_version},
+        follow=True,
+    )
+    subject.refresh_from_db()
+    subsubject.refresh_from_db()
+
+    assert "Arquivamento cancelado" in subject_response.content.decode("utf-8")
+    assert "Arquivamento cancelado" in subsubject_response.content.decode("utf-8")
+    assert subject.status == TaxonomyStatus.ACTIVE
+    assert subsubject.status == TaxonomyStatus.ACTIVE
+
+
+@pytest.mark.django_db
 def test_stale_archive_requires_new_confirmation_and_preserves_state() -> None:
     workspace = _local_workspace()
     discipline = create_discipline(workspace_id=workspace.id, name="Geografia")
