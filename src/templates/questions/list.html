@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Questões — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumbs" aria-label="Trilha de navegação">
+    <ol>
+      {% for label, url in breadcrumbs %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
+      <li aria-current="page">Questões</li>
+    </ol>
+  </nav>
+
+  <section aria-labelledby="page-title">
+    <p class="eyebrow">Catálogo de questões</p>
+    <h1 id="page-title">Consultar questões</h1>
+    <p>As questões ativas do seu espaço aparecem primeiro. Escolha outro estado para consultar rascunhos ou arquivadas.</p>
+  </section>
+
+  <form method="get" aria-label="Buscar e filtrar questões">
+    <fieldset class="form-section">
+      <legend>Busca e filtros</legend>
+      {% if form.non_field_errors %}<div class="feedback feedback-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+      <div class="filter-grid">
+        {% for field in form %}
+          <div class="field-group{% if field.errors %} field-error{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="errorlist" role="alert">{{ field.errors }}</div>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="button-row">
+        <button type="submit">Aplicar filtros</button>
+        <a class="button-link button-secondary" href="{% url 'questions:list' %}">Limpar busca e filtros</a>
+      </div>
+    </fieldset>
+  </form>
+
+  {% if page_notice %}<p class="notice" role="status">{{ page_notice }}</p>{% endif %}
+  {% if active_filters %}
+    <section class="active-filters" aria-labelledby="active-filters-title">
+      <h2 id="active-filters-title">Filtros ativos</h2>
+      <ul>{% for label, value in active_filters %}<li><strong>{{ label }}:</strong> {{ value }}</li>{% endfor %}</ul>
+    </section>
+  {% endif %}
+
+  {% if result %}
+    <p class="result-count" role="status">Total: {{ result.total }} questão{% if result.total != 1 %}es{% endif %} encontrada{% if result.total != 1 %}s{% endif %}.</p>
+    {% if result.page.object_list %}
+      <ol class="question-list" start="{{ result.page.start_index }}">
+        {% for item in result.page.object_list %}
+          <li>
+            <article class="question-card" aria-labelledby="question-{{ item.question.id }}">
+              <div>
+                <h2 id="question-{{ item.question.id }}"><a href="{% url 'questions:detail' item.question.id %}">{% if item.question.draft_title %}{{ item.question.draft_title }}{% else %}Questão {{ item.question.id|slice:":8" }}{% endif %}</a></h2>
+                <p class="status-badge status-{{ item.question.status|lower }}">Estado: {{ item.question.get_status_display }}</p>
+                <p class="preserve-lines">{{ item.stem|default:"Conteúdo ainda não informado." }}</p>
+                {% if item.explanation %}<p class="muted">Explicação: {{ item.explanation }}</p>{% endif %}
+                <p class="muted">{% if item.question.discipline %}{{ item.question.discipline.name }}{% else %}Sem disciplina{% endif %} · {% if item.question.subject %}{{ item.question.subject.name }}{% else %}Sem assunto{% endif %}{% if item.question.subsubject %} · {{ item.question.subsubject.name }}{% endif %}</p>
+              </div>
+              <a class="button-link button-secondary" href="{% url 'questions:detail' item.question.id %}">Abrir detalhe</a>
+            </article>
+          </li>
+        {% endfor %}
+      </ol>
+      {% if result.page.paginator.num_pages > 1 %}
+        <nav class="pagination" aria-label="Paginas de questões">
+          {% if result.page.has_previous %}<a href="?{{ query_without_page }}{% if query_without_page %}&amp;{% endif %}page={{ result.page.previous_page_number }}">Página anterior</a>{% endif %}
+          <span>Página {{ result.page.number }} de {{ result.page.paginator.num_pages }}</span>
+          {% if result.page.has_next %}<a href="?{{ query_without_page }}{% if query_without_page %}&amp;{% endif %}page={{ result.page.next_page_number }}">Próxima página</a>{% endif %}
+        </nav>
+      {% endif %}
+    {% else %}
+      <section class="empty-state" aria-labelledby="empty-title">
+        <h2 id="empty-title">Nenhuma questão encontrada</h2>
+        <p>Altere ou limpe a busca e os filtros para consultar outras questões deste espaço.</p>
+      </section>
+    {% endif %}
+  {% endif %}
+{% endblock %}

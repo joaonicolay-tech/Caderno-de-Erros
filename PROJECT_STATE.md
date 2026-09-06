@@ -2,8 +2,8 @@
 
 Versão atual: V0.2
 Situação da versão: em andamento
-Etapa atual: V0.2 — Etapa 7 — Listagem, Busca e Filtros de Conteúdo
-Status da etapa atual: formalmente liberada / não iniciada
+Etapa atual: nenhuma tarefa de implementação formalmente liberada
+Status da etapa atual: aguardando liberação da próxima tarefa
 
 Etapas concluídas:
 
@@ -14,6 +14,7 @@ Etapas concluídas:
 - V0.2 — Etapa 4 — Catálogo de Questões;
 - V0.2 — Etapa 5 — Rascunho, Ativação e Cadastro Rápido;
 - V0.2 — Etapa 6 — Detalhe, Edição Versionada e Arquivamento de Questões.
+- V0.2 — Etapa 7 — Listagem, Busca e Filtros de Conteúdo.
 
 Melhoria operacional:
 Etapa 6 — adoção definitiva do novo fluxo operacional concluída.
@@ -22,14 +23,13 @@ Baseline protegida:
 `v0.1.0` (`cc7c382d2db8474eaee6005b71b7d01d40481611`)
 
 Último gate:
-GREEN — correção operacional do isolamento temporário do pytest (pré-Etapa 7)
+GREEN — V0.2 Etapa 7, com isolamento temporário do pytest preservado
 
 Testes:
-183 aprovados
+189 aprovados
 
 Coverage:
-85% global; Questions Models 86%, Services 83%, Selectors 98%, Validators 90% e
-Views 87%; metas específicas aplicáveis atendidas
+85% global (85,47%); metas específicas aplicáveis atendidas
 
 Bloqueadores:
 Nenhum
@@ -41,9 +41,9 @@ Pendência planejada:
 Validação manual integral de `CT-142`, reservada à Etapa 8 da V0.2.
 
 Próximo objetivo:
-Executar em novo chat a V0.2 — Etapa 7 — Listagem, Busca e Filtros de Conteúdo,
-conforme `tasks/current.md`. A etapa está formalmente liberada, mas ainda não foi
-iniciada.
+Aguardar liberação formal de uma nova tarefa. A Etapa 8 não foi preparada nem
+autorizada neste encerramento; a validação manual integral de `CT-142` permanece
+planejada para ela.
 
 ADRs relevantes:
 

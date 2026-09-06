@@ -2,6 +2,7 @@
 
 import uuid
 from typing import Any
+from urllib.parse import urlencode
 
 from django.db import DatabaseError
 from django.http import Http404, HttpRequest, HttpResponse
@@ -12,6 +13,8 @@ from django.views.decorators.http import require_GET, require_http_methods
 from modules.accounts.exceptions import WorkspaceAccessDenied
 from modules.accounts.models import Workspace
 from modules.accounts.services import LOCAL_USER_ID, LOCAL_WORKSPACE_ID, get_workspace_for_owner
+from modules.search.forms import QuestionSearchForm
+from modules.search.selectors import list_questions, paginate_questions
 
 from .exceptions import (
     OriginCatalogError,
@@ -108,6 +111,67 @@ def _detail_feedback(request: HttpRequest) -> str:
         "edited": "Questão atualizada com sucesso.",
         "archived": "Questão arquivada. Seu conteúdo e suas revisões foram preservados.",
     }.get(request.GET.get("result", ""), "")
+
+
+@require_GET
+def question_list(request: HttpRequest) -> HttpResponse:
+    """Liste o catálogo do Workspace local sem alterar qualquer registro."""
+    workspace = _local_workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    form_data = request.GET.copy()
+    if "status" not in form_data:
+        form_data["status"] = QuestionStatus.ACTIVE
+    form = QuestionSearchForm(form_data, workspace_id=workspace.id)
+    result = None
+    page_notice = ""
+    if form.is_valid():
+        data = form.cleaned_data
+        result = paginate_questions(
+            questions=list_questions(
+                workspace_id=workspace.id,
+                status=data["status"],
+                query=data["query"].strip(),
+                discipline_id=data["discipline"].id if data["discipline"] else None,
+                subject_id=data["subject"].id if data["subject"] else None,
+                subsubject_id=data["subsubject"].id if data["subsubject"] else None,
+            ),
+            requested_page=request.GET.get("page"),
+        )
+        if result.page_was_adjusted:
+            page_notice = "A página solicitada não existe; mostramos uma página válida."
+    parameters = request.GET.copy()
+    parameters.pop("page", None)
+    active_filters = [
+        ("Estado", dict(QuestionStatus.choices)[form.cleaned_data["status"]])
+        if form.is_valid()
+        else None,
+        ("Busca", form.cleaned_data["query"])
+        if form.is_valid() and form.cleaned_data["query"]
+        else None,
+        ("Disciplina", form.cleaned_data["discipline"].name)
+        if form.is_valid() and form.cleaned_data["discipline"]
+        else None,
+        ("Assunto", form.cleaned_data["subject"].name)
+        if form.is_valid() and form.cleaned_data["subject"]
+        else None,
+        ("Subassunto", form.cleaned_data["subsubject"].name)
+        if form.is_valid() and form.cleaned_data["subsubject"]
+        else None,
+    ]
+    return render(
+        request,
+        "questions/list.html",
+        {
+            "workspace": workspace,
+            "form": form,
+            "result": result,
+            "page_notice": page_notice,
+            "active_filters": [item for item in active_filters if item is not None],
+            "query_without_page": urlencode(parameters, doseq=True),
+            "breadcrumbs": [("Início", reverse("accounts:home"))],
+        },
+    )
 
 
 def _initial_from_question(*, workspace: Workspace, question: Question) -> dict[str, Any]:

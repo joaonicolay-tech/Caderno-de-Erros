@@ -7,6 +7,7 @@ from . import views
 app_name = "questions"
 
 urlpatterns = [
+    path("", views.question_list, name="list"),
     path("new/", views.quick_entry, name="quick-entry"),
     path("drafts/<uuid:question_id>/activate/", views.draft_activate, name="draft-activate"),
     path("<uuid:question_id>/", views.question_detail, name="detail"),
