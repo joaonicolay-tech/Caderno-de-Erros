@@ -1,18 +1,19 @@
 {
   "schema_version": 2,
-  "release": "V0.2 — Etapa 2",
+  "release": "V0.2 — Etapa 3",
   "protected_baseline": "v0.1.0@cc7c382d2db8474eaee6005b71b7d01d40481611",
   "required_identifiers": [
     "RF-001", "RF-002", "RF-003", "RF-004", "RF-005", "RF-006", "RF-007", "RF-008",
-    "RF-029", "RF-067", "RF-068",
+    "RF-012", "RF-015", "RF-017", "RF-029", "RF-067", "RF-068",
     "RNF-013", "RNF-016", "RNF-027", "RNF-031", "RNF-033", "RNF-052", "RNF-056",
     "RNF-057", "RNF-058", "RNF-066", "RNF-074", "RNF-075", "RNF-076", "RNF-077",
     "RNF-078", "RNF-079", "RNF-080",
     "RN-001", "RN-002", "RN-003", "RN-004", "RN-005", "RN-006", "RN-007", "RN-008",
-    "RN-009", "RN-029", "FL-001", "FL-022", "FL-023",
+    "RN-009", "RN-014", "RN-019", "RN-029", "RN-086",
+    "FL-001", "FL-002", "FL-005", "FL-022", "FL-023",
     "CT-001", "CT-002", "CT-003", "CT-004", "CT-073", "CT-074", "CT-081", "CT-082",
     "CT-094", "CT-095", "CT-096", "CT-097", "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-128", "CT-129", "CT-130",
-    "CT-131", "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137",
+    "CT-131", "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137", "CT-138",
     "ERR-V01-001", "ERR-V01-002", "ERR-V01-003", "ERR-V01-004", "ERR-V01-005",
     "ERR-V01-006", "ERR-V01-007", "ERR-V01-008", "ERR-V01-009",
     "ERR-V02-001", "ERR-V02-002", "ERR-V02-003", "ERR-V02-004", "ERR-V02-005",
@@ -45,7 +46,7 @@
   "expected_test_cases": [
     "CT-001", "CT-002", "CT-003", "CT-004", "CT-073", "CT-074", "CT-081", "CT-082",
     "CT-094", "CT-095", "CT-096", "CT-097", "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-129", "CT-130", "CT-131",
-    "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137"
+    "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137", "CT-138"
   ],
   "promotion_pending_cases": [],
   "test_evidence": {
@@ -81,7 +82,9 @@
       "evidence": [
         {"kind": "test", "target": "tests/test_accounts.py::test_first_accounts_migration_contains_custom_user_and_no_default_user_table"},
         {"kind": "test", "target": "tests/test_error_categories.py::test_canonical_code_cannot_be_changed_or_duplicated_in_workspace"},
-        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct073_foreign_keys_reject_orphans_and_protect_hierarchy"}
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct073_foreign_keys_reject_orphans_and_protect_hierarchy"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct073_database_constraints_cover_uniqueness_states_types_year_and_lock"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct073_foreign_keys_reject_orphans_and_use_protect"}
       ]
     },
     "CT-074": {
@@ -89,7 +92,9 @@
       "evidence": [
         {"kind": "test", "target": "tests/test_accounts.py::test_workspace_owner_foreign_key_is_enforced"},
         {"kind": "test", "target": "tests/test_taxonomy.py::test_ct004_and_ct074_services_reject_cross_workspace_without_partial_data"},
-        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct074_model_guard_rejects_cross_workspace_outside_services"}
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct074_model_guard_rejects_cross_workspace_outside_services"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct074_creation_and_queries_are_fully_workspace_scoped"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct074_model_guard_rejects_cross_workspace_exam_board"}
       ]
     },
     "CT-081": {
@@ -97,13 +102,16 @@
       "evidence": [
         {"kind": "test", "target": "tests/test_accounts.py::test_migrations_apply_from_an_empty_disposable_database"},
         {"kind": "test", "target": "tests/test_taxonomy.py::test_taxonomy_migration_is_single_initial_node_with_v01_dependency"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct081_questions_migration_is_frozen_single_node_without_future_entities"},
         {"kind": "gate-step", "target": "migrar banco vazio isolado"}
       ]
     },
     "CT-082": {
       "status": "executable",
       "evidence": [
-        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct082_and_ct122_upgrade_v01_data_to_taxonomy_initial"}
+        {"kind": "test", "target": "tests/test_taxonomy.py::test_ct082_and_ct122_upgrade_v01_data_to_taxonomy_initial"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct082_upgrade_from_v01_preserves_existing_data"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct082_upgrade_from_stage2_preserves_taxonomy_data"}
       ]
     },
     "CT-094": {
@@ -229,6 +237,15 @@
         {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_subject_and_subsubject_archive_flows_remain_historical"},
         {"kind": "test", "target": "tests/test_taxonomy_interface.py::test_subject_and_subsubject_archive_can_be_cancelled_without_changes"}
       ]
+    },
+    "CT-138": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct138_create_reuses_equivalent_active_references_within_workspace"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct138_year_boundaries_use_workspace_calendar_and_controlled_clock"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct138_exam_board_year_and_catalog_details_are_optional"},
+        {"kind": "test", "target": "tests/test_origin_catalog.py::test_ct074_creation_and_queries_are_fully_workspace_scoped"}
+      ]
     }
   },
   "domain_coverage": {
@@ -245,7 +262,11 @@
       "src/modules/taxonomy/models.py",
       "src/modules/taxonomy/services.py",
       "src/modules/taxonomy/selectors.py",
-      "src/modules/taxonomy/validators.py"
+      "src/modules/taxonomy/validators.py",
+      "src/modules/questions/models.py",
+      "src/modules/questions/services.py",
+      "src/modules/questions/selectors.py",
+      "src/modules/questions/validators.py"
     ]
   },
   "historical_migration_sha256": {
@@ -262,6 +283,10 @@
     "src/modules/taxonomy/migrations/0001_initial.py": [
       220, 90, 71, 0, 146, 253, 186, 222, 187, 195, 239, 220, 249, 236, 201, 182,
       22, 74, 150, 108, 41, 245, 109, 222, 129, 201, 220, 68, 42, 57, 237, 70
+    ],
+    "src/modules/questions/migrations/0001_origin_catalog.py": [
+      97, 166, 38, 54, 23, 75, 118, 77, 52, 243, 39, 208, 182, 79, 105, 188,
+      161, 253, 73, 255, 111, 158, 24, 221, 10, 205, 67, 242, 175, 8, 151, 244
     ]
   }
 }

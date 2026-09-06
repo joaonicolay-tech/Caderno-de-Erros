@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "modules.accounts.apps.AccountsConfig",
+    "modules.questions.apps.QuestionsConfig",
     "modules.taxonomy.apps.TaxonomyConfig",
     "modules.errors.apps.ErrorsConfig",
     "modules.operations.apps.OperationsConfig",
