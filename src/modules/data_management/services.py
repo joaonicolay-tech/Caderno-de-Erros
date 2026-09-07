@@ -55,12 +55,22 @@ class BackupValidationResult:
 
 @dataclass(frozen=True, slots=True)
 class ReconciliationResult:
-    """Contagens comprovadas no banco restaurado da fundação."""
+    """Contagens comprovadas no banco restaurado, da fundação ao catálogo V0.2."""
 
     migration_count: int
     user_count: int
     workspace_count: int
     category_count: int
+    discipline_count: int
+    subject_count: int
+    subsubject_count: int
+    board_count: int
+    exam_count: int
+    source_count: int
+    question_count: int
+    revision_count: int
+    alternative_count: int
+    origin_count: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -394,7 +404,7 @@ def _expected_migrations() -> set[tuple[str, str]]:
 
 
 def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
-    """Confira a fundação sem executar bootstrap ou recriar registros ausentes."""
+    """Confira a fundação e relações V0.2 sem executar bootstrap ou recriar dados."""
     try:
         with closing(_readonly_connection(path)) as database:
             _validate_sqlite_file(path)
@@ -418,6 +428,66 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
             category_rows = database.execute(
                 "SELECT code, display_name, description, workspace_id FROM errors_error_category"
             ).fetchall()
+            counts = {
+                "discipline_count": _fetch_one(
+                    database, "SELECT COUNT(*) FROM taxonomy_discipline"
+                )[0],
+                "subject_count": _fetch_one(database, "SELECT COUNT(*) FROM taxonomy_subject")[0],
+                "subsubject_count": _fetch_one(
+                    database, "SELECT COUNT(*) FROM taxonomy_subsubject"
+                )[0],
+                "board_count": _fetch_one(database, "SELECT COUNT(*) FROM questions_board")[0],
+                "exam_count": _fetch_one(database, "SELECT COUNT(*) FROM questions_exam")[0],
+                "source_count": _fetch_one(database, "SELECT COUNT(*) FROM questions_source")[0],
+                "question_count": _fetch_one(database, "SELECT COUNT(*) FROM questions_question")[
+                    0
+                ],
+                "revision_count": _fetch_one(
+                    database, "SELECT COUNT(*) FROM questions_questionrevision"
+                )[0],
+                "alternative_count": _fetch_one(
+                    database, "SELECT COUNT(*) FROM questions_alternative"
+                )[0],
+                "origin_count": _fetch_one(
+                    database, "SELECT COUNT(*) FROM questions_questionorigin"
+                )[0],
+            }
+            v02_violations = (
+                "SELECT 1 FROM taxonomy_subject s JOIN taxonomy_discipline d ON d.id = s.discipline_id "
+                "WHERE s.workspace_id != d.workspace_id LIMIT 1",
+                "SELECT 1 FROM taxonomy_subsubject ss JOIN taxonomy_subject s ON s.id = ss.subject_id "
+                "WHERE ss.workspace_id != s.workspace_id LIMIT 1",
+                "SELECT 1 FROM questions_exam e JOIN questions_board b ON b.id = e.board_id "
+                "WHERE e.board_id IS NOT NULL AND e.workspace_id != b.workspace_id LIMIT 1",
+                "SELECT 1 FROM questions_question q LEFT JOIN taxonomy_discipline d ON d.id = q.discipline_id "
+                "LEFT JOIN taxonomy_subject s ON s.id = q.subject_id "
+                "LEFT JOIN taxonomy_subsubject ss ON ss.id = q.subsubject_id "
+                "WHERE (d.id IS NOT NULL AND d.workspace_id != q.workspace_id) "
+                "OR (s.id IS NOT NULL AND s.workspace_id != q.workspace_id) "
+                "OR (ss.id IS NOT NULL AND ss.workspace_id != q.workspace_id) "
+                "OR (s.id IS NOT NULL AND s.discipline_id != q.discipline_id) "
+                "OR (ss.id IS NOT NULL AND ss.subject_id != q.subject_id) LIMIT 1",
+                "SELECT 1 FROM questions_question q LEFT JOIN questions_questionrevision r "
+                "ON r.question_id = q.id AND r.is_current = 1 "
+                "WHERE q.status IN ('ACTIVE', 'ARCHIVED') AND r.id IS NULL LIMIT 1",
+                "SELECT 1 FROM questions_questionrevision r JOIN questions_question q ON q.id = r.question_id "
+                "LEFT JOIN questions_alternative a ON a.id = r.correct_alternative_id "
+                "WHERE r.workspace_id != q.workspace_id "
+                "OR (a.id IS NOT NULL AND (a.workspace_id != r.workspace_id "
+                "OR a.question_revision_id != r.id)) LIMIT 1",
+                "SELECT 1 FROM questions_alternative a JOIN questions_questionrevision r "
+                "ON r.id = a.question_revision_id WHERE a.workspace_id != r.workspace_id LIMIT 1",
+                "SELECT 1 FROM questions_questionorigin o JOIN questions_question q ON q.id = o.question_id "
+                "LEFT JOIN questions_source s ON s.id = o.source_id "
+                "LEFT JOIN questions_exam e ON e.id = o.exam_id "
+                "LEFT JOIN questions_board b ON b.id = o.board_id "
+                "WHERE o.workspace_id != q.workspace_id "
+                "OR (s.id IS NOT NULL AND s.workspace_id != o.workspace_id) "
+                "OR (e.id IS NOT NULL AND e.workspace_id != o.workspace_id) "
+                "OR (b.id IS NOT NULL AND b.workspace_id != o.workspace_id) LIMIT 1",
+            )
+            if any(database.execute(query).fetchone() is not None for query in v02_violations):
+                raise RestoreError("O catálogo V0.2 restaurado possui relações inconsistentes.")
     except RestoreError:
         raise
     except (sqlite3.Error, ValueError, TypeError) as error:
@@ -474,6 +544,16 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
         user_count=user_count,
         workspace_count=workspace_count,
         category_count=len(category_rows),
+        discipline_count=cast(int, counts["discipline_count"]),
+        subject_count=cast(int, counts["subject_count"]),
+        subsubject_count=cast(int, counts["subsubject_count"]),
+        board_count=cast(int, counts["board_count"]),
+        exam_count=cast(int, counts["exam_count"]),
+        source_count=cast(int, counts["source_count"]),
+        question_count=cast(int, counts["question_count"]),
+        revision_count=cast(int, counts["revision_count"]),
+        alternative_count=cast(int, counts["alternative_count"]),
+        origin_count=cast(int, counts["origin_count"]),
     )
 
 
@@ -485,7 +565,7 @@ def restore_sqlite_backup(
     database_alias: str = "default",
     correlation_id: str | None = None,
 ) -> RestoreResult:
-    """Restaure somente em destino novo e publique após reconciliação da V0.1."""
+    """Restaure somente em destino novo após reconciliação da fundação e V0.2."""
     temporary_destination: Path | None = None
     published_destination: Path | None = None
     with correlation_scope(correlation_id):

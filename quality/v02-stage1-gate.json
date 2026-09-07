@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "release": "V0.2 — Etapa 5",
+  "release": "V0.2 — Etapa 8",
   "protected_baseline": "v0.1.0@cc7c382d2db8474eaee6005b71b7d01d40481611",
   "required_identifiers": [
     "RF-001", "RF-002", "RF-003", "RF-004", "RF-005", "RF-006", "RF-007", "RF-008",
@@ -17,7 +17,7 @@
     "CT-010", "CT-011", "CT-012", "CT-073", "CT-074", "CT-075", "CT-081", "CT-082",
     "CT-094", "CT-095", "CT-096", "CT-097", "CT-099", "CT-104", "CT-122", "CT-123", "CT-127", "CT-128", "CT-129", "CT-130",
     "CT-131", "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137", "CT-138",
-    "CT-139", "CT-140", "CT-142", "CT-144",
+    "CT-139", "CT-140", "CT-141", "CT-142", "CT-143", "CT-144",
     "ERR-V01-001", "ERR-V01-002", "ERR-V01-003", "ERR-V01-004", "ERR-V01-005",
     "ERR-V01-006", "ERR-V01-007", "ERR-V01-008", "ERR-V01-009",
     "ERR-V02-001", "ERR-V02-002", "ERR-V02-003", "ERR-V02-004", "ERR-V02-005",
@@ -52,7 +52,7 @@
     "CT-010", "CT-011", "CT-012", "CT-073", "CT-074", "CT-075", "CT-081", "CT-082",
     "CT-094", "CT-095", "CT-096", "CT-097", "CT-099", "CT-104", "CT-122", "CT-123", "CT-124", "CT-127", "CT-129", "CT-130", "CT-131",
     "CT-132", "CT-133", "CT-134", "CT-135", "CT-136", "CT-137", "CT-138",
-    "CT-139", "CT-140", "CT-142", "CT-144"
+    "CT-139", "CT-140", "CT-141", "CT-142", "CT-143", "CT-144"
   ],
   "promotion_pending_cases": [],
   "test_evidence": {
@@ -325,6 +325,13 @@
         {"kind": "test", "target": "tests/test_question_catalog.py::test_model_guard_rejects_answer_from_another_revision"}
       ]
     },
+    "CT-141": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_v02_fixture.py::test_ct141_fixture_is_deterministic_idempotent_and_covers_catalog_states"},
+        {"kind": "test", "target": "tests/test_v02_fixture.py::test_ct141_fixture_command_is_explicit_and_rejects_non_disposable_profiles"}
+      ]
+    },
     "CT-144": {
       "status": "executable",
       "evidence": [
@@ -341,6 +348,13 @@
       "status": "executable",
       "evidence": [
         {"kind": "test", "target": "tests/test_question_interface.py::test_ct142_templates_remain_semantic_keyboard_accessible_and_responsive"}
+      ]
+    },
+    "CT-143": {
+      "status": "executable",
+      "evidence": [
+        {"kind": "test", "target": "tests/test_v02_fixture.py::test_ct143_backup_restore_reconciles_v02_catalog_and_rejects_corruption"},
+        {"kind": "test", "target": "tests/test_backup_restore.py::test_existing_destination_is_never_replaced"}
       ]
     }
   },

@@ -1,8 +1,9 @@
 # Caderno de Erros
 
-Fundação executável local do Caderno de Erros Inteligente. A V0.1 fornece identidade e
-Workspace locais, fuso IANA, dez categorias padrão, interface mínima, diagnóstico,
-logging e backup/restauração técnica do SQLite. Ela ainda não é o produto de estudo.
+Catálogo executável local do Caderno de Erros Inteligente. A V0.2 preserva a fundação
+V0.1 (identidade e Workspace locais, fuso IANA, categorias padrão, diagnóstico e
+logging) e adiciona taxonomia, origem, questões objetivas textuais versionadas e busca
+simples. Ainda não existe ciclo de aprendizagem.
 
 A V0.1 foi formalmente promovida em 3 de setembro de 2026 após instalação limpa,
 gate autoritativo e validação manual de Chrome/Edge. A documentação oficial está em
@@ -192,7 +193,7 @@ O manifesto `backups\cei-v01.sqlite3.manifest.json` registra formato
 `CEI-SQLITE-BACKUP` 1.0, instante UTC, tamanho e SHA-256. Mantenha ambos juntos e
 proteja-os como o banco original.
 
-Na V0.1, restaure sempre em um arquivo novo e isolado:
+Na V0.2, restaure sempre em um arquivo novo e isolado:
 
 ```powershell
 New-Item -ItemType Directory -Force recovery
@@ -209,9 +210,28 @@ Remove-Item -LiteralPath Env:CEI_DEVELOPMENT_DB
 ```
 
 Checksum inválido, versão desconhecida, migração divergente ou reconciliação
-incompleta falham antes da publicação do destino.
+incompleta — incluindo taxonomia, origem, questões, revisões, alternativas, gabarito e
+referências do catálogo — falham antes da publicação do destino.
 
-## 11. Solução de problemas
+## 11. Fixture sintética V0.2
+
+O catálogo V0.2 inclui uma fixture sintética para demonstração e regressão. Ela cria
+somente no **perfil de teste descartável**: um Workspace local explícito, uma
+taxonomia, origem, uma questão em rascunho, uma ativa com duas revisões e uma
+arquivada. As alternativas, o gabarito e a origem são artificiais e não representam
+aprendizagem, pessoas ou conteúdo privado. A carga é idempotente para a semente
+`v02-catalog-demo-001`; nunca é automática e recusa desenvolvimento e produção local.
+
+Em um banco de teste descartável já migrado, execute:
+
+```powershell
+uv run --locked python manage.py load_v02_fixture --settings=config.settings.test
+```
+
+Não use esse comando para carregar banco de uso local. Para uma demonstração, execute
+o perfil de teste em ambiente isolado e descarte o banco ao encerrar.
+
+## 12. Solução de problemas
 
 - **`uv` não encontrado:** reabra o PowerShell após instalar e confirme `uv --version`.
 - **Versão de `uv` divergente:** reinstale exatamente `0.12.7`.
@@ -228,10 +248,10 @@ incompleta falham antes da publicação do destino.
 - **Teste temporário bloqueado pelo Windows:** encerre processos Python que ainda
   mantenham arquivos abertos e execute novamente; não redirecione testes para banco real.
 
-## 12. Limitações conhecidas da V0.1
+## 13. Limitações conhecidas da V0.2
 
-- É uma fundação técnica e não deve ser usada para estudo real.
-- Não há questões, tentativas, revisões, dashboard, busca ou métricas.
+- O catálogo ainda não deve ser usado para estudo real.
+- Não há tentativas, revisões de aprendizagem, dashboard ou métricas.
 - Não há categorias pessoais, autenticação remota, API, notificações ou PWA.
 - O servidor é exclusivamente local; hospedagem e PostgreSQL pertencem a marcos futuros.
 - Backup/restauração são comandos técnicos; não há interface, agenda, rotação, nuvem ou
