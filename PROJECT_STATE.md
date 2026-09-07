@@ -1,9 +1,9 @@
 # Project State
 
 Versão atual: V0.2
-Situação da versão: em andamento; promoção final pendente
-Etapa atual: V0.2 — Etapa 9 — Validação Final e Promoção
-Status da etapa atual: formalmente liberada, preparada e não iniciada
+Situação da versão: formalmente promovida
+Etapa atual: nenhuma tarefa autorizada
+Status da etapa atual: V0.2 encerrada; V0.3 não iniciada
 
 Etapas concluídas:
 
@@ -24,10 +24,10 @@ Baseline protegida:
 `v0.1.0` (`cc7c382d2db8474eaee6005b71b7d01d40481611`)
 
 Último gate:
-GREEN — V0.2 Etapa 8 final, exit code 0, com isolamento temporário do pytest preservado
+GREEN — V0.2 Etapa 9 final, exit code 0, em 56 s
 
 Testes:
-192 aprovados (mais 1 verificação focada de `CT-142` aprovada)
+192 aprovados no gate final; smoke isolado de promoção com 8 aprovados
 
 Coverage:
 86% global; metas específicas aplicáveis atendidas
@@ -39,14 +39,13 @@ P0/P1 aplicável aberto:
 Nenhum
 
 Evidência de encerramento:
-`CT-142` manual está integralmente PASS em Chrome e Edge vigentes no Windows, incluindo
-teclado, foco, labels/erros/feedback, fluxos do catálogo, viewport aproximado de 360 px
-e zoom de 200%, sem rolagem horizontal indevida. A evidência está em
-`quality/v02-stage8-automated-result.md`; não há P0/P1 aplicável aberto.
+V0.2 promovida formalmente após revisão consolidada das Etapas 0–8. `CT-141`,
+`CT-142` (manual integral em Chrome e Edge no Windows) e `CT-143` estão PASS;
+o banco vazio, o upgrade V0.1 → V0.2, a regressão e as migrations protegidas foram
+reconfirmados. A evidência está em `quality/v02-stage9-promotion-result.md`.
 
 Próximo objetivo:
-Executar exclusivamente a V0.2 — Etapa 9 — Validação Final e Promoção em novo chat,
-conforme `tasks/current.md`. A V0.3 não está autorizada.
+Não há execução autorizada. A V0.3 não está autorizada e não foi iniciada.
 
 ADRs relevantes:
 
