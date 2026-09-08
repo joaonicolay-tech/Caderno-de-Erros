@@ -888,6 +888,17 @@ Logs técnicos devem diagnosticar falhas sem coletar conteúdo de estudo. Analyt
 5. A política de não transmissão externa e de conteúdo fora dos logs.
 6. Atomicidade, idempotência e integridade referencial como bloqueadores.
 7. RPO de 24 h, RTO de 4 h e retenção inicial.
+
+---
+
+## Errata controlada V0.3
+
+Para tornar `RNF-025`, `RNF-026`, `RNF-031` e `RNF-032` verificáveis no perfil
+SQLite local, `ADR-011` fixa transação curta, `busy_timeout` de 5 s e uma única
+repetição após 150 ms exclusivamente para `SQLITE_BUSY`/`locked`, sempre com a
+mesma chave idempotente. A falha restante não confirma sucesso e não deixa
+estado parcial. Esta decisão não introduz broker, lock distribuído ou retentativa
+infinita.
 8. Baseline WCAG 2.2 AA e operação por teclado.
 9. Matriz inicial de navegadores e dimensões responsivas.
 10. Testes com relógio controlável e cobertura mínima do domínio.

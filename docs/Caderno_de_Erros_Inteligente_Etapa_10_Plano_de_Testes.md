@@ -679,3 +679,17 @@ A Etapa 10 será concluída quando:
 Após a aprovação, as dez etapas documentais iniciais estarão congeladas. A implementação poderá começar pela **V0.1 — Fundação Executável**, acompanhada desde o primeiro commit pelos casos aplicáveis deste plano.
 
 A etapa foi aprovada integralmente em 30 de agosto de 2026. A errata 1.0.1, registrada em 1º de setembro de 2026, corrige a rastreabilidade aplicável à V0.1, formaliza `CT-129` a `CT-136`, antecipa `CT-127` e ajusta a aplicabilidade de `CT-122`/`CT-123`. A errata 1.0.2, registrada em 5 de setembro de 2026, formaliza os recortes V0.2 e `CT-137` a `CT-144` por `ERR-V02-003` e `ERR-V02-008`. Os casos `CT-001` a `CT-144` e as decisões `PT-DEC-001` a `PT-DEC-017` passam a ser considerados congelados e somente poderão ser alterados mediante registro explícito e análise de impacto.
+
+---
+
+## Errata controlada V0.3 — `ERR-V03-001`
+
+As referências históricas inválidas dos casos V0.3 não alteram seu objetivo
+legítimo. A matriz canônica de `ADR-011` §8 substitui a rastreabilidade e a
+etapa de `CT-013`–`018`, `CT-019`, `CT-021`–`042`, `CT-073`, `CT-074`,
+`CT-076`–`082`, `CT-093`, `CT-100`, `CT-101`, `CT-107`, `CT-111`, `CT-123` e
+`CT-125`. Ela também explicita as parcelas futuras: métricas/dashboard ficam
+na V0.4; reativação, reagendamento, categorias pessoais, correção estrutural,
+domínio e prioridade continuam posteriores. `CT-019` é Etapa 4 V0.3 e
+`CT-041` é o arquivamento com suspensão da mesma etapa. Nenhum CT da matriz
+autoriza implementação antes da etapa correspondente.

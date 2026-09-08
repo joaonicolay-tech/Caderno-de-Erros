@@ -974,3 +974,16 @@ de Conteúdo:
 Esta errata substitui apenas a leitura de fase da seção 5 e da matriz da seção
 14. O objetivo histórico da V0.2 — catálogo sem aprendizagem ou revisão — não
 foi alterado.
+
+---
+
+## 23. Errata controlada da V0.3
+
+Em 8 de setembro de 2026, `ADR-011` saneou a fronteira da V0.3. A versão inclui
+resposta inicial, diagnóstico, histórico, `REV-FIXA-1.0`, D1/D7/D14/D30, filas,
+timeline e arquivamento com suspensão; a restrição histórica proíbe antecipá-los
+antes de suas etapas V0.3, não os exclui da versão. O plano incremental fica:
+Etapa 0 saneamento; Etapa 1 schema; Etapa 2 resposta inicial; Etapa 3 política e
+conclusão; Etapa 4 fila/timeline/diagnóstico/arquivamento; Etapa 5 integração,
+regressão e promoção. A matriz e os limites autoritativos estão em `ADR-011`
+§§2–9. A Etapa 1 só pode iniciar sob nova autorização formal.

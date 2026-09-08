@@ -1086,6 +1086,17 @@ parcela que constitui entrega da V0.2, conforme `ADR-010`.
 | `RF-018` | Sem `Attempt` na V0.2, alteração de alternativas/gabarito é permitida apenas no estado estrutural sem tentativa e sempre cria revisão válida | Bloqueio com tentativa: V0.3; correção auditável: V1 |
 | `RF-019` | Confirmar arquivamento, marcar a questão, retirar das ativas e preservar revisões de conteúdo | Tentativas, ciclo, revisão pendente e fila: V0.3 |
 | `RF-020` | Não aplicável | V1, sem qualquer implementação antecipada |
+
+---
+
+## Errata controlada V0.3
+
+`ADR-011` é a leitura autoritativa de fase para a aprendizagem: `RF-021`–`026`,
+`RF-028`–`032` e `RF-034`–`044` são implementados nos recortes e etapas ali
+definidos. Em especial, `RF-031` (correção de diagnóstico) entra na Etapa 4 da
+V0.3 e não depende do dashboard; `RF-019` ganha somente o recorte V0.3 de
+suspender ciclo/revisão/fila no arquivamento. `RF-027`, `RF-033`, `RF-045` e
+`RF-046` continuam posteriores conforme seus próprios textos.
 | `RF-063` | Ativas por padrão; acesso explícito e distinguível a rascunhos e arquivadas; paginação | Consultas analíticas posteriores |
 | `RF-064` | Busca textual simples e limpeza da busca | FTS somente após benchmark e nova decisão |
 | `RF-065` | Disciplina, assunto e subassunto; opções hierárquicas; filtros visíveis; estado vazio; contagem correspondente | Revisão, resultado e erro: V0.4 |

@@ -1254,3 +1254,15 @@ O gate V0.2 terá manifesto próprio e manterá os hashes históricos V0.1 como
 conjunto protegido. `quality/v01-gate.json` e `scripts/verify_v01.py` não serão
 substituídos. A implementação do novo gate ocorrerá em etapa posterior, sem
 mudança de ferramenta ou dependência nesta Etapa 0.
+
+---
+
+## Errata controlada V0.3
+
+`ADR-011` resolve a ambiguidade entre módulos e serviços: `AttemptService`
+recebe e valida somente a tentativa inicial; `CompleteReviewService` é o único
+orquestrador da finalização inicial incorreta e da conclusão de revisão. Ele
+compõe os fatos e o `OperationReceipt` em uma transação; policies não
+persistem. As decisões de contexto transitório, timeout, retry, contenção e
+replay da V0.3 são as seções 5–7 de `ADR-011` e complementam, sem substituir,
+as transações e constraints deste SDD.

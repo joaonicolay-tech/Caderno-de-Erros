@@ -1261,6 +1261,17 @@ A etapa foi aprovada integralmente em 30 de agosto de 2026. As regras `RN-001` a
 | `RN-087` | Arquivamento é a ação V0.2; conteúdo versionado permanece | Suspensão de revisões: V0.3 |
 | `RN-088`–`RN-090` | Não aplicáveis: nenhuma exclusão física na V0.2 | V1, após política de `RF-020` |
 | `RN-093` | Não aplicável | V1 |
+
+---
+
+## Errata controlada V0.3
+
+Para a V0.3, `RN-032` é executada pela correção append-only de diagnóstico,
+sem alterar tentativa, resultado ou calendário. `RN-033`–`051` cobrem o ciclo
+automático, D1/D7/D14/D30 e filas nas etapas previstas de `ADR-011`; não são
+capacidades removidas da versão. `RN-055` e `RN-087` aplicam ao arquivamento o
+recorte transacional de suspensão, sem reativação. Os parâmetros de contexto,
+idempotência e contenção SQLite são os da seção 5–7 de `ADR-011`.
 | `RN-094` | Somente fundamenta que item com vínculo deve ser arquivado; exclusão não é oferecida | Exclusão/migração de vínculo: V1 |
 
 Tags não recebem regra nova nesta versão. A leitura anterior do Roadmap que

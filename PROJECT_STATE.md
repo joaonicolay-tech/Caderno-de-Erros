@@ -1,9 +1,9 @@
 # Project State
 
-Versão atual: V0.2
-Situação da versão: formalmente promovida
+Versão atual: V0.3 (planejamento documental)
+Situação da versão: Etapa 0 concluída; implementação não iniciada
 Etapa atual: nenhuma tarefa autorizada
-Status da etapa atual: V0.2 encerrada; V0.3 não iniciada
+Status da etapa atual: V0.3 — Etapa 0 encerrada; Etapa 1 aguarda autorização formal
 
 Etapas concluídas:
 
@@ -21,16 +21,16 @@ Melhoria operacional:
 Etapa 6 — adoção definitiva do novo fluxo operacional concluída.
 
 Baseline protegida:
-`v0.1.0` (`cc7c382d2db8474eaee6005b71b7d01d40481611`)
+`v0.2.0` (`a756b6d`)
 
 Último gate:
-GREEN — V0.2 Etapa 9 final, exit code 0, em 56 s
+GREEN — V0.3 Etapa 0 documental, exit code 0
 
 Testes:
-192 aprovados no gate final; smoke isolado de promoção com 8 aprovados
+192 coletados pela suite do gate da Etapa 0; validador documental GREEN
 
 Coverage:
-86% global; metas específicas aplicáveis atendidas
+Sem alteração de código nesta etapa; metas aplicáveis preservadas
 
 Bloqueadores:
 Nenhum
@@ -39,13 +39,13 @@ P0/P1 aplicável aberto:
 Nenhum
 
 Evidência de encerramento:
-V0.2 promovida formalmente após revisão consolidada das Etapas 0–8. `CT-141`,
-`CT-142` (manual integral em Chrome e Edge no Windows) e `CT-143` estão PASS;
-o banco vazio, o upgrade V0.1 → V0.2, a regressão e as migrations protegidas foram
-reconfirmados. A evidência está em `quality/v02-stage9-promotion-result.md`.
+`ADR-011` resolveu a rastreabilidade V0.3, `CT-019`, `CT-041`, a orquestração,
+o contexto transitório, a política SQLite/idempotência e `OperationReceipt`.
+A evidência está em `quality/v03-stage0-documentation-result.md`.
 
 Próximo objetivo:
-Não há execução autorizada. A V0.3 não está autorizada e não foi iniciada.
+Não há execução autorizada. A Etapa 1 da V0.3 está documentalmente liberada,
+mas não foi autorizada e não foi iniciada.
 
 ADRs relevantes:
 
@@ -54,3 +54,4 @@ ADR-002
 ADR-003
 ADR-008
 ADR-010
+ADR-011

@@ -626,6 +626,23 @@ Entre as decisões controladas estão:
 
 ---
 
+## ADR-011 — Saneamento, Fronteira e Rastreabilidade da V0.3
+
+**Arquivo:** `ADR-011_Saneamento_Fronteira_e_Rastreabilidade_V0.3.md`
+
+### Assunto
+
+Resolve os bloqueadores documentais da V0.3: fases de testes, orquestração,
+contexto transitório, SQLite/idempotência, `OperationReceipt`, entidades e
+plano incremental.
+
+### Consultar quando
+
+Qualquer tarefa da V0.3 envolver tentativa, diagnóstico, ciclo, revisão, fila,
+arquivamento com suspensão, transação, concorrência ou rastreabilidade.
+
+---
+
 # 3. Documentos de gate, promoção e release
 
 ## Gate de Implementação — Auditoria Final da Documentação

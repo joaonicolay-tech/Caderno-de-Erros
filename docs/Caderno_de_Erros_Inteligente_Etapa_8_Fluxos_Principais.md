@@ -1117,3 +1117,20 @@ Os passos gerais que citam tentativas, revisões, métricas, auditoria funcional
 tags permanecem válidos apenas para suas fases futuras. Eles não são
 pré-condição nem resultado do catálogo V0.2. Isso formaliza `ERR-V02-001`,
 `ERR-V02-004` e `ERR-V02-005` sem apagar o fluxo integral planejado.
+
+---
+
+## 20. Errata controlada da V0.3
+
+`ADR-011` fixa a leitura executável da V0.3. Em `FL-003`, a pré-condição
+“revisão corrente válida” significa **`QuestionRevision` corrente válida**,
+isto é, a revisão de conteúdo apresentada à pessoa usuária; não significa uma
+`Review` de aprendizagem pendente. O fluxo usa contexto transitório e somente
+persiste fatos na confirmação. `AttemptService` recebe a tentativa inicial e
+`CompleteReviewService` orquestra a finalização incorreta; a fronteira e a
+transação são as de `ADR-011` §4.
+
+`FL-008` executa a correção de diagnóstico na Etapa 4 da V0.3. `FL-006` executa
+o arquivamento com suspensão transacional de ciclo e pendência na mesma etapa,
+sem reativação. `FL-009`–`FL-013`, incluindo D1/D7/D14/D30 e filas, pertencem
+à V0.3 nos recortes de `ADR-011`; não são capacidades removidas da versão.

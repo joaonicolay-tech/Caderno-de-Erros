@@ -946,6 +946,18 @@ alternativa correta pertence à própria revisão. Essa leitura resolve a lacuna
 sem acrescentar campo de publicação e é compatível com `MD-DEC-004` e
 `MD-DEC-006`.
 
+---
+
+## Errata controlada V0.3
+
+As entidades de aprendizagem previstas nas seções 7–9 entram como schema na
+Etapa 1 da V0.3, exceto `ReviewScheduleChange`, que permanece V1. A finalidade,
+chave, retenção e minimização de dados de `OperationReceipt` são vinculantes
+conforme `ADR-011` §7. `AuditEvent` não é model da V0.3: os fatos imutáveis,
+revisões de diagnóstico, estados de arquivamento e logs sanitizados constituem
+o recorte mínimo. O detalhamento de constraints/índices e as relações das
+seções existentes permanece válido e será implementado somente na Etapa 1.
+
 ### 27.4 Migrations futuras congeladas
 
 1. `taxonomy/0001_initial`: taxonomia, dependente de `accounts/0001_initial`.
