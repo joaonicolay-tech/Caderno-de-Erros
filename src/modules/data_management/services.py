@@ -55,7 +55,7 @@ class BackupValidationResult:
 
 @dataclass(frozen=True, slots=True)
 class ReconciliationResult:
-    """Contagens comprovadas no banco restaurado, da fundação ao catálogo V0.2."""
+    """Contagens comprovadas no banco restaurado, da fundação à aprendizagem V0.3."""
 
     migration_count: int
     user_count: int
@@ -71,6 +71,12 @@ class ReconciliationResult:
     revision_count: int
     alternative_count: int
     origin_count: int
+    attempt_count: int
+    classification_count: int
+    classification_revision_count: int
+    review_cycle_count: int
+    review_count: int
+    operation_receipt_count: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -404,7 +410,7 @@ def _expected_migrations() -> set[tuple[str, str]]:
 
 
 def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
-    """Confira a fundação e relações V0.2 sem executar bootstrap ou recriar dados."""
+    """Confira fundação, catálogo V0.2 e aprendizagem V0.3 sem corrigir dados."""
     try:
         with closing(_readonly_connection(path)) as database:
             _validate_sqlite_file(path)
@@ -451,6 +457,20 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
                 "origin_count": _fetch_one(
                     database, "SELECT COUNT(*) FROM questions_questionorigin"
                 )[0],
+                "attempt_count": _fetch_one(database, "SELECT COUNT(*) FROM attempts_attempt")[0],
+                "classification_count": _fetch_one(
+                    database, "SELECT COUNT(*) FROM errors_errorclassification"
+                )[0],
+                "classification_revision_count": _fetch_one(
+                    database, "SELECT COUNT(*) FROM errors_errorclassificationrevision"
+                )[0],
+                "review_cycle_count": _fetch_one(
+                    database, "SELECT COUNT(*) FROM reviews_reviewcycle"
+                )[0],
+                "review_count": _fetch_one(database, "SELECT COUNT(*) FROM reviews_review")[0],
+                "operation_receipt_count": _fetch_one(
+                    database, "SELECT COUNT(*) FROM attempts_operationreceipt"
+                )[0],
             }
             v02_violations = (
                 "SELECT 1 FROM taxonomy_subject s JOIN taxonomy_discipline d ON d.id = s.discipline_id "
@@ -488,6 +508,54 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
             )
             if any(database.execute(query).fetchone() is not None for query in v02_violations):
                 raise RestoreError("O catálogo V0.2 restaurado possui relações inconsistentes.")
+            v03_violations = (
+                "SELECT 1 FROM attempts_attempt a "
+                "JOIN questions_question q ON q.id = a.question_id "
+                "JOIN questions_questionrevision qr ON qr.id = a.question_revision_id "
+                "JOIN questions_alternative aa ON aa.id = a.selected_alternative_id "
+                "LEFT JOIN reviews_review r ON r.id = a.review_id "
+                "WHERE a.workspace_id != q.workspace_id "
+                "OR a.workspace_id != qr.workspace_id OR qr.question_id != a.question_id "
+                "OR a.workspace_id != aa.workspace_id OR aa.question_revision_id != qr.id "
+                "OR (r.id IS NOT NULL AND (r.workspace_id != a.workspace_id "
+                "OR r.question_id != a.question_id)) LIMIT 1",
+                "SELECT 1 FROM errors_errorclassification ec "
+                "JOIN attempts_attempt a ON a.id = ec.attempt_id "
+                "JOIN errors_error_category cat ON cat.id = ec.category_id "
+                "WHERE ec.workspace_id != a.workspace_id OR ec.workspace_id != cat.workspace_id "
+                "OR a.is_correct = 1 OR a.status != 'VALID' LIMIT 1",
+                "SELECT 1 FROM errors_errorclassificationrevision ecr "
+                "JOIN errors_errorclassification ec ON ec.id = ecr.error_classification_id "
+                "JOIN errors_error_category cat ON cat.id = ecr.category_id "
+                "WHERE ecr.workspace_id != ec.workspace_id "
+                "OR ecr.workspace_id != cat.workspace_id LIMIT 1",
+                "SELECT 1 FROM attempts_attempt a "
+                "LEFT JOIN errors_errorclassification ec ON ec.attempt_id = a.id "
+                "WHERE a.status = 'VALID' AND ((a.is_correct = 1 AND ec.id IS NOT NULL) "
+                "OR (a.is_correct = 0 AND ec.id IS NULL)) LIMIT 1",
+                "SELECT 1 FROM reviews_reviewcycle c "
+                "JOIN questions_question q ON q.id = c.question_id "
+                "JOIN attempts_attempt a ON a.id = c.origin_attempt_id "
+                "WHERE c.workspace_id != q.workspace_id OR c.workspace_id != a.workspace_id "
+                "OR c.question_id != a.question_id OR a.attempt_type != 'INITIAL' "
+                "OR a.is_correct = 1 OR a.status != 'VALID' LIMIT 1",
+                "SELECT 1 FROM reviews_review r "
+                "JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id "
+                "JOIN questions_question q ON q.id = r.question_id "
+                "JOIN attempts_attempt a ON a.id = r.scheduled_from_attempt_id "
+                "WHERE r.workspace_id != c.workspace_id OR r.question_id != c.question_id "
+                "OR r.workspace_id != q.workspace_id OR r.workspace_id != a.workspace_id "
+                "OR r.question_id != a.question_id OR a.status != 'VALID' LIMIT 1",
+                "SELECT 1 FROM attempts_operationreceipt op "
+                "LEFT JOIN attempts_attempt a ON op.result_entity_type = 'ATTEMPT' "
+                "AND a.id = op.result_entity_id "
+                "WHERE op.result_entity_type = 'ATTEMPT' "
+                "AND (a.id IS NULL OR a.workspace_id != op.workspace_id) LIMIT 1",
+            )
+            if any(database.execute(query).fetchone() is not None for query in v03_violations):
+                raise RestoreError(
+                    "A fundação de aprendizagem V0.3 possui relações inconsistentes."
+                )
     except RestoreError:
         raise
     except (sqlite3.Error, ValueError, TypeError) as error:
@@ -554,6 +622,12 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
         revision_count=cast(int, counts["revision_count"]),
         alternative_count=cast(int, counts["alternative_count"]),
         origin_count=cast(int, counts["origin_count"]),
+        attempt_count=cast(int, counts["attempt_count"]),
+        classification_count=cast(int, counts["classification_count"]),
+        classification_revision_count=cast(int, counts["classification_revision_count"]),
+        review_cycle_count=cast(int, counts["review_cycle_count"]),
+        review_count=cast(int, counts["review_count"]),
+        operation_receipt_count=cast(int, counts["operation_receipt_count"]),
     )
 
 
@@ -565,7 +639,7 @@ def restore_sqlite_backup(
     database_alias: str = "default",
     correlation_id: str | None = None,
 ) -> RestoreResult:
-    """Restaure somente em destino novo após reconciliação da fundação e V0.2."""
+    """Restaure somente em destino novo após reconciliação até a fundação V0.3."""
     temporary_destination: Path | None = None
     published_destination: Path | None = None
     with correlation_scope(correlation_id):

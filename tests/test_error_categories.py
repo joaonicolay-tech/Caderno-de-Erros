@@ -181,10 +181,24 @@ def test_seed_creates_no_unrelated_domain_tables_or_records() -> None:
     project_tables = {
         name
         for name in connection.introspection.table_names()
-        if name.startswith(("accounts_", "errors_"))
+        if name.startswith(("accounts_", "attempts_", "errors_", "reviews_"))
     }
     assert project_tables == {
         "accounts_user",
         "accounts_workspace",
+        "attempts_attempt",
+        "attempts_operationreceipt",
         "errors_error_category",
+        "errors_errorclassification",
+        "errors_errorclassificationrevision",
+        "reviews_review",
+        "reviews_reviewcycle",
     }
+    for learning_table in project_tables - {
+        "accounts_user",
+        "accounts_workspace",
+        "errors_error_category",
+    }:
+        with connection.cursor() as cursor:
+            cursor.execute(f"SELECT COUNT(*) FROM {learning_table}")  # noqa: S608
+            assert cursor.fetchone() == (0,)

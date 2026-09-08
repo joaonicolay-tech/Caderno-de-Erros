@@ -21,6 +21,7 @@ DEFINITION_SOURCES = {
     "CT": "docs/Caderno_de_Erros_Inteligente_Etapa_10_Plano_de_Testes.md",
     "ERR-V01": "docs/Caderno_de_Erros_Inteligente_Gate_de_Implementacao_Auditoria_Final.md",
     "ERR-V02": "docs/ADR-010_Fronteira_Rastreabilidade_e_Dados_V0.2.md",
+    "ERR-V03": "docs/Caderno_de_Erros_Inteligente_Etapa_10_Plano_de_Testes.md",
 }
 DEFINITION_PATTERNS = {
     "RF": re.compile(r"^### `(RF-\d{3})`", re.MULTILINE),
@@ -30,10 +31,11 @@ DEFINITION_PATTERNS = {
     "CT": re.compile(r"^\| `(CT-\d{3})` \|", re.MULTILINE),
     "ERR-V01": re.compile(r"^\| `(ERR-V01-\d{3})` \|", re.MULTILINE),
     "ERR-V02": re.compile(r"^### `(ERR-V02-\d{3})`", re.MULTILINE),
+    "ERR-V03": re.compile(r"^## Errata controlada V0\.3 — `(ERR-V03-\d{3})`", re.MULTILINE),
 }
 CORE_REFERENCE_PATTERN = re.compile(
     r"(?<![A-Z0-9-])(?:RF-\d{3}|RNF-\d{3}|RN-\d{3}|FL-\d{3}|CT-\d{3}|"
-    r"ERR-V01-\d{3}|ERR-V02-\d{3}|ADR-\d{3})(?![A-Z0-9-])"
+    r"ERR-V01-\d{3}|ERR-V02-\d{3}|ERR-V03-\d{3}|ADR-\d{3})(?![A-Z0-9-])"
 )
 MARKDOWN_LINK_PATTERN = re.compile(r"\]\((?P<target>[^)]+)\)")
 TEST_SELECTOR_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")

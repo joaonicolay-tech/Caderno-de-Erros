@@ -1,9 +1,9 @@
 # Project State
 
-Versão atual: V0.3 (planejamento documental)
-Situação da versão: Etapa 0 concluída; Etapa 1 formalmente liberada, não iniciada
-Etapa atual: V0.3 — Etapa 1 — Fundação de Aprendizagem: Schema, Constraints e Políticas Puras
-Status da etapa atual: liberada para execução exclusivamente em novo chat; não iniciada
+Versão atual: V0.3 (implementação incremental)
+Situação da versão: Etapas 0 e 1 concluídas
+Etapa atual: nenhuma tarefa autorizada
+Status da etapa atual: Etapa 1 concluída; Etapa 2 não preparada nem iniciada
 
 Etapas concluídas:
 
@@ -16,6 +16,8 @@ Etapas concluídas:
 - V0.2 — Etapa 6 — Detalhe, Edição Versionada e Arquivamento de Questões.
 - V0.2 — Etapa 7 — Listagem, Busca e Filtros de Conteúdo.
 - V0.2 — Etapa 8 — Fixture, Acessibilidade, Backup, Integração e Regressão.
+- V0.3 — Etapa 0 — Saneamento, Fronteira e Rastreabilidade.
+- V0.3 — Etapa 1 — Fundação de Aprendizagem: Schema, Constraints e Políticas Puras.
 
 Melhoria operacional:
 Etapa 6 — adoção definitiva do novo fluxo operacional concluída.
@@ -24,13 +26,13 @@ Baseline protegida:
 `v0.2.0` (`a756b6d`)
 
 Último gate:
-GREEN — V0.3 Etapa 0 documental, exit code 0
+GREEN — V0.3 Etapa 1, exit code 0, 62,4 s
 
 Testes:
-192 coletados pela suite do gate da Etapa 0; validador documental GREEN
+209 aprovados; `CT-073`, `CT-074` e `CT-076`–`CT-082` GREEN
 
 Coverage:
-Sem alteração de código nesta etapa; metas aplicáveis preservadas
+86% global; todos os módulos de domínio/regra do manifesto acima de 80%
 
 Bloqueadores:
 Nenhum
@@ -39,14 +41,14 @@ P0/P1 aplicável aberto:
 Nenhum
 
 Evidência de encerramento:
-`ADR-011` resolveu a rastreabilidade V0.3, `CT-019`, `CT-041`, a orquestração,
-o contexto transitório, a política SQLite/idempotência e `OperationReceipt`.
-A evidência está em `quality/v03-stage0-documentation-result.md`.
+As seis entidades, quatro migrations ordenadas, constraints, isolamento,
+policies puras, contenção/idempotência, instalação limpa e upgrade/restauração
+desde `v0.2.0` estão registrados em
+`quality/v03-stage1-learning-foundation-result.md`.
 
 Próximo objetivo:
-Executar exclusivamente em novo chat a V0.3 — Etapa 1 — Fundação de
-Aprendizagem: Schema, Constraints e Políticas Puras, conforme `tasks/current.md`.
-Ela está formalmente liberada, mas ainda não foi iniciada.
+Nenhum autorizado. A Etapa 2 não foi preparada nem iniciada; exige nova
+`tasks/current.md` formal e novo chat.
 
 ADRs relevantes:
 
