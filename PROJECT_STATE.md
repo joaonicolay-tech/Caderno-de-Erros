@@ -1,9 +1,9 @@
 # Project State
 
 Versão atual: V0.3 (planejamento documental)
-Situação da versão: Etapa 0 concluída; implementação não iniciada
-Etapa atual: nenhuma tarefa autorizada
-Status da etapa atual: V0.3 — Etapa 0 encerrada; Etapa 1 aguarda autorização formal
+Situação da versão: Etapa 0 concluída; Etapa 1 formalmente liberada, não iniciada
+Etapa atual: V0.3 — Etapa 1 — Fundação de Aprendizagem: Schema, Constraints e Políticas Puras
+Status da etapa atual: liberada para execução exclusivamente em novo chat; não iniciada
 
 Etapas concluídas:
 
@@ -44,8 +44,9 @@ o contexto transitório, a política SQLite/idempotência e `OperationReceipt`.
 A evidência está em `quality/v03-stage0-documentation-result.md`.
 
 Próximo objetivo:
-Não há execução autorizada. A Etapa 1 da V0.3 está documentalmente liberada,
-mas não foi autorizada e não foi iniciada.
+Executar exclusivamente em novo chat a V0.3 — Etapa 1 — Fundação de
+Aprendizagem: Schema, Constraints e Políticas Puras, conforme `tasks/current.md`.
+Ela está formalmente liberada, mas ainda não foi iniciada.
 
 ADRs relevantes:
 
