@@ -643,6 +643,23 @@ arquivamento com suspensão, transação, concorrência ou rastreabilidade.
 
 ---
 
+## ADR-012 — Parâmetros Executáveis de BCR-1 e CT-125 na V0.3
+
+**Arquivo:** `ADR-012_Parametros_Executaveis_BCR-1_e_CT-125_V0.3.md`
+
+### Assunto
+
+Complementa ADR-011 com o protocolo reprodutível de `CT-107`/`BCR-1` e a
+amostra manual de `CT-125`, sem registrar execução, PASS ou promoção.
+
+### Consultar quando
+
+* executar ou auditar o benchmark `BCR-1`/`CT-107` da V0.3;
+* executar ou auditar a evidência humana `CT-125`;
+* interpretar os bloqueadores remanescentes da promoção V0.3.
+
+---
+
 # 3. Documentos de gate, promoção e release
 
 ## Gate de Implementação — Auditoria Final da Documentação

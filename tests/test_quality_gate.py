@@ -27,6 +27,7 @@ V03_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage1-gate.json"
 V03_STAGE2_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage2-gate.json"
 V03_STAGE3_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage3-gate.json"
 V03_STAGE4_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage4-gate.json"
+V03_STAGE5_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage5-gate.json"
 STAGE1_MANIFEST_REVISION = "".join(
     ("b64552c1cc6201a82245", "61a6c25f29a2bb8f4a47")  # pragma: allowlist secret
 )
@@ -35,6 +36,9 @@ STAGE2_MANIFEST_REVISION = "".join(
 )
 STAGE3_MANIFEST_REVISION = "".join(
     ("9176d28a68036bf2aac4", "6df5cba9feac09515b96")  # pragma: allowlist secret
+)
+STAGE4_MANIFEST_REVISION = "".join(
+    ("7b06d30cee61494d742a", "29a4a9fe893531525eab")  # pragma: allowlist secret
 )
 
 
@@ -69,6 +73,10 @@ def test_current_repository_satisfies_v03_stage4_contract() -> None:
     verify_repository(PROJECT_ROOT, V03_STAGE4_MANIFEST_PATH)
 
 
+def test_current_repository_satisfies_v03_stage5_contract() -> None:
+    verify_repository(PROJECT_ROOT, V03_STAGE5_MANIFEST_PATH)
+
+
 @pytest.mark.parametrize(
     ("revision", "manifest"),
     [
@@ -83,6 +91,10 @@ def test_current_repository_satisfies_v03_stage4_contract() -> None:
         (
             STAGE3_MANIFEST_REVISION,
             "v03-stage3-gate.json",
+        ),
+        (
+            STAGE4_MANIFEST_REVISION,
+            "v03-stage4-gate.json",
         ),
     ],
 )

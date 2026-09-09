@@ -1,9 +1,9 @@
 # Project State
 
 Versão atual: V0.3 (implementação incremental)
-Situação da versão: Etapas 0, 1, 2, 3 e 4 concluídas; Etapa 5 formalmente liberada
+Situação da versão: Etapas 0, 1, 2, 3 e 4 concluídas; Etapa 5 aberta, com validação parcial registrada
 Etapa atual: V0.3 — Etapa 5 — Integração, Migração, Regressão, Carga/Concorrência e Promoção
-Status da etapa atual: E5 autorizada documentalmente, ainda não iniciada; V0.3 não promovida
+Status da etapa atual: E5 aberta; gate técnico GREEN, mas CT-107 aguarda execução e CT-125 aguarda execução humana; V0.3 não promovida
 
 Etapas concluídas:
 
@@ -29,31 +29,32 @@ Baseline protegida:
 `v0.2.0` (`a756b6d`)
 
 Último gate:
-GREEN — V0.3 Etapa 4, exit code 0
+GREEN — V0.3 Etapa 5, exit code 0 (a promoção permanece bloqueada)
 
 Testes:
-266 aprovados, incluindo 5 testes E4 específicos; CT-019, CT-030–CT-036,
-CT-041 e CT-125 GREEN
+269 aprovados; os CTs automatizados aplicáveis à E5 estão GREEN. CT-107 e
+CT-125 não possuem PASS.
 
 Coverage:
 86% global; todos os módulos de domínio/regra do manifesto E4 acima de 80%
 
 Bloqueadores:
-Nenhum
+`CT-107`/`BCR-1` (P0), aguardando benchmark real sob ADR-012; `CT-125` (P1),
+aguardando evidência humana sob o protocolo atualizado.
 
 P0/P1 aplicável aberto:
-Nenhum
+`CT-107` (P0) e `CT-125` (P1).
 
 Evidência de encerramento:
-Fila derivada, timeline, diagnóstico append-only, arquivamento com suspensão,
-isolamento, rollback, contenção SQLite e interface estão registrados em
-`quality/v03-stage4-derived-queue-timeline-result.md`. As migrations E1 e os
-manifestos E1–E3 permanecem intactos. Nenhuma promoção da versão foi realizada.
+O resultado integrado E5 está em `quality/v03-stage5-validation-result.md`.
+ADR-012 torna `CT-107` e `CT-125` executáveis sem ambiguidade, sem preencher
+qualquer resultado. As migrations E1 e os manifestos E1–E4 permanecem
+intactos. Nenhuma promoção da versão foi realizada.
 
 Próximo objetivo autorizado:
-Executar exclusivamente a V0.3 — Etapa 5 de validação integrada e promoção
-condicionada, conforme `tasks/current.md`. E5 não foi iniciada. V0.4 não está
-preparada, autorizada nem iniciada; V0.3 continua não promovida.
+Executar exclusivamente as provas pendentes da V0.3 — Etapa 5: benchmark real
+`CT-107` conforme ADR-012 e sessão humana `CT-125` conforme protocolo. V0.4
+não está preparada, autorizada nem iniciada; V0.3 continua não promovida.
 
 ADRs relevantes:
 
@@ -63,3 +64,4 @@ ADR-003
 ADR-008
 ADR-010
 ADR-011
+ADR-012

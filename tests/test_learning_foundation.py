@@ -783,7 +783,9 @@ FinalOrigin = final_apps.get_model("questions", "QuestionOrigin")
 current_revision = FinalRevision.objects.get(version_number=2)
 historical_revision = FinalRevision.objects.get(version_number=1)
 current_origin = FinalOrigin.objects.get()
-after = {"users": final_apps.get_model("accounts", "User").objects.count(), "workspaces": final_apps.get_model("accounts", "Workspace").objects.count(), "categories": final_apps.get_model("errors", "ErrorCategory").objects.count(), "disciplines": final_apps.get_model("taxonomy", "Discipline").objects.count(), "subjects": final_apps.get_model("taxonomy", "Subject").objects.count(), "subsubjects": final_apps.get_model("taxonomy", "Subsubject").objects.count(), "boards": final_apps.get_model("questions", "Board").objects.count(), "exams": final_apps.get_model("questions", "Exam").objects.count(), "sources": final_apps.get_model("questions", "Source").objects.count(), "questions": final_apps.get_model("questions", "Question").objects.count(), "revisions": FinalRevision.objects.count(), "alternatives": final_apps.get_model("questions", "Alternative").objects.count(), "origins": FinalOrigin.objects.count(), "activated_at": final_apps.get_model("questions", "Question").objects.get().activated_at.isoformat(), "current_version": current_revision.version_number, "historical_stem": historical_revision.stem, "correct": str(current_revision.correct_alternative_id), "wrong": str(wrong_2.id), "origin_source": str(current_origin.source_id), "origin_exam": str(current_origin.exam_id), "origin_reference": current_origin.reference_text}
+FinalAttempt = final_apps.get_model("attempts", "Attempt")
+FinalAttempt.objects.create(workspace_id=workspace.id, question_id=question.id, question_revision_id=current_revision.id, attempt_type="INITIAL", selected_alternative_id=current_revision.correct_alternative_id, is_correct=True, occurred_at=datetime(2026, 9, 8, 12, tzinfo=UTC), timezone_name="America/Sao_Paulo", local_date=datetime(2026, 9, 8, 12, tzinfo=UTC).astimezone().date(), idempotency_key=uuid.UUID("33333333-3333-4333-8333-333333333333"))
+after = {"users": final_apps.get_model("accounts", "User").objects.count(), "workspaces": final_apps.get_model("accounts", "Workspace").objects.count(), "categories": final_apps.get_model("errors", "ErrorCategory").objects.count(), "disciplines": final_apps.get_model("taxonomy", "Discipline").objects.count(), "subjects": final_apps.get_model("taxonomy", "Subject").objects.count(), "subsubjects": final_apps.get_model("taxonomy", "Subsubject").objects.count(), "boards": final_apps.get_model("questions", "Board").objects.count(), "exams": final_apps.get_model("questions", "Exam").objects.count(), "sources": final_apps.get_model("questions", "Source").objects.count(), "questions": final_apps.get_model("questions", "Question").objects.count(), "revisions": FinalRevision.objects.count(), "alternatives": final_apps.get_model("questions", "Alternative").objects.count(), "origins": FinalOrigin.objects.count(), "activated_at": final_apps.get_model("questions", "Question").objects.get().activated_at.isoformat(), "current_version": current_revision.version_number, "historical_stem": historical_revision.stem, "correct": str(current_revision.correct_alternative_id), "wrong": str(wrong_2.id), "origin_source": str(current_origin.source_id), "origin_exam": str(current_origin.exam_id), "origin_reference": current_origin.reference_text, "v03_attempts": FinalAttempt.objects.count()}
 connection.close()
 with closing(sqlite3.connect(Path(os.environ["CEI_V03_BACKUP_PATH"]))) as src, closing(sqlite3.connect(Path(os.environ["CEI_V03_RESTORED_PATH"]))) as dst:
     with dst:
@@ -810,7 +812,10 @@ print(json.dumps({"before": before, "after": after, "rollback": rollback}))
     )
     assert result.returncode == 0, result.stderr
     evidence = json.loads(result.stdout.strip().splitlines()[-1])
-    assert evidence["after"] == evidence["before"]
+    assert {
+        key: value for key, value in evidence["after"].items() if key != "v03_attempts"
+    } == evidence["before"]
+    assert evidence["after"]["v03_attempts"] == 1
     assert evidence["rollback"] == {
         "integrity": "ok",
         "foreign_keys": [],

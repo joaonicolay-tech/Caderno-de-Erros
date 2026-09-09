@@ -1,5 +1,18 @@
 # V0.3 — Etapa 5 — Integração, Migração, Regressão, Carga/Concorrência e Promoção
 
+## Adendo operacional de 9 de setembro de 2026
+
+A validação integrada e o gate técnico E5 foram executados e registrados em
+`quality/v03-stage5-validation-result.md`, mas a E5 permanece aberta e V0.3
+permanece **NÃO PROMOVIDA** exclusivamente por `CT-107` e `CT-125`. ADR-012
+formaliza as provas pendentes: o benchmark real `BCR-1`/`CT-107` e a sessão
+humana `CT-125`. V0.4 continua não autorizada.
+
+Este adendo não executa o benchmark, não preenche resultado humano, não marca
+qualquer CT como PASS e não promove a versão. Ele substitui somente as menções
+históricas desta tarefa a E5 “ainda não iniciada” e à inexistência de artefato
+E5; as demais fronteiras e proibições permanecem vigentes.
+
 ## Autorização e objetivo
 
 Esta é a tarefa formal de **VALIDAÇÃO E PROMOÇÃO** da V0.3. O nome adota o recorte canônico de ADR-011 §9 e esclarece que "migração" inclui instalação limpa e upgrade representativo; não autoriza migration nova. E0–E4 estão concluídas e GREEN. A E5 está formalmente liberada, mas ainda não iniciada.
