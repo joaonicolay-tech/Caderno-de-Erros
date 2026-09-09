@@ -2,8 +2,8 @@
 
 Versão atual: V0.3 (implementação incremental)
 Situação da versão: Etapas 0, 1, 2 e 3 concluídas
-Etapa atual: nenhuma tarefa autorizada
-Status da etapa atual: V0.3 Etapa 3 concluída; Etapa 4 não autorizada
+Etapa atual: V0.3 Etapa 4 formalmente liberada
+Status da etapa atual: Etapa 4 autorizada somente para futura implementação; não iniciada
 
 Etapas concluídas:
 
@@ -48,9 +48,11 @@ rollback, contenção SQLite e interface direta estão registrados em
 `quality/v03-stage3-review-completion-result.md`. A fundação E1 e suas
 migrations permanecem intactas. Nenhuma promoção da versão foi realizada.
 
-Próximo objetivo:
-Nenhum. A Etapa 4 não está autorizada, preparada nem iniciada; exige nova
-autorização formal em novo chat.
+Próximo objetivo autorizado:
+V0.3 — Etapa 4 — Fila Derivada, Linha do Tempo, Diagnóstico Auditável e
+Suspensão por Arquivamento, conforme `tasks/current.md`. A autorização foi
+preparada documentalmente; nenhuma implementação foi iniciada. A Etapa 5 não
+está autorizada, preparada nem iniciada.
 
 ADRs relevantes:
 
