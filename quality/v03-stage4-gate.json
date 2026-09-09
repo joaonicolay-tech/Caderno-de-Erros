@@ -1,0 +1,36 @@
+{
+  "schema_version": 3,
+  "release": "V0.3 — Etapa 4",
+  "protected_baseline": "v0.2.0@a756b6dce6cac05cfb81b4ab5891eebcb7d47292",
+  "required_identifiers": ["RF-019", "RF-031", "RF-036", "RF-037", "RF-038", "RF-039", "RF-040", "RN-032", "RN-040", "RN-041", "RN-042", "RN-043", "RN-044", "RN-048", "RN-049", "RN-055", "RN-087", "FL-006", "FL-008", "FL-009", "FL-013", "CT-019", "CT-030", "CT-031", "CT-032", "CT-033", "CT-034", "CT-035", "CT-036", "CT-041", "CT-125", "ADR-011"],
+  "reference_scope": [],
+  "expected_test_cases": ["CT-019", "CT-030", "CT-031", "CT-032", "CT-033", "CT-034", "CT-035", "CT-036", "CT-041", "CT-125"],
+  "promotion_pending_cases": [],
+  "test_evidence": {
+    "CT-019": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct019_diagnosis_correction_seeds_history_is_append_only_and_checks_lock"}]},
+    "CT-030": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct030_to_ct036_queue_is_workspace_scoped_temporal_and_stably_ordered"}]},
+    "CT-031": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct030_to_ct036_queue_is_workspace_scoped_temporal_and_stably_ordered"}]},
+    "CT-032": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct030_to_ct036_queue_is_workspace_scoped_temporal_and_stably_ordered"}]},
+    "CT-033": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct030_to_ct036_queue_is_workspace_scoped_temporal_and_stably_ordered"}]},
+    "CT-034": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct030_to_ct036_queue_is_workspace_scoped_temporal_and_stably_ordered"}]},
+    "CT-035": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct030_to_ct036_queue_is_workspace_scoped_temporal_and_stably_ordered"}]},
+    "CT-036": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct030_to_ct036_queue_is_workspace_scoped_temporal_and_stably_ordered"}]},
+    "CT-041": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct041_archive_suspends_active_cycle_review_and_preserves_timeline"}, {"kind": "test", "target": "tests/test_stage4_learning.py::test_ct041_archive_without_cycle_and_suspended_review_blocks_completion"}]},
+    "CT-125": {"status": "executable", "evidence": [{"kind": "test", "target": "tests/test_stage4_learning.py::test_ct125_queue_timeline_and_correction_views_keep_csrf_and_escaping"}]}
+  },
+  "domain_coverage": {
+    "minimum_line_percent": 80,
+    "files": ["src/modules/errors/services.py", "src/modules/questions/services.py", "src/modules/reviews/services.py", "src/modules/reviews/selectors.py", "src/modules/reviews/policies.py"]
+  },
+  "migration_sha256": {
+    "src/modules/accounts/migrations/0001_initial.py": [82,74,213,206,119,47,122,235,186,85,218,180,142,107,73,120,193,24,121,14,147,246,251,215,194,217,246,81,76,180,234,164],
+    "src/modules/attempts/migrations/0001_learning_foundation.py": [59,226,119,41,51,38,107,170,157,203,41,24,252,134,133,94,34,29,88,196,10,109,131,145,248,251,163,45,22,230,125,176],
+    "src/modules/attempts/migrations/0002_review_receipt_constraints.py": [96,80,95,37,122,170,134,72,232,135,185,8,6,190,229,242,60,43,83,170,53,183,67,11,200,102,174,35,203,224,224,120],
+    "src/modules/errors/migrations/0001_initial.py": [107,41,64,70,87,216,166,0,62,39,30,255,42,49,167,245,170,114,2,171,26,16,171,120,19,142,219,254,149,134,118,234],
+    "src/modules/errors/migrations/0002_learning_classification.py": [211,183,74,28,126,106,237,76,46,30,181,236,161,11,168,130,84,76,208,155,68,117,109,198,81,19,90,226,35,174,175,215],
+    "src/modules/questions/migrations/0001_origin_catalog.py": [97,166,38,54,23,75,118,77,52,243,39,208,182,79,105,188,161,253,73,255,111,158,24,221,10,205,67,242,175,8,151,244],
+    "src/modules/questions/migrations/0002_question_catalog.py": [222,225,192,146,124,237,202,76,232,26,185,191,214,94,111,131,197,229,194,30,242,157,89,226,182,16,36,43,159,80,106,209],
+    "src/modules/reviews/migrations/0001_learning_foundation.py": [92,216,71,146,27,179,23,213,62,170,124,177,177,63,16,12,117,254,167,10,130,241,54,43,51,65,157,167,58,6,195,199],
+    "src/modules/taxonomy/migrations/0001_initial.py": [220,90,71,0,146,253,186,222,187,195,239,220,249,236,201,182,22,74,150,108,41,245,109,222,129,201,220,68,42,57,237,70]
+  }
+}

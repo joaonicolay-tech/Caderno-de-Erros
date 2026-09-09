@@ -3,20 +3,107 @@
 import secrets
 import uuid
 
-from django.http import HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
-from modules.accounts.services import LOCAL_USER_ID, LOCAL_WORKSPACE_ID
+from modules.accounts.exceptions import WorkspaceAccessDenied
+from modules.accounts.models import Workspace
+from modules.accounts.services import LOCAL_USER_ID, LOCAL_WORKSPACE_ID, get_workspace_for_owner
 from modules.attempts.context import InitialAttemptError
 from modules.attempts.forms import CancelForm, ReviewAnswerForm, ReviewConfirmationForm
-from modules.errors.models import ErrorCategory
+from modules.errors.forms import ErrorClassificationCorrectionForm
+from modules.errors.models import ErrorCategory, ErrorClassification
+from modules.errors.services import ErrorDiagnosisConflictError, ErrorDiagnosisService
 
+from .selectors import get_learning_timeline, list_review_queue
 from .services import CompleteReviewService
 
 SESSION_COOKIE = "review_session"
 COOKIE_SALT = "review-session-v1"
+
+
+def _workspace() -> Workspace | None:
+    try:
+        return get_workspace_for_owner(actor_user_id=LOCAL_USER_ID, workspace_id=LOCAL_WORKSPACE_ID)
+    except WorkspaceAccessDenied:
+        return None
+
+
+@never_cache
+@require_http_methods(["GET"])
+def queue(request: HttpRequest) -> HttpResponse:
+    """Exiba as três seções derivadas; cada uma possui paginação independente."""
+    workspace = _workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+
+    def page(name: str) -> int:
+        try:
+            return max(1, int(request.GET.get(name, "1")))
+        except ValueError:
+            return 1
+
+    result = list_review_queue(
+        workspace_id=workspace.id,
+        overdue_page=page("overdue_page"),
+        due_page=page("due_page"),
+        future_page=page("future_page"),
+    )
+    return render(request, "reviews/queue.html", {"workspace": workspace, "queue": result})
+
+
+@never_cache
+@require_http_methods(["GET"])
+def timeline(request: HttpRequest, question_id: uuid.UUID) -> HttpResponse:
+    workspace = _workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    try:
+        events = get_learning_timeline(workspace_id=workspace.id, question_id=question_id)
+    except Exception as error:
+        raise Http404("Histórico não encontrado.") from error
+    return render(request, "reviews/timeline.html", {"workspace": workspace, "events": events})
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+def correct_diagnosis(request: HttpRequest, attempt_id: uuid.UUID) -> HttpResponse:
+    workspace = _workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    classification = (
+        ErrorClassification.objects.filter(workspace_id=workspace.id, attempt_id=attempt_id)
+        .select_related("attempt", "category")
+        .first()
+    )
+    if classification is None:
+        raise Http404("Diagnóstico não encontrado.")
+    form = ErrorClassificationCorrectionForm(
+        request.POST if request.method == "POST" else None,
+        initial={
+            "lock_version": classification.lock_version,
+            "category": classification.category_id,
+            "other_description": classification.other_description,
+        },
+        workspace_id=workspace.id,
+    )
+    if request.method == "POST" and form.is_valid():
+        try:
+            ErrorDiagnosisService(workspace_id=workspace.id).correct(
+                attempt_id=attempt_id,
+                category_id=form.cleaned_data["category"].id,
+                other_description=form.cleaned_data["other_description"],
+                change_reason=form.cleaned_data["change_reason"],
+                expected_lock_version=form.cleaned_data["lock_version"],
+            )
+            return redirect("reviews:timeline", question_id=classification.attempt.question_id)
+        except (ErrorDiagnosisConflictError, ValueError) as error:
+            form.add_error(None, str(error))
+    return render(
+        request, "reviews/diagnosis_correct.html", {"form": form, "classification": classification}
+    )
 
 
 @never_cache

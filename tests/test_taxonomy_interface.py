@@ -58,7 +58,7 @@ def test_empty_taxonomy_and_home_expose_only_the_implemented_capability() -> Non
     assert 'aria-current="page"' in html
     assert "Abrir taxonomia" in home
     assert "Nova questão" in home
-    for forbidden in ("Tentativas", "Revisões", "Dashboard", "Métricas", "Busca"):
+    for forbidden in ("Tentativas", "Dashboard", "Métricas", "Busca"):
         assert f">{forbidden}<" not in home
 
 

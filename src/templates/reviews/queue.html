@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Fila de revisões — Caderno de Erros{% endblock %}
+{% block content %}
+<main><h1>Fila de revisões</h1><p>Fila derivada no fuso do Workspace.</p>
+<section aria-labelledby="overdue"><h2 id="overdue">Atrasadas</h2>{% for review in queue.overdue.entries %}<p><a href="{% url 'reviews:complete' review.id %}">{{ review.stage_code }} — {{ review.current_due_date }}</a></p>{% empty %}<p>Nenhuma revisão atrasada.</p>{% endfor %}</section>
+<section aria-labelledby="due"><h2 id="due">Hoje</h2>{% for review in queue.due.entries %}<p><a href="{% url 'reviews:complete' review.id %}">{{ review.stage_code }} — {{ review.current_due_date }}</a></p>{% empty %}<p>Nenhuma revisão para hoje.</p>{% endfor %}</section>
+<section aria-labelledby="future"><h2 id="future">Futuras</h2>{% for review in queue.future.entries %}<p>{{ review.stage_code }} — {{ review.current_due_date }}</p>{% empty %}<p>Nenhuma revisão futura.</p>{% endfor %}</section></main>
+{% endblock %}

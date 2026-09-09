@@ -259,7 +259,9 @@ class CompleteReviewService:
     ) -> tuple[Review, Question, QuestionRevision]:
         self.attempts.workspace()
         review = Review.objects.filter(
-            pk=review_id, workspace_id=self.attempts.workspace_id
+            pk=review_id,
+            workspace_id=self.attempts.workspace_id,
+            review_cycle__state=ReviewCycleState.ACTIVE,
         ).first()
         if review is None or (require_pending and review.state != ReviewState.PENDING):
             raise InitialAttemptError("CONFLICT")

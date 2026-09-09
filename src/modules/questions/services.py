@@ -1122,7 +1122,6 @@ def set_question_origin(
     return result
 
 
-@transaction.atomic
 def archive_question(
     *,
     workspace_id: uuid.UUID,
@@ -1130,26 +1129,78 @@ def archive_question(
     expected_lock_version: int,
     clock: Clock | None = None,
 ) -> Question:
-    """Arquive a identidade sem apagar suas revisões ou origem."""
-    question = _locked_question(workspace_id=workspace_id, question_id=question_id)
-    _check_question_lock(question, expected_lock_version)
-    if question.status == QuestionStatus.ARCHIVED:
-        raise QuestionCatalogStateConflictError("A questão já está arquivada.")
-    now = (clock or SystemClock()).now().value
-    updated = Question.objects.filter(
-        pk=question.id,
-        workspace_id=workspace_id,
-        lock_version=expected_lock_version,
-    ).update(
-        status=QuestionStatus.ARCHIVED,
-        archived_at=now,
-        lock_version=F("lock_version") + 1,
-        updated_at=now,
-    )
-    if updated != 1:
-        raise QuestionCatalogConcurrencyError("A questão mudou; recarregue a versão atual.")
-    question.refresh_from_db()
-    return question
+    """Arquive e suspenda a pendência ativa no mesmo commit, sem apagar fatos."""
+    from modules.attempts.persistence import run_sqlite_critical_write
+    from modules.reviews.models import Review, ReviewCycle, ReviewCycleState, ReviewState
+
+    source = clock or SystemClock()
+
+    def write() -> Question:
+        with transaction.atomic(durable=True):
+            question = _locked_question(workspace_id=workspace_id, question_id=question_id)
+            _check_question_lock(question, expected_lock_version)
+            if question.status == QuestionStatus.ARCHIVED:
+                raise QuestionCatalogStateConflictError("A questão já está arquivada.")
+            now = source.now().value
+            cycle = (
+                ReviewCycle.objects.select_for_update()
+                .filter(
+                    workspace_id=workspace_id,
+                    question_id=question_id,
+                    state=ReviewCycleState.ACTIVE,
+                )
+                .first()
+            )
+            if cycle is not None:
+                pending = (
+                    Review.objects.select_for_update()
+                    .filter(
+                        workspace_id=workspace_id,
+                        review_cycle_id=cycle.id,
+                        state=ReviewState.PENDING,
+                    )
+                    .first()
+                )
+                if pending is None:
+                    raise QuestionCatalogStateConflictError("Ciclo ativo sem Review pendente.")
+                suspended = Review.objects.filter(
+                    pk=pending.id, state=ReviewState.PENDING, lock_version=pending.lock_version
+                ).update(
+                    state=ReviewState.SUSPENDED,
+                    suspended_at=now,
+                    lock_version=F("lock_version") + 1,
+                    updated_at=now,
+                )
+                cycle_changed = ReviewCycle.objects.filter(
+                    pk=cycle.id, state=ReviewCycleState.ACTIVE, lock_version=cycle.lock_version
+                ).update(
+                    state=ReviewCycleState.SUSPENDED,
+                    suspended_at=now,
+                    suspension_reason="QUESTION_ARCHIVED",
+                    lock_version=F("lock_version") + 1,
+                    updated_at=now,
+                )
+                if suspended != 1 or cycle_changed != 1:
+                    raise QuestionCatalogConcurrencyError(
+                        "O ciclo mudou; recarregue a versão atual."
+                    )
+            updated = Question.objects.filter(
+                pk=question.id,
+                workspace_id=workspace_id,
+                status=QuestionStatus.ACTIVE,
+                lock_version=expected_lock_version,
+            ).update(
+                status=QuestionStatus.ARCHIVED,
+                archived_at=now,
+                lock_version=F("lock_version") + 1,
+                updated_at=now,
+            )
+            if updated != 1:
+                raise QuestionCatalogConcurrencyError("A questão mudou; recarregue a versão atual.")
+            question.refresh_from_db()
+            return question
+
+    return run_sqlite_critical_write(write)
 
 
 def _revision_matches(

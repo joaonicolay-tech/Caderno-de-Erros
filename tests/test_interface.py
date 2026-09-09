@@ -127,6 +127,7 @@ def test_initialized_home_only_links_existing_capabilities_and_preserves_unicode
         "/configuracoes/",
         "/questions/",
         "/questions/new/",
+        "/reviews/",
         "/taxonomy/",
         "#conteudo-principal",
     }

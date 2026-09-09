@@ -26,6 +26,16 @@ V02_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v02-stage1-gate.json"
 V03_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage1-gate.json"
 V03_STAGE2_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage2-gate.json"
 V03_STAGE3_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage3-gate.json"
+V03_STAGE4_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage4-gate.json"
+STAGE1_MANIFEST_REVISION = "".join(
+    ("b64552c1cc6201a82245", "61a6c25f29a2bb8f4a47")  # pragma: allowlist secret
+)
+STAGE2_MANIFEST_REVISION = "".join(
+    ("fdd001b0b23b2cb09e48", "2714e8a68f02c334a90b")  # pragma: allowlist secret
+)
+STAGE3_MANIFEST_REVISION = "".join(
+    ("9176d28a68036bf2aac4", "6df5cba9feac09515b96")  # pragma: allowlist secret
+)
 
 
 def _manifest() -> dict[str, object]:
@@ -53,6 +63,39 @@ def test_current_repository_satisfies_v03_stage1_contract() -> None:
 
 def test_current_repository_satisfies_v03_stage3_contract() -> None:
     verify_repository(PROJECT_ROOT, V03_STAGE3_MANIFEST_PATH)
+
+
+def test_current_repository_satisfies_v03_stage4_contract() -> None:
+    verify_repository(PROJECT_ROOT, V03_STAGE4_MANIFEST_PATH)
+
+
+@pytest.mark.parametrize(
+    ("revision", "manifest"),
+    [
+        (
+            STAGE1_MANIFEST_REVISION,
+            "v03-stage1-gate.json",
+        ),
+        (
+            STAGE2_MANIFEST_REVISION,
+            "v03-stage2-gate.json",
+        ),
+        (
+            STAGE3_MANIFEST_REVISION,
+            "v03-stage3-gate.json",
+        ),
+    ],
+)
+def test_v03_historical_manifests_are_immutable(revision: str, manifest: str) -> None:
+    completed = subprocess.run(
+        ["git", "show", f"{revision}:quality/{manifest}"],  # noqa: S607
+        cwd=PROJECT_ROOT,
+        check=True,
+        capture_output=True,
+    )
+    # Git may materialize tracked JSON as CRLF on Windows; content still must match its stage blob.
+    current = (PROJECT_ROOT / "quality" / manifest).read_text(encoding="utf-8")
+    assert current.replace("\r\n", "\n").encode() == completed.stdout
 
 
 def test_v02_stage1_manifest_matches_protected_v020_baseline_byte_for_byte() -> None:
