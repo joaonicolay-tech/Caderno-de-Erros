@@ -1,9 +1,9 @@
 # Project State
 
 Versão atual: V0.3 (implementação incremental)
-Situação da versão: Etapas 0, 1, 2, 3 e 4 concluídas
-Etapa atual: nenhuma tarefa de implementação autorizada
-Status da etapa atual: E4 concluída e encerrada; E5 não foi preparada nem autorizada
+Situação da versão: Etapas 0, 1, 2, 3 e 4 concluídas; Etapa 5 formalmente liberada
+Etapa atual: V0.3 — Etapa 5 — Integração, Migração, Regressão, Carga/Concorrência e Promoção
+Status da etapa atual: E5 autorizada documentalmente, ainda não iniciada; V0.3 não promovida
 
 Etapas concluídas:
 
@@ -51,8 +51,9 @@ isolamento, rollback, contenção SQLite e interface estão registrados em
 manifestos E1–E3 permanecem intactos. Nenhuma promoção da versão foi realizada.
 
 Próximo objetivo autorizado:
-Nenhum. `tasks/current.md` está deliberadamente sem tarefa autorizada. A Etapa
-5 não está autorizada, preparada nem iniciada.
+Executar exclusivamente a V0.3 — Etapa 5 de validação integrada e promoção
+condicionada, conforme `tasks/current.md`. E5 não foi iniciada. V0.4 não está
+preparada, autorizada nem iniciada; V0.3 continua não promovida.
 
 ADRs relevantes:
 
