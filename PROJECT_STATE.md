@@ -2,8 +2,8 @@
 
 Versão atual: V0.3 (implementação incremental)
 Situação da versão: Etapas 0, 1, 2 e 3 concluídas
-Etapa atual: V0.3 Etapa 4 formalmente liberada
-Status da etapa atual: Etapa 4 autorizada somente para futura implementação; não iniciada
+Etapa atual: V0.3 Etapa 4 formalmente autorizada para implementação
+Status da etapa atual: Etapa 4 preparada, autorizada para implementação em novo chat e ainda não iniciada
 
 Etapas concluídas:
 
@@ -50,9 +50,10 @@ migrations permanecem intactas. Nenhuma promoção da versão foi realizada.
 
 Próximo objetivo autorizado:
 V0.3 — Etapa 4 — Fila Derivada, Linha do Tempo, Diagnóstico Auditável e
-Suspensão por Arquivamento, conforme `tasks/current.md`. A autorização foi
-preparada documentalmente; nenhuma implementação foi iniciada. A Etapa 5 não
-está autorizada, preparada nem iniciada.
+Suspensão por Arquivamento, conforme `tasks/current.md`. A E3 está concluída;
+a E4 foi preparada e está formalmente autorizada para implementação em novo
+chat, mas ainda não foi iniciada. A Etapa 5 não está autorizada, preparada nem
+iniciada.
 
 ADRs relevantes:
 

@@ -2,7 +2,7 @@
 
 ## Autorização e objetivo
 
-Esta tarefa autoriza exclusivamente a futura implementação da E4, formalmente liberada depois da E3 GREEN e não iniciada nesta execução documental. O nome confirma o recorte de ADR-011 §9: fila/timeline, diagnóstico e arquivamento com suspensão; não inclui dashboard, métricas, analytics, domínio ou prioridade. E5 continua não autorizada.
+Esta é a tarefa formal de **IMPLEMENTAÇÃO** da E4. Ela autoriza exclusivamente a implementação funcional da E4, formalmente liberada depois da E3 GREEN e ainda não iniciada. O nome confirma o recorte de ADR-011 §9: fila/timeline, diagnóstico e arquivamento com suspensão; não inclui dashboard, métricas, analytics, domínio ou prioridade. E5 continua não autorizada.
 
 O objetivo é consolidar a leitura e manutenção operacional dos fatos existentes: fila derivada, timeline histórica, correção auditável de diagnóstico e arquivamento que suspende o ciclo ativo atomicamente.
 
@@ -43,9 +43,11 @@ Sem ciclo ativo, arquivamento continua válido e não cria fatos. Replay não po
 
 A pendência sai da fila, a timeline segue legível e `CompleteReviewService.complete_review(...)` deve rejeitar Review suspensa, ciclo inativo ou questão arquivada antes de criar Attempt/recibo/contexto.
 
-## Interface, transações e migrações
+## Entrega autorizada, interface, transações e migrações
 
 Interface mínima: três seções da fila, abertura de Review elegível, timeline, correção de diagnóstico e indicação histórica de arquivamento/suspensão. Usar views finas, services/selectors, autorização Workspace, POST+CSRF, escaping, PRG e padrões acessíveis (semântica, teclado, foco, labels, erros e vazio). Sem dashboard, gráficos ou métricas.
+
+Esta implementação autoriza criar e alterar exclusivamente o código funcional E4 necessário: selectors, services, views, forms, templates mínimos, extensão mínima do arquivamento e testes E4. Não autoriza antecipar nenhuma capacidade fora deste recorte.
 
 Fila/detalhe/timeline são leitura e não escrevem cache/status/recibo. Correção de diagnóstico é uma transação de lock, snapshots, projeção e recibo quando aplicável; mesma chave/hash reproduz resultado, payload divergente conflita e falha reverte tudo. Arquivamento+suspensão é uma transação Question/ciclo/Review, mantendo constraints, locks, `busy_timeout` e a única retentativa SQLite de ADR-011. `AttemptService` continua exclusivo para inicial e `CompleteReviewService` para conclusão.
 
@@ -59,12 +61,22 @@ Cobrir no mínimo `CT-019`, `CT-030`–`CT-036`, `CT-041`, `CT-125` e regressõe
 
 Aceite: filas derivadas corretas; timezone/data civil corretos; concluídas e suspensas fora da fila; timeline preserva fatos; correção cria história imutável; arquivamento suspende atomicamente e preserva histórico; Workspace isolado; mutações atômicas/idempotentes quando aplicável; sem E5+; gate GREEN e nenhum P0/P1 aplicável.
 
-## Manifesto e gate da futura implementação
+## Riscos e contenções
 
-Durante a implementação, e nunca nesta preparação, criar `quality/v03-stage4-gate.json`, exclusivo E4, com CTs/evidências, cobertura E4 e hashes de migrations históricas. Testar proteção contra alteração/reuso de `v03-stage1-gate.json`, `v03-stage2-gate.json` e `v03-stage3-gate.json`: são históricos e imutáveis. Só na E4 apontar `scripts/quality.ps1` exclusivamente ao manifesto E4; jamais sobrescrever/reaproveitar os anteriores. Executar testes específicos, `git diff --check` e o gate autoritativo.
+- Concorrência, replay e falha parcial podem duplicar ou divergir fatos: preservar locks, constraints, transações curtas, `busy_timeout`, a única retentativa SQLite e idempotência aplicável de ADR-011.
+- Correção de diagnóstico pode violar a auditoria: manter `Attempt` imutável, revisões append-only, semeadura determinística da revisão 1 e projeção corrente consistente após commit.
+- Arquivamento pode deixar pendência executável: suspender atomicamente ciclo ativo e sua única Review pendente, sem apagar histórico e sem reativação.
+- O schema pode não comportar uma regra aprovada: tratar como bloqueador e reportar antes de criar migration.
+- O gate pode perder rastreabilidade histórica: criar somente o manifesto E4 e preservar imutáveis os manifestos E1–E3.
 
-## Fora de escopo e restrições desta execução
+## Manifesto, gate e encerramento da implementação
+
+Criar `quality/v03-stage4-gate.json`, exclusivo E4, com CTs/evidências, cobertura E4 e hashes de migrations históricas. Testar proteção contra alteração/reuso de `v03-stage1-gate.json`, `v03-stage2-gate.json` e `v03-stage3-gate.json`: são históricos e imutáveis. Na E4, apontar `scripts/quality.ps1` exclusivamente ao manifesto E4; jamais sobrescrever/reaproveitar os anteriores. Executar testes específicos, `git diff --check` e o gate autoritativo.
+
+Quando todos os critérios estiverem GREEN, registrar a evidência final, atualizar `PROJECT_STATE.md` e arquivar esta tarefa conforme o padrão do repositório. Commit, push, tag e release continuam fora desta tarefa.
+
+## Fora de escopo e limites permanentes
 
 Fora: dashboard, métricas, analytics, domínio, confiança, prioridade, recomendações, revisão adaptativa, reagendamento, reativação, `SavedFilter`, exportação, correção/anulação estrutural de Attempt, E5 e V0.4+.
 
-Nesta execução: não implementar E4, não alterar código funcional/models/migrations, não criar manifesto E4, não iniciar E5, nem commit/push/tag/release.
+Não alterar migrations históricas, nem criar migration nova. Se a implementação demonstrar bloqueador real de schema, parar e reportar a lacuna antes de criar qualquer migration. Não iniciar E5, nem fazer commit, push, tag ou release.
