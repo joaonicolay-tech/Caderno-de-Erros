@@ -8,5 +8,6 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("taxonomy/", include("modules.taxonomy.urls")),
     path("questions/", include("modules.questions.urls")),
     path("initial/", include("modules.attempts.urls")),
+    path("reviews/", include("modules.reviews.urls")),
     path("", include("modules.accounts.urls")),
 ]

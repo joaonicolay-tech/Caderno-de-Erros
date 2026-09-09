@@ -5,6 +5,7 @@ from typing import Any
 from django import forms
 from django.http import QueryDict
 
+from modules.attempts.models import PerceivedEase
 from modules.errors.models import ErrorCategory
 
 
@@ -30,6 +31,12 @@ class AnswerForm(StrictForm):
     alternative_id = forms.ChoiceField(label="Sua resposta", widget=forms.RadioSelect)
 
 
+class ReviewAnswerForm(AnswerForm):
+    """Inclui a versão da Review apresentada, sem aceitar estado do cliente."""
+
+    review_lock_version = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
+
+
 class ConfirmationForm(StrictForm):
     """Diagnóstico mínimo opcional somente no formulário de erro."""
 
@@ -43,6 +50,16 @@ class ConfirmationForm(StrictForm):
         max_length=500,
         required=False,
         widget=forms.Textarea(attrs={"rows": 3}),
+    )
+
+
+class ReviewConfirmationForm(ConfirmationForm):
+    """Confirmação da revisão, com facilidade fechada e opcional."""
+
+    perceived_ease = forms.ChoiceField(
+        label="Facilidade percebida",
+        choices=[("", "---"), *list(PerceivedEase.choices)],
+        required=False,
     )
 
 

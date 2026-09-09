@@ -30,6 +30,8 @@ class AnswerContext:
     is_correct: bool
     evaluated_at: datetime
     timezone_name: str
+    review_id: uuid.UUID | None = None
+    review_lock_version: int | None = None
     nonce: str = field(default_factory=lambda: secrets.token_urlsafe(32))
 
     @property

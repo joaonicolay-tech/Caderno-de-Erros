@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Concluir revisão — Caderno de Erros{% endblock %}
+{% block content %}
+<h1>Concluir revisão</h1>
+{% if error %}<p role="alert">{{ error }}</p><p>{{ code }}</p>{% endif %}
+{% if review_id %}<p><a href="{% url 'reviews:complete' review_id %}">Reabrir revisão</a></p>{% endif %}
+{% if receipt %}<p role="status">Revisão confirmada com sucesso.</p><p>Recibo: {{ receipt }}</p>{% endif %}
+{% if answer %}
+  <p class="preserve-lines">{{ stem }}</p>
+  <form method="post">{% csrf_token %}{{ answer.as_p }}<button name="action" value="answer">Avaliar resposta</button></form>
+{% endif %}
+{% if confirmation %}
+  <p role="status">{% if is_correct %}Resposta correta.{% else %}Resposta incorreta. Classifique o erro para confirmar.{% endif %}</p>
+  <p>Gabarito: {{ correction }}</p>
+  {% if explanation %}<p>{{ explanation }}</p>{% endif %}{% if trap_note %}<p>{{ trap_note }}</p>{% endif %}
+  <p>A avaliação expira em 15 minutos. Até confirmar, não há tentativa registrada.</p>
+  <form method="post">{% csrf_token %}{{ confirmation.as_p }}<button name="action" value="confirm">Confirmar revisão</button></form>
+  <form method="post">{% csrf_token %}{{ cancel.as_p }}<button name="action" value="cancel">Cancelar resposta</button></form>
+{% endif %}
+<p><a href="{% url 'questions:list' %}">Voltar às questões</a></p>
+{% endblock %}

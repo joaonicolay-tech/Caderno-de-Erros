@@ -24,6 +24,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = PROJECT_ROOT / "quality" / "v01-gate.json"
 V02_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v02-stage1-gate.json"
 V03_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage1-gate.json"
+V03_STAGE2_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage2-gate.json"
+V03_STAGE3_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage3-gate.json"
 
 
 def _manifest() -> dict[str, object]:
@@ -49,6 +51,10 @@ def test_current_repository_satisfies_v03_stage1_contract() -> None:
     verify_repository(PROJECT_ROOT, V03_MANIFEST_PATH)
 
 
+def test_current_repository_satisfies_v03_stage3_contract() -> None:
+    verify_repository(PROJECT_ROOT, V03_STAGE3_MANIFEST_PATH)
+
+
 def test_v02_stage1_manifest_matches_protected_v020_baseline_byte_for_byte() -> None:
     completed = subprocess.run(
         ["git", "show", "v0.2.0:quality/v02-stage1-gate.json"],  # noqa: S607
@@ -58,6 +64,17 @@ def test_v02_stage1_manifest_matches_protected_v020_baseline_byte_for_byte() -> 
     )
 
     assert V02_MANIFEST_PATH.read_bytes() == completed.stdout
+
+
+def test_v03_stage2_manifest_matches_completed_stage_byte_for_byte() -> None:
+    completed = subprocess.run(
+        ["git", "show", "fdd001b:quality/v03-stage2-gate.json"],  # noqa: S607
+        cwd=PROJECT_ROOT,
+        check=True,
+        capture_output=True,
+    )
+
+    assert V03_STAGE2_MANIFEST_PATH.read_bytes() == completed.stdout
 
 
 def test_v01_manifest_remains_strict_about_later_migrations() -> None:

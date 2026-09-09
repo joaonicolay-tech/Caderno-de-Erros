@@ -10,7 +10,7 @@ $env:UV_CACHE_DIR = Join-Path $toolsDirectory "cache"
 $env:UV_PYTHON_INSTALL_DIR = Join-Path $toolsDirectory "python"
 $qualityReportsDirectory = Join-Path $toolsDirectory "quality"
 $coverageReport = ".tools/quality/coverage.json"
-$gateManifest = "quality/v03-stage2-gate.json"
+$gateManifest = "quality/v03-stage3-gate.json"
 $pytestBaseTemp = Join-Path ([System.IO.Path]::GetTempPath()) (
     "cei-pytest-" + [Guid]::NewGuid().ToString("N")
 )
