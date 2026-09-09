@@ -1,9 +1,9 @@
 # Project State
 
 Versão atual: V0.3 (implementação incremental)
-Situação da versão: Etapas 0, 1 e 2 concluídas
-Etapa atual: nenhuma tarefa autorizada
-Status da etapa atual: Etapa 2 concluída; Etapa 3 não preparada nem iniciada
+Situação da versão: Etapas 0, 1 e 2 concluídas; Etapa 3 formalmente liberada
+Etapa atual: V0.3 — Etapa 3 — Política e Conclusão de Revisões
+Status da etapa atual: autorizada para execução futura em novo chat; não iniciada
 
 Etapas concluídas:
 
@@ -13,11 +13,11 @@ Etapas concluídas:
 - V0.2 — Etapa 3 — Catálogo de Origem;
 - V0.2 — Etapa 4 — Catálogo de Questões;
 - V0.2 — Etapa 5 — Rascunho, Ativação e Cadastro Rápido;
-- V0.2 — Etapa 6 — Detalhe, Edição Versionada e Arquivamento de Questões.
-- V0.2 — Etapa 7 — Listagem, Busca e Filtros de Conteúdo.
-- V0.2 — Etapa 8 — Fixture, Acessibilidade, Backup, Integração e Regressão.
-- V0.3 — Etapa 0 — Saneamento, Fronteira e Rastreabilidade.
-- V0.3 — Etapa 1 — Fundação de Aprendizagem: Schema, Constraints e Políticas Puras.
+- V0.2 — Etapa 6 — Detalhe, Edição Versionada e Arquivamento de Questões;
+- V0.2 — Etapa 7 — Listagem, Busca e Filtros de Conteúdo;
+- V0.2 — Etapa 8 — Fixture, Acessibilidade, Backup, Integração e Regressão;
+- V0.3 — Etapa 0 — Saneamento, Fronteira e Rastreabilidade;
+- V0.3 — Etapa 1 — Fundação de Aprendizagem: Schema, Constraints e Políticas Puras;
 - V0.3 — Etapa 2 — Resposta Inicial Protegida, Contexto Transitório e Finalização Inicial Atômica.
 
 Melhoria operacional:
@@ -48,8 +48,9 @@ recibos/replay, isolamento, rollback e contenção SQLite estão registrados em
 permanecem intactas. Nenhuma promoção da versão foi realizada.
 
 Próximo objetivo:
-Nenhum autorizado. A Etapa 3 não foi preparada nem iniciada; exige nova
-`tasks/current.md` formal e novo chat.
+Implementar somente V0.3 — Etapa 3 — Política e Conclusão de Revisões, conforme
+`tasks/current.md`, em novo chat. E2 permanece concluída; E3 está formalmente
+liberada, mas ainda não iniciada. Nenhuma E4 está autorizada, preparada ou iniciada.
 
 ADRs relevantes:
 
