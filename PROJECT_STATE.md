@@ -1,9 +1,9 @@
 # Project State
 
 Versão atual: V0.3 (implementação incremental)
-Situação da versão: Etapas 0 e 1 concluídas
+Situação da versão: Etapas 0, 1 e 2 concluídas
 Etapa atual: nenhuma tarefa autorizada
-Status da etapa atual: Etapa 1 concluída; Etapa 2 não preparada nem iniciada
+Status da etapa atual: Etapa 2 concluída; Etapa 3 não preparada nem iniciada
 
 Etapas concluídas:
 
@@ -18,6 +18,7 @@ Etapas concluídas:
 - V0.2 — Etapa 8 — Fixture, Acessibilidade, Backup, Integração e Regressão.
 - V0.3 — Etapa 0 — Saneamento, Fronteira e Rastreabilidade.
 - V0.3 — Etapa 1 — Fundação de Aprendizagem: Schema, Constraints e Políticas Puras.
+- V0.3 — Etapa 2 — Resposta Inicial Protegida, Contexto Transitório e Finalização Inicial Atômica.
 
 Melhoria operacional:
 Etapa 6 — adoção definitiva do novo fluxo operacional concluída.
@@ -26,13 +27,13 @@ Baseline protegida:
 `v0.2.0` (`a756b6d`)
 
 Último gate:
-GREEN — V0.3 Etapa 1, exit code 0, 62,4 s
+GREEN — V0.3 Etapa 2, execução direta, exit code 0, 81,8 s
 
 Testes:
-209 aprovados; `CT-073`, `CT-074` e `CT-076`–`CT-082` GREEN
+240 aprovados, incluindo 30 testes E2; CTs E2 aplicáveis GREEN
 
 Coverage:
-86% global; todos os módulos de domínio/regra do manifesto acima de 80%
+87% global; todos os módulos de domínio/regra do manifesto acima de 80%
 
 Bloqueadores:
 Nenhum
@@ -41,13 +42,13 @@ P0/P1 aplicável aberto:
 Nenhum
 
 Evidência de encerramento:
-As seis entidades, quatro migrations ordenadas, constraints, isolamento,
-policies puras, contenção/idempotência, instalação limpa e upgrade/restauração
-desde `v0.2.0` estão registrados em
-`quality/v03-stage1-learning-foundation-result.md`.
+A jornada inicial protegida, contexto efêmero, acerto/erro atômicos,
+recibos/replay, isolamento, rollback e contenção SQLite estão registrados em
+`quality/v03-stage2-initial-answer-result.md`. A fundação E1 e suas migrations
+permanecem intactas. Nenhuma promoção da versão foi realizada.
 
 Próximo objetivo:
-Nenhum autorizado. A Etapa 2 não foi preparada nem iniciada; exige nova
+Nenhum autorizado. A Etapa 3 não foi preparada nem iniciada; exige nova
 `tasks/current.md` formal e novo chat.
 
 ADRs relevantes:

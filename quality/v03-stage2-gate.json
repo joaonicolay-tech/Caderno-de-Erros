@@ -1,0 +1,1353 @@
+{
+    "schema_version":  3,
+    "release":  "V0.3 — Etapa 2",
+    "protected_baseline":  "v0.2.0@a756b6dce6cac05cfb81b4ab5891eebcb7d47292",
+    "required_identifiers":  [
+                                 "RF-001",
+                                 "RF-002",
+                                 "RF-003",
+                                 "RF-004",
+                                 "RF-005",
+                                 "RF-006",
+                                 "RF-007",
+                                 "RF-008",
+                                 "RF-009",
+                                 "RF-010",
+                                 "RF-011",
+                                 "RF-012",
+                                 "RF-013",
+                                 "RF-014",
+                                 "RF-015",
+                                 "RF-017",
+                                 "RF-018",
+                                 "RF-019",
+                                 "RF-021",
+                                 "RF-022",
+                                 "RF-023",
+                                 "RF-024",
+                                 "RF-025",
+                                 "RF-026",
+                                 "RF-028",
+                                 "RF-029",
+                                 "RF-030",
+                                 "RF-034",
+                                 "RF-035",
+                                 "RF-043",
+                                 "RF-044",
+                                 "RF-067",
+                                 "RF-068",
+                                 "RNF-003",
+                                 "RNF-007",
+                                 "RNF-008",
+                                 "RNF-010",
+                                 "RNF-013",
+                                 "RNF-016",
+                                 "RNF-017",
+                                 "RNF-025",
+                                 "RNF-026",
+                                 "RNF-027",
+                                 "RNF-031",
+                                 "RNF-032",
+                                 "RNF-033",
+                                 "RNF-044",
+                                 "RNF-045",
+                                 "RNF-046",
+                                 "RNF-047",
+                                 "RNF-048",
+                                 "RNF-049",
+                                 "RNF-052",
+                                 "RNF-056",
+                                 "RNF-057",
+                                 "RNF-058",
+                                 "RNF-066",
+                                 "RNF-074",
+                                 "RNF-075",
+                                 "RNF-076",
+                                 "RNF-077",
+                                 "RNF-063",
+                                 "RNF-065",
+                                 "RNF-078",
+                                 "RNF-079",
+                                 "RNF-080",
+                                 "RN-001",
+                                 "RN-002",
+                                 "RN-003",
+                                 "RN-004",
+                                 "RN-005",
+                                 "RN-006",
+                                 "RN-007",
+                                 "RN-008",
+                                 "RN-009",
+                                 "RN-011",
+                                 "RN-012",
+                                 "RN-013",
+                                 "RN-014",
+                                 "RN-015",
+                                 "RN-016",
+                                 "RN-017",
+                                 "RN-018",
+                                 "RN-019",
+                                 "RN-020",
+                                 "RN-021",
+                                 "RN-023",
+                                 "RN-025",
+                                 "RN-026",
+                                 "RN-028",
+                                 "RN-029",
+                                 "RN-030",
+                                 "RN-032",
+                                 "RN-033",
+                                 "RN-039",
+                                 "RN-086",
+                                 "RN-087",
+                                 "FL-001",
+                                 "FL-002",
+                                 "FL-003",
+                                 "FL-004",
+                                 "FL-005",
+                                 "FL-006",
+                                 "FL-010",
+                                 "FL-022",
+                                 "FL-023",
+                                 "CT-001",
+                                 "CT-002",
+                                 "CT-003",
+                                 "CT-004",
+                                 "CT-005",
+                                 "CT-006",
+                                 "CT-007",
+                                 "CT-008",
+                                 "CT-010",
+                                 "CT-011",
+                                 "CT-012",
+                                 "CT-073",
+                                 "CT-074",
+                                 "CT-075",
+                                 "CT-076",
+                                 "CT-077",
+                                 "CT-078",
+                                 "CT-079",
+                                 "CT-080",
+                                 "CT-081",
+                                 "CT-082",
+                                 "CT-094",
+                                 "CT-095",
+                                 "CT-096",
+                                 "CT-097",
+                                 "CT-099",
+                                 "CT-104",
+                                 "CT-122",
+                                 "CT-123",
+                                 "CT-127",
+                                 "CT-128",
+                                 "CT-129",
+                                 "CT-130",
+                                 "CT-131",
+                                 "CT-132",
+                                 "CT-133",
+                                 "CT-134",
+                                 "CT-135",
+                                 "CT-136",
+                                 "CT-137",
+                                 "CT-138",
+                                 "CT-139",
+                                 "CT-140",
+                                 "CT-141",
+                                 "CT-142",
+                                 "CT-143",
+                                 "CT-144",
+                                 "ERR-V01-001",
+                                 "ERR-V01-002",
+                                 "ERR-V01-003",
+                                 "ERR-V01-004",
+                                 "ERR-V01-005",
+                                 "ERR-V01-006",
+                                 "ERR-V01-007",
+                                 "ERR-V01-008",
+                                 "ERR-V01-009",
+                                 "ERR-V02-001",
+                                 "ERR-V02-002",
+                                 "ERR-V02-003",
+                                 "ERR-V02-004",
+                                 "ERR-V02-005",
+                                 "ERR-V02-006",
+                                 "ERR-V02-007",
+                                 "ERR-V02-008",
+                                 "ERR-V02-009",
+                                 "ERR-V03-001",
+                                 "ADR-001",
+                                 "ADR-002",
+                                 "ADR-003",
+                                 "ADR-004",
+                                 "ADR-005",
+                                 "ADR-006",
+                                 "ADR-007",
+                                 "ADR-008",
+                                 "ADR-009",
+                                 "ADR-010",
+                                 "ADR-011"
+                             ],
+    "reference_scope":  [
+                            "README.md",
+                            "docs/ADR-001_Toolchain_Reproduzivel_V0.1.md",
+                            "docs/ADR-002_Perfis_e_Isolamento_Django_V0.1.md",
+                            "docs/ADR-003_Identidade_Workspace_e_Tempo_V0.1.md",
+                            "docs/ADR-004_Categorias_Padrao_e_Seed_V0.1.md",
+                            "docs/ADR-005_Logging_Correlacao_e_Health_Local_V0.1.md",
+                            "docs/ADR-006_Interface_Acessivel_da_Fundacao_V0.1.md",
+                            "docs/ADR-007_Backup_e_Restauracao_Minima_SQLite_V0.1.md",
+                            "docs/ADR-008_Gate_Unico_de_Qualidade_V0.1.md",
+                            "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md",
+                            "docs/ADR-010_Fronteira_Rastreabilidade_e_Dados_V0.2.md",
+                            "docs/Caderno_de_Erros_Inteligente_Etapa_3_Requisitos_Funcionais.md",
+                            "docs/Caderno_de_Erros_Inteligente_Etapa_4_Requisitos_Nao_Funcionais.md",
+                            "docs/Caderno_de_Erros_Inteligente_Etapa_5_Regras_de_Negocio.md",
+                            "docs/Caderno_de_Erros_Inteligente_Etapa_6_SDD.md",
+                            "docs/Caderno_de_Erros_Inteligente_Etapa_7_Modelo_de_Dados.md",
+                            "docs/Caderno_de_Erros_Inteligente_Etapa_8_Fluxos_Principais.md",
+                            "docs/Caderno_de_Erros_Inteligente_Etapa_9_Roadmap (1).md",
+                            "docs/Caderno_de_Erros_Inteligente_Etapa_10_Plano_de_Testes.md",
+                            "docs/RELEASE_NOTES_V0.1.md"
+                        ],
+    "expected_test_cases":  [
+                                "CT-001",
+                                "CT-002",
+                                "CT-003",
+                                "CT-004",
+                                "CT-005",
+                                "CT-006",
+                                "CT-007",
+                                "CT-008",
+                                "CT-010",
+                                "CT-011",
+                                "CT-012",
+                                "CT-073",
+                                "CT-074",
+                                "CT-075",
+                                "CT-076",
+                                "CT-077",
+                                "CT-078",
+                                "CT-079",
+                                "CT-080",
+                                "CT-081",
+                                "CT-082",
+                                "CT-094",
+                                "CT-095",
+                                "CT-096",
+                                "CT-097",
+                                "CT-099",
+                                "CT-104",
+                                "CT-122",
+                                "CT-123",
+                                "CT-124",
+                                "CT-127",
+                                "CT-129",
+                                "CT-130",
+                                "CT-131",
+                                "CT-132",
+                                "CT-133",
+                                "CT-134",
+                                "CT-135",
+                                "CT-136",
+                                "CT-137",
+                                "CT-138",
+                                "CT-139",
+                                "CT-140",
+                                "CT-141",
+                                "CT-142",
+                                "CT-143",
+                                "CT-144",
+                                "CT-015",
+                                "CT-017",
+                                "CT-021",
+                                "CT-093",
+                                "CT-022",
+                                "CT-100",
+                                "CT-016",
+                                "CT-018",
+                                "CT-013",
+                                "CT-014",
+                                "CT-101"
+                            ],
+    "promotion_pending_cases":  [
+
+                                ],
+    "test_evidence":  {
+                          "CT-001":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_accounts.py::test_workspace_queries_and_changes_are_scoped_by_owner"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-002":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_interface.py::test_valid_first_access_persists_timezone_and_shows_success"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-003":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct003_normalizer_collapses_space_case_and_unicode_but_preserves_accents"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct003_active_uniqueness_uses_normalized_name_and_allows_archived_reuse"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct003_same_child_name_is_allowed_under_different_parents_only"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-004":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct004_and_ct074_services_reject_cross_workspace_without_partial_data"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_composed_transaction_rolls_back_when_hierarchy_creation_fails"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-005":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct005_draft_with_title_exists_without_revision"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-006":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct006_ct007_create_active_requires_complete_hierarchy_content_and_answer"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-007":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct006_ct007_create_active_requires_complete_hierarchy_content_and_answer"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct011_ct139_active_aggregate_keeps_order_and_answer_in_own_revision"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-008":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct008_ct075_revision_switch_is_atomic_and_preserves_previous_snapshot"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-010":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct010_archive_preserves_revisions_origin_and_rejects_future_edits"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-011":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct011_ct139_active_aggregate_keeps_order_and_answer_in_own_revision"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-012":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct012_unicode_and_text_boundaries_are_preserved"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-073":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_accounts.py::test_first_accounts_migration_contains_custom_user_and_no_default_user_table"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_error_categories.py::test_canonical_code_cannot_be_changed_or_duplicated_in_workspace"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct073_foreign_keys_reject_orphans_and_protect_hierarchy"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct073_database_constraints_cover_uniqueness_states_types_year_and_lock"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct073_foreign_keys_reject_orphans_and_use_protect"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct073_constraints_and_protected_foreign_keys_cover_local_invariants"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_ct073_foreign_keys_and_local_checks_reject_invalid_learning_rows"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-074":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_accounts.py::test_workspace_owner_foreign_key_is_enforced"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct004_and_ct074_services_reject_cross_workspace_without_partial_data"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct074_model_guard_rejects_cross_workspace_outside_services"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct074_creation_and_queries_are_fully_workspace_scoped"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct074_model_guard_rejects_cross_workspace_exam_board"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct074_hierarchy_and_selectors_never_cross_workspace"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_ct074_model_guards_reject_cross_workspace_learning_links"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-075":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct008_ct075_revision_switch_is_atomic_and_preserves_previous_snapshot"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct073_constraints_and_protected_foreign_keys_cover_local_invariants"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-076":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_ct076_only_one_valid_initial_attempt_exists_per_question"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-077":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_ct077_only_one_valid_attempt_exists_per_review"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-078":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_ct078_only_one_active_cycle_exists_and_completed_history_is_preserved"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-079":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_ct079_pending_review_is_rejected_by_guard_and_database_constraint"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-080":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_ct080_receipt_recovers_equal_hash_and_rejects_collision"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-081":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_accounts.py::test_migrations_apply_from_an_empty_disposable_database"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_taxonomy_migration_is_single_initial_node_with_v01_dependency"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct081_origin_migration_remains_frozen_as_questions_root"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct081_question_migration_has_frozen_dependencies_order_and_schema"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_ct081_migration_graph_and_final_schema_are_frozen_without_cycle"
+                                                          },
+                                                          {
+                                                              "kind":  "gate-step",
+                                                              "target":  "migrar banco vazio isolado"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-082":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct082_and_ct122_upgrade_v01_data_to_taxonomy_initial"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct082_upgrade_from_v01_preserves_existing_data"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct082_upgrade_from_stage2_preserves_taxonomy_data"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct082_upgrade_and_rollback_preserve_stage3_data"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_ct082_upgrade_v020_and_backup_restore_preserve_representative_data"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_learning_foundation.py::test_v01_v02_migrations_match_protected_v020_tag"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-094":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy_interface.py::test_ct003_and_ct094_duplicate_form_preserves_input_and_associates_error"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy_interface.py::test_ct137_complete_create_edit_and_hierarchical_navigation"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-095":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy_interface.py::test_ct004_and_ct095_foreign_or_unknown_ids_return_safe_404"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-096":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy_interface.py::test_ct096_mutations_keep_csrf_and_http_method_protection"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-097":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy_interface.py::test_ct097_user_html_is_escaped_in_lists_context_and_attributes"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-099":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_operations.py::test_central_sanitization_removes_secret_and_private_payloads"
+                                                          },
+                                                          {
+                                                              "kind":  "gate-step",
+                                                              "target":  "detectar segredos"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-104":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "gate-step",
+                                                              "target":  "auditar vulnerabilidades"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-122":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct082_and_ct122_upgrade_v01_data_to_taxonomy_initial"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct082_upgrade_and_rollback_preserve_stage3_data"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-123":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "gate-step",
+                                                              "target":  "executar testes e cobertura"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_backup_restore.py::test_management_commands_are_available_and_validate_backup"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-127":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "documentation",
+                                                              "target":  "README.md"
+                                                          },
+                                                          {
+                                                              "kind":  "documentation",
+                                                              "target":  "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md"
+                                                          },
+                                                          {
+                                                              "kind":  "gate-step",
+                                                              "target":  "sincronizar ambiente"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-129":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_error_categories.py::test_repeated_bootstrap_does_not_duplicate_and_preserves_codes_and_ids"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-130":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_settings_profiles.py::test_test_profile_ignores_real_database_and_secret_environment"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-131":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_operations.py::test_health_is_unhealthy_and_safe_when_database_is_unavailable"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-132":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_backup_restore.py::test_ct132_creates_consistent_backup_and_minimal_manifest"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-133":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_backup_restore.py::test_ct133_restores_and_reconciles_minimal_foundation"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-134":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_operations.py::test_structured_log_has_required_fields_and_correlation"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_backup_restore.py::test_invalid_backup_failure_log_is_correlated_and_sanitized"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-135":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_time.py::test_calendar_produces_distinct_local_dates_for_same_instant"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_time.py::test_fixed_clock_can_advance_without_changing_system_clock"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-136":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "documentation",
+                                                              "target":  "docs/ADR-009_Validacao_Final_e_Promocao_V0.1.md"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_interface.py::test_templates_use_native_keyboard_semantics_and_visible_focus"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_interface.py::test_layout_has_responsive_boundaries_without_horizontal_dependency"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_interface.py::test_documented_primary_colors_meet_text_contrast_target"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-137":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct137_rename_uses_lock_and_preserves_identity_and_timestamp"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_ct137_archive_preserves_descendant_states_and_effective_availability"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy.py::test_subject_and_subsubject_archive_are_historical_and_workspace_scoped"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy_interface.py::test_ct137_complete_create_edit_and_hierarchical_navigation"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy_interface.py::test_archive_requires_confirmation_can_cancel_and_preserves_descendants"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy_interface.py::test_subject_and_subsubject_archive_flows_remain_historical"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_taxonomy_interface.py::test_subject_and_subsubject_archive_can_be_cancelled_without_changes"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-138":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct138_create_reuses_equivalent_active_references_within_workspace"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct138_year_boundaries_use_workspace_calendar_and_controlled_clock"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct138_exam_board_year_and_catalog_details_are_optional"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_origin_catalog.py::test_ct074_creation_and_queries_are_fully_workspace_scoped"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct138_origin_is_optional_unique_mutable_and_removed_when_empty"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct138_origin_rejects_cross_workspace_exclusivity_and_dynamic_year"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-139":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct011_ct139_active_aggregate_keeps_order_and_answer_in_own_revision"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct074_hierarchy_and_selectors_never_cross_workspace"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-140":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct008_ct075_revision_switch_is_atomic_and_preserves_previous_snapshot"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct140_failure_and_stale_lock_preserve_previous_current_revision"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_model_guard_rejects_answer_from_another_revision"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-141":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_v02_fixture.py::test_ct141_fixture_is_deterministic_idempotent_and_covers_catalog_states"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_v02_fixture.py::test_ct141_fixture_command_is_explicit_and_rejects_non_disposable_profiles"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-144":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_catalog.py::test_ct144_equal_stems_are_not_semantically_blocked"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-124":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_interface.py::test_ct005_draft_can_be_completed_and_activated_without_duplicate"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-142":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_question_interface.py::test_ct142_templates_remain_semantic_keyboard_accessible_and_responsive"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-143":  {
+                                         "status":  "executable",
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_v02_fixture.py::test_ct143_backup_restore_reconciles_v02_catalog_and_rejects_corruption"
+                                                          },
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_backup_restore.py::test_existing_destination_is_never_replaced"
+                                                          }
+                                                      ]
+                                     },
+                          "CT-015":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_http_rejects_extra_confirmation_fields"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-017":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_validation_and_divergent_payload"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-021":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_context_ttl_cancel_bindings_and_tampering"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-093":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_http_protection_csrf_escape_and_confirmation"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-022":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_http_protection_csrf_escape_and_confirmation"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-100":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_http_protection_csrf_escape_and_confirmation"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-016":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_initial_atomic_facts_and_replay"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-018":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_real_workspace_crossing"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-013":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_initial_atomic_facts_and_replay"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-014":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_rollback_at_every_error_boundary"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     },
+                          "CT-101":  {
+                                         "evidence":  [
+                                                          {
+                                                              "kind":  "test",
+                                                              "target":  "tests/test_initial_attempt.py::test_context_ttl_cancel_bindings_and_tampering"
+                                                          }
+                                                      ],
+                                         "status":  "executable"
+                                     }
+                      },
+    "domain_coverage":  {
+                            "minimum_line_percent":  80,
+                            "files":  [
+                                          "src/shared/domain/time.py",
+                                          "src/shared/application/bootstrap.py",
+                                          "src/modules/accounts/models.py",
+                                          "src/modules/accounts/services.py",
+                                          "src/modules/accounts/validators.py",
+                                          "src/modules/attempts/models.py",
+                                          "src/modules/attempts/persistence.py",
+                                          "src/modules/errors/catalog.py",
+                                          "src/modules/errors/models.py",
+                                          "src/modules/errors/services.py",
+                                          "src/modules/taxonomy/models.py",
+                                          "src/modules/taxonomy/services.py",
+                                          "src/modules/taxonomy/selectors.py",
+                                          "src/modules/taxonomy/validators.py",
+                                          "src/modules/questions/models.py",
+                                          "src/modules/questions/services.py",
+                                          "src/modules/questions/selectors.py",
+                                          "src/modules/questions/validators.py",
+                                          "src/modules/reviews/models.py",
+                                          "src/modules/reviews/policies.py",
+                                          "src/modules/attempts/context.py",
+                                          "src/modules/attempts/services.py",
+                                          "src/modules/reviews/services.py"
+                                      ]
+                        },
+    "historical_migration_sha256":  {
+                                        "src/modules/accounts/migrations/0001_initial.py":  [
+                                                                                                82,
+                                                                                                74,
+                                                                                                213,
+                                                                                                206,
+                                                                                                119,
+                                                                                                47,
+                                                                                                122,
+                                                                                                235,
+                                                                                                186,
+                                                                                                85,
+                                                                                                218,
+                                                                                                180,
+                                                                                                142,
+                                                                                                107,
+                                                                                                73,
+                                                                                                120,
+                                                                                                193,
+                                                                                                24,
+                                                                                                121,
+                                                                                                14,
+                                                                                                147,
+                                                                                                246,
+                                                                                                251,
+                                                                                                215,
+                                                                                                194,
+                                                                                                217,
+                                                                                                246,
+                                                                                                81,
+                                                                                                76,
+                                                                                                180,
+                                                                                                234,
+                                                                                                164
+                                                                                            ],
+                                        "src/modules/errors/migrations/0001_initial.py":  [
+                                                                                              107,
+                                                                                              41,
+                                                                                              64,
+                                                                                              70,
+                                                                                              87,
+                                                                                              216,
+                                                                                              166,
+                                                                                              0,
+                                                                                              62,
+                                                                                              39,
+                                                                                              30,
+                                                                                              255,
+                                                                                              42,
+                                                                                              49,
+                                                                                              167,
+                                                                                              245,
+                                                                                              170,
+                                                                                              114,
+                                                                                              2,
+                                                                                              171,
+                                                                                              26,
+                                                                                              16,
+                                                                                              171,
+                                                                                              120,
+                                                                                              19,
+                                                                                              142,
+                                                                                              219,
+                                                                                              254,
+                                                                                              149,
+                                                                                              134,
+                                                                                              118,
+                                                                                              234
+                                                                                          ],
+                                        "src/modules/taxonomy/migrations/0001_initial.py":  [
+                                                                                                220,
+                                                                                                90,
+                                                                                                71,
+                                                                                                0,
+                                                                                                146,
+                                                                                                253,
+                                                                                                186,
+                                                                                                222,
+                                                                                                187,
+                                                                                                195,
+                                                                                                239,
+                                                                                                220,
+                                                                                                249,
+                                                                                                236,
+                                                                                                201,
+                                                                                                182,
+                                                                                                22,
+                                                                                                74,
+                                                                                                150,
+                                                                                                108,
+                                                                                                41,
+                                                                                                245,
+                                                                                                109,
+                                                                                                222,
+                                                                                                129,
+                                                                                                201,
+                                                                                                220,
+                                                                                                68,
+                                                                                                42,
+                                                                                                57,
+                                                                                                237,
+                                                                                                70
+                                                                                            ],
+                                        "src/modules/questions/migrations/0001_origin_catalog.py":  [
+                                                                                                        97,
+                                                                                                        166,
+                                                                                                        38,
+                                                                                                        54,
+                                                                                                        23,
+                                                                                                        75,
+                                                                                                        118,
+                                                                                                        77,
+                                                                                                        52,
+                                                                                                        243,
+                                                                                                        39,
+                                                                                                        208,
+                                                                                                        182,
+                                                                                                        79,
+                                                                                                        105,
+                                                                                                        188,
+                                                                                                        161,
+                                                                                                        253,
+                                                                                                        73,
+                                                                                                        255,
+                                                                                                        111,
+                                                                                                        158,
+                                                                                                        24,
+                                                                                                        221,
+                                                                                                        10,
+                                                                                                        205,
+                                                                                                        67,
+                                                                                                        242,
+                                                                                                        175,
+                                                                                                        8,
+                                                                                                        151,
+                                                                                                        244
+                                                                                                    ],
+                                        "src/modules/questions/migrations/0002_question_catalog.py":  [
+                                                                                                          222,
+                                                                                                          225,
+                                                                                                          192,
+                                                                                                          146,
+                                                                                                          124,
+                                                                                                          237,
+                                                                                                          202,
+                                                                                                          76,
+                                                                                                          232,
+                                                                                                          26,
+                                                                                                          185,
+                                                                                                          191,
+                                                                                                          214,
+                                                                                                          94,
+                                                                                                          111,
+                                                                                                          131,
+                                                                                                          197,
+                                                                                                          229,
+                                                                                                          194,
+                                                                                                          30,
+                                                                                                          242,
+                                                                                                          157,
+                                                                                                          89,
+                                                                                                          226,
+                                                                                                          182,
+                                                                                                          16,
+                                                                                                          36,
+                                                                                                          43,
+                                                                                                          159,
+                                                                                                          80,
+                                                                                                          106,
+                                                                                                          209
+                                                                                                      ]
+                                    },
+    "current_migration_sha256":  {
+                                     "src/modules/attempts/migrations/0001_learning_foundation.py":  [
+                                                                                                         59,
+                                                                                                         226,
+                                                                                                         119,
+                                                                                                         41,
+                                                                                                         51,
+                                                                                                         38,
+                                                                                                         107,
+                                                                                                         170,
+                                                                                                         157,
+                                                                                                         203,
+                                                                                                         41,
+                                                                                                         24,
+                                                                                                         252,
+                                                                                                         134,
+                                                                                                         133,
+                                                                                                         94,
+                                                                                                         34,
+                                                                                                         29,
+                                                                                                         88,
+                                                                                                         196,
+                                                                                                         10,
+                                                                                                         109,
+                                                                                                         131,
+                                                                                                         145,
+                                                                                                         248,
+                                                                                                         251,
+                                                                                                         163,
+                                                                                                         45,
+                                                                                                         22,
+                                                                                                         230,
+                                                                                                         125,
+                                                                                                         176
+                                                                                                     ],
+                                     "src/modules/errors/migrations/0002_learning_classification.py":  [
+                                                                                                           211,
+                                                                                                           183,
+                                                                                                           74,
+                                                                                                           28,
+                                                                                                           126,
+                                                                                                           106,
+                                                                                                           237,
+                                                                                                           76,
+                                                                                                           46,
+                                                                                                           30,
+                                                                                                           181,
+                                                                                                           236,
+                                                                                                           161,
+                                                                                                           11,
+                                                                                                           168,
+                                                                                                           130,
+                                                                                                           84,
+                                                                                                           76,
+                                                                                                           208,
+                                                                                                           155,
+                                                                                                           68,
+                                                                                                           117,
+                                                                                                           109,
+                                                                                                           198,
+                                                                                                           81,
+                                                                                                           19,
+                                                                                                           90,
+                                                                                                           226,
+                                                                                                           35,
+                                                                                                           174,
+                                                                                                           175,
+                                                                                                           215
+                                                                                                       ],
+                                     "src/modules/reviews/migrations/0001_learning_foundation.py":  [
+                                                                                                        92,
+                                                                                                        216,
+                                                                                                        71,
+                                                                                                        146,
+                                                                                                        27,
+                                                                                                        179,
+                                                                                                        23,
+                                                                                                        213,
+                                                                                                        62,
+                                                                                                        170,
+                                                                                                        124,
+                                                                                                        177,
+                                                                                                        177,
+                                                                                                        63,
+                                                                                                        16,
+                                                                                                        12,
+                                                                                                        117,
+                                                                                                        254,
+                                                                                                        167,
+                                                                                                        10,
+                                                                                                        130,
+                                                                                                        241,
+                                                                                                        54,
+                                                                                                        43,
+                                                                                                        51,
+                                                                                                        65,
+                                                                                                        157,
+                                                                                                        167,
+                                                                                                        58,
+                                                                                                        6,
+                                                                                                        195,
+                                                                                                        199
+                                                                                                    ],
+                                     "src/modules/attempts/migrations/0002_review_receipt_constraints.py":  [
+                                                                                                                96,
+                                                                                                                80,
+                                                                                                                95,
+                                                                                                                37,
+                                                                                                                122,
+                                                                                                                170,
+                                                                                                                134,
+                                                                                                                72,
+                                                                                                                232,
+                                                                                                                135,
+                                                                                                                185,
+                                                                                                                8,
+                                                                                                                6,
+                                                                                                                190,
+                                                                                                                229,
+                                                                                                                242,
+                                                                                                                60,
+                                                                                                                43,
+                                                                                                                83,
+                                                                                                                170,
+                                                                                                                53,
+                                                                                                                183,
+                                                                                                                67,
+                                                                                                                11,
+                                                                                                                200,
+                                                                                                                102,
+                                                                                                                174,
+                                                                                                                35,
+                                                                                                                203,
+                                                                                                                224,
+                                                                                                                224,
+                                                                                                                120
+                                                                                                            ]
+                                 }
+}
