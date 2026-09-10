@@ -27,7 +27,6 @@ from modules.reviews.models import (
     Review,
     ReviewCycle,
     ReviewCycleState,
-    ReviewStageCode,
     ReviewState,
 )
 from modules.reviews.selectors import (
@@ -81,23 +80,10 @@ def _learning(
         local_date=date(2026, 9, 8),
         idempotency_key=uuid.uuid4(),
     )
-    cycle = ReviewCycle.objects.create(
-        workspace=workspace,
-        question=question,
-        origin_attempt=attempt,
-        started_at=attempt.occurred_at,
-    )
-    review = Review.objects.create(
-        workspace=workspace,
-        review_cycle=cycle,
-        question=question,
-        sequence_number=1,
-        stage_code=ReviewStageCode.D1,
-        first_due_date=due,
-        current_due_date=due,
-        scheduled_from_attempt=attempt,
-        transition_code="INITIAL_ERROR_TO_D1",
-    )
+    cycle = question.review_cycles.get(state=ReviewCycleState.ACTIVE)
+    review = cycle.reviews.get(state=ReviewState.PENDING)
+    Review.objects.filter(pk=review.id).update(first_due_date=due, current_due_date=due)
+    review.refresh_from_db()
     return attempt, cycle, review
 
 

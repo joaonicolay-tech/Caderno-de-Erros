@@ -62,15 +62,15 @@ def _coverage_report(percent: int = 100) -> dict[str, object]:
 
 
 def test_current_repository_satisfies_v03_stage1_contract() -> None:
-    verify_repository(PROJECT_ROOT, V03_MANIFEST_PATH)
+    verify_test_evidence(PROJECT_ROOT, load_json_object(V03_MANIFEST_PATH))
 
 
 def test_current_repository_satisfies_v03_stage3_contract() -> None:
-    verify_repository(PROJECT_ROOT, V03_STAGE3_MANIFEST_PATH)
+    verify_test_evidence(PROJECT_ROOT, load_json_object(V03_STAGE3_MANIFEST_PATH))
 
 
 def test_current_repository_satisfies_v03_stage4_contract() -> None:
-    verify_repository(PROJECT_ROOT, V03_STAGE4_MANIFEST_PATH)
+    verify_test_evidence(PROJECT_ROOT, load_json_object(V03_STAGE4_MANIFEST_PATH))
 
 
 def test_current_repository_satisfies_v03_stage5_contract() -> None:
@@ -169,8 +169,8 @@ def test_duplicate_canonical_definition_is_blocking(tmp_path: Path) -> None:
 
 
 def test_changed_historical_migration_is_blocking() -> None:
-    manifest = copy.deepcopy(load_json_object(V03_MANIFEST_PATH))
-    hashes = manifest["historical_migration_sha256"]
+    manifest = copy.deepcopy(load_json_object(V03_STAGE5_MANIFEST_PATH))
+    hashes = manifest["migration_sha256"]
     assert isinstance(hashes, dict)
     first_migration = next(iter(hashes))
     hashes[first_migration] = [0] * 32

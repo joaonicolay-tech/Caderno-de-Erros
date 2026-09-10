@@ -11,9 +11,9 @@
   <p><a href="{% url 'reviews:queue' %}">Ver revis&otilde;es</a></p>
 {% elif question_id %}<p><a href="{% url 'attempts:initial' question_id %}">Reabrir questão</a></p>{% endif %}
 {% if correct_attempt_confirmed %}
-  <p role="status">VocÃª acertou. Sua tentativa foi registrada.</p>
-  <p>Como este foi um acerto inicial, esta questÃ£o nÃ£o entrou em ciclo de revisÃ£o.</p>
-  <p><a href="{% url 'questions:list' %}">Responder outra questÃ£o</a></p>
+  <p role="status">Você acertou. Sua tentativa foi registrada.</p>
+  <p>Esta questão já faz parte do seu ciclo de revisão.</p>
+  <p><a href="{% url 'reviews:queue' %}">Ver revisões</a></p>
 {% elif receipt %}
   <p role="status">Tentativa confirmada com sucesso.</p>
 {% endif %}

@@ -370,6 +370,7 @@ def _create_history(workspace_id: uuid.UUID, config: Bcr1DatasetConfig) -> None:
                 workspace_id=workspace_id,
                 question_id=question_id,
                 origin_attempt_id=initial_id,
+                origin_question_revision_id=revision_id,
                 state=ReviewCycleState.ACTIVE,
                 started_at=occurred,
             )
@@ -554,6 +555,7 @@ def _attempt_operation(workspace: Any) -> Callable[[bool, int], Callable[[], obj
         nonlocal counter
         counter += 1
         suffix = f"attempt-{'warmup' if warmup else 'sample'}-{counter:04d}"
+        clock = FixedClock(Instant(_FIXED_NOW))
         question = create_active(
             workspace_id=workspace.id,
             discipline_id=discipline_id,
@@ -561,12 +563,13 @@ def _attempt_operation(workspace: Any) -> Callable[[bool, int], Callable[[], obj
             stem=f"Pré-condição BCR-1 {suffix}",
             alternatives=[f"Incorreta {suffix}", f"Correta {suffix}"],
             correct_alternative_position=2,
+            clock=clock,
         )
         service = AttemptService(
             actor_id=workspace.owner_user_id,
             workspace_id=workspace.id,
             session=f"bcr1-attempt-{counter}",
-            clock=FixedClock(Instant(_FIXED_NOW)),
+            clock=clock,
             store=ContextStore(),
         )
         presented = service.presentation(question.id)
@@ -609,6 +612,7 @@ def _review_operation(workspace: Any) -> Callable[[bool, int], Callable[[], obje
             stem=f"Pré-condição de revisão BCR-1 {suffix}",
             alternatives=[f"Incorreta {suffix}", f"Correta {suffix}"],
             correct_alternative_position=2,
+            clock=clock,
         )
         initial = AttemptService(
             actor_id=workspace.owner_user_id,

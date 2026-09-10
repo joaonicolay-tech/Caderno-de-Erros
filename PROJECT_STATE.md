@@ -86,3 +86,23 @@ funcionais/estruturais afetados também exigem regressão contra a nova regra.
 As migrations E1 e manifestos E1–E4 continuam protegidos.
 
 ADRs relevantes adicionais: ADR-013.
+
+## Encerramento controlado — ADR-013 (10 de setembro de 2026)
+
+A correção ADR-013 foi implementada e validada pelo gate autoritativo: GREEN,
+exit code 0, 280 testes aprovados e 87% de cobertura global. A migration
+`reviews.0002_activation_review_cycle` evolui apenas o schema e referencia a
+revisão de origem dos ciclos existentes; não cria ciclos retroativos para
+questões `ACTIVE` históricas.
+
+As três transições efetivas para `ACTIVE` agora criam atomicamente um ciclo de
+origem `QUESTION_ACTIVATION` e uma D1 no próximo dia civil do Workspace, sem
+`Attempt` artificial. Acerto e erro INITIAL preservam essa D1; somente erro de
+Review a reinicia. Arquivamento, fila e timeline foram cobertos para a âncora
+de ativação sem tentativa.
+
+`CT-125` mantém a evidência humana histórica de 9/10 e permanece PENDENTE de
+reteste no candidato corrigido. V0.3 continua **NÃO PROMOVIDA**; não houve
+promoção, V0.4, commit, push, tag ou release. Os manifestos E1–E4 e suas
+migrations históricas permanecem preservados. A próxima etapa exige nova
+autorização formal em novo chat.

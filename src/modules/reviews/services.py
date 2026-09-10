@@ -28,7 +28,13 @@ from modules.operations.structured_logging import emit_event
 from modules.questions.models import Alternative, Question, QuestionRevision, QuestionStatus
 from shared.domain.time import Calendar, Clock, LocalDate, SystemClock, TimeZoneId
 
-from .models import Review, ReviewCycle, ReviewCycleState, ReviewState
+from .models import (
+    Review,
+    ReviewCycle,
+    ReviewCycleOriginKind,
+    ReviewCycleState,
+    ReviewState,
+)
 from .policies import (
     ReviewSchedulePolicy,
     ReviewStage,
@@ -36,6 +42,44 @@ from .policies import (
     ReviewStructuralState,
     ReviewTemporalStatus,
 )
+
+
+class QuestionActivationReviewService:
+    """Crie a D1 inaugural no mesmo agregado da transicao para ACTIVE."""
+
+    def __init__(self, *, clock: Clock | None = None) -> None:
+        self.clock = clock or SystemClock()
+        self.calendar = Calendar(self.clock)
+
+    def activate(self, *, question: Question, revision: QuestionRevision) -> ReviewCycle:
+        """Retorne o ciclo existente ou crie o unico ciclo/D1 de ativacao."""
+        existing = ReviewCycle.objects.filter(
+            workspace_id=question.workspace_id,
+            question_id=question.id,
+            state=ReviewCycleState.ACTIVE,
+        ).first()
+        if existing is not None:
+            return existing
+        workspace = Workspace.objects.get(pk=question.workspace_id)
+        due = Calendar.add_days(self.calendar.today(TimeZoneId(workspace.timezone_name)), 1).value
+        cycle = ReviewCycle.objects.create(
+            workspace_id=question.workspace_id,
+            question=question,
+            origin_kind=ReviewCycleOriginKind.QUESTION_ACTIVATION,
+            origin_question_revision=revision,
+            started_at=self.clock.now().value,
+        )
+        Review.objects.create(
+            workspace_id=question.workspace_id,
+            question=question,
+            review_cycle=cycle,
+            sequence_number=1,
+            stage_code="D1",
+            first_due_date=due,
+            current_due_date=due,
+            transition_code="QUESTION_ACTIVATION_D1",
+        )
+        return cycle
 
 
 class CompleteReviewService:
@@ -106,24 +150,6 @@ class CompleteReviewService:
                     attempt=attempt,
                     category=category,
                     other_description=description or None,
-                )
-                cycle = ReviewCycle.objects.create(
-                    workspace_id=service.workspace_id,
-                    question_id=context.question_id,
-                    origin_attempt=attempt,
-                    started_at=attempt.occurred_at,
-                )
-                due = Calendar.add_days(LocalDate(attempt.local_date), 1).value
-                Review.objects.create(
-                    workspace_id=service.workspace_id,
-                    question_id=context.question_id,
-                    review_cycle=cycle,
-                    sequence_number=1,
-                    stage_code="D1",
-                    first_due_date=due,
-                    current_due_date=due,
-                    scheduled_from_attempt=attempt,
-                    transition_code="INITIAL_ERROR_TO_D1",
                 )
                 return service._receipt(context, key, request_hash, attempt)
 

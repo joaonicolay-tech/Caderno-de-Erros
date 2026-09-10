@@ -50,6 +50,7 @@ from modules.questions.services import (
     set_question_origin,
     update_question_metadata,
 )
+from modules.reviews.models import Review, ReviewCycleOriginKind, ReviewCycleState, ReviewState
 from modules.taxonomy.models import Discipline, Subject, Subsubject
 from modules.taxonomy.services import create_discipline, create_subject, create_subsubject
 from shared.domain.time import FixedClock, Instant
@@ -292,6 +293,107 @@ def test_draft_can_be_activated_by_saving_a_complete_revision() -> None:
     assert question.activated_at is not None
     assert question.lock_version == 2
     assert revision.version_number == 1
+
+
+@pytest.mark.django_db
+def test_adr013_effective_activation_creates_one_d1_for_all_authorized_paths() -> None:
+    workspace = _workspace(email="activation@example.test", timezone_name="America/New_York")
+    discipline, subject, _ = _taxonomy(workspace=workspace)
+    clock = FixedClock(Instant(datetime(2026, 3, 8, 4, 30, tzinfo=UTC)))
+
+    direct = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Ativacao direta",
+        alternatives=["Errada", "Certa"],
+        correct_alternative_position=2,
+        clock=clock,
+    )
+    direct_cycle = direct.review_cycles.get(state=ReviewCycleState.ACTIVE)
+    direct_review = direct_cycle.reviews.get(state=ReviewState.PENDING)
+    assert direct_cycle.origin_kind == ReviewCycleOriginKind.QUESTION_ACTIVATION
+    assert direct_cycle.origin_attempt_id is None
+    assert direct_cycle.origin_question_revision_id == direct.revisions.get(is_current=True).id
+    assert (
+        direct_review.scheduled_from_attempt_id,
+        direct_review.transition_code,
+        direct_review.current_due_date.isoformat(),
+    ) == (None, "QUESTION_ACTIVATION_D1", "2026-03-08")
+
+    draft = create_draft(
+        workspace_id=workspace.id,
+        draft_title="Completar",
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+    )
+    assert not draft.review_cycles.exists()
+    completed = QuestionCommandService.complete_draft(
+        workspace_id=workspace.id,
+        question_id=draft.id,
+        expected_lock_version=draft.lock_version,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Completa",
+        alternatives=["Errada", "Certa"],
+        correct_alternative_position=2,
+        clock=clock,
+    )
+    assert completed.review_cycles.filter(state=ReviewCycleState.ACTIVE).count() == 1
+
+    draft_by_revision = create_draft(
+        workspace_id=workspace.id,
+        draft_title="Revisao",
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+    )
+    revision = save_revision(
+        workspace_id=workspace.id,
+        question_id=draft_by_revision.id,
+        expected_lock_version=draft_by_revision.lock_version,
+        stem="Ativada por revisao",
+        alternatives=["Errada", "Certa"],
+        correct_alternative_position=2,
+        activate=True,
+        clock=clock,
+    )
+    draft_by_revision.refresh_from_db()
+    assert draft_by_revision.status == QuestionStatus.ACTIVE
+    assert draft_by_revision.review_cycles.get().origin_question_revision_id == revision.id
+    save_revision(
+        workspace_id=workspace.id,
+        question_id=draft_by_revision.id,
+        expected_lock_version=draft_by_revision.lock_version,
+        stem="Edicao ativa",
+        alternatives=["Errada", "Certa"],
+        correct_alternative_position=2,
+        clock=clock,
+    )
+    assert draft_by_revision.review_cycles.count() == 1
+
+
+@pytest.mark.django_db
+def test_adr013_activation_rolls_back_question_when_d1_cannot_be_persisted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workspace = _workspace(email="activation-rollback@example.test")
+    discipline, subject, _ = _taxonomy(workspace=workspace)
+    before = Question.objects.count()
+
+    def fail_review(*args: object, **kwargs: object) -> Review:
+        raise IntegrityError("controlled activation failure")
+
+    monkeypatch.setattr(Review.objects, "create", fail_review)
+    with pytest.raises(IntegrityError, match="controlled activation failure"):
+        create_active(
+            workspace_id=workspace.id,
+            discipline_id=discipline.id,
+            subject_id=subject.id,
+            stem="Nao persiste parcialmente",
+            alternatives=["Errada", "Certa"],
+            correct_alternative_position=2,
+        )
+    assert Question.objects.count() == before
 
 
 @pytest.mark.django_db

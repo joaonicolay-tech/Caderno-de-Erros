@@ -22,14 +22,14 @@ from modules.errors.services import seed_standard_error_categories
 from modules.operations.structured_logging import StructuredJsonFormatter
 from modules.questions.models import Question
 from modules.questions.services import create_active
-from modules.reviews.models import Review, ReviewCycle
+from modules.reviews.models import Review, ReviewCycle, ReviewCycleOriginKind
 from modules.reviews.services import CompleteReviewService
 from modules.taxonomy.services import create_discipline, create_subject
 from shared.application.bootstrap import bootstrap_local_workspace
-from shared.domain.time import FixedClock, Instant
+from shared.domain.time import Clock, FixedClock, Instant
 
 
-def question(workspace: Workspace, suffix: str = "") -> Question:
+def question(workspace: Workspace, suffix: str = "", clock: Clock | None = None) -> Question:
     discipline = create_discipline(workspace_id=workspace.id, name=f"Disciplina{suffix}")
     subject = create_subject(
         workspace_id=workspace.id, discipline_id=discipline.id, name="Assunto sintético"
@@ -43,6 +43,7 @@ def question(workspace: Workspace, suffix: str = "") -> Question:
         correct_alternative_position=2,
         explanation="EXPLICACAO-RESERVADA",
         trap_note="PEGADINHA-RESERVADA",
+        clock=clock,
     )
 
 
@@ -56,7 +57,7 @@ def setup(db: None) -> tuple[AttemptService, Question, Workspace]:
         store=ContextStore(),
         clock=FixedClock(Instant(datetime(2026, 9, 9, 2, 59, tzinfo=UTC))),
     )
-    return service, question(workspace), workspace
+    return service, question(workspace, clock=service.clock), workspace
 
 
 def evaluate(service: AttemptService, item: Question, correct: bool = False) -> str:
@@ -70,9 +71,14 @@ def evaluate(service: AttemptService, item: Question, correct: bool = False) -> 
 
 
 def counts() -> tuple[int, ...]:
-    return tuple(
-        model.objects.count()
-        for model in (Attempt, ErrorClassification, ReviewCycle, Review, OperationReceipt)
+    return (
+        Attempt.objects.count(),
+        ErrorClassification.objects.count(),
+        ReviewCycle.objects.exclude(origin_kind=ReviewCycleOriginKind.QUESTION_ACTIVATION).count(),
+        Review.objects.exclude(
+            review_cycle__origin_kind=ReviewCycleOriginKind.QUESTION_ACTIVATION
+        ).count(),
+        OperationReceipt.objects.count(),
     )
 
 
@@ -81,6 +87,9 @@ def test_initial_atomic_facts_and_replay(
     setup: tuple[AttemptService, Question, Workspace], correct: bool
 ) -> None:
     service, item, workspace = setup
+    activation_cycle = item.review_cycles.get(origin_kind=ReviewCycleOriginKind.QUESTION_ACTIVATION)
+    activation_review = activation_cycle.reviews.get(state="PENDING")
+    activation_due = activation_review.current_due_date
     token = evaluate(service, item, correct)
     assert counts() == (0, 0, 0, 0, 0)
     assert service.feedback(token)["is_correct"] is correct
@@ -93,11 +102,16 @@ def test_initial_atomic_facts_and_replay(
     )
     receipt = service.confirm(token=token, key=key, **kwargs)
     assert service.confirm(token=token, key=key, **kwargs).id == receipt.id
-    assert counts() == ((1, 0, 0, 0, 1) if correct else (1, 1, 1, 1, 1))
+    assert counts() == ((1, 0, 0, 0, 1) if correct else (1, 1, 0, 0, 1))
     attempt = Attempt.objects.get()
     assert attempt.is_correct is correct
     assert attempt.local_date.isoformat() == "2026-09-08"
     assert attempt.workspace_id == workspace.id
+    activation_cycle.refresh_from_db()
+    activation_review.refresh_from_db()
+    assert activation_cycle.state == "ACTIVE"
+    assert activation_review.current_due_date == activation_due
+    assert item.review_cycles.count() == 1
     if not correct:
         review = Review.objects.get()
         assert review.stage_code == "D1" and review.state == "PENDING"
@@ -167,12 +181,10 @@ def test_validation_and_divergent_payload(
     service.confirm(token=token, key=key, category_id=other.id, other_description="original")
     with pytest.raises(InitialAttemptError):
         service.confirm(token=token, key=key, category_id=other.id, other_description="divergente")
-    assert counts() == (1, 1, 1, 1, 1)
+    assert counts() == (1, 1, 0, 0, 1)
 
 
-@pytest.mark.parametrize(
-    "model", [Attempt, ErrorClassification, ReviewCycle, Review, OperationReceipt]
-)
+@pytest.mark.parametrize("model", [Attempt, ErrorClassification, OperationReceipt])
 def test_rollback_at_every_error_boundary(
     setup: tuple[AttemptService, Question, Workspace],
     monkeypatch: pytest.MonkeyPatch,
@@ -198,7 +210,7 @@ def test_rollback_at_every_error_boundary(
     with pytest.raises(InitialAttemptError):
         service.confirm(token=token, key=uuid.uuid4(), category_id=category.id)
     service.confirm(token=token, key=key, category_id=category.id)
-    assert counts() == (1, 1, 1, 1, 1)
+    assert counts() == (1, 1, 0, 0, 1)
 
 
 @pytest.mark.parametrize("message, calls", [("database is locked", 2), ("disk error", 1)])
@@ -281,7 +293,7 @@ def test_concurrent_distinct_keys_cannot_duplicate() -> None:
     with ThreadPoolExecutor(max_workers=2) as executor:
         results = list(executor.map(confirm, range(2)))
     assert results.count("success") == 1
-    assert counts() == (1, 1, 1, 1, 1)
+    assert counts() == (1, 1, 0, 0, 1)
 
 
 def test_http_protection_csrf_escape_and_confirmation(
@@ -326,9 +338,9 @@ def test_http_protection_csrf_escape_and_confirmation(
     assert confirmed.status_code == 200
     confirmed_html = confirmed.content.decode()
     assert "<h1>Resposta correta</h1>" in confirmed_html
-    assert "VocÃª acertou. Sua tentativa foi registrada." in confirmed_html
-    assert "nÃ£o entrou em ciclo de revisÃ£o" in confirmed_html
-    assert "Responder outra questÃ£o" in confirmed_html
+    assert "Você acertou. Sua tentativa foi registrada." in confirmed_html
+    assert "Esta questão já faz parte do seu ciclo de revisão." in confirmed_html
+    assert "Ver revisões" in confirmed_html
     assert str(confirmed.context["receipt"]) not in confirmed_html
     assert client.post(url, submit).status_code == 200
     assert counts() == (1, 0, 0, 0, 1)
@@ -442,8 +454,18 @@ def test_real_workspace_crossing(setup: tuple[AttemptService, Question, Workspac
         category_id=foreign.error_categories.get(code="ATTENTION").id,
     )
     assert not workspace.attempts.exists()
-    assert not workspace.review_cycles.exists()
-    assert not workspace.reviews.exists()
+    assert (
+        workspace.review_cycles.filter(
+            origin_kind=ReviewCycleOriginKind.QUESTION_ACTIVATION
+        ).count()
+        == 1
+    )
+    assert (
+        workspace.reviews.filter(
+            review_cycle__origin_kind=ReviewCycleOriginKind.QUESTION_ACTIVATION
+        ).count()
+        == 1
+    )
     assert foreign.attempts.count() == 1
 
 
@@ -591,7 +613,7 @@ def test_http_error_diagnosis_recovery_and_expiration(
     assert "Tentativa confirmada com sucesso." in confirmed_html
     assert "Recibo:" not in confirmed_html
     assert str(confirmed.context["receipt"]) not in confirmed_html
-    assert counts() == (1, 1, 1, 1, 1)
+    assert counts() == (1, 1, 0, 0, 1)
 
 
 @pytest.mark.parametrize(
@@ -658,4 +680,4 @@ def test_orchestrator_direct_call_validates_context_and_payload(
         orchestrator.complete_initial_error(
             token=token, key=key, category_id=category.id, description="divergente"
         )
-    assert counts() == (1, 1, 1, 1, 1)
+    assert counts() == (1, 1, 0, 0, 1)

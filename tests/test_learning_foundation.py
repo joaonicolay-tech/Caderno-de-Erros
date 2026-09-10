@@ -131,10 +131,18 @@ def _attempt(
 def _cycle_and_review(
     *, workspace: Workspace, question: Question, origin_attempt: Attempt
 ) -> tuple[ReviewCycle, Review]:
+    existing = ReviewCycle.objects.filter(
+        workspace=workspace,
+        question=question,
+        state=ReviewCycleState.ACTIVE,
+    ).first()
+    if existing is not None:
+        return existing, existing.reviews.get(state=ReviewState.PENDING)
     cycle = ReviewCycle.objects.create(
         workspace=workspace,
         question=question,
         origin_attempt=origin_attempt,
+        origin_question_revision=origin_attempt.question_revision,
         started_at=origin_attempt.occurred_at,
     )
     review = Review.objects.create(
@@ -311,6 +319,7 @@ def test_ct078_only_one_active_cycle_exists_and_completed_history_is_preserved()
                         workspace=workspace,
                         question=question,
                         origin_attempt=voided_origin,
+                        origin_question_revision=voided_origin.question_revision,
                         started_at=initial.occurred_at,
                     )
                 ]
@@ -685,6 +694,7 @@ def test_ct081_migration_graph_and_final_schema_are_frozen_without_cycle() -> No
     attempts_1 = loader.get_migration("attempts", "0001_learning_foundation")
     errors_2 = loader.get_migration("errors", "0002_learning_classification")
     reviews_1 = loader.get_migration("reviews", "0001_learning_foundation")
+    reviews_2 = loader.get_migration("reviews", "0002_activation_review_cycle")
     attempts_2 = loader.get_migration("attempts", "0002_review_receipt_constraints")
 
     assert attempts_1.dependencies == [
@@ -700,10 +710,16 @@ def test_ct081_migration_graph_and_final_schema_are_frozen_without_cycle() -> No
         ("attempts", "0001_learning_foundation"),
     }.issubset(set(reviews_1.dependencies))
     assert ("reviews", "0001_learning_foundation") in attempts_2.dependencies
+    assert ("reviews", "0001_learning_foundation") in reviews_2.dependencies
+    assert ("attempts", "0002_review_receipt_constraints") in reviews_2.dependencies
     assert not any(
         getattr(operation, "name", None) == "review" for operation in attempts_1.operations
     )
     assert any(getattr(operation, "name", None) == "review" for operation in attempts_2.operations)
+    assert any(
+        getattr(operation, "name", None) == "origin_question_revision"
+        for operation in reviews_2.operations
+    )
     assert {
         "attempts_attempt",
         "attempts_operationreceipt",
@@ -784,8 +800,9 @@ current_revision = FinalRevision.objects.get(version_number=2)
 historical_revision = FinalRevision.objects.get(version_number=1)
 current_origin = FinalOrigin.objects.get()
 FinalAttempt = final_apps.get_model("attempts", "Attempt")
+FinalCycle = final_apps.get_model("reviews", "ReviewCycle")
 FinalAttempt.objects.create(workspace_id=workspace.id, question_id=question.id, question_revision_id=current_revision.id, attempt_type="INITIAL", selected_alternative_id=current_revision.correct_alternative_id, is_correct=True, occurred_at=datetime(2026, 9, 8, 12, tzinfo=UTC), timezone_name="America/Sao_Paulo", local_date=datetime(2026, 9, 8, 12, tzinfo=UTC).astimezone().date(), idempotency_key=uuid.UUID("33333333-3333-4333-8333-333333333333"))
-after = {"users": final_apps.get_model("accounts", "User").objects.count(), "workspaces": final_apps.get_model("accounts", "Workspace").objects.count(), "categories": final_apps.get_model("errors", "ErrorCategory").objects.count(), "disciplines": final_apps.get_model("taxonomy", "Discipline").objects.count(), "subjects": final_apps.get_model("taxonomy", "Subject").objects.count(), "subsubjects": final_apps.get_model("taxonomy", "Subsubject").objects.count(), "boards": final_apps.get_model("questions", "Board").objects.count(), "exams": final_apps.get_model("questions", "Exam").objects.count(), "sources": final_apps.get_model("questions", "Source").objects.count(), "questions": final_apps.get_model("questions", "Question").objects.count(), "revisions": FinalRevision.objects.count(), "alternatives": final_apps.get_model("questions", "Alternative").objects.count(), "origins": FinalOrigin.objects.count(), "activated_at": final_apps.get_model("questions", "Question").objects.get().activated_at.isoformat(), "current_version": current_revision.version_number, "historical_stem": historical_revision.stem, "correct": str(current_revision.correct_alternative_id), "wrong": str(wrong_2.id), "origin_source": str(current_origin.source_id), "origin_exam": str(current_origin.exam_id), "origin_reference": current_origin.reference_text, "v03_attempts": FinalAttempt.objects.count()}
+after = {"users": final_apps.get_model("accounts", "User").objects.count(), "workspaces": final_apps.get_model("accounts", "Workspace").objects.count(), "categories": final_apps.get_model("errors", "ErrorCategory").objects.count(), "disciplines": final_apps.get_model("taxonomy", "Discipline").objects.count(), "subjects": final_apps.get_model("taxonomy", "Subject").objects.count(), "subsubjects": final_apps.get_model("taxonomy", "Subsubject").objects.count(), "boards": final_apps.get_model("questions", "Board").objects.count(), "exams": final_apps.get_model("questions", "Exam").objects.count(), "sources": final_apps.get_model("questions", "Source").objects.count(), "questions": final_apps.get_model("questions", "Question").objects.count(), "revisions": FinalRevision.objects.count(), "alternatives": final_apps.get_model("questions", "Alternative").objects.count(), "origins": FinalOrigin.objects.count(), "activated_at": final_apps.get_model("questions", "Question").objects.get().activated_at.isoformat(), "current_version": current_revision.version_number, "historical_stem": historical_revision.stem, "correct": str(current_revision.correct_alternative_id), "wrong": str(wrong_2.id), "origin_source": str(current_origin.source_id), "origin_exam": str(current_origin.exam_id), "origin_reference": current_origin.reference_text, "v03_attempts": FinalAttempt.objects.count(), "v03_cycles": FinalCycle.objects.count()}
 connection.close()
 with closing(sqlite3.connect(Path(os.environ["CEI_V03_BACKUP_PATH"]))) as src, closing(sqlite3.connect(Path(os.environ["CEI_V03_RESTORED_PATH"]))) as dst:
     with dst:
@@ -813,9 +830,12 @@ print(json.dumps({"before": before, "after": after, "rollback": rollback}))
     assert result.returncode == 0, result.stderr
     evidence = json.loads(result.stdout.strip().splitlines()[-1])
     assert {
-        key: value for key, value in evidence["after"].items() if key != "v03_attempts"
+        key: value
+        for key, value in evidence["after"].items()
+        if key not in {"v03_attempts", "v03_cycles"}
     } == evidence["before"]
     assert evidence["after"]["v03_attempts"] == 1
+    assert evidence["after"]["v03_cycles"] == 0
     assert evidence["rollback"] == {
         "integrity": "ok",
         "foreign_keys": [],

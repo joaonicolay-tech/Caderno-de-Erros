@@ -28,7 +28,7 @@ from shared.application.bootstrap import bootstrap_local_workspace
 from shared.domain.time import FixedClock, Instant
 
 
-def _question(workspace: Workspace, suffix: str = "") -> Question:
+def _question(workspace: Workspace, suffix: str = "", clock: FixedClock | None = None) -> Question:
     discipline = create_discipline(workspace_id=workspace.id, name=f"Disciplina revisão{suffix}")
     subject = create_subject(
         workspace_id=workspace.id, discipline_id=discipline.id, name="Assunto revisão"
@@ -42,6 +42,7 @@ def _question(workspace: Workspace, suffix: str = "") -> Question:
         correct_alternative_position=2,
         explanation="explicação reservada",
         trap_note="pegadinha reservada",
+        clock=clock,
     )
 
 
@@ -56,7 +57,7 @@ def _seed_pending_review() -> tuple[CompleteReviewService, Review, Workspace, Fi
         store=store,
         clock=clock,
     )
-    question = _question(workspace)
+    question = _question(workspace, clock=clock)
     shown = initial.presentation(question.id)
     token = initial.evaluate(
         question_id=question.id,

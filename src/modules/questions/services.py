@@ -861,7 +861,7 @@ def create_active(
         difficulty=difficulty,
         draft_title=_normalize_draft_title(draft_title),
     )
-    _create_revision(
+    revision = _create_revision(
         question=question,
         stem=content[0],
         alternatives=content[1],
@@ -880,6 +880,9 @@ def create_active(
     )
     _replace_origin(question=question, workspace=workspace, value=origin, clock=clock)
     question.refresh_from_db()
+    from modules.reviews.services import QuestionActivationReviewService
+
+    QuestionActivationReviewService(clock=clock).activate(question=question, revision=revision)
     return question
 
 
@@ -932,7 +935,7 @@ def complete_draft(
         alternatives=content[1],
         correct_alternative_position=content[2],
     )
-    _create_revision(
+    revision = _create_revision(
         question=question,
         stem=content[0],
         alternatives=content[1],
@@ -964,6 +967,9 @@ def complete_draft(
     if updated != 1:
         raise QuestionCatalogConcurrencyError("A questão mudou; recarregue a versão atual.")
     question.refresh_from_db()
+    from modules.reviews.services import QuestionActivationReviewService
+
+    QuestionActivationReviewService(clock=clock).activate(question=question, revision=revision)
     return question
 
 
@@ -1007,6 +1013,7 @@ def save_revision(
         notes=content[5],
     ):
         raise QuestionCatalogValidationError("Uma revisão exige algum conteúdo versionável.")
+    activating_draft = activate and question.status == QuestionStatus.DRAFT
     becoming_active = activate or question.status == QuestionStatus.ACTIVE
     if becoming_active:
         _get_taxonomy(
@@ -1046,6 +1053,11 @@ def save_revision(
     ).update(**update_values)
     if updated != 1:
         raise QuestionCatalogConcurrencyError("A questão mudou; recarregue a versão atual.")
+    if activating_draft:
+        question.status = QuestionStatus.ACTIVE
+        from modules.reviews.services import QuestionActivationReviewService
+
+        QuestionActivationReviewService(clock=clock).activate(question=question, revision=revision)
     return revision
 
 

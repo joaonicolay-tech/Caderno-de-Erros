@@ -9,13 +9,14 @@ from django.db.models import Q
 
 from modules.accounts.models import Workspace
 from modules.attempts.models import Attempt, AttemptStatus, AttemptType
-from modules.questions.models import Question
+from modules.questions.models import Question, QuestionRevision
 
 
 class ReviewCycleOriginKind(models.TextChoices):
     """Origem automática disponível no recorte V0.3."""
 
     INITIAL_ERROR = "INITIAL_ERROR", "Erro inicial"
+    QUESTION_ACTIVATION = "QUESTION_ACTIVATION", "Ativacao da questao"
 
 
 class ReviewCycleState(models.TextChoices):
@@ -64,6 +65,13 @@ class ReviewCycle(models.Model):
         Attempt,
         on_delete=models.PROTECT,
         related_name="originated_review_cycle",
+        null=True,
+        blank=True,
+    )
+    origin_question_revision = models.ForeignKey(
+        QuestionRevision,
+        on_delete=models.PROTECT,
+        related_name="originated_review_cycles",
     )
     origin_kind = models.CharField(
         max_length=24,
@@ -101,6 +109,19 @@ class ReviewCycle(models.Model):
             models.CheckConstraint(
                 condition=Q(origin_kind__in=ReviewCycleOriginKind.values),
                 name="cycle_origin_kind_valid",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    Q(
+                        origin_kind=ReviewCycleOriginKind.INITIAL_ERROR,
+                        origin_attempt__isnull=False,
+                    )
+                    | Q(
+                        origin_kind=ReviewCycleOriginKind.QUESTION_ACTIVATION,
+                        origin_attempt__isnull=True,
+                    )
+                ),
+                name="cycle_origin_attempt_valid",
             ),
             models.CheckConstraint(
                 condition=Q(policy_code="REV-FIXA-1.0"),
@@ -152,19 +173,46 @@ class ReviewCycle(models.Model):
 
     def _validate_references(self) -> None:
         question = Question.objects.filter(pk=self.question_id).only("workspace_id").first()
-        attempt = (
-            Attempt.objects.filter(pk=self.origin_attempt_id)
-            .only("workspace_id", "question_id", "attempt_type", "is_correct", "status")
+        attempt = None
+        if self.origin_attempt_id is not None:
+            attempt = (
+                Attempt.objects.filter(pk=self.origin_attempt_id)
+                .only(
+                    "workspace_id",
+                    "question_id",
+                    "question_revision_id",
+                    "attempt_type",
+                    "is_correct",
+                    "status",
+                )
+                .first()
+            )
+        revision = (
+            QuestionRevision.objects.filter(pk=self.origin_question_revision_id)
+            .only("workspace_id", "question_id")
             .first()
         )
         if question is not None and question.workspace_id != self.workspace_id:
             raise ValidationError("O ciclo deve pertencer ao Workspace da questão.")
-        if attempt is not None and (
-            attempt.workspace_id != self.workspace_id
-            or attempt.question_id != self.question_id
-            or attempt.attempt_type != AttemptType.INITIAL
-            or attempt.is_correct
-            or attempt.status != AttemptStatus.VALID
+        if revision is None or (
+            revision.workspace_id != self.workspace_id or revision.question_id != self.question_id
+        ):
+            raise ValidationError("Origin revision must belong to the cycle.")
+        if self.origin_kind == ReviewCycleOriginKind.QUESTION_ACTIVATION:
+            if self.origin_attempt_id is not None:
+                raise ValidationError("Activation cycle cannot have an origin attempt.")
+            return
+        if (
+            self.origin_kind != ReviewCycleOriginKind.INITIAL_ERROR
+            or attempt is None
+            or (
+                attempt.workspace_id != self.workspace_id
+                or attempt.question_id != self.question_id
+                or attempt.question_revision_id != self.origin_question_revision_id
+                or attempt.attempt_type != AttemptType.INITIAL
+                or attempt.is_correct
+                or attempt.status != AttemptStatus.VALID
+            )
         ):
             raise ValidationError(
                 "O ciclo automático exige tentativa inicial incorreta válida do mesmo contexto."
@@ -205,6 +253,8 @@ class Review(models.Model):
         Attempt,
         on_delete=models.PROTECT,
         related_name="scheduled_reviews",
+        null=True,
+        blank=True,
     )
     transition_code = models.CharField(max_length=64)
     policy_code = models.CharField(max_length=64, default=POLICY_CODE)
@@ -285,6 +335,15 @@ class Review(models.Model):
                 condition=~Q(transition_code=""),
                 name="review_transition_not_empty",
             ),
+            models.CheckConstraint(
+                condition=Q(scheduled_from_attempt__isnull=False)
+                | Q(
+                    sequence_number=1,
+                    stage_code=ReviewStageCode.D1,
+                    transition_code="QUESTION_ACTIVATION_D1",
+                ),
+                name="review_activation_anchor_valid",
+            ),
         ]
 
     def __str__(self) -> str:
@@ -308,15 +367,17 @@ class Review(models.Model):
     def _validate_references(self) -> None:
         cycle = (
             ReviewCycle.objects.filter(pk=self.review_cycle_id)
-            .only("workspace_id", "question_id")
+            .only("workspace_id", "question_id", "origin_kind")
             .first()
         )
         question = Question.objects.filter(pk=self.question_id).only("workspace_id").first()
-        anchor = (
-            Attempt.objects.filter(pk=self.scheduled_from_attempt_id)
-            .only("workspace_id", "question_id", "status")
-            .first()
-        )
+        anchor = None
+        if self.scheduled_from_attempt_id is not None:
+            anchor = (
+                Attempt.objects.filter(pk=self.scheduled_from_attempt_id)
+                .only("workspace_id", "question_id", "status")
+                .first()
+            )
         if cycle is not None and (
             cycle.workspace_id != self.workspace_id or cycle.question_id != self.question_id
         ):
@@ -325,6 +386,16 @@ class Review(models.Model):
             )
         if question is not None and question.workspace_id != self.workspace_id:
             raise ValidationError("A Review deve pertencer ao Workspace da questão.")
+        if anchor is None:
+            if (
+                cycle is None
+                or cycle.origin_kind != ReviewCycleOriginKind.QUESTION_ACTIVATION
+                or self.sequence_number != 1
+                or self.stage_code != ReviewStageCode.D1
+                or self.transition_code != "QUESTION_ACTIVATION_D1"
+            ):
+                raise ValidationError("Only the activation D1 may omit its origin attempt.")
+            return
         if anchor is not None and (
             anchor.workspace_id != self.workspace_id
             or anchor.question_id != self.question_id

@@ -21,7 +21,7 @@ from shared.application.bootstrap import bootstrap_local_workspace
 from shared.domain.time import FixedClock, Instant
 
 
-def _question(workspace_id: uuid.UUID, suffix: str) -> Question:
+def _question(workspace_id: uuid.UUID, suffix: str, clock: FixedClock | None = None) -> Question:
     discipline = create_discipline(workspace_id=workspace_id, name=f"E5 Disciplina {suffix}")
     subject = create_subject(
         workspace_id=workspace_id, discipline_id=discipline.id, name=f"E5 Assunto {suffix}"
@@ -33,6 +33,7 @@ def _question(workspace_id: uuid.UUID, suffix: str) -> Question:
         stem=f"Questão sintética E5 {suffix}",
         alternatives=["Incorreta", "Correta"],
         correct_alternative_position=2,
+        clock=clock,
         explanation="Explicação sintética reservada",
         trap_note="Pegadinha sintética reservada",
     )
@@ -83,7 +84,7 @@ def test_e5_integrated_synthetic_flow_completes_cycle_and_resets_review_error() 
     )
     reviews = CompleteReviewService(attempts)
 
-    complete_question = _question(workspace.id, "complete")
+    complete_question = _question(workspace.id, "complete", clock)
     token = _evaluate_initial(attempts, complete_question, correct=False)
     attempts.confirm(
         token=token,
@@ -118,7 +119,7 @@ def test_e5_integrated_synthetic_flow_completes_cycle_and_resets_review_error() 
     assert [event.kind for event in timeline].count("attempt_initial") == 1
     assert [event.kind for event in timeline].count("attempt_review") == 4
 
-    restart_question = _question(workspace.id, "restart")
+    restart_question = _question(workspace.id, "restart", clock)
     token = _evaluate_initial(attempts, restart_question, correct=False)
     attempts.confirm(
         token=token,
@@ -155,9 +156,9 @@ def test_e5_integrated_synthetic_flow_completes_cycle_and_resets_review_error() 
     assert (restarted.stage_code, restarted.current_due_date.isoformat()) == ("D1", "2026-11-08")
     assert restart_question.review_cycles.get().state == ReviewCycleState.ACTIVE
 
-    correct_question = _question(workspace.id, "correct")
+    correct_question = _question(workspace.id, "correct", clock)
     attempts.confirm(
         token=_evaluate_initial(attempts, correct_question, correct=True), key=uuid.uuid4()
     )
-    assert not Review.objects.filter(question=correct_question).exists()
+    assert Review.objects.filter(question=correct_question, state=ReviewState.PENDING).exists()
     assert Attempt.objects.filter(workspace=workspace, status="VALID").count() == 9

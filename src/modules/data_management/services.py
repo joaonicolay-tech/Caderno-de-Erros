@@ -535,17 +535,26 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
                 "OR (a.is_correct = 0 AND ec.id IS NULL)) LIMIT 1",
                 "SELECT 1 FROM reviews_reviewcycle c "
                 "JOIN questions_question q ON q.id = c.question_id "
-                "JOIN attempts_attempt a ON a.id = c.origin_attempt_id "
-                "WHERE c.workspace_id != q.workspace_id OR c.workspace_id != a.workspace_id "
-                "OR c.question_id != a.question_id OR a.attempt_type != 'INITIAL' "
-                "OR a.is_correct = 1 OR a.status != 'VALID' LIMIT 1",
+                "JOIN questions_questionrevision qr ON qr.id = c.origin_question_revision_id "
+                "LEFT JOIN attempts_attempt a ON a.id = c.origin_attempt_id "
+                "WHERE c.workspace_id != q.workspace_id OR c.workspace_id != qr.workspace_id "
+                "OR c.question_id != qr.question_id "
+                "OR (c.origin_kind = 'INITIAL_ERROR' AND (a.id IS NULL "
+                "OR c.workspace_id != a.workspace_id OR c.question_id != a.question_id "
+                "OR a.question_revision_id != qr.id OR a.attempt_type != 'INITIAL' "
+                "OR a.is_correct = 1 OR a.status != 'VALID')) "
+                "OR (c.origin_kind = 'QUESTION_ACTIVATION' AND c.origin_attempt_id IS NOT NULL) LIMIT 1",
                 "SELECT 1 FROM reviews_review r "
                 "JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id "
                 "JOIN questions_question q ON q.id = r.question_id "
-                "JOIN attempts_attempt a ON a.id = r.scheduled_from_attempt_id "
+                "LEFT JOIN attempts_attempt a ON a.id = r.scheduled_from_attempt_id "
                 "WHERE r.workspace_id != c.workspace_id OR r.question_id != c.question_id "
-                "OR r.workspace_id != q.workspace_id OR r.workspace_id != a.workspace_id "
-                "OR r.question_id != a.question_id OR a.status != 'VALID' LIMIT 1",
+                "OR r.workspace_id != q.workspace_id "
+                "OR (a.id IS NOT NULL AND (r.workspace_id != a.workspace_id "
+                "OR r.question_id != a.question_id OR a.status != 'VALID')) "
+                "OR (a.id IS NULL AND NOT (c.origin_kind = 'QUESTION_ACTIVATION' "
+                "AND r.sequence_number = 1 AND r.stage_code = 'D1' "
+                "AND r.transition_code = 'QUESTION_ACTIVATION_D1')) LIMIT 1",
                 "SELECT 1 FROM attempts_operationreceipt op "
                 "LEFT JOIN attempts_attempt a ON op.result_entity_type = 'ATTEMPT' "
                 "AND a.id = op.result_entity_id "
