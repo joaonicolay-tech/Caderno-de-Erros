@@ -3,6 +3,7 @@
 import secrets
 import uuid
 
+from django.conf import settings
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
@@ -153,7 +154,7 @@ def complete(request: HttpRequest, review_id: uuid.UUID) -> HttpResponse:
         samesite="Strict",
         secure=request.is_secure(),
     )
-    response["Referrer-Policy"] = "no-referrer"
+    response["Referrer-Policy"] = settings.FORM_POST_REFERRER_POLICY
     return response
 
 

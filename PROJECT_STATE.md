@@ -65,3 +65,24 @@ ADR-008
 ADR-010
 ADR-011
 ADR-012
+
+## Atualização controlada — ADR-013 (10 de setembro de 2026)
+
+Esta atualização substitui o estado operacional anterior a partir deste ponto.
+
+Situação da versão: a validação E5 anterior permanece evidência histórica,
+mas não é suficiente para promoção após a correção arquitetural ADR-013.
+Etapa atual: V0.3 — correção autorizada: ciclo de revisão na ativação da
+questão. Status: ADR-013 aprovada; implementação corretiva ainda não iniciada;
+V0.3 **NÃO PROMOVIDA**.
+
+O próximo objetivo autorizado é exclusivamente schema, migration, serviços,
+correção comprovada de mojibake, testes e gate da regra ADR-013. Não autoriza
+promoção, V0.4, commit, push, tag ou release.
+
+`CT-125` preserva o resultado humano histórico de 9/10 (90%), mas a mudança
+estrutural requer reteste do candidato final; não há PASS inferido. Os CTs
+funcionais/estruturais afetados também exigem regressão contra a nova regra.
+As migrations E1 e manifestos E1–E4 continuam protegidos.
+
+ADRs relevantes adicionais: ADR-013.

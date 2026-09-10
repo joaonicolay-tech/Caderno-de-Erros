@@ -9,6 +9,53 @@ matriz GREEN. Há um bloqueador P0 de carga (`CT-107`) e uma evidência manual
 P1 vinculante ausente (`CT-125`). Nenhum deles foi convertido em PASS por
 inferência.
 
+## Adendo BCR-1/CT-107 - 9 de setembro de 2026
+
+`CT-107` recebeu **PASS** por execucao real do executor reproduzivel
+`scripts/run_bcr1.py`. O artefato completo, com cada uma das 100 amostras por
+operacao e por execucao, esta em `quality/v03-bcr1-result.json`.
+
+- Ambiente: Windows 11 10.0.26200, Python 3.13.15, Django 5.2.17 e SQLite
+  3.53.1; CPU AMD64 Family 23 Model 160, 8 nucleos logicos; RAM 16 GiB;
+  armazenamento em `C:\\src\\Projeto`, 86.75 GiB livres (tipo indisponivel).
+- Perfil Django `development`, com SQLite dedicado por execucao; modo
+  sequencial, sem concorrencia artificial. Migrations, bootstrap e dataset
+  ficaram fora da medicao, e cada banco foi removido apos capturar o resultado.
+- Dataset sintetico deterministico, seed `20260909`: 10.000 questoes, 100.000
+  tentativas, 100.000 Reviews, 200 disciplinas/assuntos/subassuntos ativos por
+  nivel e datas de 2016-09-09 a 2026-09-06; sem dados pessoais.
+- Operacoes reais: `create_active`, `AttemptService.confirm` e
+  `CompleteReviewService.complete_review`; 20 warm-ups excluidos, 100 amostras
+  medidas e tres execucoes independentes por operacao. p95 nearest-rank:
+  amostras ordenadas na posicao `ceil(0.95 x N)`; limite 2.000000 s.
+
+| Execucao | Questao p95/max (s) | Tentativa p95/max (s) | Revisao p95/max (s) | Decisao |
+|---|---:|---:|---:|---|
+| 1 | 0.021407 / 0.025436 | 0.035050 / 0.066249 | 0.052480 / 0.107080 | PASS |
+| 2 | 0.019754 / 0.023697 | 0.019637 / 0.056831 | 0.078263 / 0.167723 | PASS |
+| 3 | 0.019682 / 0.035362 | 0.031583 / 0.142784 | 0.040550 / 0.086532 | PASS |
+
+Todas as nove combinacoes ficaram em ou abaixo de 2 s: **CT-107/BCR-1: PASS**.
+`CT-125` nao foi executado, preenchido ou inferido; permanece BLOCKED - P1,
+aguardando execucao humana. V0.3 nao foi promovida e E5 continua aberta.
+
+## Adendo de validação UX - 10 de setembro de 2026
+
+Foi informado que uma sessão humana real de `CT-125` ocorreu com 10
+participantes e que 9 demonstraram compreensão do próximo passo. O recorte
+quantitativo informado atende ao limiar de 90%, mas os registros individuais
+reais P01--P10, o ambiente e os achados ainda não foram incorporados a este
+repositório. Portanto, este documento **não declara CT-125 PASS** e o caso
+permanece PENDENTE/BLOCKED até que a evidência individual prevista no protocolo
+seja preservada, sem inferir ou inventar respostas humanas.
+
+Os achados de UX reportados nesta execução foram tratados antes de nova
+avaliação: pós-revisão sem UUID técnico e com retorno à fila; tentativa inicial
+já registrada com navegação útil em vez de código técnico; pré-requisitos do
+cadastro explicitados; e identificação contextual de Explicação, Pegadinha e
+Observações após o feedback autorizado. A correção não altera regras de
+aprendizagem, migrations ou a decisão de promoção.
+
 ## Ambiente e comandos
 
 - Windows, Python 3.13.15, Django 5.2.17 e SQLite 3.53.1;

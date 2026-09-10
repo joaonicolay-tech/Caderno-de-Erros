@@ -58,9 +58,9 @@
         <dl class="summary-list">
           <div><dt>Revisão atual</dt><dd>Versão {{ current_revision.version_number }}</dd></div>
           <div><dt>Enunciado</dt><dd class="preserve-lines">{{ current_revision.stem|default:"Não informado" }}</dd></div>
-          <div><dt>Explicação</dt><dd class="preserve-lines">{{ current_revision.explanation|default:"Não informada" }}</dd></div>
-          <div><dt>Pegadinha</dt><dd class="preserve-lines">{{ current_revision.trap_note|default:"Não informada" }}</dd></div>
-          <div><dt>Observações</dt><dd class="preserve-lines">{{ current_revision.notes|default:"Não informadas" }}</dd></div>
+          {% if current_revision.explanation %}<div><dt>Explicação</dt><dd class="preserve-lines">{{ current_revision.explanation }}</dd></div>{% endif %}
+          {% if current_revision.trap_note %}<div><dt>Pegadinha</dt><dd class="preserve-lines">{{ current_revision.trap_note }}</dd></div>{% endif %}
+          {% if current_revision.notes %}<div><dt>Observações</dt><dd class="preserve-lines">{{ current_revision.notes }}</dd></div>{% endif %}
         </dl>
         <h3>Alternativas</h3>
         {% if current_revision.ordered_alternatives %}
@@ -90,9 +90,9 @@
                 <p>Tipo de alteração: {{ revision.get_change_kind_display }}.</p>
                 <dl class="summary-list">
                   <div><dt>Enunciado</dt><dd class="preserve-lines">{{ revision.stem|default:"Não informado" }}</dd></div>
-                  <div><dt>Explicação</dt><dd class="preserve-lines">{{ revision.explanation|default:"Não informada" }}</dd></div>
-                  <div><dt>Pegadinha</dt><dd class="preserve-lines">{{ revision.trap_note|default:"Não informada" }}</dd></div>
-                  <div><dt>Observações</dt><dd class="preserve-lines">{{ revision.notes|default:"Não informadas" }}</dd></div>
+                  {% if revision.explanation %}<div><dt>Explicação</dt><dd class="preserve-lines">{{ revision.explanation }}</dd></div>{% endif %}
+                  {% if revision.trap_note %}<div><dt>Pegadinha</dt><dd class="preserve-lines">{{ revision.trap_note }}</dd></div>{% endif %}
+                  {% if revision.notes %}<div><dt>Observações</dt><dd class="preserve-lines">{{ revision.notes }}</dd></div>{% endif %}
                 </dl>
                 {% if revision.ordered_alternatives %}
                   <ol class="alternative-list">

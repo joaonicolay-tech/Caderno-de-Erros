@@ -9,6 +9,9 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 
 LOCAL_ALLOWED_HOSTS = frozenset({"127.0.0.1", "localhost", "[::1]"})
 DATABASE_TIMEOUT_SECONDS = 5.0
+# `no-referrer` serializa o Origin como `null` em POSTs de formulário. Esta
+# política preserva o Origin apenas no mesmo host e não envia Referer a terceiros.
+FORM_POST_REFERRER_POLICY = "same-origin"
 
 INSTALLED_APPS = [
     "django.contrib.staticfiles",

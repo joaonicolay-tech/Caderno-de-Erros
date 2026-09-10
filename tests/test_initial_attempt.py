@@ -298,6 +298,7 @@ def test_http_protection_csrf_escape_and_confirmation(
     assert "correct_alternative" not in html and "is_correct" not in html
     assert "<script>" not in html and "&lt;script&gt;" in html
     assert "no-store" in page["Cache-Control"]
+    assert page["Referrer-Policy"] == "same-origin"
     answer = page.context["answer"]
     data = {
         "action": "answer",
@@ -311,6 +312,9 @@ def test_http_protection_csrf_escape_and_confirmation(
     assert counts() == (0, 0, 0, 0, 0)
     page = client.post(url, data, follow=True)
     assert page.status_code == 200 and b"EXPLICACAO-RESERVADA" in page.content
+    feedback_html = page.content.decode()
+    assert "explanation-title" in feedback_html and "trap-note-title" in feedback_html
+    assert "notes-title" not in feedback_html
     confirmation = page.context["confirmation"]
     token = confirmation.initial["token"]
     submit = {
@@ -318,7 +322,14 @@ def test_http_protection_csrf_escape_and_confirmation(
         **confirmation.initial,
         "csrfmiddlewaretoken": client.cookies["csrftoken"].value,
     }
-    assert client.post(url, submit).status_code == 200
+    confirmed = client.post(url, submit)
+    assert confirmed.status_code == 200
+    confirmed_html = confirmed.content.decode()
+    assert "<h1>Resposta correta</h1>" in confirmed_html
+    assert "VocÃª acertou. Sua tentativa foi registrada." in confirmed_html
+    assert "nÃ£o entrou em ciclo de revisÃ£o" in confirmed_html
+    assert "Responder outra questÃ£o" in confirmed_html
+    assert str(confirmed.context["receipt"]) not in confirmed_html
     assert client.post(url, submit).status_code == 200
     assert counts() == (1, 0, 0, 0, 1)
     records = [record for record in caplog.records if record.name == "cei"]
@@ -328,6 +339,49 @@ def test_http_protection_csrf_escape_and_confirmation(
         assert sensitive not in formatted
     assert all(
         json.loads(StructuredJsonFormatter().format(record))["correlation_id"] for record in records
+    )
+
+
+@pytest.mark.parametrize(
+    ("host", "origin"),
+    [("127.0.0.1:8000", "http://127.0.0.1:8000"), ("localhost:8000", "http://localhost:8000")],
+)
+def test_initial_http_same_origin_csrf_keeps_cross_site_rejection(
+    setup: tuple[AttemptService, Question, Workspace],
+    host: str,
+    origin: str,
+) -> None:
+    """The local form posts from its actual origin; null/foreign origins stay blocked."""
+    _, item, _ = setup
+    client = Client(enforce_csrf_checks=True)
+    url = reverse("attempts:initial", args=[item.id])
+    page = client.get(url, HTTP_HOST=host)
+    answer = page.context["answer"]
+    data = {
+        "action": "answer",
+        "revision_id": str(answer.initial["revision_id"]),
+        "lock_version": answer.initial["lock_version"],
+        "alternative_id": str(answer.fields["alternative_id"].choices[0][0]),
+        "csrfmiddlewaretoken": client.cookies["csrftoken"].value,
+    }
+    assert client.post(url, data, HTTP_HOST=host, HTTP_ORIGIN="null").status_code == 403
+    assert (
+        client.post(
+            url,
+            data,
+            HTTP_HOST=host,
+            HTTP_ORIGIN="http://untrusted.example",
+        ).status_code
+        == 403
+    )
+    assert (
+        client.post(
+            url,
+            data,
+            HTTP_HOST=host,
+            HTTP_ORIGIN=origin,
+        ).status_code
+        == 302
     )
 
 
@@ -419,6 +473,42 @@ def test_context_invalidated_by_current_state(
     assert counts() == (0, 0, 0, 0, 0)
 
 
+@pytest.mark.django_db
+def test_already_answered_question_has_useful_navigation_not_technical_error(
+    setup: tuple[AttemptService, Question, Workspace],
+) -> None:
+    service, item, workspace = setup
+    service.confirm(
+        token=evaluate(service, item, True),
+        key=uuid.uuid4(),
+    )
+
+    response = Client().get(reverse("attempts:initial", args=[item.id]))
+    html = response.content.decode()
+
+    assert response.status_code == 409
+    assert "Quest" in html
+    assert "reviews/timeline" in html and 'href="/reviews/"' in html
+    assert "Reabrir questÃ£o" not in html
+    assert "CONFLICT" not in html and "INVALID_CONTEXT" not in html
+    assert workspace.attempts.filter(question=item).count() == 1
+
+
+@pytest.mark.django_db
+def test_real_invalid_context_remains_recoverable_without_technical_code(
+    setup: tuple[AttemptService, Question, Workspace],
+) -> None:
+    _, item, _ = setup
+
+    # A malformed POST has no usable session/context.
+    response = Client().post(reverse("attempts:initial", args=[item.id]), {"action": "confirm"})
+    html = response.content.decode()
+
+    assert response.status_code == 403
+    assert "Sess" in html
+    assert "CONFLICT" not in html and "INVALID_CONTEXT" not in html
+
+
 def test_same_key_different_context_conflicts(
     setup: tuple[AttemptService, Question, Workspace],
 ) -> None:
@@ -495,7 +585,12 @@ def test_http_error_diagnosis_recovery_and_expiration(
     assert page.status_code == 503
     assert str(page.context["confirmation"].data["key"]) == str(submit["key"])
     assert counts() == (0, 0, 0, 0, 0)
-    assert client.post(url, submit).status_code == 200
+    confirmed = client.post(url, submit)
+    assert confirmed.status_code == 200
+    confirmed_html = confirmed.content.decode()
+    assert "Tentativa confirmada com sucesso." in confirmed_html
+    assert "Recibo:" not in confirmed_html
+    assert str(confirmed.context["receipt"]) not in confirmed_html
     assert counts() == (1, 1, 1, 1, 1)
 
 

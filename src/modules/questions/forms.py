@@ -42,18 +42,21 @@ class QuestionQuickEntryForm(forms.Form):
         queryset=None,
         required=False,
         empty_label="Selecione uma disciplina",
+        help_text="Obrigat\u00f3ria para ativar a quest\u00e3o.",
     )
     subject: forms.ModelChoiceField[Subject] = forms.ModelChoiceField(
         label="Assunto",
         queryset=None,
         required=False,
         empty_label="Selecione um assunto",
+        help_text="Obrigat\u00f3rio para ativar. Se n\u00e3o houver op\u00e7\u00f5es, selecione uma disciplina primeiro.",
     )
     subsubject: forms.ModelChoiceField[Subsubject] = forms.ModelChoiceField(
         label="Subassunto",
         queryset=None,
         required=False,
         empty_label="Sem subassunto",
+        help_text="Opcional. Se necess\u00e1rio, selecione primeiro uma disciplina e um assunto.",
     )
     difficulty = forms.ChoiceField(
         label="Dificuldade",

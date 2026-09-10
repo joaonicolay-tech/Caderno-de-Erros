@@ -198,6 +198,7 @@ class CompleteReviewService:
             "correction": revision.correct_alternative.text,
             "explanation": revision.explanation,
             "trap_note": revision.trap_note,
+            "notes": revision.notes,
         }
 
     def cancel(self, token: str) -> None:

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Concluir revisão — Caderno de Erros{% endblock %}
 {% block content %}
-<h1>Concluir revisão</h1>
-{% if error %}<p role="alert">{{ error }}</p><p>{{ code }}</p>{% endif %}
+{% if receipt %}{% else %}<h1>Concluir revisão</h1>{% endif %}
+{% if error %}<p role="alert">{{ error }}</p>{% endif %}
 {% if review_id %}<p><a href="{% url 'reviews:complete' review_id %}">Reabrir revisão</a></p>{% endif %}
-{% if receipt %}<p role="status">Revisão confirmada com sucesso.</p><p>Recibo: {{ receipt }}</p>{% endif %}
+{% if receipt %}<h1>Revis&atilde;o conclu&iacute;da</h1><p role="status">Sua revis&atilde;o foi registrada com sucesso.</p><p><a href="{% url 'reviews:queue' %}">Voltar &agrave;s revis&otilde;es</a></p>{% endif %}
 {% if answer %}
   <p class="preserve-lines">{{ stem }}</p>
   <form method="post">{% csrf_token %}{{ answer.as_p }}<button name="action" value="answer">Avaliar resposta</button></form>
@@ -12,10 +12,12 @@
 {% if confirmation %}
   <p role="status">{% if is_correct %}Resposta correta.{% else %}Resposta incorreta. Classifique o erro para confirmar.{% endif %}</p>
   <p>Gabarito: {{ correction }}</p>
-  {% if explanation %}<p>{{ explanation }}</p>{% endif %}{% if trap_note %}<p>{{ trap_note }}</p>{% endif %}
+  {% if explanation %}<section aria-labelledby="explanation-title"><h2 id="explanation-title">Explica&ccedil;&atilde;o</h2><p class="preserve-lines">{{ explanation }}</p></section>{% endif %}
+  {% if trap_note %}<section aria-labelledby="trap-note-title"><h2 id="trap-note-title">Pegadinha</h2><p class="preserve-lines">{{ trap_note }}</p></section>{% endif %}
+  {% if notes %}<section aria-labelledby="notes-title"><h2 id="notes-title">Observa&ccedil;&otilde;es</h2><p class="preserve-lines">{{ notes }}</p></section>{% endif %}
   <p>A avaliação expira em 15 minutos. Até confirmar, não há tentativa registrada.</p>
   <form method="post">{% csrf_token %}{{ confirmation.as_p }}<button name="action" value="confirm">Confirmar revisão</button></form>
   <form method="post">{% csrf_token %}{{ cancel.as_p }}<button name="action" value="cancel">Cancelar resposta</button></form>
 {% endif %}
-<p><a href="{% url 'questions:list' %}">Voltar às questões</a></p>
+{% if not receipt %}<p><a href="{% url 'questions:list' %}">Voltar às questões</a></p>{% endif %}
 {% endblock %}

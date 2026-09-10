@@ -321,6 +321,7 @@ def test_ct093_ct101_review_http_hides_answer_and_validates_context() -> None:
     page = client.get(url)
     html = page.content.decode()
     assert page.status_code == 200
+    assert page["Referrer-Policy"] == "same-origin"
     assert "explicação reservada" not in html and "pegadinha reservada" not in html
     assert "correct_alternative" not in html and "is_correct" not in html
     answer = page.context["answer"]
@@ -334,6 +335,9 @@ def test_ct093_ct101_review_http_hides_answer_and_validates_context() -> None:
     }
     page = client.post(url, data, follow=True)
     assert page.status_code == 200 and b"explica\xc3\xa7\xc3\xa3o reservada" in page.content
+    feedback_html = page.content.decode()
+    assert "explanation-title" in feedback_html and "trap-note-title" in feedback_html
+    assert "notes-title" not in feedback_html
     confirmation = page.context["confirmation"]
     submit = {
         "action": "confirm",
@@ -342,5 +346,12 @@ def test_ct093_ct101_review_http_hides_answer_and_validates_context() -> None:
         "csrfmiddlewaretoken": client.cookies["csrftoken"].value,
     }
     assert client.post(url, {**submit, "is_correct": "true"}).status_code == 409
-    assert client.post(url, submit).status_code == 200
+    completed = client.post(url, submit)
+    completed_html = completed.content.decode()
+    assert completed.status_code == 200
+    assert "Revis&atilde;o conclu&iacute;da" in completed_html
+    assert "Sua revis&atilde;o foi registrada com sucesso." in completed_html
+    assert "Voltar &agrave;s revis&otilde;es" in completed_html
+    assert str(completed.context["receipt"]) not in completed_html
+    assert "Recibo:" not in completed_html
     assert Attempt.objects.filter(review=review, attempt_type=AttemptType.REVIEW).count() == 1

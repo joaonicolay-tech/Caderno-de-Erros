@@ -3,6 +3,7 @@
 import secrets
 import uuid
 
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
@@ -13,6 +14,7 @@ from modules.errors.models import ErrorCategory
 
 from .context import InitialAttemptError
 from .forms import AnswerForm, CancelForm, ConfirmationForm
+from .models import Attempt, AttemptStatus, AttemptType
 from .services import AttemptService
 
 SESSION_COOKIE = "initial_session"
@@ -35,23 +37,31 @@ def initial(request: HttpRequest, question_id: uuid.UUID) -> HttpResponse:
     try:
         response = _journey(request, question_id, service, token, cookie_name)
     except InitialAttemptError as error:
+        already_answered = _has_valid_initial_attempt(question_id, service)
         status = 503 if error.code == "PERSISTENCE_FAILURE" else 409
         if error.code == "ACCESS_DENIED":
             status = 403
-        response = render(
-            request,
-            "attempts/initial.html",
-            {
-                "error": (
-                    "Falha de persistência. Reenvie a confirmação com a mesma chave."
-                    if status == 503
-                    else "Contexto inválido ou estado atualizado. Reabra a questão para responder."
-                ),
-                "code": error.code,
-                "question_id": question_id,
-            },
-            status=status,
-        )
+        if already_answered:
+            response = render(
+                request,
+                "attempts/initial.html",
+                {"already_answered": True, "question_id": question_id},
+                status=409,
+            )
+        else:
+            response = render(
+                request,
+                "attempts/initial.html",
+                {
+                    "error": (
+                        "Falha de persistência. Reenvie a confirmação com a mesma chave."
+                        if status == 503
+                        else "Não foi possível continuar esta resposta. Reabra a questão e tente novamente."
+                    ),
+                    "question_id": question_id,
+                },
+                status=status,
+            )
         if status == 409 and error.code != "INVALID_DIAGNOSIS":
             response.delete_cookie(cookie_name)
     response.set_signed_cookie(
@@ -62,8 +72,18 @@ def initial(request: HttpRequest, question_id: uuid.UUID) -> HttpResponse:
         samesite="Strict",
         secure=request.is_secure(),
     )
-    response["Referrer-Policy"] = "no-referrer"
+    response["Referrer-Policy"] = settings.FORM_POST_REFERRER_POLICY
     return response
+
+
+def _has_valid_initial_attempt(question_id: uuid.UUID, service: AttemptService) -> bool:
+    """Distingue a regra de uma tentativa única de contexto realmente inválido."""
+    return Attempt.objects.filter(
+        workspace_id=service.workspace_id,
+        question_id=question_id,
+        attempt_type=AttemptType.INITIAL,
+        status=AttemptStatus.VALID,
+    ).exists()
 
 
 def _journey(
@@ -119,7 +139,11 @@ def _journey(
                 },
                 status=400 if error.code == "INVALID_DIAGNOSIS" else 503,
             )
-        return render(request, "attempts/initial.html", {"receipt": receipt.id})
+        return render(
+            request,
+            "attempts/initial.html",
+            {"receipt": receipt.id, "correct_attempt_confirmed": context.is_correct},
+        )
     if request.method == "POST" and action != "answer":
         raise InitialAttemptError("INVALID_INPUT")
     if action == "answer" or not token:

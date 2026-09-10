@@ -1,10 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Resposta inicial — Caderno de Erros{% endblock %}
 {% block content %}
-<h1>Resposta inicial</h1>
-{% if error %}<p role="alert">{{ error }}</p><p>{{ code }}</p>{% endif %}
-{% if question_id %}<p><a href="{% url 'attempts:initial' question_id %}">Reabrir questão</a></p>{% endif %}
-{% if receipt %}<p role="status">Tentativa confirmada com sucesso.</p><p>Recibo: {{ receipt }}</p>{% endif %}
+{% if already_answered %}{% else %}<h1>{% if correct_attempt_confirmed %}Resposta correta{% else %}Resposta inicial{% endif %}</h1>{% endif %}
+{% if error %}<p role="alert">{{ error }}</p>{% endif %}
+{% if already_answered %}
+  <h1>Quest&atilde;o j&aacute; respondida</h1>
+  <p role="status">A tentativa inicial desta questão já foi registrada.</p>
+  <p>Voc&ecirc; pode consultar o hist&oacute;rico ou verificar suas revis&otilde;es.</p>
+  <p><a href="{% url 'reviews:timeline' question_id %}">Ver hist&oacute;rico da quest&atilde;o</a></p>
+  <p><a href="{% url 'reviews:queue' %}">Ver revis&otilde;es</a></p>
+{% elif question_id %}<p><a href="{% url 'attempts:initial' question_id %}">Reabrir questão</a></p>{% endif %}
+{% if correct_attempt_confirmed %}
+  <p role="status">VocÃª acertou. Sua tentativa foi registrada.</p>
+  <p>Como este foi um acerto inicial, esta questÃ£o nÃ£o entrou em ciclo de revisÃ£o.</p>
+  <p><a href="{% url 'questions:list' %}">Responder outra questÃ£o</a></p>
+{% elif receipt %}
+  <p role="status">Tentativa confirmada com sucesso.</p>
+{% endif %}
 {% if answer %}
   <p class="preserve-lines">{{ stem }}</p>
   <form method="post">
@@ -16,8 +28,9 @@
 {% if confirmation %}
   <p role="status">{% if is_correct %}Resposta correta.{% else %}Resposta incorreta. Classifique o erro para confirmar.{% endif %}</p>
   <p>Gabarito: {{ correction }}</p>
-  {% if explanation %}<p>{{ explanation }}</p>{% endif %}
-  {% if trap_note %}<p>{{ trap_note }}</p>{% endif %}
+  {% if explanation %}<section aria-labelledby="explanation-title"><h2 id="explanation-title">Explica&ccedil;&atilde;o</h2><p class="preserve-lines">{{ explanation }}</p></section>{% endif %}
+  {% if trap_note %}<section aria-labelledby="trap-note-title"><h2 id="trap-note-title">Pegadinha</h2><p class="preserve-lines">{{ trap_note }}</p></section>{% endif %}
+  {% if notes %}<section aria-labelledby="notes-title"><h2 id="notes-title">Observa&ccedil;&otilde;es</h2><p class="preserve-lines">{{ notes }}</p></section>{% endif %}
   <p>A avaliação expira em 15 minutos. Até confirmar, não há tentativa registrada.</p>
   <form method="post">
     {% csrf_token %}{{ confirmation.as_p }}

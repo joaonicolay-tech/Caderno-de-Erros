@@ -614,3 +614,5 @@ def test_ct142_templates_remain_semantic_keyboard_accessible_and_responsive() ->
     assert 'role="alert"' in archive
     assert not re.search(r'tabindex="[1-9]', detail + archive)
     assert "overflow-wrap: anywhere" in css
+    assert 'class="visually-hidden"' in template
+    assert "obrigat" in template
