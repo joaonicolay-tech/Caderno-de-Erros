@@ -2,9 +2,10 @@
 
 ## Estado
 
-**PENDENTE — não preencher sem sessão humana real.** Este protocolo prepara a
-evidência de `CT-125`; ele não substitui os testes automatizados de interface e
-não declara PASS. A execução segue ADR-012.
+**PASS — 9/10 (90%), aceito para o fechamento da V0.3 por ADR-014.** A sessão
+humana abaixo é histórica e real. Não houve nova sessão pós-ADR-013; esta
+limitação está formalizada em ADR-014. O protocolo não substitui testes
+automatizados de interface nem a evidência de CT-107.
 
 ## Definição autoritativa
 
@@ -67,6 +68,30 @@ não uma resposta a ser corrigida durante a sessão.
 
 ## Registro por participante
 
+### Sessão humana histórica aceita
+
+O ambiente original não foi registrado retroativamente. A ausência desse dado
+é uma limitação explícita; não se inventa ambiente. Foram preservados somente
+os dados reais fornecidos, sem observações adicionais.
+
+| ID pseudônimo | Perfil efetivo | Resultado identificado | Causa classificada | Próximo passo explicado | Termos compreendidos | Feedback de gravação compreendido | Ajuda crítica? | Achados/observações |
+|---|---|---|---|---|---|---|---|---|
+| P01 | familiar | Sim | Sim | Sim | Sim | Sim | Não | não foram registradas observações. |
+| P02 | familiar | Sim | Sim | Sim | Sim | Sim | Não | não foram registradas observações. |
+| P03 | familiar | Sim | Sim | Sim | Sim | Sim | Não | não foram registradas observações. |
+| P04 | familiar | Sim | Sim | Sim | Sim | Sim | Não | não foram registradas observações. |
+| P05 | amigo | Sim | Sim | Sim | Sim | Sim | Não | não foram registradas observações. |
+| P06 | amigo | Sim | Sim | Sim | Sim | Sim | Não | não foram registradas observações. |
+| P07 | amigo | Sim | Sim | Sim | Parcial | Sim | Não | não foram registradas observações. |
+| P08 | amigo | Sim | Sim | Sim | Parcial | Sim | Não | não foram registradas observações. |
+| P09 | amigo | Sim | Sim | Sim | Parcial | Sim | Não | não foram registradas observações. |
+| P10 | amigo | Sim | Não | Não | Parcial | Não | Sim | não foram registradas observações. |
+
+Resultado: **9/10 = 90% — PASS**. P07–P09 são achados de compreensão parcial
+dos termos. P10 é um FAIL real; não foi omitido nem convertido em sucesso.
+
+### Modelo histórico do protocolo
+
 | ID pseudônimo | Perfil efetivo | Resultado identificado | Causa classificada | Próximo passo explicado | Termos compreendidos | Feedback de gravação compreendido | Ajuda crítica? | Achados/observações |
 |---|---|---|---|---|---|---|---|---|
 | P01 | _não preenchido_ |  |  |  |  |  |  |  |
@@ -93,6 +118,6 @@ não uma resposta a ser corrigida durante a sessão.
   dos 10 participantes não está completo. Não preencher respostas por
   inferência.
 
-Após uma sessão real, acrescentar o registro preenchido e a decisão em
-`quality/v03-stage5-validation-result.md`, preservando este roteiro. Não usar
-o resultado de testes automatizados de CSRF/escaping como evidência humana.
+O registro histórico e a decisão constam neste protocolo e em
+`quality/v03-stage5-validation-result.md`. Não usar o resultado de testes
+automatizados de CSRF/escaping como evidência humana.

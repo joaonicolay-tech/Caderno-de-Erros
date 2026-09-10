@@ -1,6 +1,6 @@
 # Resultado integrado — V0.3 Etapa 5
 
-## Decisão formal
+## Decisão formal histórica pré-ADR-013
 
 **V0.3 — NÃO PROMOVIDA.**
 
@@ -66,7 +66,7 @@ aprendizagem, migrations ou a decisão de promoção.
   `makemigrations --check --dry-run`, banco vazio, segredos, `pip-audit`,
   rastreabilidade e `git diff --check` GREEN.
 
-## Matriz de promoção
+## Matriz de promoção histórica pré-ADR-013
 
 | CT / critério | Evidência | Status |
 |---|---|---|
@@ -121,3 +121,45 @@ Em 9 de setembro de 2026, ADR-012 formalizou os parâmetros reprodutíveis do
 resultado histórico desta execução: não houve benchmark, sessão humana, PASS
 ou promoção. Os dois casos seguem como os únicos bloqueadores da V0.3, agora
 executáveis sem ambiguidade.
+## Fechamento final pós-ADR-013 — 10 de setembro de 2026
+
+### Decisão
+
+**V0.3 está formalmente PROMOVIDA.** A decisão considera o candidato final
+ADR-013, não a matriz histórica deste documento. Nenhum P0/P1 aplicável
+permanece aberto.
+
+### CT-107 e CT-125
+
+- `CT-107` / BCR-1: **PASS** por execução real registrada em
+  `quality/v03-bcr1-result.json`: três execuções independentes, 20 warm-ups,
+  100 amostras por operação, p95 nearest-rank e todas as nove medições em até
+  2 s.
+- `CT-125`: **PASS — 9/10 (90%)**. Os dez registros individuais históricos
+  estão preservados em `quality/v03-ct125-manual-protocol.md`.
+- P07–P09: compreensão parcial dos termos, registrada como achado sem
+  inventar observações adicionais.
+- P10: **FAIL real**; não classificou a causa, não explicou o próximo passo,
+  não compreendeu o feedback e precisou de ajuda crítica.
+- Não houve nova sessão humana pós-ADR-013. ADR-014 aceita de modo limitado a
+  evidência histórica porque ADR-013 não mudou o objeto humano de CT-125; a
+  validação manual funcional posterior pelo responsável pelo produto não é
+  apresentada como amostra de participantes.
+
+### Regressão, migrations e gate final
+
+- Candidato ADR-013: 280 testes aprovados, 87% de cobertura global e testes
+  focais de ativação/regressão aprovados, conforme
+  `quality/v03-adr013-activation-review-result.md`.
+- Migrations: `reviews.0002_activation_review_cycle` foi validada pelo gate;
+  não cria ciclos retroativos para questões `ACTIVE` históricas. As migrations
+  E1 e os manifestos E1–E4 permanecem protegidos.
+- Gate final desta promoção: `powershell -NoProfile -ExecutionPolicy Bypass
+  -File .\scripts\quality.ps1` — **GREEN, exit code 0**.
+- `git diff --check`: aprovado.
+
+### Integridade e não ações
+
+Nenhuma funcionalidade, migration, política D1/D7/D14/D30 ou reativação foi
+implementada neste fechamento. Nenhuma evidência histórica foi apagada. Não
+houve commit, tag, push ou release. V0.4 não foi iniciada.

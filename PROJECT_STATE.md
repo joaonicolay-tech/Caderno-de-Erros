@@ -1,9 +1,9 @@
 # Project State
 
-Versão atual: V0.3 (implementação incremental)
-Situação da versão: Etapas 0, 1, 2, 3 e 4 concluídas; Etapa 5 aberta, com validação parcial registrada
-Etapa atual: V0.3 — Etapa 5 — Integração, Migração, Regressão, Carga/Concorrência e Promoção
-Status da etapa atual: E5 aberta; gate técnico GREEN, mas CT-107 aguarda execução e CT-125 aguarda execução humana; V0.3 não promovida
+Versão atual: V0.3 (promovida)
+Situação da versão: Etapas 0–5 concluídas; promoção formal registrada em 10 de setembro de 2026.
+Etapa atual: nenhuma etapa de implementação autorizada.
+Status da etapa atual: E5 concluída; V0.3 **PROMOVIDA**.
 
 Etapas concluídas:
 
@@ -20,7 +20,8 @@ Etapas concluídas:
 - V0.3 — Etapa 1 — Fundação de Aprendizagem: Schema, Constraints e Políticas Puras;
 - V0.3 — Etapa 2 — Resposta Inicial Protegida, Contexto Transitório e Finalização Inicial Atômica.
 - V0.3 — Etapa 3 — Política e Conclusão de Revisões.
-- V0.3 — Etapa 4 — Fila Derivada, Linha do Tempo, Diagnóstico Auditável e Suspensão por Arquivamento.
+- V0.3 — Etapa 4 — Fila Derivada, Linha do Tempo, Diagnóstico Auditável e Suspensão por Arquivamento;
+- V0.3 — Etapa 5 — Integração, Migração, Regressão, Carga/Concorrência e Promoção.
 
 Melhoria operacional:
 Etapa 6 — adoção definitiva do novo fluxo operacional concluída.
@@ -29,32 +30,30 @@ Baseline protegida:
 `v0.2.0` (`a756b6d`)
 
 Último gate:
-GREEN — V0.3 Etapa 5, exit code 0 (a promoção permanece bloqueada)
+GREEN — V0.3 Etapa 5, exit code 0.
 
 Testes:
-269 aprovados; os CTs automatizados aplicáveis à E5 estão GREEN. CT-107 e
-CT-125 não possuem PASS.
+280 aprovados; regressões do candidato ADR-013 e os CTs automatizados
+aplicáveis à E5 estão GREEN.
 
 Coverage:
-86% global; todos os módulos de domínio/regra do manifesto E4 acima de 80%
+87% global; todos os módulos de domínio/regra do manifesto E5 acima de 80%.
 
 Bloqueadores:
-`CT-107`/`BCR-1` (P0), aguardando benchmark real sob ADR-012; `CT-125` (P1),
-aguardando evidência humana sob o protocolo atualizado.
+Nenhum P0/P1 aplicável aberto para a V0.3.
 
 P0/P1 aplicável aberto:
-`CT-107` (P0) e `CT-125` (P1).
+Nenhum.
 
 Evidência de encerramento:
-O resultado integrado E5 está em `quality/v03-stage5-validation-result.md`.
-ADR-012 torna `CT-107` e `CT-125` executáveis sem ambiguidade, sem preencher
-qualquer resultado. As migrations E1 e os manifestos E1–E4 permanecem
-intactos. Nenhuma promoção da versão foi realizada.
+`quality/v03-stage5-validation-result.md` registra CT-107 PASS e CT-125 PASS
+(9/10, 90%). ADR-014 documenta a aceitação limitada da evidência histórica de
+CT-125 sem alegar nova sessão humana pós-ADR-013. As migrations E1 e os
+manifestos E1–E4 permanecem intactos.
 
 Próximo objetivo autorizado:
-Executar exclusivamente as provas pendentes da V0.3 — Etapa 5: benchmark real
-`CT-107` conforme ADR-012 e sessão humana `CT-125` conforme protocolo. V0.4
-não está preparada, autorizada nem iniciada; V0.3 continua não promovida.
+Somente planejamento futuro da V0.4 em nova autorização formal; V0.4 não foi
+iniciada.
 
 ADRs relevantes:
 
@@ -66,7 +65,7 @@ ADR-010
 ADR-011
 ADR-012
 
-## Atualização controlada — ADR-013 (10 de setembro de 2026)
+## Atualização histórica — ADR-013 (10 de setembro de 2026)
 
 Esta atualização substitui o estado operacional anterior a partir deste ponto.
 
@@ -87,7 +86,7 @@ As migrations E1 e manifestos E1–E4 continuam protegidos.
 
 ADRs relevantes adicionais: ADR-013.
 
-## Encerramento controlado — ADR-013 (10 de setembro de 2026)
+## Encerramento histórico — ADR-013 (10 de setembro de 2026)
 
 A correção ADR-013 foi implementada e validada pelo gate autoritativo: GREEN,
 exit code 0, 280 testes aprovados e 87% de cobertura global. A migration
@@ -106,3 +105,10 @@ reteste no candidato corrigido. V0.3 continua **NÃO PROMOVIDA**; não houve
 promoção, V0.4, commit, push, tag ou release. Os manifestos E1–E4 e suas
 migrations históricas permanecem preservados. A próxima etapa exige nova
 autorização formal em novo chat.
+## Fechamento final — ADR-014 (10 de setembro de 2026)
+
+ADR-014 aceitou a evidência humana histórica completa de CT-125 para este
+fechamento, sem reescrever ADR-013 ou alegar reteste. CT-107/BCR-1 está PASS
+por medição real; CT-125 está PASS por 9/10 (90%). O gate final retornou exit
+code 0, não restam P0/P1 aplicáveis e V0.3 está **PROMOVIDA**. V0.4 permanece
+não iniciada e exige nova autorização formal.

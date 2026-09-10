@@ -660,6 +660,38 @@ amostra manual de `CT-125`, sem registrar execução, PASS ou promoção.
 
 ---
 
+## ADR-013 — Ciclo de Revisão na Ativação da Questão V0.3
+
+**Arquivo:** `ADR-013_Ciclo_de_Revisao_na_Ativacao_da_Questao_V0.3.md`
+
+### Assunto
+
+Define que a ativação efetiva da questão cria atomicamente o ciclo de revisão
+e sua D1 inaugural, sem fabricar uma tentativa.
+
+### Consultar quando
+
+* interpretar a origem de ciclo/D1, tentativas iniciais, fila ou timeline da V0.3;
+* auditar a migration `reviews.0002_activation_review_cycle` ou suas regressões.
+
+---
+
+## ADR-014 — Exceção Documental do CT-125 pós-ADR-013 V0.3
+
+**Arquivo:** `ADR-014_Excecao_Documental_CT-125_Pos_ADR-013_V0.3.md`
+
+### Assunto
+
+Registra a aceitação limitada da evidência humana histórica de CT-125 para o
+fechamento da V0.3, sem afirmar uma nova sessão após ADR-013.
+
+### Consultar quando
+
+* auditar a promoção da V0.3 e a situação de CT-125;
+* interpretar a limitação da ausência de reteste humano pós-ADR-013.
+
+---
+
 # 3. Documentos de gate, promoção e release
 
 ## Gate de Implementação — Auditoria Final da Documentação
