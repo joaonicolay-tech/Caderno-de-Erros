@@ -1,10 +1,15 @@
 # Caderno de Erros
 
-Catálogo executável local do Caderno de Erros Inteligente. A V0.2 preserva a fundação
-V0.1 (identidade e Workspace locais, fuso IANA, categorias padrão, diagnóstico e
-logging) e adiciona taxonomia, origem, questões objetivas textuais versionadas e busca
-simples. Ainda não existe ciclo de aprendizagem.
+Aplicação web desenvolvida em Django para registrar, organizar e consultar erros cometidos durante os estudos, criando uma base estruturada de questões, disciplinas, assuntos e classificações de erro.
 
+O projeto também é utilizado como exercício prático de engenharia de software, com arquitetura documentada, testes automatizados, controle de qualidade, decisões arquiteturais (ADRs), ambientes separados e evolução incremental por versões.
+
+## Estado atual
+
+A V0.2 preserva a fundação da V0.1 e adiciona taxonomia, origem,
+questões objetivas textuais versionadas e busca simples.
+
+> O ciclo completo de aprendizagem e revisão ainda está em desenvolvimento.
 A V0.1 foi formalmente promovida em 3 de setembro de 2026 após instalação limpa,
 gate autoritativo e validação manual de Chrome/Edge. A documentação oficial está em
 [`docs/`](docs/) e as notas da versão estão em
