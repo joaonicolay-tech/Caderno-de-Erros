@@ -4,13 +4,15 @@ Este arquivo define as orientações operacionais gerais para agentes que trabal
 
 ## 1. Antes de iniciar qualquer tarefa
 
-Leia, nesta ordem:
+Leia `tasks/current.md` antes de qualquer implementação. Ele é a autoridade
+persistida do escopo atual: `Status: NO_TASK_AUTHORIZED` impede implementação;
+`Status: AUTHORIZED` permite somente o escopo descrito.
 
-1. `PROJECT_STATE.md` para entender o estado atual do projeto.
-2. `tasks/current.md` para identificar a tarefa autorizada no momento.
-3. `docs/README.md` para localizar as fontes documentais aplicáveis.
-4. Apenas a documentação explicitamente relevante ou referenciada pela tarefa atual.
-5. ADRs relacionados à área que será modificada.
+Depois, siga a política de progressive disclosure em
+`docs/A3_Progressive_Disclosure.md`: localize primeiro código e testes
+diretamente relacionados e aumente o contexto apenas quando a tarefa, o risco
+ou a evidência o exigirem. `PROJECT_STATE.md` e `docs/README.md` não são
+leituras universais; consulte-os nas condições definidas nessa política.
 
 Não reanalise todo o repositório sem necessidade.
 
@@ -143,14 +145,9 @@ Não inicie automaticamente a etapa seguinte.
 
 O repositório é a memória permanente do projeto.
 
-Leia somente os arquivos necessários para a tarefa atual.
-
-Prefira:
-
-* consultar índices e referências;
-* abrir arquivos diretamente relacionados à mudança;
-* reutilizar decisões já documentadas;
-* evitar reanálises globais desnecessárias.
+Leia somente os arquivos necessários para uma mudança segura; aplique as
+regras de consulta, escalation e stop de
+`docs/A3_Progressive_Disclosure.md`.
 
 O histórico do chat não deve ser tratado como a única fonte de verdade.
 
@@ -160,7 +157,10 @@ O histórico do chat não deve ser tratado como a única fonte de verdade.
 
 O fluxo padrão do repositório é:
 
-`AGENTS.md` → `PROJECT_STATE.md` → `tasks/current.md` → documentação relevante e ADRs → implementação → testes específicos → `scripts/quality.ps1` → atualização de estado → arquivamento da tarefa → commit autorizado → novo chat para a próxima etapa.
+`AGENTS.md` → `tasks/current.md` → contexto proporcional conforme
+`docs/A3_Progressive_Disclosure.md` → implementação → testes específicos →
+`scripts/quality.ps1` → atualização de estado → arquivamento da tarefa → commit
+autorizado → novo chat para a próxima etapa.
 
 Preparar a próxima `tasks/current.md` autoriza apenas uma execução futura. Não autoriza iniciar essa tarefa na mesma execução que encerra a anterior.
 

@@ -2,15 +2,11 @@
 
 Este diretório contém a documentação formal, as decisões arquiteturais e os registros de implementação do projeto **Caderno de Erros Inteligente**.
 
-Este arquivo funciona como **índice operacional da documentação**.
-
-Um agente não deve ler todos os documentos indiscriminadamente antes de cada tarefa. Deve primeiro consultar:
-
-1. `../PROJECT_STATE.md`;
-2. `../tasks/current.md`;
-3. este índice;
-4. somente os documentos relacionados ao escopo atual;
-5. os ADRs aplicáveis.
+Este arquivo funciona como **índice operacional da documentação**, não como
+leitura integral obrigatória. A ordem e as condições de consulta estão em
+`../AGENTS.md` e `A3_Progressive_Disclosure.md`: consulte este índice para
+descobrir documentos relacionados ao escopo, e abra somente as fontes
+aplicáveis.
 
 As regras gerais de trabalho do repositório permanecem definidas em `../AGENTS.md`.
 
@@ -752,6 +748,14 @@ Define o formato proporcional de `tasks/current.md`, a regra de autorização,
 os níveis de tamanho e risco e o estado inequívoco sem tarefa autorizada.
 Não é ADR e não autoriza V0.4 ou funcionalidade do produto.
 
+## A3 — Progressive Disclosure
+
+**Arquivo:** `A3_Progressive_Disclosure.md`
+
+Define a ordem proporcional de consulta, os papéis de `tasks/current.md`,
+`PROJECT_STATE.md` e deste índice, além das regras de context escalation e
+context stop. Não é ADR e não autoriza V0.4 ou funcionalidade do produto.
+
 Além dos documentos existentes neste diretório, três arquivos localizados fora de `docs/` possuem papel operacional especial.
 
 ## `../AGENTS.md`
@@ -806,21 +810,23 @@ Os manifests e demais artefatos utilizados pelo gate permanecem em `../quality/`
 
 ---
 
-# 6. Ordem recomendada de consulta por tipo de tarefa
+# 6. Roteamento documental por tipo de tarefa
+
+Depois de aplicar `A3_Progressive_Disclosure.md`, consulte apenas os itens
+aplicáveis abaixo. Estas listas ajudam a encontrar fontes por tema; não são
+checklists universais nem substituem a ordem proporcional definida na política.
 
 ## Nova funcionalidade
 
-Consultar normalmente:
+Consultar conforme a mudança exigir:
 
-1. `../PROJECT_STATE.md`;
-2. `../tasks/current.md`;
-3. Etapa 9 — Roadmap;
-4. Etapa 3 — Requisitos Funcionais;
-5. Etapa 5 — Regras de Negócio;
-6. Etapa 8 — Fluxos;
-7. SDD e Modelo de Dados quando aplicáveis;
-8. ADRs relacionados;
-9. Etapa 10 — Plano de Testes.
+1. Etapa 3 — Requisitos Funcionais;
+2. Etapa 5 — Regras de Negócio;
+3. Etapa 8 — Fluxos;
+4. SDD e Modelo de Dados quando aplicáveis;
+5. ADRs relacionados;
+6. Etapa 10 — Plano de Testes;
+7. Etapa 9 — Roadmap, somente para delimitar versão ou antecipação.
 
 ---
 
