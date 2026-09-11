@@ -744,6 +744,14 @@ Registra informações relativas à entrega e ao estado promovido da V0.1.
 Registro factual da arquitetura operacional existente na baseline funcional
 `v0.3.0`. Não é ADR nem autoriza V0.4 ou as adaptações A2–A10.
 
+## Contrato A2 — tarefa atual
+
+**Arquivo:** `A2_Contrato_de_Tarefa_Atual.md`
+
+Define o formato proporcional de `tasks/current.md`, a regra de autorização,
+os níveis de tamanho e risco e o estado inequívoco sem tarefa autorizada.
+Não é ADR e não autoriza V0.4 ou funcionalidade do produto.
+
 Além dos documentos existentes neste diretório, três arquivos localizados fora de `docs/` possuem papel operacional especial.
 
 ## `../AGENTS.md`
@@ -775,17 +783,8 @@ Não substitui requisitos, ADRs ou documentação formal.
 
 Define **o que está autorizado a ser feito agora**.
 
-Deve conter:
-
-* objetivo;
-* escopo;
-* fora de escopo;
-* arquivos relevantes;
-* documentação relevante;
-* restrições;
-* critérios de aceite;
-* testes;
-* gate aplicável.
+Seu contrato e o estado sem tarefa autorizada estão definidos em
+`A2_Contrato_de_Tarefa_Atual.md`.
 
 A existência de uma funcionalidade no Roadmap não autoriza sua implementação se ela não estiver dentro da tarefa atual.
 

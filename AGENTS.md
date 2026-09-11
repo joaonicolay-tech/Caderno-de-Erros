@@ -35,7 +35,11 @@ Identifique a divergência e trate-a antes de introduzir uma mudança estrutural
 
 ## 3. Escopo da tarefa
 
-Implemente somente o que estiver autorizado em `tasks/current.md`.
+Implemente somente o que estiver autorizado no contrato com
+`Status: AUTHORIZED` em `tasks/current.md`. Chat não amplia silenciosamente o
+escopo persistido; em caso de divergência, identifique-a antes de implementar.
+O formato e o estado sem autorização estão em
+`docs/A2_Contrato_de_Tarefa_Atual.md`.
 
 Não:
 

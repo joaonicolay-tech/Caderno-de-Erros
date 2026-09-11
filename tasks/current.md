@@ -1,8 +1,6 @@
-# Nenhuma tarefa autorizada
+# Task Contract
 
-V0.3 foi promovida após o fechamento da E5, registrado em
-`quality/v03-stage5-validation-result.md` e ADR-014.
+Status: NO_TASK_AUTHORIZED
 
-Não iniciar V0.4, nova implementação, commit, push, tag ou release sem nova
-autorização formal em novo chat. O próximo objetivo permitido é apenas o
-planejamento futuro da V0.4.
+No implementation is authorized. A clear external authorization must first be
+persisted here as an `AUTHORIZED` contract.
