@@ -737,6 +737,13 @@ Registra informações relativas à entrega e ao estado promovido da V0.1.
 
 # 4. Documentação operacional do repositório
 
+## Baseline A1 — pós-V0.3 / pré-V0.4
+
+**Arquivo:** `A1_Baseline_Pos_V0.3_Pre_V0.4_Arquitetura_Operacional.md`
+
+Registro factual da arquitetura operacional existente na baseline funcional
+`v0.3.0`. Não é ADR nem autoriza V0.4 ou as adaptações A2–A10.
+
 Além dos documentos existentes neste diretório, três arquivos localizados fora de `docs/` possuem papel operacional especial.
 
 ## `../AGENTS.md`
