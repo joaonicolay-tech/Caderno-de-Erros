@@ -9,6 +9,9 @@ as fontes de verdade nem autoriza trabalho fora do contrato.
 - `REPOSITÓRIO` é a memória permanente;
 - chat/Codex é memória temporária;
 - `tasks/current.md` é a autoridade persistida da execução atual.
+- `tasks/plans/` é contexto opcional: só é lido se `current.md` o referenciar
+  ou se o contrato exigir a decomposição; planos concluídos não pertencem ao
+  contexto normal.
 
 `AGENTS.md` contém a regra curta e obrigatória. Este documento é a fonte
 durável das condições de leitura; `docs/README.md` é o índice para descobri-las.

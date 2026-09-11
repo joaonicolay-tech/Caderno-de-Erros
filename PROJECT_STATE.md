@@ -26,6 +26,11 @@ Etapas concluídas:
 Melhoria operacional:
 Etapa 6 — adoção definitiva do novo fluxo operacional concluída.
 
+Adaptação operacional pós-V0.3 / pré-V0.4:
+A2, A3 e A4 concluídas. `tasks/current.md` é a autoridade da tarefa corrente;
+`tasks/plans/` é opcional e prospectivo; `tasks/completed/` preserva o
+histórico. Nenhuma tarefa está autorizada; A5 exige nova autorização formal.
+
 Baseline protegida:
 `v0.2.0` (`a756b6d`)
 
