@@ -6,14 +6,14 @@ O projeto também é utilizado como exercício prático de engenharia de softwar
 
 ## Estado atual
 
-A V0.2 preserva a fundação da V0.1 e adiciona taxonomia, origem,
-questões objetivas textuais versionadas e busca simples.
+A V0.3 está formalmente promovida. Ela preserva a fundação, a taxonomia e o
+catálogo versionado das versões anteriores e implementa o ciclo de aprendizagem
+e revisão: respostas iniciais, ciclos de revisão, agenda D1/D7/D14/D30, fila
+derivada, linha do tempo, diagnóstico auditável e suspensão por arquivamento.
 
-> O ciclo completo de aprendizagem e revisão ainda está em desenvolvimento.
-A V0.1 foi formalmente promovida em 3 de setembro de 2026 após instalação limpa,
-gate autoritativo e validação manual de Chrome/Edge. A documentação oficial está em
-[`docs/`](docs/) e as notas da versão estão em
-[`RELEASE_NOTES_V0.1.md`](docs/RELEASE_NOTES_V0.1.md).
+O gate final da V0.3 está GREEN, sem P0/P1 aplicável aberto. A V0.4 não foi
+iniciada e exige nova autorização formal. A documentação oficial está em
+[`docs/`](docs/).
 
 ## 1. Pré-requisitos
 
@@ -172,7 +172,7 @@ Executar somente a suíte:
 uv run --locked pytest
 ```
 
-Executar o gate autoritativo da V0.1:
+Executar o gate autoritativo:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\quality.ps1
@@ -253,10 +253,9 @@ o perfil de teste em ambiente isolado e descarte o banco ao encerrar.
 - **Teste temporário bloqueado pelo Windows:** encerre processos Python que ainda
   mantenham arquivos abertos e execute novamente; não redirecione testes para banco real.
 
-## 13. Limitações conhecidas da V0.2
+## 13. Limitações conhecidas da V0.3
 
-- O catálogo ainda não deve ser usado para estudo real.
-- Não há tentativas, revisões de aprendizagem, dashboard ou métricas.
+- Não há dashboard ou analytics de aprendizagem.
 - Não há categorias pessoais, autenticação remota, API, notificações ou PWA.
 - O servidor é exclusivamente local; hospedagem e PostgreSQL pertencem a marcos futuros.
 - Backup/restauração são comandos técnicos; não há interface, agenda, rotação, nuvem ou

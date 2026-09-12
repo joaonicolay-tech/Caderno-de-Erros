@@ -167,3 +167,25 @@ O gate autoritativo ficou GREEN na primeira execução, exit code 0, com 280
 testes aprovados e 87% de cobertura. Não houve mudança de Django, migration,
 schema, gate, configuração pessoal ou Skills. A9 e V0.4 não foram iniciadas;
 não há tarefa autorizada.
+
+## Encerramento - A9 (12 de setembro de 2026)
+
+O piloto real auditou e corrigiu o `README.md` raiz: ele ainda apresentava V0.2
+e o ciclo de aprendizagem/revisao como futuro, embora V0.3 esteja promovida.
+O README agora descreve as capacidades V0.3 comprovadas e informa que V0.4 nao
+foi iniciada. A revisao A8 leve foi APPROVED, sem findings, e o gate
+autoritativo terminou GREEN na primeira execucao, exit code 0, com 280 testes
+aprovados e 87% de cobertura.
+
+As quatro Skills A6 foram uteis e suficientes como passos independentes:
+`start-task` delimitou autoridade e arvore preexistente; `implement-current-task`
+sustentou a alteracao minima; `run-quality-gate` preservou a evidencia tecnica;
+e `finish-task` orientou o encerramento. A3 evitou leitura excessiva; A7
+permitiu registro append-only sem estimativas; e A8 proporcionou revisao leve
+sem burocracia adicional. Nao houve conflito de fontes nem workaround. A
+duplicacao residual entre AGENTS, A2/A3 e Skills permaneceu limitada a papeis
+distintos. Candidatas para A10: revisar a redacao historica acumulada de
+`PROJECT_STATE.md` e padronizar captura externa de duracao, reasoning e quotas.
+Nenhuma alteracao arquitetural foi feita nesta A9. Nao houve mudanca funcional,
+migration, alteracao de Skills/politicas/gate, inicio de A10 ou V0.4, commit,
+push, tag ou release. Nao ha tarefa autorizada.
