@@ -27,9 +27,10 @@ Melhoria operacional:
 Etapa 6 — adoção definitiva do novo fluxo operacional concluída.
 
 Adaptação operacional pós-V0.3 / pré-V0.4:
-A2, A3 e A4 concluídas. `tasks/current.md` é a autoridade da tarefa corrente;
+A2, A3, A4, A5 e A6 concluídas. `tasks/current.md` é a autoridade da tarefa corrente;
 `tasks/plans/` é opcional e prospectivo; `tasks/completed/` preserva o
-histórico. Nenhuma tarefa está autorizada; A5 exige nova autorização formal.
+histórico. As quatro Skills essenciais estão em `.agents/skills/`. Nenhuma
+tarefa está autorizada; A7 exige nova autorização formal.
 
 Baseline protegida:
 `v0.2.0` (`a756b6d`)
@@ -117,3 +118,22 @@ fechamento, sem reescrever ADR-013 ou alegar reteste. CT-107/BCR-1 está PASS
 por medição real; CT-125 está PASS por 9/10 (90%). O gate final retornou exit
 code 0, não restam P0/P1 aplicáveis e V0.3 está **PROMOVIDA**. V0.4 permanece
 não iniciada e exige nova autorização formal.
+
+## Encerramento — A5 (11 de setembro de 2026)
+
+A5 verificou Codex CLI 0.153.0 e a documentação oficial vigente. Nenhum
+`.codex/config.toml` ou arquivo de rules foi criado: `AGENTS.md` já é descoberto
+nativamente, `PROJECT_STATE.md` não deve virar fallback universal e rules são
+experimentais e não agregariam uma fronteira além da sandbox/aprovações atuais.
+`.codex/auth.json` passou a ser ignorado explicitamente. O gate autoritativo
+ficou GREEN, exit code 0, com 280 testes e 87% de cobertura. A6 não foi iniciada.
+
+## Encerramento — A6 (11 de setembro de 2026)
+
+A6 criou quatro Skills de projeto concisas em `.agents/skills/`: início de
+tarefa autorizada, implementação do contrato corrente, execução/interpretação
+do gate existente e validação de encerramento. O Codex 0.153.0 descobriu as
+quatro pelo caminho de repositório e a validação estrutural aprovou todos os
+`SKILL.md`. Os cinco dry-runs operacionais passaram. O gate autoritativo ficou
+GREEN na primeira execução, exit code 0, com 280 testes e 87% de cobertura.
+Não houve mudança funcional, migration ou início de A7/V0.4.

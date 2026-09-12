@@ -756,6 +756,28 @@ Define a ordem proporcional de consulta, os papéis de `tasks/current.md`,
 `PROJECT_STATE.md` e deste índice, além das regras de context escalation e
 context stop. Não é ADR e não autoriza V0.4 ou funcionalidade do produto.
 
+## A5 — configuração versionada do Codex
+
+**Registro:** `../tasks/completed/a5-codex-project-configuration.md`
+
+Registra a compatibilidade verificada do Codex, a decisão de não criar
+configuração ou rules redundantes e a separação entre política do repositório
+e preferências pessoais. `AGENTS.md` continua sendo a fonte versionada das
+instruções; a ausência de `.codex/config.toml` é deliberada.
+
+## A6 — Skills essenciais do fluxo operacional
+
+**Local:** `../.agents/skills/`
+
+Quatro Skills de projeto encapsulam fases repetitivas e podem ser invocadas
+separadamente: `start-task` valida o início de uma tarefa já autorizada;
+`implement-current-task` executa somente o contrato corrente;
+`run-quality-gate` chama e interpreta `scripts/quality.ps1`; e `finish-task`
+valida as condições antes do arquivamento. A relação conceitual é
+`start-task` → `implement-current-task` → `run-quality-gate` → `finish-task`,
+mas não constitui pipeline automático nem amplia a autorização de
+`tasks/current.md`.
+
 Além dos documentos existentes neste diretório, três arquivos localizados fora de `docs/` possuem papel operacional especial.
 
 ## `../AGENTS.md`

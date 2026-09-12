@@ -1,5 +1,6 @@
 .venv/
 .tools/
+.codex/auth.json
 
 __pycache__/
 *.py[cod]
