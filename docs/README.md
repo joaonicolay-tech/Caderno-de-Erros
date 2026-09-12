@@ -756,6 +756,16 @@ Define a ordem proporcional de consulta, os papéis de `tasks/current.md`,
 `PROJECT_STATE.md` e deste índice, além das regras de context escalation e
 context stop. Não é ADR e não autoriza V0.4 ou funcionalidade do produto.
 
+## A7 — política de modelos, reasoning, escalonamento e métricas
+
+**Arquivo:** `A7_Politica_de_Modelos_Reasoning_Escalonamento_e_Metricas.md`
+
+Define a política operacional inicial e calibrável de escolha de modelo,
+reasoning e escalonamento por evidência, além do registro versionado de
+métricas em `../quality/operational-execution-metrics.jsonl`. Não altera a
+autorização funcional de `tasks/current.md`, não configura preferências
+pessoais do Codex e não inicia V0.4.
+
 ## A5 — configuração versionada do Codex
 
 **Registro:** `../tasks/completed/a5-codex-project-configuration.md`

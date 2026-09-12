@@ -137,3 +137,20 @@ quatro pelo caminho de repositório e a validação estrutural aprovou todos os
 `SKILL.md`. Os cinco dry-runs operacionais passaram. O gate autoritativo ficou
 GREEN na primeira execução, exit code 0, com 280 testes e 87% de cobertura.
 Não houve mudança funcional, migration ou início de A7/V0.4.
+
+## Encerramento — A7 (12 de setembro de 2026)
+
+A7 formalizou uma política inicial e calibrável de seleção de modelo,
+reasoning e escalonamento por evidência em
+`docs/A7_Politica_de_Modelos_Reasoning_Escalonamento_e_Metricas.md`. As
+métricas operacionais têm registro versionado, append-friendly e com
+proveniência em `quality/operational-execution-metrics.jsonl`; valores
+desconhecidos permanecem explícitos e dados de quota externos não são
+estimados.
+
+O gate autoritativo elegível ficou GREEN no contexto de rede autorizado, exit
+code 0, com 280 testes e 87% de cobertura. A primeira execução no sandbox foi
+inconclusiva apenas no `pip-audit` por `WinError 10013`, classificado como
+infraestrutura e não como falha de modelo ou retrabalho funcional. Não houve
+mudança em Django, migrations, gate, baseline, configuração pessoal ou Skills.
+A8 e V0.4 não foram iniciadas; não há tarefa autorizada.
