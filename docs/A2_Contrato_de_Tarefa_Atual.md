@@ -22,8 +22,22 @@ ADRs, estado, plano de projeto, checklist universal ou histórico extenso.
 Implementação só pode começar quando `tasks/current.md` declarar uma tarefa com
 `Status: AUTHORIZED` e os campos obrigatórios preenchidos. Um prompt ou chat
 não amplia silenciosamente o escopo persistido. Uma autorização externa clara
-pode somente instruir a criação ou substituição do contrato antes da execução;
-depois disso, o contrato persistido limita o trabalho.
+pode instruir uma sessão administrativa de bootstrap a criar ou substituir o
+contrato antes da execução. Essa sessão pode editar somente o contrato e deve
+parar depois de deixá-lo completo; ela não executa a tarefa recém-autorizada.
+
+O contrato criado pelo bootstrap deve representar a tarefa real e ficar
+imediatamente executável por uma sessão posterior. Restrições exclusivas do
+bootstrap, como "não implemente nesta sessão", não são persistidas em
+`Constraints`; `Done When` descreve sempre a conclusão real da tarefa, não o
+fim da autorização administrativa. O fluxo legítimo é:
+
+`NO_TASK_AUTHORIZED` → autorização administrativa explícita → contrato
+`AUTHORIZED` executável → nova sessão de execução.
+
+Sem autorização administrativa explícita, `NO_TASK_AUTHORIZED` continua
+bloqueando qualquer implementação. Uma Skill de execução não cria nem amplia
+autorização.
 
 Se chat e contrato divergirem, o agente deve identificar a divergência e pedir
 ou registrar a correção antes de implementar. Ao concluir, a tarefa é arquivada

@@ -85,6 +85,13 @@ devem ser tratadas como medidas exatas. Duração também não é proxy confiáv
 consumo: tipo de tarefa, ferramentas, testes, gates, retrabalho, contexto,
 arquivos e investigação afetam o resultado.
 
+Uma nota não pode contradizer os campos estruturados. Se a fonte disponível
+afirmar que reasoning, duração ou quota não foram capturados, os respectivos
+campos ficam `"unknown"`; não se reconstrói o valor a partir do tamanho, do
+horário de arquivos ou de memória informal. Correções factuais em registros
+existentes preservam a linha e identificam a fonte da correção; novos
+resultados continuam sendo acrescentados, não reescritos retroativamente.
+
 `record_type: "incident"` separa incidentes de `model_task`,
 `infrastructure`, `environment` e `scope_contract`. Assim, falhas de sandbox
 ou de contrato não entram em first-pass failure, retrabalho funcional ou taxa
