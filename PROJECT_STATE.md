@@ -154,3 +154,16 @@ inconclusiva apenas no `pip-audit` por `WinError 10013`, classificado como
 infraestrutura e não como falha de modelo ou retrabalho funcional. Não houve
 mudança em Django, migrations, gate, baseline, configuração pessoal ou Skills.
 A8 e V0.4 não foram iniciadas; não há tarefa autorizada.
+
+## Encerramento — A8 (12 de setembro de 2026)
+
+A8 formalizou a política principal em `docs/review/code-review.md`: revisão
+proporcional e orientada a risco, focada em findings concretos, com prioridade,
+profundidades, severidades, decisões de aprovação e tratamento de escopo. O
+índice passou a apontar para essa fonte; as Skills existentes permaneceram
+inalteradas porque já se integram ao fluxo sem duplicar a política.
+
+O gate autoritativo ficou GREEN na primeira execução, exit code 0, com 280
+testes aprovados e 87% de cobertura. Não houve mudança de Django, migration,
+schema, gate, configuração pessoal ou Skills. A9 e V0.4 não foram iniciadas;
+não há tarefa autorizada.

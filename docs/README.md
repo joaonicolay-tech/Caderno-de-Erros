@@ -766,6 +766,14 @@ métricas em `../quality/operational-execution-metrics.jsonl`. Não altera a
 autorização funcional de `tasks/current.md`, não configura preferências
 pessoais do Codex e não inicia V0.4.
 
+## A8 — política formal de code review
+
+**Arquivo:** `review/code-review.md`
+
+Define uma revisão proporcional e orientada a risco, centrada em findings
+concretos. Complementa o contrato, as Skills, os testes e o gate sem duplicá-los
+nem autorizar mudanças funcionais.
+
 ## A5 — configuração versionada do Codex
 
 **Registro:** `../tasks/completed/a5-codex-project-configuration.md`
