@@ -136,12 +136,15 @@ class ReviewStatusPolicy:
         current_due_date: LocalDate,
         time_zone_id: TimeZoneId,
     ) -> ReviewTemporalStatus:
-        self._clock.now()
         if structural_state != ReviewStructuralState.PENDING:
             return ReviewTemporalStatus(structural_state.value)
-        today = self._calendar.today(time_zone_id)
+        today = self.reference_date(time_zone_id)
         if current_due_date.value > today.value:
             return ReviewTemporalStatus.FUTURE
         if current_due_date.value == today.value:
             return ReviewTemporalStatus.DUE
         return ReviewTemporalStatus.OVERDUE
+
+    def reference_date(self, time_zone_id: TimeZoneId) -> LocalDate:
+        """Capture a data civil usada por todas as leituras de situação."""
+        return self._calendar.today(time_zone_id)
