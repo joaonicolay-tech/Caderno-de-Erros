@@ -56,9 +56,11 @@ def test_empty_taxonomy_and_home_expose_only_the_implemented_capability() -> Non
     assert reverse("taxonomy:discipline-create") in html
     assert 'aria-label="Filtrar por estado"' in html
     assert 'aria-current="page"' in html
-    assert "Abrir taxonomia" in home
-    assert "Nova questão" in home
-    for forbidden in ("Tentativas", "Dashboard", "Métricas", "Busca"):
+    assert "Painel de estudo" in home
+    assert "Tentativas" in home
+    assert reverse("taxonomy:index") in home
+    assert reverse("questions:quick-entry") in home
+    for forbidden in ("Métricas", "Busca"):
         assert f">{forbidden}<" not in home
 
 

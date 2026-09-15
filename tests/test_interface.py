@@ -120,8 +120,9 @@ def test_initialized_home_only_links_existing_capabilities_and_preserves_unicode
     links = {link.get("href") for link in parsed_html(response.content).links}
 
     assert response.status_code == 200
-    assert "Seu espaço está pronto" in html
-    assert "Português (Brasil)" in html
+    assert "Visão do seu estudo" in html
+    assert "Sem dados" in html
+    assert "Painel de estudo" in html
     assert links == {
         "/",
         "/configuracoes/",

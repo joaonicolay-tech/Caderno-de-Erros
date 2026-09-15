@@ -1,40 +1,61 @@
 {% extends "base.html" %}
 
-{% block title %}Início — Caderno de Erros{% endblock %}
+{% block title %}Painel de estudo — Caderno de Erros{% endblock %}
 
 {% block content %}
   <section aria-labelledby="page-title">
-    <p class="eyebrow">Espaço local</p>
-    <h1 id="page-title">Seu espaço está pronto</h1>
-    <p>A base local foi inicializada. A organização da taxonomia acadêmica está disponível.</p>
+    <p class="eyebrow">Painel de estudo</p>
+    <h1 id="page-title">Visão do seu estudo</h1>
+    <p>Os dados abaixo usam todo o histórico de tentativas válidas deste espaço.</p>
   </section>
 
-  <section class="panel" aria-labelledby="workspace-title">
-    <h2 id="workspace-title">Configuração atual</h2>
-    <dl class="summary-list">
-      <div><dt>Espaço</dt><dd>{{ workspace.name }}</dd></div>
-      <div><dt>Idioma</dt><dd>Português (Brasil)</dd></div>
-      <div><dt>Fuso horário</dt><dd><code>{{ workspace.timezone_name }}</code></dd></div>
-      <div><dt>Hoje nesse fuso</dt><dd>{{ today }}</dd></div>
+  <section class="dashboard-section" aria-labelledby="activity-title">
+    <h2 id="activity-title">Atividade</h2>
+    <p class="field-help">Cadastradas são questões existentes; realizadas são questões com ao menos uma tentativa inicial válida.</p>
+    <dl class="metric-grid">
+      <div class="metric-card"><dt>Questões cadastradas</dt><dd>{{ activity.registered_questions }}</dd></div>
+      <div class="metric-card"><dt>Questões realizadas</dt><dd>{{ activity.performed_questions }}</dd></div>
+      <div class="metric-card"><dt>Tentativas</dt><dd>{{ activity.attempts }}</dd><small>{{ activity.initial_attempts }} inicial(is) e {{ activity.review_attempts }} de revisão</small></div>
+      <div class="metric-card"><dt>Acertos</dt><dd>{{ activity.correct_answers }}</dd></div>
+      <div class="metric-card"><dt>Erros</dt><dd>{{ activity.incorrect_answers }}</dd></div>
+      <div class="metric-card"><dt>Taxa de acerto</dt><dd>{% if activity.accuracy.percent is None %}<span class="metric-empty">Sem dados</span>{% else %}{{ activity.accuracy.percent|floatformat:1 }}%{% endif %}</dd><small>{% if activity.accuracy.percent is None %}Ainda sem tentativas válidas.{% else %}{{ activity.accuracy.numerator }} acerto(s) em {{ activity.accuracy.denominator }} tentativa(s) válida(s).{% endif %}</small></div>
     </dl>
-    <p><a class="button-link" href="{% url 'accounts:settings' %}">Alterar fuso horário</a></p>
   </section>
 
-  <section class="panel" aria-labelledby="taxonomy-title">
-    <h2 id="taxonomy-title">Organização acadêmica</h2>
-    <p>Gerencie disciplinas, assuntos e subassuntos sem apagar o histórico.</p>
-    <p><a class="button-link" href="{% url 'taxonomy:index' %}">Abrir taxonomia</a></p>
-  </section>
-
-  <section class="panel" aria-labelledby="questions-title">
-    <h2 id="questions-title">Questões</h2>
-    <p>Registre uma questão como rascunho ou ative-a quando os dados essenciais estiverem prontos.</p>
-    <p class="button-row"><a class="button-link" href="{% url 'questions:list' %}">Consultar questões</a><a class="button-link button-secondary" href="{% url 'questions:quick-entry' %}">Nova questão</a></p>
-  </section>
-
-  <section class="panel" aria-labelledby="reviews-title">
+  <section class="dashboard-section" aria-labelledby="reviews-title">
     <h2 id="reviews-title">Revisões</h2>
-    <p>Consulte sua fila derivada e o histórico das tentativas.</p>
-    <p><a class="button-link" href="{% url 'reviews:queue' %}">Abrir fila de revisões</a></p>
+    <p class="field-help">A data de referência é {{ reviews.reference_date|date:"d/m/Y" }}, no fuso do espaço.</p>
+    <dl class="metric-grid">
+      <div class="metric-card"><dt>Concluídas hoje</dt><dd>{{ reviews.completed_today }}</dd><small>Respostas de revisão válidas concluídas na data de referência.</small></div>
+      <div class="metric-card"><dt>Atrasadas</dt><dd>{{ reviews.overdue }}</dd><small>Revisões pendentes com vencimento anterior a hoje.</small></div>
+      <div class="metric-card"><dt>Devidas hoje</dt><dd>{{ reviews.due }}</dd><small>Revisões pendentes com vencimento hoje.</small></div>
+      <div class="metric-card"><dt>Futuras</dt><dd>{{ reviews.future }}</dd><small>Revisões pendentes com vencimento posterior a hoje.</small></div>
+    </dl>
+    <p><a href="{% url 'reviews:queue' %}">Abrir fila de revisões existente</a></p>
+  </section>
+
+  <section class="dashboard-section" aria-labelledby="discipline-title">
+    <h2 id="discipline-title">Desempenho por disciplina</h2>
+    <p class="field-help">Cada linha usa tentativas válidas vinculadas à disciplina atual. Sem amostra não é uma taxa de 0%.</p>
+    {% include "accounts/_performance_table.html" with breakdown=disciplines label="Disciplina" %}
+  </section>
+
+  <section class="dashboard-section" aria-labelledby="subject-title">
+    <h2 id="subject-title">Desempenho por assunto</h2>
+    <p class="field-help">Cada linha usa tentativas válidas vinculadas ao assunto atual.</p>
+    {% include "accounts/_performance_table.html" with breakdown=subjects label="Assunto" %}
+  </section>
+
+  <section class="dashboard-section" aria-labelledby="error-category-title">
+    <h2 id="error-category-title">Categorias de erro</h2>
+    <p class="field-help">A frequência considera erros de tentativas válidas com classificação atual.</p>
+    {% if error_categories.eligible_errors == 0 %}
+      <p class="empty-state">Ainda não há erros válidos para classificar.</p>
+    {% else %}
+      <ul class="category-list">
+        {% for row in observed_error_categories %}<li><strong>{{ row.display_name }}:</strong> {{ row.errors }}</li>{% endfor %}
+        {% if error_categories.unclassified_errors %}<li><strong>Erros válidos sem classificação:</strong> {{ error_categories.unclassified_errors }} <span class="muted">(resíduo analítico, não uma categoria persistida)</span></li>{% endif %}
+      </ul>
+    {% endif %}
   </section>
 {% endblock %}

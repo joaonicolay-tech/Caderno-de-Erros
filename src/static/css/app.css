@@ -160,6 +160,66 @@ form {
   padding-block: 0.75rem;
 }
 
+.dashboard-section {
+  margin-block-start: 2rem;
+}
+
+.metric-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  margin: 1rem 0 0;
+}
+
+.metric-card {
+  background: var(--surface);
+  border: 0.0625rem solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.metric-card dt,
+.metric-card small {
+  color: var(--muted);
+}
+
+.metric-card dd {
+  font-size: 1.75rem;
+  font-weight: 750;
+  margin: 0.25rem 0;
+}
+
+.metric-empty {
+  font-size: 1.125rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  background: var(--surface);
+  border-collapse: collapse;
+  margin-top: 1rem;
+  min-width: 36rem;
+  width: 100%;
+}
+
+th,
+td {
+  border: 0.0625rem solid var(--border);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.category-list {
+  background: var(--surface);
+  border: 0.0625rem solid var(--border);
+  border-radius: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 1rem 1rem 1rem 2rem;
+}
+
 .summary-list dt {
   color: var(--muted);
   font-weight: 700;

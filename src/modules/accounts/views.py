@@ -8,8 +8,9 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
+from modules.analytics import AnalyticsService
+from modules.analytics.read_models import PerformanceLevel
 from shared.application.bootstrap import bootstrap_local_workspace
-from shared.domain.time import Calendar, SystemClock, TimeZoneId
 
 from .exceptions import LocalBootstrapConflict, WorkspaceAccessDenied, WorkspaceConcurrencyError
 from .forms import InitialSetupForm, TimezoneChangeForm
@@ -38,17 +39,27 @@ def _status_message(request: HttpRequest, messages: dict[str, str]) -> str:
 
 
 def home(request: HttpRequest) -> HttpResponse:
-    """Mostre somente as capacidades existentes na fundação V0.1."""
+    """Apresente o dashboard V0.4 a partir da fachada analítica read-only."""
     workspace = _local_workspace()
     if workspace is None:
         return redirect("accounts:initial-setup")
-    today = Calendar(SystemClock()).today(TimeZoneId(workspace.timezone_name)).value
+    analytics = AnalyticsService(workspace_id=workspace.id)
+    activity = analytics.activity()
+    reviews = analytics.reviews()
+    disciplines = analytics.performance(level=PerformanceLevel.DISCIPLINE)
+    subjects = analytics.performance(level=PerformanceLevel.SUBJECT)
+    error_categories = analytics.error_categories()
     return render(
         request,
         "accounts/home.html",
         {
             "workspace": workspace,
-            "today": today.strftime("%d/%m/%Y"),
+            "activity": activity,
+            "reviews": reviews,
+            "disciplines": disciplines,
+            "subjects": subjects,
+            "error_categories": error_categories,
+            "observed_error_categories": tuple(row for row in error_categories.rows if row.errors),
             "feedback": _status_message(
                 request,
                 {"configured": "Configuração inicial concluída com sucesso."},
