@@ -1,0 +1,1038 @@
+"""Verificação read-only de invariantes operacionais do banco local SQLite."""
+
+from __future__ import annotations
+
+import re
+import sqlite3
+from collections import Counter
+from contextlib import closing
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+from enum import StrEnum
+from pathlib import Path
+from typing import Final
+
+from django.db import connections
+
+from modules.operations.structured_logging import REDACTED
+from shared.domain.time import TimeZoneId
+
+DEFAULT_FINDING_LIMIT: Final = 100
+MAX_FINDING_LIMIT: Final = 1000
+_UUID_PATTERN: Final = re.compile(
+    r"(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\Z",
+    re.IGNORECASE,
+)
+_DATE_PATTERN: Final = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
+_SAFE_CODES: Final = frozenset(
+    {
+        "ACTIVE",
+        "ARCHIVED",
+        "ATTEMPT",
+        "ATTENTION",
+        "CALCULATION",
+        "COMPLETED",
+        "CONCEPTUAL",
+        "D1",
+        "D7",
+        "D14",
+        "D30",
+        "DRAFT",
+        "ERROR",
+        "FORMULA_RULE",
+        "GUESS",
+        "INITIAL",
+        "INITIAL_CORRECT",
+        "INITIAL_ERROR",
+        "INITIAL_ERROR_TO_D1",
+        "INTERPRETATION",
+        "INVALID",
+        "OTHER",
+        "PENDING",
+        "PROCEDURE",
+        "QUESTION_ACTIVATION",
+        "QUESTION_ACTIVATION_D1",
+        "REVIEW",
+        "REVIEW_COMPLETION",
+        "SUSPENDED",
+        "TIME_SHORTAGE",
+        "TRAP",
+        "VALID",
+        "VOIDED",
+        "ADVANCE_D1_TO_D7",
+        "ADVANCE_D7_TO_D14",
+        "ADVANCE_D14_TO_D30",
+        "RESET_TO_D1_AFTER_ERROR",
+        "complete_current",
+        "correct_alternative",
+        "incomplete_current",
+        "alternative_owner",
+        "revision_owner",
+        "accounts_user",
+        "accounts_workspace",
+        "attempts_attempt",
+        "attempts_operationreceipt",
+        "django_content_type",
+        "errors_error_category",
+        "errors_errorclassification",
+        "errors_errorclassificationrevision",
+        "questions_alternative",
+        "questions_board",
+        "questions_exam",
+        "questions_question",
+        "questions_questionorigin",
+        "questions_questionrevision",
+        "questions_source",
+        "reviews_review",
+        "reviews_reviewcycle",
+        "taxonomy_discipline",
+        "taxonomy_subject",
+        "taxonomy_subsubject",
+    }
+)
+
+
+class IntegrityCheckOperationalError(RuntimeError):
+    """Indique que o checker não conseguiu concluir, sem confundir com finding."""
+
+
+class InvariantSeverity(StrEnum):
+    """Severidades impeditivas mantidas intencionalmente pequenas."""
+
+    CRITICAL = "CRITICAL"
+    ERROR = "ERROR"
+
+
+@dataclass(frozen=True, slots=True)
+class InvariantSpec:
+    """Entrada estável e auditável do catálogo de invariantes."""
+
+    invariant_id: str
+    name: str
+    description: str
+    domain: str
+    expected_condition: str
+    evidence_type: str
+    severity: InvariantSeverity
+    rationale: str
+    impact: str
+    detection_strategy: str
+    false_positive_risk: str
+    source_reference: str
+    message: str
+    operational_action: str
+
+
+@dataclass(frozen=True, slots=True)
+class IntegrityFinding:
+    """Diagnóstico mínimo; nunca carrega conteúdo de estudo ou objeto inteiro."""
+
+    invariant_id: str
+    severity: InvariantSeverity
+    entity_type: str
+    technical_id: str
+    message: str
+    technical_context: tuple[tuple[str, str], ...]
+    operational_action: str
+
+
+@dataclass(frozen=True, slots=True)
+class IntegrityCheckResult:
+    """Resultado determinístico com contagem total independente do limite visual."""
+
+    checks_executed: int
+    total_findings: int
+    findings: tuple[IntegrityFinding, ...]
+    severity_counts: tuple[tuple[InvariantSeverity, int], ...]
+    queries_executed: int
+
+    @property
+    def has_blocking_findings(self) -> bool:
+        return self.total_findings > 0
+
+    @property
+    def truncated(self) -> bool:
+        return self.total_findings > len(self.findings)
+
+
+_SAFE_ACTION = (
+    "Interrompa restore ou promoção, preserve um backup e investigue a entidade antes de "
+    "qualquer correção manual autorizada."
+)
+
+
+INVARIANT_CATALOG: Final[tuple[InvariantSpec, ...]] = (
+    InvariantSpec(
+        "DB-001",
+        "Estrutura SQLite íntegra",
+        "O arquivo deve passar pelo diagnóstico interno do SQLite.",
+        "database",
+        "PRAGMA integrity_check retorna somente ok.",
+        "PRAGMA read-only",
+        InvariantSeverity.CRITICAL,
+        "Corrupção física não é coberta pelos validators da aplicação.",
+        "Leituras e restaurações podem produzir resultados não confiáveis.",
+        "Executar integrity_check na conexão aberta em modo read-only.",
+        "Baixo; o próprio SQLite produz a evidência.",
+        "ADR-007 e modules.data_management.services._validate_sqlite_file",
+        "O SQLite relatou corrupção estrutural.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "DB-002",
+        "Foreign keys válidas",
+        "Toda foreign key persistida deve apontar para a linha esperada.",
+        "database",
+        "PRAGMA foreign_key_check não retorna linhas.",
+        "PRAGMA read-only",
+        InvariantSeverity.CRITICAL,
+        "FKs podem ter sido importadas com enforcement desativado.",
+        "Relações órfãs quebram todos os domínios dependentes.",
+        "Executar foreign_key_check e reportar apenas tabela/rowid/parent.",
+        "Baixo; depende do catálogo de FKs do schema aplicado.",
+        "ADR-007 e migrations vigentes",
+        "Existe uma referência de banco órfã.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "WS-001",
+        "Hierarquia taxonômica no mesmo Workspace",
+        "Subject/Subsubject devem compartilhar Workspace com seus ancestrais.",
+        "taxonomy",
+        "Cada relação da hierarquia preserva Workspace e ancestral direto.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "A validação de model não é uma constraint intertabelas.",
+        "Filtros e agregações podem vazar ou classificar dados incorretamente.",
+        "Comparar em lote os Workspaces das relações reais.",
+        "Baixo; arquivamento não altera pertencimento.",
+        "taxonomy.models e CT-074",
+        "A hierarquia taxonômica cruza Workspaces.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "WS-002",
+        "Catálogo de origem no mesmo Workspace",
+        "Exam e QuestionOrigin devem compartilhar Workspace com suas referências.",
+        "question origin",
+        "Banca, questão e referências de origem preservam o Workspace do vínculo.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "As regras existem em save(), não como constraints compostas.",
+        "Metadados podem ser atribuídos ao estudante errado.",
+        "Comparar em lote cada referência opcional existente.",
+        "Baixo; referências nulas são excluídas do teste.",
+        "questions.models Exam/QuestionOrigin",
+        "Uma referência de origem cruza Workspaces.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "WS-003",
+        "Timezone do Workspace válido",
+        "O timezone persistido deve ser um identificador IANA aceito pelo domínio.",
+        "workspace time",
+        "TimeZoneId aceita timezone_name sem normalização persistente.",
+        "Leitura em lote e helper temporal",
+        InvariantSeverity.ERROR,
+        "O validator de model não é uma constraint SQLite.",
+        "Fila, dashboard e datas civis podem falhar ou usar referência incorreta.",
+        "Validar uma projeção de ID/timezone com o mesmo value object do domínio.",
+        "Baixo; usa a base IANA instalada que também atende a aplicação.",
+        "accounts.models.Workspace e shared.domain.time.TimeZoneId",
+        "O timezone do Workspace não é válido.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "QUE-001",
+        "Taxonomia da Question coerente",
+        "A taxonomia da Question deve manter Workspace e encadeamento.",
+        "question",
+        "Discipline -> Subject -> Subsubject coincide com os vínculos da Question.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "Question._validate_taxonomy pode ser contornada por SQL/importação.",
+        "Consulta e analytics podem agrupar a questão no universo errado.",
+        "Comparar em uma consulta todos os níveis presentes.",
+        "Baixo; taxonomia arquivada continua válida e não é sinalizada.",
+        "questions.models.Question e V0.4-S1",
+        "A taxonomia da questão é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "QUE-002",
+        "Conteúdo versionado pertence à Question",
+        "Revisões, alternativas e gabarito devem manter questão e Workspace.",
+        "question versioning",
+        "Todo snapshot e alternativa pertence à cadeia declarada.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "FK simples não expressa os vínculos compostos.",
+        "Tentativas podem apontar para conteúdo ou gabarito de outra questão.",
+        "Comparar relações de revisão, alternativa e gabarito em lote.",
+        "Baixo; revisões históricas não precisam continuar atuais.",
+        "questions.models.QuestionRevision/Alternative",
+        "A cadeia de conteúdo versionado é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "QUE-003",
+        "Sequência e revisão corrente coerentes",
+        "Versões devem ser contíguas e questões utilizáveis ter revisão corrente completa.",
+        "question versioning",
+        "Versões começam em 1; ACTIVE/ARCHIVED têm uma current; ACTIVE está completa.",
+        "SQL com window/aggregation",
+        InvariantSeverity.ERROR,
+        "Unicidade impede duplicação, mas não lacunas nem ausência.",
+        "A apresentação ou a semântica da tentativa deixa de ser determinística.",
+        "Calcular row_number e agregar revisão/alternativas correntes.",
+        "Baixo; DRAFT sem revisão é explicitamente aceito.",
+        "questions.services._create_revision e contratos V0.2",
+        "A sequência ou revisão corrente da questão é inválida.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "ATT-001",
+        "Contexto e resultado da Attempt coerentes",
+        "Attempt deve apontar para questão, revisão, alternativa, review e resultado compatíveis.",
+        "attempt",
+        "Todos os vínculos e is_correct correspondem ao snapshot apresentado.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "A semântica composta é validada na escrita, não pelo schema.",
+        "RN-057 e todas as métricas de acerto podem ser corrompidas.",
+        "Comparar em lote IDs, Workspaces, gabarito e eventual substituição.",
+        "Baixo; a revisão histórica é preservada e não comparada à current.",
+        "attempts.models.Attempt e V0.4-S1/S2",
+        "O contexto persistido da tentativa é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "ATT-002",
+        "Data civil histórica da Attempt coerente",
+        "local_date deve derivar de occurred_at e timezone_name persistidos.",
+        "attempt time",
+        "A conversão IANA do instante produz exatamente local_date.",
+        "Leitura em lote e helper temporal",
+        InvariantSeverity.ERROR,
+        "Timezone IANA e conversão civil não cabem em constraint SQLite.",
+        "Filtros por período e métricas diárias ficam incorretos.",
+        "Iterar uma projeção de quatro campos sem carregar models.",
+        "Baixo; usa o mesmo TimeZoneId do domínio e não compara timezone atual.",
+        "attempts.models.Attempt._validate_references e V0.4-S1",
+        "A data civil histórica da tentativa é inválida.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "REV-001",
+        "Origem do ReviewCycle coerente",
+        "Ciclo deve preservar questão, revisão e origem no mesmo contexto.",
+        "review cycle",
+        "Origem INITIAL_ERROR ou QUESTION_ACTIVATION satisfaz o contrato vigente.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "A constraint de origem não valida as entidades relacionadas.",
+        "O ciclo pode nascer de fato alheio ou semanticamente incompatível.",
+        "Comparar ciclo, questão, revisão e tentativa de origem.",
+        "Baixo; ambos os tipos históricos aprovados são aceitos.",
+        "ADR-013 e reviews.models.ReviewCycle",
+        "A origem do ciclo de revisão é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "REV-002",
+        "Review e âncora coerentes",
+        "Review deve pertencer ao ciclo/questão e ter âncora válida quando exigida.",
+        "review",
+        "Somente D1 de ativação omite âncora; demais âncoras mantêm contexto.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "A constraint não expressa Workspace, questão e encadeamento anterior.",
+        "A progressão pode usar uma resposta de outro ciclo.",
+        "Comparar em lote ciclo, questão, âncora e Attempt de conclusão.",
+        "Baixo; D1 histórico por erro inicial é aceito.",
+        "reviews.models.Review e CompleteReviewService",
+        "A revisão ou sua âncora é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "REV-003",
+        "Estado do ciclo coerente com suas Reviews",
+        "ACTIVE, COMPLETED e SUSPENDED devem refletir as pendências/fatos do ciclo.",
+        "review cycle state",
+        "Ciclo ativo tem uma pending; completo termina em D30 correta; suspenso tem suspensa.",
+        "SQL agregada",
+        InvariantSeverity.ERROR,
+        "Constraints locais não relacionam o estado agregado do ciclo.",
+        "Fila e dashboard podem apresentar estados mutuamente incompatíveis.",
+        "Agregar estados e validar a Review terminal sem recalcular analytics.",
+        "Baixo; ciclo completo de questão arquivada continua válido.",
+        "REV-FIXA-1.0, Question.archive e V0.4-S1",
+        "O estado agregado do ciclo de revisão é inválido.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "REV-004",
+        "Sequência e agenda da Review coerentes",
+        "A sequência e as transições D1/D7/D14/D30 devem seguir a policy vigente.",
+        "review schedule",
+        "Sequência contígua, transição conhecida e due date derivada da âncora.",
+        "SQL com window/date",
+        InvariantSeverity.ERROR,
+        "A policy decide na escrita, mas o banco não valida a progressão inteira.",
+        "Uma revisão pode aparecer na etapa ou data civil errada.",
+        "Comparar row_number, transition_code e Attempt.local_date em lote.",
+        "Médio; current_due_date não é congelada e por isso não é comparada.",
+        "reviews.policies.ReviewSchedulePolicy REV-FIXA-1.0",
+        "A sequência ou agenda da revisão é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "ERR-001",
+        "ErrorClassification coerente",
+        "Classificação existente deve apontar para erro válido e categoria do mesmo Workspace.",
+        "error classification",
+        "Attempt é VALID/incorreta e categoria/contexto pertencem ao Workspace.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "OneToOne não expressa correção, status ou tenant composto.",
+        "Categorias e drill-downs podem vazar ou contar eventos inelegíveis.",
+        "Comparar somente classificações existentes; ausência legítima não é finding.",
+        "Baixo; resíduo analítico sem classificação é explicitamente preservado.",
+        "V0.4-S1/S2 e errors.models.ErrorClassification",
+        "A classificação de erro é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "ERR-002",
+        "Histórico da classificação coerente",
+        "Revisões do diagnóstico devem ser contíguas, isoladas e reconciliar a projeção atual.",
+        "error classification history",
+        "r1..rN pertencem ao contexto e rN coincide com a projeção atual.",
+        "SQL com window",
+        InvariantSeverity.ERROR,
+        "Unicidade não impede lacunas nem divergência da projeção.",
+        "Histórico e diagnóstico atual podem contar histórias incompatíveis.",
+        "Comparar sequência, Workspace, categoria e última revisão.",
+        "Baixo; classificação nunca corrigida pode legitimamente não ter revisões.",
+        "errors.services.ErrorClassificationRevisionService",
+        "O histórico da classificação é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "OPS-001",
+        "OperationReceipt aponta para resultado compatível",
+        "Recibo deve resolver a Attempt correta no mesmo Workspace e operação.",
+        "idempotency receipt",
+        "Alvo existe, tenant/chave coincidem e tipo/resultado correspondem à operação.",
+        "SQL relacional",
+        InvariantSeverity.ERROR,
+        "result_entity_id é referência técnica sem FK.",
+        "Replay idempotente pode confirmar o resultado errado.",
+        "Resolver alvos em lote e validar hash/chave/tipo/resultado.",
+        "Baixo; não exige recibo para todo fato histórico.",
+        "attempts.models.OperationReceipt",
+        "O recibo idempotente aponta para resultado incompatível.",
+        _SAFE_ACTION,
+    ),
+)
+
+
+_SQL_RULES: Final[dict[str, str]] = {
+    "WS-001": """
+        SELECT s.id AS entity_id, 'Subject' AS entity_type,
+               s.workspace_id AS workspace_id, d.workspace_id AS related_workspace_id
+        FROM taxonomy_subject s JOIN taxonomy_discipline d ON d.id = s.discipline_id
+        WHERE s.workspace_id != d.workspace_id
+        UNION ALL
+        SELECT ss.id, 'Subsubject', ss.workspace_id, s.workspace_id
+        FROM taxonomy_subsubject ss JOIN taxonomy_subject s ON s.id = ss.subject_id
+        JOIN taxonomy_discipline d ON d.id = s.discipline_id
+        WHERE ss.workspace_id != s.workspace_id OR ss.workspace_id != d.workspace_id
+    """,
+    "WS-002": """
+        SELECT e.id AS entity_id, 'Exam' AS entity_type,
+               e.workspace_id AS workspace_id, b.workspace_id AS related_workspace_id
+        FROM questions_exam e JOIN questions_board b ON b.id = e.board_id
+        WHERE e.workspace_id != b.workspace_id
+        UNION ALL
+        SELECT o.id, 'QuestionOrigin', o.workspace_id, q.workspace_id
+        FROM questions_questionorigin o JOIN questions_question q ON q.id = o.question_id
+        WHERE o.workspace_id != q.workspace_id
+        UNION ALL
+        SELECT o.id, 'QuestionOrigin', o.workspace_id, s.workspace_id
+        FROM questions_questionorigin o JOIN questions_source s ON s.id = o.source_id
+        WHERE o.workspace_id != s.workspace_id
+        UNION ALL
+        SELECT o.id, 'QuestionOrigin', o.workspace_id, e.workspace_id
+        FROM questions_questionorigin o JOIN questions_exam e ON e.id = o.exam_id
+        WHERE o.workspace_id != e.workspace_id
+        UNION ALL
+        SELECT o.id, 'QuestionOrigin', o.workspace_id, b.workspace_id
+        FROM questions_questionorigin o JOIN questions_board b ON b.id = o.board_id
+        WHERE o.workspace_id != b.workspace_id
+    """,
+    "QUE-001": """
+        SELECT q.id AS entity_id, 'Question' AS entity_type,
+               q.workspace_id AS workspace_id, q.status AS status
+        FROM questions_question q
+        LEFT JOIN taxonomy_discipline d ON d.id = q.discipline_id
+        LEFT JOIN taxonomy_subject s ON s.id = q.subject_id
+        LEFT JOIN taxonomy_subsubject ss ON ss.id = q.subsubject_id
+        WHERE (d.id IS NOT NULL AND d.workspace_id != q.workspace_id)
+           OR (s.id IS NOT NULL AND (s.workspace_id != q.workspace_id
+                                     OR s.discipline_id != q.discipline_id))
+           OR (ss.id IS NOT NULL AND (ss.workspace_id != q.workspace_id
+                                      OR ss.subject_id != q.subject_id))
+    """,
+    "QUE-002": """
+        SELECT r.id AS entity_id, 'QuestionRevision' AS entity_type,
+               r.question_id AS question_id, 'revision_owner' AS relation
+        FROM questions_questionrevision r JOIN questions_question q ON q.id = r.question_id
+        WHERE r.workspace_id != q.workspace_id
+        UNION ALL
+        SELECT a.id, 'Alternative', r.question_id, 'alternative_owner'
+        FROM questions_alternative a
+        JOIN questions_questionrevision r ON r.id = a.question_revision_id
+        WHERE a.workspace_id != r.workspace_id
+        UNION ALL
+        SELECT r.id, 'QuestionRevision', r.question_id, 'correct_alternative'
+        FROM questions_questionrevision r
+        JOIN questions_alternative a ON a.id = r.correct_alternative_id
+        WHERE a.workspace_id != r.workspace_id OR a.question_revision_id != r.id
+    """,
+    "QUE-003": """
+        WITH ranked AS (
+            SELECT id, question_id, version_number,
+                   ROW_NUMBER() OVER (PARTITION BY question_id ORDER BY version_number, id) AS expected
+            FROM questions_questionrevision
+        ), current_counts AS (
+            SELECT q.id, q.status, COUNT(r.id) AS current_count
+            FROM questions_question q
+            LEFT JOIN questions_questionrevision r
+              ON r.question_id = q.id AND r.is_current = 1
+            WHERE q.status IN ('ACTIVE', 'ARCHIVED')
+            GROUP BY q.id, q.status
+        )
+        SELECT id AS entity_id, 'QuestionRevision' AS entity_type,
+               CAST(version_number AS TEXT) AS observed,
+               CAST(expected AS TEXT) AS expected
+        FROM ranked WHERE version_number != expected
+        UNION ALL
+        SELECT id, 'Question', CAST(current_count AS TEXT), '1'
+        FROM current_counts WHERE current_count != 1
+        UNION ALL
+        SELECT q.id, 'Question', 'incomplete_current', 'complete_current'
+        FROM questions_question q
+        JOIN questions_questionrevision r ON r.question_id = q.id AND r.is_current = 1
+        WHERE q.status = 'ACTIVE'
+          AND (r.stem IS NULL OR r.correct_alternative_id IS NULL
+               OR (SELECT COUNT(*) FROM questions_alternative a
+                   WHERE a.question_revision_id = r.id) < 2)
+    """,
+    "ATT-001": """
+        SELECT a.id AS entity_id, 'Attempt' AS entity_type,
+               a.question_id AS question_id, a.attempt_type AS attempt_type,
+               a.status AS status
+        FROM attempts_attempt a
+        JOIN questions_question q ON q.id = a.question_id
+        JOIN questions_questionrevision r ON r.id = a.question_revision_id
+        JOIN questions_alternative alt ON alt.id = a.selected_alternative_id
+        LEFT JOIN reviews_review rv ON rv.id = a.review_id
+        LEFT JOIN attempts_attempt replaced ON replaced.id = a.replaces_attempt_id
+        WHERE a.workspace_id != q.workspace_id
+           OR a.workspace_id != r.workspace_id OR r.question_id != a.question_id
+           OR a.workspace_id != alt.workspace_id OR alt.question_revision_id != r.id
+           OR a.is_correct != CASE WHEN r.correct_alternative_id = alt.id THEN 1 ELSE 0 END
+           OR (rv.id IS NOT NULL AND (rv.workspace_id != a.workspace_id
+                                      OR rv.question_id != a.question_id))
+           OR (replaced.id IS NOT NULL AND (replaced.workspace_id != a.workspace_id
+                                            OR replaced.question_id != a.question_id
+                                            OR replaced.status != 'VOIDED'))
+    """,
+    "REV-001": """
+        SELECT c.id AS entity_id, 'ReviewCycle' AS entity_type,
+               c.question_id AS question_id, c.origin_kind AS origin_kind
+        FROM reviews_reviewcycle c
+        JOIN questions_question q ON q.id = c.question_id
+        JOIN questions_questionrevision r ON r.id = c.origin_question_revision_id
+        LEFT JOIN attempts_attempt a ON a.id = c.origin_attempt_id
+        WHERE c.workspace_id != q.workspace_id OR c.workspace_id != r.workspace_id
+           OR c.question_id != r.question_id
+           OR (c.origin_kind = 'INITIAL_ERROR' AND
+               (a.id IS NULL OR a.workspace_id != c.workspace_id
+                OR a.question_id != c.question_id
+                OR a.question_revision_id != c.origin_question_revision_id
+                OR a.attempt_type != 'INITIAL' OR a.is_correct != 0 OR a.status != 'VALID'))
+           OR (c.origin_kind = 'QUESTION_ACTIVATION' AND c.origin_attempt_id IS NOT NULL)
+    """,
+    "REV-002": """
+        SELECT r.id AS entity_id, 'Review' AS entity_type,
+               r.review_cycle_id AS cycle_id, CAST(r.sequence_number AS TEXT) AS sequence_number
+        FROM reviews_review r
+        JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id
+        JOIN questions_question q ON q.id = r.question_id
+        LEFT JOIN attempts_attempt anchor ON anchor.id = r.scheduled_from_attempt_id
+        WHERE r.workspace_id != c.workspace_id OR r.question_id != c.question_id
+           OR r.workspace_id != q.workspace_id
+           OR (anchor.id IS NULL AND NOT (
+                c.origin_kind = 'QUESTION_ACTIVATION' AND r.sequence_number = 1
+                AND r.stage_code = 'D1' AND r.transition_code = 'QUESTION_ACTIVATION_D1'))
+           OR (anchor.id IS NOT NULL AND
+               (anchor.workspace_id != r.workspace_id OR anchor.question_id != r.question_id
+                OR anchor.status != 'VALID'
+                OR (r.sequence_number = 1 AND
+                    (c.origin_kind != 'INITIAL_ERROR' OR anchor.id != c.origin_attempt_id
+                     OR anchor.attempt_type != 'INITIAL'))
+                OR (r.sequence_number > 1 AND
+                    (anchor.attempt_type != 'REVIEW' OR NOT EXISTS (
+                        SELECT 1 FROM reviews_review previous
+                        WHERE previous.id = anchor.review_id
+                          AND previous.review_cycle_id = r.review_cycle_id
+                          AND previous.sequence_number = r.sequence_number - 1)))))
+           OR (r.state = 'COMPLETED' AND NOT EXISTS (
+                SELECT 1 FROM attempts_attempt done
+                WHERE done.review_id = r.id AND done.attempt_type = 'REVIEW'
+                  AND done.status = 'VALID'))
+           OR (r.state != 'COMPLETED' AND EXISTS (
+                SELECT 1 FROM attempts_attempt done
+                WHERE done.review_id = r.id AND done.status = 'VALID'))
+    """,
+    "REV-003": """
+        SELECT c.id AS entity_id, 'ReviewCycle' AS entity_type,
+               c.state AS state, q.status AS question_status
+        FROM reviews_reviewcycle c JOIN questions_question q ON q.id = c.question_id
+        WHERE (c.state = 'ACTIVE' AND
+               (q.status != 'ACTIVE' OR
+                (SELECT COUNT(*) FROM reviews_review r
+                 WHERE r.review_cycle_id = c.id AND r.state = 'PENDING') != 1))
+           OR (c.state = 'SUSPENDED' AND
+               (q.status != 'ARCHIVED' OR
+                (SELECT COUNT(*) FROM reviews_review r
+                 WHERE r.review_cycle_id = c.id AND r.state = 'PENDING') != 0 OR
+                (SELECT COUNT(*) FROM reviews_review r
+                 WHERE r.review_cycle_id = c.id AND r.state = 'SUSPENDED') != 1))
+           OR (c.state = 'COMPLETED' AND
+               ((SELECT COUNT(*) FROM reviews_review r
+                 WHERE r.review_cycle_id = c.id AND r.state = 'PENDING') != 0 OR
+                NOT EXISTS (
+                    SELECT 1 FROM reviews_review terminal
+                    JOIN attempts_attempt a ON a.review_id = terminal.id
+                    WHERE terminal.review_cycle_id = c.id AND terminal.stage_code = 'D30'
+                      AND terminal.state = 'COMPLETED' AND a.status = 'VALID'
+                      AND a.attempt_type = 'REVIEW' AND a.is_correct = 1
+                      AND terminal.sequence_number = (
+                          SELECT MAX(last.sequence_number) FROM reviews_review last
+                          WHERE last.review_cycle_id = c.id))))
+    """,
+    "REV-004": """
+        WITH ranked AS (
+            SELECT r.*,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY r.review_cycle_id ORDER BY r.sequence_number, r.id
+                   ) AS expected_sequence
+            FROM reviews_review r
+        )
+        SELECT r.id AS entity_id, 'Review' AS entity_type,
+               CAST(r.sequence_number AS TEXT) AS sequence_number,
+               r.stage_code AS stage_code, r.transition_code AS transition_code
+        FROM ranked r
+        LEFT JOIN attempts_attempt a ON a.id = r.scheduled_from_attempt_id
+        WHERE r.sequence_number != r.expected_sequence
+           OR (r.sequence_number = 1 AND r.stage_code != 'D1')
+           OR (r.sequence_number = 1 AND a.id IS NOT NULL AND
+               (r.transition_code != 'INITIAL_ERROR_TO_D1'
+                OR r.first_due_date != date(a.local_date, '+1 day')))
+           OR (r.sequence_number > 1 AND NOT (
+                (r.transition_code = 'RESET_TO_D1_AFTER_ERROR' AND r.stage_code = 'D1')
+                OR (r.transition_code = 'ADVANCE_D1_TO_D7' AND r.stage_code = 'D7')
+                OR (r.transition_code = 'ADVANCE_D7_TO_D14' AND r.stage_code = 'D14')
+                OR (r.transition_code = 'ADVANCE_D14_TO_D30' AND r.stage_code = 'D30')))
+           OR (a.id IS NOT NULL AND r.sequence_number > 1 AND r.first_due_date != date(
+                a.local_date,
+                CASE r.transition_code
+                    WHEN 'RESET_TO_D1_AFTER_ERROR' THEN '+1 day'
+                    WHEN 'ADVANCE_D1_TO_D7' THEN '+7 days'
+                    WHEN 'ADVANCE_D7_TO_D14' THEN '+14 days'
+                    WHEN 'ADVANCE_D14_TO_D30' THEN '+30 days'
+                    ELSE '+0 days'
+                END))
+    """,
+    "ERR-001": """
+        SELECT c.id AS entity_id, 'ErrorCategory' AS entity_type,
+               NULL AS attempt_id, c.code AS category_code
+        FROM errors_error_category c
+        WHERE c.code NOT IN (
+            'CONCEPTUAL', 'INTERPRETATION', 'CALCULATION', 'ATTENTION',
+            'FORMULA_RULE', 'PROCEDURE', 'TRAP', 'TIME_SHORTAGE', 'GUESS', 'OTHER'
+        )
+        UNION ALL
+        SELECT e.id, 'ErrorClassification',
+               e.attempt_id AS attempt_id, c.code AS category_code
+        FROM errors_errorclassification e
+        JOIN attempts_attempt a ON a.id = e.attempt_id
+        JOIN errors_error_category c ON c.id = e.category_id
+        WHERE e.workspace_id != a.workspace_id OR e.workspace_id != c.workspace_id
+           OR a.is_correct = 1 OR a.status != 'VALID'
+           OR c.code NOT IN (
+                'CONCEPTUAL', 'INTERPRETATION', 'CALCULATION', 'ATTENTION',
+                'FORMULA_RULE', 'PROCEDURE', 'TRAP', 'TIME_SHORTAGE', 'GUESS', 'OTHER'
+           )
+           OR (c.code = 'OTHER' AND e.other_description IS NULL)
+    """,
+    "ERR-002": """
+        WITH ranked AS (
+            SELECT r.*,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY r.error_classification_id
+                       ORDER BY r.revision_number, r.id
+                   ) AS expected_revision,
+                   MAX(r.revision_number) OVER (
+                       PARTITION BY r.error_classification_id
+                   ) AS latest_revision
+            FROM errors_errorclassificationrevision r
+        )
+        SELECT r.id AS entity_id, 'ErrorClassificationRevision' AS entity_type,
+               CAST(r.revision_number AS TEXT) AS revision_number,
+               CAST(r.expected_revision AS TEXT) AS expected_revision
+        FROM ranked r
+        JOIN errors_errorclassification e ON e.id = r.error_classification_id
+        JOIN errors_error_category c ON c.id = r.category_id
+        WHERE r.workspace_id != e.workspace_id OR r.workspace_id != c.workspace_id
+           OR r.revision_number != r.expected_revision
+           OR (c.code = 'OTHER' AND r.other_description IS NULL)
+           OR (r.revision_number = r.latest_revision AND
+               (r.category_id != e.category_id
+                OR COALESCE(r.other_description, '') != COALESCE(e.other_description, '')))
+    """,
+    "OPS-001": """
+        SELECT o.id AS entity_id, 'OperationReceipt' AS entity_type,
+               o.operation_kind AS operation_kind, o.result_entity_id AS result_entity_id
+        FROM attempts_operationreceipt o
+        LEFT JOIN attempts_attempt a
+          ON o.result_entity_type = 'ATTEMPT' AND a.id = o.result_entity_id
+        WHERE a.id IS NULL OR a.workspace_id != o.workspace_id
+           OR a.idempotency_key != o.idempotency_key
+           OR length(o.request_hash) != 64 OR o.request_hash GLOB '*[^0-9a-f]*'
+           OR (o.operation_kind = 'INITIAL_CORRECT'
+               AND (a.attempt_type != 'INITIAL' OR a.is_correct != 1))
+           OR (o.operation_kind = 'INITIAL_ERROR'
+               AND (a.attempt_type != 'INITIAL' OR a.is_correct != 0))
+           OR (o.operation_kind = 'REVIEW_COMPLETION' AND a.attempt_type != 'REVIEW')
+    """,
+}
+
+
+def _database_path(using: str) -> Path:
+    connection = connections[using]
+    if connection.vendor != "sqlite":
+        raise IntegrityCheckOperationalError("O checker S5 exige o banco SQLite do projeto.")
+    configured_name = connection.settings_dict.get("NAME")
+    if not configured_name or str(configured_name) == ":memory:":
+        raise IntegrityCheckOperationalError("O banco SQLite precisa existir em arquivo local.")
+    path = Path(str(configured_name)).resolve()
+    if not path.is_file():
+        raise IntegrityCheckOperationalError("O arquivo do banco SQLite não está disponível.")
+    return path
+
+
+def _finding(
+    spec: InvariantSpec,
+    *,
+    entity_type: str,
+    technical_id: str,
+    context: tuple[tuple[str, str], ...] = (),
+) -> IntegrityFinding:
+    return IntegrityFinding(
+        invariant_id=spec.invariant_id,
+        severity=spec.severity,
+        entity_type=entity_type,
+        technical_id=_safe_technical_value(technical_id),
+        message=spec.message,
+        technical_context=tuple((key, _safe_technical_value(value)) for key, value in context),
+        operational_action=spec.operational_action,
+    )
+
+
+def _safe_technical_value(value: object) -> str:
+    text = str(value)
+    if text == "database" or text.isdecimal() or _UUID_PATTERN.fullmatch(text):
+        return text
+    if _DATE_PATTERN.fullmatch(text) or text in _SAFE_CODES:
+        return text
+    try:
+        return TimeZoneId(text).value
+    except (TypeError, ValueError):
+        return REDACTED
+
+
+def _append_sql_findings(
+    database: sqlite3.Connection,
+    spec: InvariantSpec,
+    query: str,
+    findings: list[IntegrityFinding],
+    *,
+    limit: int,
+) -> int:
+    sample_limit = max(1, limit - len(findings))
+    wrapped = "".join(
+        (
+            "SELECT violations.*, COUNT(*) OVER () AS _total_findings FROM (",
+            query,
+            ") AS violations ORDER BY entity_type, entity_id LIMIT ?",
+        )
+    )
+    cursor = database.execute(wrapped, (sample_limit,))
+    rows = cursor.fetchall()
+    if not rows:
+        return 0
+    names = tuple(column[0] for column in cursor.description or ())
+    total_index = names.index("_total_findings")
+    total = int(rows[0][total_index])
+    if len(findings) >= limit:
+        return total
+    for row in rows[: limit - len(findings)]:
+        document = dict(zip(names, row, strict=True))
+        entity_type = str(document.pop("entity_type"))
+        technical_id = str(document.pop("entity_id"))
+        document.pop("_total_findings")
+        context = tuple((str(key), str(value)) for key, value in document.items())
+        findings.append(
+            _finding(
+                spec,
+                entity_type=entity_type,
+                technical_id=technical_id,
+                context=context,
+            )
+        )
+    return total
+
+
+def _append_integrity_findings(
+    database: sqlite3.Connection,
+    spec: InvariantSpec,
+    findings: list[IntegrityFinding],
+    *,
+    limit: int,
+) -> int:
+    cursor = database.execute("PRAGMA integrity_check(1000000)")
+    first = cursor.fetchone()
+    if first == ("ok",) and cursor.fetchone() is None:
+        return 0
+    total = 0 if first is None else 1
+    total += sum(1 for _row in cursor)
+    if len(findings) < limit:
+        findings.append(
+            _finding(
+                spec,
+                entity_type="SQLiteDatabase",
+                technical_id="database",
+                context=(("issues_detected", str(total)),),
+            )
+        )
+    return total
+
+
+def _append_foreign_key_findings(
+    database: sqlite3.Connection,
+    spec: InvariantSpec,
+    findings: list[IntegrityFinding],
+    *,
+    limit: int,
+) -> int:
+    total = 0
+    for table, rowid, parent, foreign_key_id in database.execute("PRAGMA foreign_key_check"):
+        total += 1
+        if len(findings) >= limit:
+            continue
+        findings.append(
+            _finding(
+                spec,
+                entity_type="DatabaseRow",
+                technical_id=str(rowid),
+                context=(
+                    ("table", str(table)),
+                    ("parent_table", str(parent)),
+                    ("foreign_key_id", str(foreign_key_id)),
+                ),
+            )
+        )
+    return total
+
+
+def _append_attempt_time_findings(
+    database: sqlite3.Connection,
+    spec: InvariantSpec,
+    findings: list[IntegrityFinding],
+    *,
+    limit: int,
+) -> int:
+    total = 0
+    rows = database.execute(
+        "SELECT id, occurred_at, timezone_name, local_date FROM attempts_attempt ORDER BY id"
+    )
+    for technical_id, occurred_at, timezone_name, local_date in rows:
+        try:
+            instant = datetime.fromisoformat(str(occurred_at))
+            if instant.tzinfo is None:
+                instant = instant.replace(tzinfo=UTC)
+            expected = instant.astimezone(TimeZoneId(str(timezone_name)).zone).date().isoformat()
+        except (TypeError, ValueError):
+            expected = "invalid-temporal-context"
+        if str(local_date) == expected:
+            continue
+        total += 1
+        if len(findings) >= limit:
+            continue
+        findings.append(
+            _finding(
+                spec,
+                entity_type="Attempt",
+                technical_id=str(technical_id),
+                context=(
+                    ("local_date", str(local_date)),
+                    ("expected_local_date", expected),
+                    ("timezone_name", str(timezone_name)),
+                ),
+            )
+        )
+    return total
+
+
+def _append_workspace_timezone_findings(
+    database: sqlite3.Connection,
+    spec: InvariantSpec,
+    findings: list[IntegrityFinding],
+    *,
+    limit: int,
+) -> int:
+    total = 0
+    rows = database.execute("SELECT id, timezone_name FROM accounts_workspace ORDER BY id")
+    for technical_id, timezone_name in rows:
+        try:
+            TimeZoneId(str(timezone_name))
+        except (TypeError, ValueError):
+            total += 1
+            if len(findings) < limit:
+                findings.append(
+                    _finding(
+                        spec,
+                        entity_type="Workspace",
+                        technical_id=str(technical_id),
+                        context=(("timezone_name", str(timezone_name)),),
+                    )
+                )
+    return total
+
+
+def _append_activation_schedule_findings(
+    database: sqlite3.Connection,
+    spec: InvariantSpec,
+    findings: list[IntegrityFinding],
+    *,
+    limit: int,
+) -> int:
+    total = 0
+    rows = database.execute(
+        "SELECT r.id, c.started_at, w.timezone_name, r.first_due_date "
+        "FROM reviews_review r "
+        "JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id "
+        "JOIN accounts_workspace w ON w.id = r.workspace_id "
+        "WHERE c.origin_kind = 'QUESTION_ACTIVATION' AND r.sequence_number = 1 "
+        "ORDER BY r.id"
+    )
+    for technical_id, started_at, timezone_name, first_due_date in rows:
+        try:
+            instant = datetime.fromisoformat(str(started_at))
+            if instant.tzinfo is None:
+                instant = instant.replace(tzinfo=UTC)
+            expected = (
+                instant.astimezone(TimeZoneId(str(timezone_name)).zone).date() + timedelta(days=1)
+            ).isoformat()
+        except (TypeError, ValueError):
+            continue
+        if str(first_due_date) == expected:
+            continue
+        total += 1
+        if len(findings) < limit:
+            findings.append(
+                _finding(
+                    spec,
+                    entity_type="Review",
+                    technical_id=str(technical_id),
+                    context=(
+                        ("first_due_date", str(first_due_date)),
+                        ("expected_first_due_date", expected),
+                    ),
+                )
+            )
+    return total
+
+
+def run_integrity_check(
+    *,
+    using: str = "default",
+    finding_limit: int = DEFAULT_FINDING_LIMIT,
+) -> IntegrityCheckResult:
+    """Execute todas as invariantes sobre snapshot lógico e conexão mode=ro."""
+    if not 1 <= finding_limit <= MAX_FINDING_LIMIT:
+        raise ValueError(f"finding_limit deve estar entre 1 e {MAX_FINDING_LIMIT}.")
+    path = _database_path(using)
+    findings: list[IntegrityFinding] = []
+    totals: Counter[InvariantSeverity] = Counter()
+    queries_executed = 0
+    try:
+        with closing(
+            sqlite3.connect(f"{path.as_uri()}?mode=ro", uri=True, timeout=5.0)
+        ) as database:
+            database.execute("BEGIN")
+            for spec in INVARIANT_CATALOG:
+                if spec.invariant_id == "DB-001":
+                    count = _append_integrity_findings(
+                        database, spec, findings, limit=finding_limit
+                    )
+                elif spec.invariant_id == "DB-002":
+                    count = _append_foreign_key_findings(
+                        database, spec, findings, limit=finding_limit
+                    )
+                elif spec.invariant_id == "ATT-002":
+                    count = _append_attempt_time_findings(
+                        database, spec, findings, limit=finding_limit
+                    )
+                elif spec.invariant_id == "WS-003":
+                    count = _append_workspace_timezone_findings(
+                        database, spec, findings, limit=finding_limit
+                    )
+                else:
+                    count = _append_sql_findings(
+                        database,
+                        spec,
+                        _SQL_RULES[spec.invariant_id],
+                        findings,
+                        limit=finding_limit,
+                    )
+                    if spec.invariant_id == "REV-004":
+                        count += _append_activation_schedule_findings(
+                            database, spec, findings, limit=finding_limit
+                        )
+                        queries_executed += 1
+                queries_executed += 1
+                totals[spec.severity] += count
+            database.rollback()
+    except (OSError, sqlite3.Error, KeyError, TypeError, ValueError) as error:
+        raise IntegrityCheckOperationalError(
+            "O checker não conseguiu concluir a leitura consistente do banco."
+        ) from error
+
+    ordered_findings = tuple(
+        sorted(findings, key=lambda item: (item.invariant_id, item.entity_type, item.technical_id))
+    )
+    severity_counts = tuple(
+        (severity, totals[severity]) for severity in InvariantSeverity if totals[severity]
+    )
+    return IntegrityCheckResult(
+        checks_executed=len(INVARIANT_CATALOG),
+        total_findings=sum(totals.values()),
+        findings=ordered_findings,
+        severity_counts=severity_counts,
+        queries_executed=queries_executed,
+    )

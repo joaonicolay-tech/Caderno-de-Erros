@@ -774,6 +774,14 @@ Define uma revisão proporcional e orientada a risco, centrada em findings
 concretos. Complementa o contrato, as Skills, os testes e o gate sem duplicá-los
 nem autorizar mudanças funcionais.
 
+## V0.4-S5 — invariant checker operacional
+
+**Arquivo:** `V0.4_S5_Invariant_Checker.md`
+
+Define o comando read-only, o catálogo de invariantes, severidades, exit codes,
+sanitização, limitações e o contrato de integração futura com restore,
+hardening e piloto. Não autoriza nem executa S6-S9.
+
 ## Project Development Architecture v1.0
 
 **Arquivo:** `PROJECT_DEVELOPMENT_ARCHITECTURE_V1.md`

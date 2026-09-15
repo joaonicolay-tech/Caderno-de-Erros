@@ -16,11 +16,23 @@
   analítica S2, sem migration ou schema.
 - V0.4-S4: concluída — consulta consolidada com filtros de revisão, resultado
   inicial, categoria/resíduo, navegação de detalhe e destinos de revisão S2.
-- Etapa de implementação atual: nenhuma; S5 permanece não autorizada.
+- V0.4-S5: concluída — invariant checker operacional read-only com catálogo de
+  17 invariantes, saída/logs sanitizados e exit codes distintos.
+- Etapa de implementação atual: nenhuma; S6 permanece não autorizada.
 - P0/P1 aplicável aberto: nenhum.
-- V0.4 funcional: camada analítica S2 concluída; nenhuma etapa autorizada.
+- V0.4 funcional: S1-S5 concluídas; nenhuma etapa autorizada.
 
 ## Última validação
+
+Gate de V0.4-S5 GREEN no encerramento, exit code 0: 302 testes aprovados em
+62,55 s, 87% de cobertura global, checker 88% e comando 95%; migrations,
+formatação, Ruff, mypy, detect-secrets, cobertura de domínio e pip-audit
+aprovados. Dez testes específicos e 153 regressões relacionadas passaram; o
+teste manual em SQLite descartável confirmou exit 0 e hash do banco inalterado.
+A revisão A8 profunda foi **APPROVED**, sem Blocker ou Major. A primeira
+execução do gate ficou inconclusiva somente no pip-audit por `WinError 10013`;
+a repetição autorizada fora do sandbox terminou GREEN. Não houve migration,
+schema, repair ou implementação de S6.
 
 Gate de V0.4-S4 GREEN no encerramento, exit code 0: 292 testes aprovados em
 63,04 s, 87% de cobertura global; migrations, formatação, Ruff, mypy,
@@ -78,8 +90,12 @@ baseline V0.3, Architecture v1.0 ou gate.
   encerramento do dashboard explicável S3;
 - `tasks/completed/v04-s4-consultation-detail-history.md`: contrato e evidência
   de encerramento da consulta, detalhe e histórico S4;
+- `docs/V0.4_S5_Invariant_Checker.md`: catálogo e contrato operacional do
+  checker read-only;
+- `tasks/completed/v04-s5-integrity-checker.md`: contrato e evidência de
+  encerramento de S5;
 - `quality/operational-execution-metrics.jsonl`: métricas A1–A10, V0.4-P0 e
-  V0.4-S1/S2;
+  V0.4-S1-S5;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -88,8 +104,9 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: avaliar e, em nova sessão, autorizar somente `V0.4-S5`,
-preservando os contratos S1, a fachada S2, o dashboard S3 e a consulta S4. A
+Recomendação: avaliar e, em nova sessão, autorizar somente `V0.4-S6`,
+preservando S1-S5 e alinhando a validação legada de restore ao resíduo sem
+classificação permitido por S1 antes de integrar o checker. A
 recomendação não cria autoridade. Qualquer etapa V0.4,
 checkpoint Git, tag ou release exige autorização expressa própria; nenhuma
 etapa funcional está autorizada.
