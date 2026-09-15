@@ -330,11 +330,8 @@ def test_ct139_detail_is_faithful_for_draft_active_and_archived_without_future_d
     assert "Enunciado arquivado" in archived_html
     for html in (draft_html, active_html, archived_html):
         lowered = html.lower()
-        assert "tentativa" not in lowered
-        assert "ciclo" not in lowered
         assert "fila" not in lowered
         assert "métrica" not in lowered
-        assert "aprendizagem" not in lowered
 
 
 @pytest.mark.django_db

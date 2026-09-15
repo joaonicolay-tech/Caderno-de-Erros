@@ -1,8 +1,8 @@
 """Views finas dos fluxos web autorizados do catálogo de questões."""
 
 import uuid
-from typing import Any
-from urllib.parse import urlencode
+from typing import Any, cast
+from urllib.parse import urlencode, urlsplit
 
 from django.db import DatabaseError
 from django.http import Http404, HttpRequest, HttpResponse
@@ -135,12 +135,23 @@ def question_list(request: HttpRequest) -> HttpResponse:
                 discipline_id=data["discipline"].id if data["discipline"] else None,
                 subject_id=data["subject"].id if data["subject"] else None,
                 subsubject_id=data["subsubject"].id if data["subsubject"] else None,
+                review_status=data["review_status"],
+                initial_result=data["initial_result"],
+                error_category_id=(
+                    uuid.UUID(data["error_category"])
+                    if data["error_category"] not in ("", "unclassified")
+                    else None
+                ),
+                unclassified_error=data["error_category"] == "unclassified",
             ),
             requested_page=request.GET.get("page"),
         )
         if result.page_was_adjusted:
             page_notice = "A página solicitada não existe; mostramos uma página válida."
     parameters = request.GET.copy()
+    for key in tuple(parameters):
+        if key not in form.fields:
+            parameters.pop(key)
     parameters.pop("page", None)
     active_filters = [
         ("Estado", dict(QuestionStatus.choices)[form.cleaned_data["status"]])
@@ -158,6 +169,30 @@ def question_list(request: HttpRequest) -> HttpResponse:
         ("Subassunto", form.cleaned_data["subsubject"].name)
         if form.is_valid() and form.cleaned_data["subsubject"]
         else None,
+        (
+            "Situação de revisão",
+            dict(cast(Any, form.fields["review_status"]).choices)[
+                form.cleaned_data["review_status"]
+            ],
+        )
+        if form.is_valid() and form.cleaned_data["review_status"]
+        else None,
+        (
+            "Resultado inicial",
+            dict(cast(Any, form.fields["initial_result"]).choices)[
+                form.cleaned_data["initial_result"]
+            ],
+        )
+        if form.is_valid() and form.cleaned_data["initial_result"]
+        else None,
+        (
+            "Categoria de erro",
+            dict(cast(Any, form.fields["error_category"]).choices)[
+                form.cleaned_data["error_category"]
+            ],
+        )
+        if form.is_valid() and form.cleaned_data["error_category"]
+        else None,
     ]
     return render(
         request,
@@ -169,6 +204,7 @@ def question_list(request: HttpRequest) -> HttpResponse:
             "page_notice": page_notice,
             "active_filters": [item for item in active_filters if item is not None],
             "query_without_page": urlencode(parameters, doseq=True),
+            "current_query": urlencode(parameters, doseq=True),
             "breadcrumbs": [("Início", reverse("accounts:home"))],
         },
     )
@@ -380,6 +416,11 @@ def question_detail(request: HttpRequest, question_id: uuid.UUID) -> HttpRespons
     question = _question_or_404(workspace=workspace, question_id=question_id)
     revisions = list(list_question_revisions(workspace_id=workspace.id, question_id=question.id))
     current_revision = next((item for item in revisions if item.is_current), None)
+    return_to = request.GET.get("return_to", "")
+    list_prefix = reverse("questions:list")
+    parsed_return_to = urlsplit(return_to)
+    if parsed_return_to.scheme or parsed_return_to.netloc or parsed_return_to.path != list_prefix:
+        return_to = list_prefix
     return render(
         request,
         "questions/detail.html",
@@ -390,7 +431,8 @@ def question_detail(request: HttpRequest, question_id: uuid.UUID) -> HttpRespons
             "revisions": list(reversed(revisions)),
             "origin": getattr(question, "origin", None),
             "feedback": _detail_feedback(request),
-            "breadcrumbs": [("Início", reverse("accounts:home"))],
+            "return_to": return_to,
+            "breadcrumbs": [("Início", reverse("accounts:home")), ("Consulta", return_to)],
         },
     )
 

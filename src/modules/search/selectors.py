@@ -7,7 +7,10 @@ from typing import Any, cast
 from django.core.paginator import EmptyPage, Page, Paginator
 from django.db.models import Prefetch, Q, QuerySet
 
+from modules.analytics.selectors import eligible_reviews
+from modules.attempts.models import AttemptStatus, AttemptType
 from modules.questions.models import Question, QuestionRevision, QuestionStatus
+from modules.reviews.policies import ReviewTemporalStatus
 
 PAGE_SIZE = 10
 
@@ -38,6 +41,10 @@ def list_questions(
     discipline_id: uuid.UUID | None = None,
     subject_id: uuid.UUID | None = None,
     subsubject_id: uuid.UUID | None = None,
+    review_status: str = "",
+    initial_result: str = "",
+    error_category_id: uuid.UUID | None = None,
+    unclassified_error: bool = False,
 ) -> QuerySet[Question]:
     """Liste somente questões do Workspace com ordenação total estável."""
 
@@ -53,6 +60,33 @@ def list_questions(
         questions = questions.filter(subject_id=subject_id)
     if subsubject_id is not None:
         questions = questions.filter(subsubject_id=subsubject_id)
+    if review_status:
+        questions = questions.filter(
+            id__in=eligible_reviews(
+                workspace_id=workspace_id,
+                status=ReviewTemporalStatus(review_status),
+            ).values("question_id")
+        )
+    if initial_result:
+        questions = questions.filter(
+            attempts__workspace_id=workspace_id,
+            attempts__attempt_type=AttemptType.INITIAL,
+            attempts__status=AttemptStatus.VALID,
+            attempts__is_correct=initial_result == "correct",
+        )
+    if error_category_id is not None or unclassified_error:
+        questions = questions.filter(
+            attempts__workspace_id=workspace_id,
+            attempts__status=AttemptStatus.VALID,
+            attempts__is_correct=False,
+        )
+        if unclassified_error:
+            questions = questions.filter(attempts__error_classification__isnull=True)
+        else:
+            questions = questions.filter(
+                attempts__error_classification__workspace_id=workspace_id,
+                attempts__error_classification__category_id=error_category_id,
+            )
     return (
         questions.select_related("discipline", "subject", "subsubject")
         .prefetch_related(

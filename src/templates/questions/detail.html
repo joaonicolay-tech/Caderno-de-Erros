@@ -6,7 +6,7 @@
   <nav class="breadcrumbs" aria-label="Trilha de navegação">
     <ol>
       {% for label, url in breadcrumbs %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
-      <li><a href="{% url 'questions:list' %}">Questões</a></li>
+      <li><a href="{{ return_to }}">Questões</a></li>
       <li aria-current="page">Detalhe da questão</li>
     </ol>
   </nav>
@@ -17,6 +17,7 @@
     <p class="status-badge status-{{ question.status|lower }}">Estado: {{ question.get_status_display }}</p>
 
     <div class="button-row page-actions" aria-label="Ações da questão">
+      <a class="button-link button-secondary" href="{{ return_to }}">Voltar à consulta</a>
       {% if question.status != "ARCHIVED" %}
         <a class="button-link" href="{% url 'questions:edit' question.id %}">Editar questão</a>
         <a class="button-link button-danger" href="{% url 'questions:archive' question.id %}">Arquivar questão</a>
@@ -35,6 +36,12 @@
         <div><dt>Subassunto</dt><dd>{% if question.subsubject %}{{ question.subsubject.name }}{% else %}Não informado{% endif %}</dd></div>
         <div><dt>Dificuldade</dt><dd>{% if question.difficulty %}{{ question.get_difficulty_display }}{% else %}Não informada{% endif %}</dd></div>
       </dl>
+    </section>
+
+    <section class="panel" aria-labelledby="learning-history-title">
+      <h2 id="learning-history-title">Histórico de aprendizagem</h2>
+      <p>Consulte os fatos de estudo, diagnósticos e revisões já registrados para esta questão.</p>
+      <a class="button-link button-secondary" href="{% url 'reviews:timeline' question.id %}">Abrir linha do tempo de aprendizagem</a>
     </section>
 
     <section class="panel" aria-labelledby="origin-title">

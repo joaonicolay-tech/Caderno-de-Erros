@@ -13,12 +13,22 @@
 - V0.4-S2: concluída — serviços analíticos, DTOs, agregações e drill-downs
   read-only reconciliáveis implementados, sem migration ou UI.
 - V0.4-S3: concluída — dashboard explicável integrado exclusivamente à camada
-  analítica S2, sem migration, schema ou interface de consulta S4.
-- Etapa de implementação atual: nenhuma; S4 permanece não autorizada.
+  analítica S2, sem migration ou schema.
+- V0.4-S4: concluída — consulta consolidada com filtros de revisão, resultado
+  inicial, categoria/resíduo, navegação de detalhe e destinos de revisão S2.
+- Etapa de implementação atual: nenhuma; S5 permanece não autorizada.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4 funcional: camada analítica S2 concluída; nenhuma etapa autorizada.
 
 ## Última validação
+
+Gate de V0.4-S4 GREEN no encerramento, exit code 0: 292 testes aprovados em
+63,04 s, 87% de cobertura global; migrations, formatação, Ruff, mypy,
+detect-secrets, cobertura de domínio e pip-audit aprovados. A revisão A8
+padrão foi **APPROVED**, sem finding Blocker ou Major. A etapa reutilizou a
+listagem, busca, paginação e timeline existentes e acrescentou apenas filtros
+GET Workspace-scoped, retorno à consulta e drill-down dos estados temporais de
+revisão; não houve migration, alteração de schema ou implementação S5.
 
 Gate de V0.4-S3 GREEN no encerramento, exit code 0: 288 testes aprovados em
 67,59 s, 87% de cobertura global; migrations, formatação, Ruff, mypy,
@@ -66,6 +76,8 @@ baseline V0.3, Architecture v1.0 ou gate.
   evidência de encerramento de S2;
 - `tasks/completed/v04-s3-explainable-dashboard.md`: contrato e evidência de
   encerramento do dashboard explicável S3;
+- `tasks/completed/v04-s4-consultation-detail-history.md`: contrato e evidência
+  de encerramento da consulta, detalhe e histórico S4;
 - `quality/operational-execution-metrics.jsonl`: métricas A1–A10, V0.4-P0 e
   V0.4-S1/S2;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
@@ -76,8 +88,8 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: avaliar e, em nova sessão, autorizar somente `V0.4-S4 — consulta,
-histórico e drill-downs`, preservando os contratos S1, a fachada S2 e o
-dashboard S3. A recomendação não cria autoridade. Qualquer etapa V0.4,
+Recomendação: avaliar e, em nova sessão, autorizar somente `V0.4-S5`,
+preservando os contratos S1, a fachada S2, o dashboard S3 e a consulta S4. A
+recomendação não cria autoridade. Qualquer etapa V0.4,
 checkpoint Git, tag ou release exige autorização expressa própria; nenhuma
 etapa funcional está autorizada.

@@ -6,7 +6,9 @@ from typing import Any, cast
 from django import forms
 from django.http import QueryDict
 
+from modules.errors.models import ErrorCategory
 from modules.questions.models import QuestionStatus
+from modules.reviews.policies import ReviewTemporalStatus
 from modules.taxonomy.models import Discipline, Subject, Subsubject
 
 
@@ -39,6 +41,26 @@ class QuestionSearchForm(forms.Form):
         queryset=Subsubject.objects.none(),
         label="Subassunto",
     )
+    review_status = forms.ChoiceField(
+        required=False,
+        choices=(
+            ("", "Todas as situações"),
+            (ReviewTemporalStatus.OVERDUE, "Atrasada"),
+            (ReviewTemporalStatus.DUE, "Devida hoje"),
+            (ReviewTemporalStatus.FUTURE, "Futura"),
+        ),
+        label="Situação de revisão",
+    )
+    initial_result = forms.ChoiceField(
+        required=False,
+        choices=(
+            ("", "Qualquer resultado"),
+            ("correct", "Inicial correta"),
+            ("incorrect", "Inicial incorreta"),
+        ),
+        label="Resultado inicial",
+    )
+    error_category = forms.ChoiceField(required=False, choices=(), label="Categoria de erro")
 
     def __init__(self, data: QueryDict | None = None, *, workspace_id: uuid.UUID) -> None:
         super().__init__(data=data)
@@ -62,6 +84,13 @@ class QuestionSearchForm(forms.Form):
         subsubject_field.queryset = subsubjects.select_related("subject__discipline").order_by(
             "subject__name_key", "name_key", "id"
         )
+        category_field = cast(Any, self.fields["error_category"])
+        categories = ErrorCategory.objects.filter(workspace_id=workspace_id).order_by("code", "id")
+        category_field.choices = [
+            ("", "Todas as categorias"),
+            ("unclassified", "Erros sem classificação (resíduo)"),
+            *((str(category.id), category.display_name) for category in categories),
+        ]
 
     def _uuid_value(self, field_name: str) -> uuid.UUID | None:
         value = self.data.get(field_name) if self.is_bound else self.initial.get(field_name)

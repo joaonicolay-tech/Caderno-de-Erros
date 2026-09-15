@@ -1,15 +1,19 @@
 """CTs da Etapa 7 para listagem, busca e filtros de questões."""
 
 import re
-from datetime import UTC, datetime
+import uuid
+from datetime import UTC, date, datetime
 
 import pytest
 from django.test import Client
 from django.urls import reverse
 
 from modules.accounts.models import User, Workspace
+from modules.attempts.models import Attempt, AttemptStatus, AttemptType
+from modules.errors.models import ErrorCategory, ErrorClassification
 from modules.questions.models import Question, QuestionStatus
 from modules.questions.services import archive_question, create_active, create_draft
+from modules.reviews.models import Review, ReviewCycleState, ReviewState
 from modules.search.selectors import list_questions, paginate_questions
 from modules.taxonomy.models import Discipline, Subject, Subsubject
 from modules.taxonomy.services import create_discipline, create_subject, create_subsubject
@@ -54,6 +58,23 @@ def _active_question(
         alternatives=["A", "B"],
         correct_alternative_position=1,
         explanation=explanation,
+    )
+
+
+def _initial_attempt(*, workspace: Workspace, question: Question, correct: bool) -> Attempt:
+    revision = question.revisions.get(is_current=True)
+    return Attempt.objects.create(
+        workspace=workspace,
+        question=question,
+        question_revision=revision,
+        attempt_type=AttemptType.INITIAL,
+        selected_alternative=revision.alternatives.get(position=1 if correct else 2),
+        is_correct=correct,
+        occurred_at=datetime(2026, 9, 15, 15, tzinfo=UTC),
+        timezone_name=workspace.timezone_name,
+        local_date=date(2026, 9, 15),
+        status=AttemptStatus.VALID,
+        idempotency_key=uuid.uuid4(),
     )
 
 
@@ -230,6 +251,112 @@ def test_ct097_list_escapes_rendered_content() -> None:
 
     assert payload not in html
     assert "&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;" in html
+
+
+@pytest.mark.django_db
+def test_s4_learning_filters_combine_and_keep_workspace_isolation() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    correct_question = _active_question(
+        workspace=workspace, discipline=discipline, subject=subject, stem="Correta"
+    )
+    incorrect_question = _active_question(
+        workspace=workspace, discipline=discipline, subject=subject, stem="Incorreta"
+    )
+    correct_attempt = _initial_attempt(workspace=workspace, question=correct_question, correct=True)
+    incorrect_attempt = _initial_attempt(
+        workspace=workspace, question=incorrect_question, correct=False
+    )
+    category = ErrorCategory.objects.filter(workspace=workspace).first()
+    assert category is not None
+    ErrorClassification.objects.create(
+        workspace=workspace, attempt=incorrect_attempt, category=category
+    )
+    owner = User.objects.create_user(email="s4-foreign@example.test")
+    foreign = Workspace.objects.create(owner_user=owner, name="Foreign", timezone_name="UTC")
+    foreign_discipline, foreign_subject, _ = _taxonomy(foreign, " foreign")
+    foreign_question = _active_question(
+        workspace=foreign, discipline=foreign_discipline, subject=foreign_subject, stem="Foreign"
+    )
+    _initial_attempt(workspace=foreign, question=foreign_question, correct=False)
+
+    client = Client()
+    correct = client.get(reverse("questions:list"), {"initial_result": "correct"})
+    combined = client.get(
+        reverse("questions:list"),
+        {"query": "Incorreta", "initial_result": "incorrect", "error_category": str(category.id)},
+    )
+    residue = client.get(reverse("questions:list"), {"error_category": "unclassified"})
+
+    assert str(correct_question.id) in correct.content.decode("utf-8")
+    assert str(incorrect_question.id) not in correct.content.decode("utf-8")
+    assert str(incorrect_question.id) in combined.content.decode("utf-8")
+    assert str(correct_attempt.question_id) not in combined.content.decode("utf-8")
+    assert str(foreign_question.id) not in combined.content.decode("utf-8")
+    assert "Nenhuma questão encontrada" in residue.content.decode("utf-8")
+
+
+@pytest.mark.django_db
+def test_s4_review_filter_drilldown_reconciles_pending_review_question() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    question = _active_question(
+        workspace=workspace, discipline=discipline, subject=subject, stem="Devida"
+    )
+    review = Review.objects.get(
+        workspace=workspace,
+        question=question,
+        state=ReviewState.PENDING,
+        review_cycle__state=ReviewCycleState.ACTIVE,
+    )
+    Review.objects.filter(pk=review.id).update(current_due_date=date.today())
+
+    response = Client().get(reverse("questions:list"), {"review_status": "DUE"})
+
+    assert response.status_code == 200
+    assert str(question.id) in response.content.decode("utf-8")
+    assert response.context["result"].total == 1
+
+
+@pytest.mark.django_db
+def test_s4_detail_returns_to_consultation_and_links_existing_timeline() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    question = _active_question(workspace=workspace, discipline=discipline, subject=subject)
+
+    response = Client().get(
+        reverse("questions:detail", args=[question.id]),
+        {"return_to": "/questions/?query=Enunciado&page=1"},
+    )
+    html = response.content.decode("utf-8")
+
+    assert 'href="/questions/?query=Enunciado&amp;page=1"' in html
+    assert reverse("reviews:timeline", args=[question.id]) in html
+
+
+@pytest.mark.django_db
+def test_s4_pagination_preserves_valid_search_and_filter_parameters() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    for position in range(11):
+        question = _active_question(
+            workspace=workspace,
+            discipline=discipline,
+            subject=subject,
+            stem=f"Paginação {position}",
+        )
+        _initial_attempt(workspace=workspace, question=question, correct=True)
+
+    response = Client().get(
+        reverse("questions:list"),
+        {"query": "Paginação", "initial_result": "correct", "page": "1", "ignored": "x"},
+    )
+    html = response.content.decode("utf-8")
+
+    assert "page=2" in html
+    assert "query=Pagina%C3%A7%C3%A3o" in html
+    assert "initial_result=correct" in html
+    assert "ignored" not in html
 
 
 def test_ct142_list_template_is_semantic_keyboard_accessible_and_responsive() -> None:

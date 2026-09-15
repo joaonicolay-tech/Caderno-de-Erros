@@ -58,7 +58,7 @@
                 {% if item.explanation %}<p class="muted">Explicação: {{ item.explanation }}</p>{% endif %}
                 <p class="muted">{% if item.question.discipline %}{{ item.question.discipline.name }}{% else %}Sem disciplina{% endif %} · {% if item.question.subject %}{{ item.question.subject.name }}{% else %}Sem assunto{% endif %}{% if item.question.subsubject %} · {{ item.question.subsubject.name }}{% endif %}</p>
               </div>
-              <a class="button-link button-secondary" href="{% url 'questions:detail' item.question.id %}">Abrir detalhe</a>
+              <a class="button-link button-secondary" href="{% url 'questions:detail' item.question.id %}?return_to={{ current_query|urlencode }}">Abrir detalhe</a>
               {% if item.question.status == "ACTIVE" %}<a class="button-link" href="{% url 'attempts:initial' item.question.id %}">Responder</a>{% endif %}
             </article>
           </li>
