@@ -376,6 +376,8 @@ def test_backup_and_restore_success_logs_share_correlation(
         "BACKUP_STARTED",
         "BACKUP_SUCCEEDED",
         "RESTORE_STARTED",
+        "INTEGRITY_CHECK_STARTED",
+        "INTEGRITY_CHECK_SUCCEEDED",
         "RESTORE_VALIDATED",
     ]
     assert {event["correlation_id"] for event in events} == {FIXED_CORRELATION_ID}

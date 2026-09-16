@@ -18,11 +18,23 @@
   inicial, categoria/resíduo, navegação de detalhe e destinos de revisão S2.
 - V0.4-S5: concluída — invariant checker operacional read-only com catálogo de
   17 invariantes, saída/logs sanitizados e exit codes distintos.
-- Etapa de implementação atual: nenhuma; S6 permanece não autorizada.
+- V0.4-S6: concluída — snapshot SQLite consistente, restore isolado, checks
+  físicos, reconciliação por SHA-256/fatos e invariant checker S5 integrados,
+  com ensaio sintético reproduzível e documentação operacional.
+- Etapa de implementação atual: nenhuma; S7 permanece não autorizada.
 - P0/P1 aplicável aberto: nenhum.
-- V0.4 funcional: S1-S5 concluídas; nenhuma etapa autorizada.
+- V0.4 funcional: S1-S6 concluídas; nenhuma etapa autorizada.
 
 ## Última validação
+
+Gate de V0.4-S6 GREEN no encerramento, exit code 0: 322 testes aprovados em
+74,56 s, 88% de cobertura global, migrations, formatação, Ruff, mypy,
+detect-secrets, cobertura de domínio e pip-audit aprovados. O ensaio sintético
+descartável comprovou backup/restore de 655.360 bytes, abertura da aplicação,
+checks SQLite, S5 exit 0, reconciliação e preservação por hash; recuperação
+observada em 2,691580 s, sem constituir SLA. A revisão A8 profunda foi
+**APPROVED**, sem Blocker/Major. Não houve migration, schema, restore sobre o
+banco ativo ou implementação de S7-S9.
 
 Gate de V0.4-S5 GREEN no encerramento, exit code 0: 302 testes aprovados em
 62,55 s, 87% de cobertura global, checker 88% e comando 95%; migrations,
@@ -94,8 +106,13 @@ baseline V0.3, Architecture v1.0 ou gate.
   checker read-only;
 - `tasks/completed/v04-s5-integrity-checker.md`: contrato e evidência de
   encerramento de S5;
+- `docs/V0.4_S6_Backup_e_Recuperacao.md`: procedimento operacional de backup,
+  restore isolado, S5, reconciliação, falhas, RPO/RTO e retenção;
+- `quality/v04-s6-recovery-result.md` e `quality/v04-s6-recovery-drill.json`:
+  review, gate e ensaio sintético observados de S6;
+- `tasks/completed/v04-s6-backup-recovery.md`: contrato e encerramento de S6;
 - `quality/operational-execution-metrics.jsonl`: métricas A1–A10, V0.4-P0 e
-  V0.4-S1-S5;
+  V0.4-S1-S6;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -104,9 +121,9 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: avaliar e, em nova sessão, autorizar somente `V0.4-S6`,
-preservando S1-S5 e alinhando a validação legada de restore ao resíduo sem
-classificação permitido por S1 antes de integrar o checker. A
-recomendação não cria autoridade. Qualquer etapa V0.4,
+Recomendação: avaliar e, em nova sessão, autorizar somente `V0.4-S7`,
+consumindo os comandos e o contrato operacional comprovados em S6 sem reabrir
+seu mecanismo ou antecipar hardening/piloto. A recomendação não cria
+autoridade. Qualquer etapa V0.4,
 checkpoint Git, tag ou release exige autorização expressa própria; nenhuma
 etapa funcional está autorizada.

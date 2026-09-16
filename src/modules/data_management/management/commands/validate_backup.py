@@ -27,10 +27,13 @@ class Command(BaseCommand):
                 correlation_id=options.get("correlation_id"),
             )
         except DataManagementError as error:
-            raise CommandError(str(error)) from error
+            raise CommandError(
+                f"{error} Preserve o original; verifique arquivo/manifesto ou gere novo backup."
+            ) from error
         self.stdout.write(
             self.style.SUCCESS(
                 f"Backup válido: formato {result.manifest.format_version}; "
-                f"{result.manifest.size_bytes} bytes."
+                f"{result.manifest.size_bytes} bytes. "
+                "Validação física apenas; recuperação exige restore_backup com S5."
             )
         )

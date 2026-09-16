@@ -12,7 +12,7 @@ from modules.data_management.services import create_sqlite_backup, manifest_path
 class Command(BaseCommand):
     """Exponha a criação de snapshot como operação explícita."""
 
-    help = "Cria e valida um backup SQLite da fundação V0.1."
+    help = "Cria snapshot SQLite consistente; recuperação exige restore isolado validado."
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument("--output", required=True, help="Novo arquivo SQLite de destino.")
@@ -29,10 +29,13 @@ class Command(BaseCommand):
                 correlation_id=options.get("correlation_id"),
             )
         except DataManagementError as error:
-            raise CommandError(str(error)) from error
+            raise CommandError(
+                f"{error} Verifique origem, permissões, espaço e um destino novo."
+            ) from error
         self.stdout.write(
             self.style.SUCCESS(
                 "Backup criado e validado: "
-                f"{result.manifest.size_bytes} bytes; manifesto {manifest_path_for(output).name}."
+                f"{result.manifest.size_bytes} bytes; manifesto {manifest_path_for(output).name}. "
+                "Integridade física validada; comprove recuperação com restore_backup."
             )
         )

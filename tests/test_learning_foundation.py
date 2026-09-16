@@ -41,6 +41,7 @@ from modules.errors.models import (
     ErrorClassification,
     ErrorClassificationRevision,
 )
+from modules.operations.integrity import run_integrity_check
 from modules.questions.fixture import load_v02_fixture
 from modules.questions.models import Question, QuestionStatus
 from modules.questions.services import create_active
@@ -668,7 +669,7 @@ def test_v03_backup_restore_reconciles_learning_relations(tmp_path: Path) -> Non
     OperationReceipt.objects.create(
         workspace=workspace,
         operation_kind=OperationKind.INITIAL_ERROR,
-        idempotency_key=uuid.uuid4(),
+        idempotency_key=attempt.idempotency_key,
         request_hash=hashlib.sha256(b"initial-error").hexdigest(),
         result_entity_type=ResultEntityType.ATTEMPT,
         result_entity_id=attempt.id,
@@ -678,6 +679,8 @@ def test_v03_backup_restore_reconciles_learning_relations(tmp_path: Path) -> Non
     connection.close()
 
     create_sqlite_backup(backup)
+    integrity = run_integrity_check()
+    assert not integrity.has_blocking_findings, integrity.findings
     result = restore_sqlite_backup(backup, restored)
 
     assert result.reconciliation.attempt_count == 1

@@ -267,8 +267,7 @@ def test_s4_learning_filters_combine_and_keep_workspace_isolation() -> None:
     incorrect_attempt = _initial_attempt(
         workspace=workspace, question=incorrect_question, correct=False
     )
-    category = ErrorCategory.objects.filter(workspace=workspace).first()
-    assert category is not None
+    category = ErrorCategory.objects.get(workspace=workspace, code="CONCEPTUAL")
     ErrorClassification.objects.create(
         workspace=workspace, attempt=incorrect_attempt, category=category
     )

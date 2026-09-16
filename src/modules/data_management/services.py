@@ -1,19 +1,21 @@
-"""Snapshot SQLite, manifesto, validação e restauração isolada da V0.1."""
+"""Snapshot SQLite, manifesto e recuperação isolada validada com S5."""
 
 import hashlib
 import json
 import logging
 import os
 import re
+import shutil
 import sqlite3
 import tempfile
+import time
 from collections.abc import Callable, Mapping
 from contextlib import closing
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from django.db import connections
 from django.db.migrations.loader import MigrationLoader
@@ -23,16 +25,27 @@ from modules.accounts.services import LOCAL_USER_ID, LOCAL_WORKSPACE_ID
 from modules.errors.catalog import STANDARD_ERROR_CATEGORIES
 from modules.operations.correlation import correlation_scope
 from modules.operations.events import EventCode, EventOutcome
+from modules.operations.integrity import (
+    IntegrityCheckOperationalError,
+    IntegrityCheckResult,
+    run_integrity_check,
+)
 from modules.operations.structured_logging import emit_event
 from shared.domain.time import TimeZoneId
 
-from .exceptions import BackupCreationError, BackupValidationError, RestoreError
+from .exceptions import (
+    BackupCreationError,
+    BackupValidationError,
+    RestoreError,
+    RestoreIntegrityError,
+)
 
 BACKUP_FORMAT = "CEI-SQLITE-BACKUP"
 BACKUP_FORMAT_VERSION = "1.0"
 MANIFEST_SUFFIX = ".manifest.json"
 _SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 _BUFFER_SIZE = 1024 * 1024
+_BACKUP_TIMEOUT_SECONDS = 5.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -85,6 +98,7 @@ class RestoreResult:
 
     manifest: BackupManifest
     reconciliation: ReconciliationResult
+    integrity: IntegrityCheckResult
 
 
 def manifest_path_for(backup_path: Path | str) -> Path:
@@ -107,11 +121,21 @@ def _database_path(database_alias: str, *, require_existing: bool = True) -> Pat
 
 
 def _resolved_output(path: Path | str) -> Path:
-    resolved = Path(path).expanduser().resolve()
+    requested = Path(path).expanduser().absolute()
+    if any(part.is_symlink() or part.is_junction() for part in (requested, *requested.parents)):
+        raise ValueError("Use um destino direto, sem links ou junctions.")
+    resolved = requested.resolve()
     if not resolved.parent.is_dir():
         raise ValueError("O diretório de destino precisa existir.")
     if resolved.exists():
         raise FileExistsError("O destino já existe e não será substituído.")
+    if any(
+        companion.exists() or companion.is_symlink()
+        for companion in (Path(f"{resolved}{suffix}") for suffix in ("-wal", "-shm", "-journal"))
+    ):
+        raise FileExistsError(
+            "O destino possui sidecars; escolha outro nome sem arquivos existentes."
+        )
     return resolved
 
 
@@ -131,6 +155,17 @@ def _remove_created_file(path: Path | None) -> bool:
     return True
 
 
+def _remove_temporary_sidecars(path: Path | None) -> bool:
+    """Remove only sidecars of our uniquely owned, closed restore temporary."""
+    if path is None:
+        return True
+    # Evaluate every cleanup even if an earlier deletion fails.
+    results = [
+        _remove_created_file(Path(f"{path}{suffix}")) for suffix in ("-wal", "-shm", "-journal")
+    ]
+    return all(results)
+
+
 def _publish_new_file(temporary_path: Path, destination: Path) -> None:
     """Publique sem a semântica de sobrescrita de ``os.replace``."""
     if os.name == "nt":
@@ -140,17 +175,29 @@ def _publish_new_file(temporary_path: Path, destination: Path) -> None:
     temporary_path.unlink()
 
 
-def _readonly_connection(path: Path) -> sqlite3.Connection:
-    return sqlite3.connect(f"{path.as_uri()}?mode=ro", uri=True, timeout=5.0)
+def _readonly_connection(path: Path, *, immutable: bool = False) -> sqlite3.Connection:
+    suffix = "&immutable=1" if immutable else ""
+    return sqlite3.connect(f"{path.as_uri()}?mode=ro{suffix}", uri=True, timeout=5.0)
 
 
 def _sqlite_backup(source: Path, destination: Path) -> None:
+    deadline = time.monotonic() + _BACKUP_TIMEOUT_SECONDS
+
+    def progress(status: int, remaining: int, total: int) -> None:
+        del remaining, total
+        if status != sqlite3.SQLITE_DONE and time.monotonic() >= deadline:
+            raise BackupCreationError(
+                "O snapshot excedeu o tempo seguro. Encerre as escritas e tente novo backup."
+            )
+
     with (
         closing(_readonly_connection(source)) as source_connection,
         closing(sqlite3.connect(destination, timeout=5.0)) as destination_connection,
     ):
         with destination_connection:
-            source_connection.backup(destination_connection)
+            source_connection.backup(
+                destination_connection, pages=256, progress=progress, sleep=0.05
+            )
 
 
 def _sha256(path: Path) -> str:
@@ -168,7 +215,7 @@ def _flush_file(path: Path) -> None:
 
 def _validate_sqlite_file(path: Path) -> None:
     try:
-        with closing(_readonly_connection(path)) as database:
+        with closing(_readonly_connection(path, immutable=True)) as database:
             integrity_rows = database.execute("PRAGMA integrity_check").fetchall()
             foreign_key_rows = database.execute("PRAGMA foreign_key_check").fetchall()
     except sqlite3.Error as error:
@@ -232,6 +279,10 @@ def _parse_manifest(path: Path) -> BackupManifest:
 def _validate_backup_files(backup: Path, manifest_file: Path) -> BackupManifest:
     if not backup.is_file() or not manifest_file.is_file():
         raise BackupValidationError("O backup e seu manifesto precisam existir como arquivos.")
+    if any(Path(f"{backup}{suffix}").exists() for suffix in ("-wal", "-shm", "-journal")):
+        raise BackupValidationError(
+            "O backup possui arquivos de banco em uso. Preserve-o e gere novo snapshot."
+        )
     manifest = _parse_manifest(manifest_file)
     if backup.stat().st_size != manifest.size_bytes:
         raise BackupValidationError("O tamanho do backup não corresponde ao manifesto.")
@@ -283,12 +334,9 @@ def create_sqlite_backup(
         try:
             source = _database_path(database_alias)
             output = _resolved_output(output_path)
-            manifest_file = manifest_path_for(output).resolve()
+            manifest_file = _resolved_output(manifest_path_for(output))
             if output == source or manifest_file == source:
                 raise BackupCreationError("O backup não pode substituir o banco principal.")
-            if manifest_file.exists():
-                raise BackupCreationError("O manifesto de destino já existe.")
-
             temporary_backup = _temporary_file(output.parent, ".sqlite3.tmp")
             temporary_manifest = _temporary_file(output.parent, ".manifest.tmp")
             _sqlite_backup(source, temporary_backup)
@@ -412,7 +460,7 @@ def _expected_migrations() -> set[tuple[str, str]]:
 def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
     """Confira fundação, catálogo V0.2 e aprendizagem V0.3 sem corrigir dados."""
     try:
-        with closing(_readonly_connection(path)) as database:
+        with closing(_readonly_connection(path, immutable=True)) as database:
             _validate_sqlite_file(path)
             applied_migrations = {
                 cast(tuple[str, str], row)
@@ -531,8 +579,7 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
                 "OR ecr.workspace_id != cat.workspace_id LIMIT 1",
                 "SELECT 1 FROM attempts_attempt a "
                 "LEFT JOIN errors_errorclassification ec ON ec.attempt_id = a.id "
-                "WHERE a.status = 'VALID' AND ((a.is_correct = 1 AND ec.id IS NOT NULL) "
-                "OR (a.is_correct = 0 AND ec.id IS NULL)) LIMIT 1",
+                "WHERE a.status = 'VALID' AND a.is_correct = 1 AND ec.id IS NOT NULL LIMIT 1",
                 "SELECT 1 FROM reviews_reviewcycle c "
                 "JOIN questions_question q ON q.id = c.question_id "
                 "JOIN questions_questionrevision qr ON qr.id = c.origin_question_revision_id "
@@ -640,6 +687,59 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
     )
 
 
+def _check_restored_integrity(path: Path) -> IntegrityCheckResult:
+    """Bind S5 to a unique isolated alias without changing the active connection."""
+    alias = f"restore_{uuid4().hex}"
+    connections.databases[alias] = {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": str(path),
+    }
+    emit_event(
+        EventCode.INTEGRITY_CHECK_STARTED,
+        operation="backup.restore.integrity",
+        outcome=EventOutcome.STARTED,
+    )
+    try:
+        result = run_integrity_check(using=alias)
+    except IntegrityCheckOperationalError as error:
+        _event_failure(
+            EventCode.INTEGRITY_CHECK_FAILED,
+            operation="backup.restore.integrity",
+            error_code="INTEGRITY_CHECK_OPERATIONAL_FAILURE",
+            error=error,
+        )
+        raise RestoreIntegrityError(
+            "S5 inconclusivo (exit 3). Preserve o backup e repita em ambiente seguro; "
+            "consulte os logs sanitizados.",
+            exit_code=3,
+        ) from error
+    finally:
+        if alias in connections:
+            connections[alias].close()
+            del connections[alias]
+        del connections.databases[alias]
+    emit_event(
+        EventCode.INTEGRITY_CHECK_FINDINGS
+        if result.has_blocking_findings
+        else EventCode.INTEGRITY_CHECK_SUCCEEDED,
+        operation="backup.restore.integrity",
+        outcome=EventOutcome.FAILED if result.has_blocking_findings else EventOutcome.SUCCEEDED,
+        level=logging.ERROR if result.has_blocking_findings else logging.INFO,
+        context={
+            "checks_executed": result.checks_executed,
+            "total_findings": result.total_findings,
+            "queries_executed": result.queries_executed,
+        },
+    )
+    if result.has_blocking_findings:
+        raise RestoreIntegrityError(
+            "S5 encontrou inconsistências (exit 2). Preserve o backup e investigue os "
+            "findings em uma cópia isolada; não substitua o banco principal.",
+            exit_code=2,
+        )
+    return result
+
+
 def restore_sqlite_backup(
     backup_path: Path | str,
     destination_path: Path | str,
@@ -648,7 +748,7 @@ def restore_sqlite_backup(
     database_alias: str = "default",
     correlation_id: str | None = None,
 ) -> RestoreResult:
-    """Restaure somente em destino novo após reconciliação até a fundação V0.3."""
+    """Restaure em destino novo após reconciliação e checker S5 saudável."""
     temporary_destination: Path | None = None
     published_destination: Path | None = None
     with correlation_scope(correlation_id):
@@ -671,16 +771,30 @@ def restore_sqlite_backup(
 
             manifest = _validate_backup_files(backup, manifest_file)
             temporary_destination = _temporary_file(destination.parent, ".restore.sqlite3.tmp")
-            _sqlite_backup(backup, temporary_destination)
+            # The source is an immutable, validated offline artifact, not a live database.
+            shutil.copyfile(backup, temporary_destination)
+            if _sha256(temporary_destination) != manifest.sha256:
+                raise RestoreError("O restore diverge do backup salvo. Preserve o original.")
             reconciliation = _reconcile_minimal_foundation(temporary_destination)
+            integrity = _check_restored_integrity(temporary_destination)
+            if not _remove_temporary_sidecars(temporary_destination):
+                raise RestoreError("Não foi possível limpar temporários. Verifique permissões.")
+            if (
+                _sha256(backup) != manifest.sha256
+                or _sha256(temporary_destination) != manifest.sha256
+            ):
+                raise RestoreError("O artefato mudou durante a validação. Gere novo backup.")
             _flush_file(temporary_destination)
             _publish_new_file(temporary_destination, destination)
             temporary_destination = None
             published_destination = destination
             _validate_sqlite_file(destination)
+            if _sha256(destination) != manifest.sha256:
+                raise RestoreError("O destino publicado diverge do backup. Preserve o original.")
         except Exception as error:
             cleanup_succeeded = all(
                 (
+                    _remove_temporary_sidecars(temporary_destination),
                     _remove_created_file(temporary_destination),
                     _remove_created_file(published_destination),
                 )
@@ -709,4 +823,4 @@ def restore_sqlite_backup(
                 "migration_count": reconciliation.migration_count,
             },
         )
-        return RestoreResult(manifest=manifest, reconciliation=reconciliation)
+        return RestoreResult(manifest=manifest, reconciliation=reconciliation, integrity=integrity)

@@ -782,6 +782,13 @@ Define o comando read-only, o catálogo de invariantes, severidades, exit codes,
 sanitização, limitações e o contrato de integração futura com restore,
 hardening e piloto. Não autoriza nem executa S6-S9.
 
+## V0.4-S6 — backup e recuperação comprovada
+
+**Arquivo:** `V0.4_S6_Backup_e_Recuperacao.md`
+
+Comandos, salvaguardas, restore isolado com S5, reconciliação, falhas,
+RPO/RTO, retenção e ensaio sintético reproduzível. Não autoriza S7-S9.
+
 ## Project Development Architecture v1.0
 
 **Arquivo:** `PROJECT_DEVELOPMENT_ARCHITECTURE_V1.md`
