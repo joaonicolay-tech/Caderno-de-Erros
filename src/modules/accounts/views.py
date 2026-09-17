@@ -9,7 +9,6 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from modules.analytics import AnalyticsService
-from modules.analytics.read_models import PerformanceLevel
 from shared.application.bootstrap import bootstrap_local_workspace
 
 from .exceptions import LocalBootstrapConflict, WorkspaceAccessDenied, WorkspaceConcurrencyError
@@ -46,8 +45,7 @@ def home(request: HttpRequest) -> HttpResponse:
     analytics = AnalyticsService(workspace_id=workspace.id)
     activity = analytics.activity()
     reviews = analytics.reviews()
-    disciplines = analytics.performance(level=PerformanceLevel.DISCIPLINE)
-    subjects = analytics.performance(level=PerformanceLevel.SUBJECT)
+    disciplines, subjects = analytics.performance_pair()
     error_categories = analytics.error_categories()
     return render(
         request,

@@ -79,10 +79,18 @@ class AnalyticsService:
 
     def activity(self, *, period: AnalyticsPeriod | None = None) -> ActivitySummary:
         period = period or AnalyticsPeriod()
-        attempts = valid_attempts(
+        local_questions = Question.objects.filter(workspace_id=self.workspace_id).values("id")
+        attempts = Attempt.objects.filter(
             workspace_id=self.workspace_id,
-            filters=AttemptFilters(period=period),
+            question_id__in=local_questions,
+            status=AttemptStatus.VALID,
+            attempt_type__in=(AttemptType.INITIAL, AttemptType.REVIEW),
         )
+        if period.start is not None and period.end is not None:
+            attempts = attempts.filter(
+                local_date__gte=period.start,
+                local_date__lte=period.end,
+            )
         counts = attempts.aggregate(
             attempts=Count("id"),
             initial_attempts=Count("id", filter=Q(attempt_type=AttemptType.INITIAL)),
@@ -102,6 +110,101 @@ class AnalyticsService:
             review_attempts=int(counts["review_attempts"]),
             correct_answers=correct,
             incorrect_answers=int(counts["incorrect_answers"]),
+            accuracy=_ratio(correct, total),
+        )
+
+    def performance_pair(self) -> tuple[PerformanceBreakdown, PerformanceBreakdown]:
+        """Calcule os dois níveis do dashboard em uma única passagem pelos fatos."""
+        local_questions = Question.objects.filter(workspace_id=self.workspace_id)
+        attempts = (
+            Attempt.objects.filter(
+                workspace_id=self.workspace_id,
+                question_id__in=local_questions.values("id"),
+                status=AttemptStatus.VALID,
+                attempt_type__in=(AttemptType.INITIAL, AttemptType.REVIEW),
+            )
+            .order_by()
+            .values("question_id")
+            .annotate(
+                analytics_attempts=Count("id"),
+                analytics_correct=Count("id", filter=Q(is_correct=True)),
+            )
+        )
+        facts = {
+            row["question_id"]: (int(row["analytics_attempts"]), int(row["analytics_correct"]))
+            for row in attempts
+        }
+        discipline_counts: dict[uuid.UUID, list[int]] = {}
+        subject_counts: dict[uuid.UUID, list[int]] = {}
+        discipline_residue = 0
+        subject_residue = 0
+        for question in local_questions.only("id", "discipline_id", "subject_id"):
+            total, correct = facts.get(question.id, (0, 0))
+            if question.discipline_id is None:
+                discipline_residue += total
+            else:
+                aggregate = discipline_counts.setdefault(question.discipline_id, [0, 0])
+                aggregate[0] += total
+                aggregate[1] += correct
+            if question.subject_id is None:
+                subject_residue += total
+            else:
+                aggregate = subject_counts.setdefault(question.subject_id, [0, 0])
+                aggregate[0] += total
+                aggregate[1] += correct
+
+        discipline_rows = tuple(
+            self._performance_row(
+                group_id=discipline.id,
+                group_name=discipline.name,
+                parent_id=None,
+                counts=discipline_counts.get(discipline.id, [0, 0]),
+            )
+            for discipline in Discipline.objects.filter(workspace_id=self.workspace_id).order_by(
+                "sort_order", "name_key", "id"
+            )
+        )
+        subject_rows = tuple(
+            self._performance_row(
+                group_id=subject.id,
+                group_name=subject.name,
+                parent_id=subject.discipline_id,
+                counts=subject_counts.get(subject.id, [0, 0]),
+            )
+            for subject in Subject.objects.filter(
+                workspace_id=self.workspace_id,
+                discipline__workspace_id=self.workspace_id,
+            ).order_by("discipline__sort_order", "name_key", "id")
+        )
+        return (
+            PerformanceBreakdown(
+                rows=discipline_rows,
+                unlinked_attempts=discipline_residue,
+                total_attempts=sum(row.attempts for row in discipline_rows) + discipline_residue,
+            ),
+            PerformanceBreakdown(
+                rows=subject_rows,
+                unlinked_attempts=subject_residue,
+                total_attempts=sum(row.attempts for row in subject_rows) + subject_residue,
+            ),
+        )
+
+    @staticmethod
+    def _performance_row(
+        *,
+        group_id: uuid.UUID,
+        group_name: str,
+        parent_id: uuid.UUID | None,
+        counts: list[int],
+    ) -> PerformanceRow:
+        total, correct = counts
+        return PerformanceRow(
+            group_id=group_id,
+            group_name=group_name,
+            parent_id=parent_id,
+            attempts=total,
+            correct_answers=correct,
+            incorrect_answers=total - correct,
             accuracy=_ratio(correct, total),
         )
 
@@ -294,11 +397,32 @@ class AnalyticsService:
             )
             for category, errors in raw_rows
         )
-        unclassified = (
-            valid_attempts(workspace_id=self.workspace_id, filters=filters)
-            .filter(is_correct=False, error_classification__isnull=True)
-            .count()
+        unclassified_attempts = Attempt.objects.filter(
+            workspace_id=self.workspace_id,
+            question_id__in=Question.objects.filter(workspace_id=self.workspace_id).values("id"),
+            status=AttemptStatus.VALID,
+            attempt_type__in=(AttemptType.INITIAL, AttemptType.REVIEW),
+            is_correct=False,
+            error_classification__isnull=True,
         )
+        if filters.period.start is not None and filters.period.end is not None:
+            unclassified_attempts = unclassified_attempts.filter(
+                local_date__gte=filters.period.start,
+                local_date__lte=filters.period.end,
+            )
+        if filters.attempt_type is not None:
+            unclassified_attempts = unclassified_attempts.filter(attempt_type=filters.attempt_type)
+        if filters.discipline_id is not None:
+            unclassified_attempts = unclassified_attempts.filter(
+                question__discipline_id=filters.discipline_id,
+                question__discipline__workspace_id=self.workspace_id,
+            )
+        if filters.subject_id is not None:
+            unclassified_attempts = unclassified_attempts.filter(
+                question__subject_id=filters.subject_id,
+                question__subject__workspace_id=self.workspace_id,
+            )
+        unclassified = unclassified_attempts.count()
         return ErrorCategoryBreakdown(
             rows=rows,
             classified_errors=classified,

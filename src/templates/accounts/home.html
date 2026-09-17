@@ -37,13 +37,13 @@
   <section class="dashboard-section" aria-labelledby="discipline-title">
     <h2 id="discipline-title">Desempenho por disciplina</h2>
     <p class="field-help">Cada linha usa tentativas válidas vinculadas à disciplina atual. Sem amostra não é uma taxa de 0%.</p>
-    {% include "accounts/_performance_table.html" with breakdown=disciplines label="Disciplina" %}
+    {% include "accounts/_performance_table.html" with breakdown=disciplines label="Disciplina" table_labelledby="discipline-title" %}
   </section>
 
   <section class="dashboard-section" aria-labelledby="subject-title">
     <h2 id="subject-title">Desempenho por assunto</h2>
     <p class="field-help">Cada linha usa tentativas válidas vinculadas ao assunto atual.</p>
-    {% include "accounts/_performance_table.html" with breakdown=subjects label="Assunto" %}
+    {% include "accounts/_performance_table.html" with breakdown=subjects label="Assunto" table_labelledby="subject-title" %}
   </section>
 
   <section class="dashboard-section" aria-labelledby="error-category-title">

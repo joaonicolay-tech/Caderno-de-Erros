@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from modules.attempts.models import Attempt
+from modules.operations.integrity import run_integrity_check
 from modules.questions.models import Question
 from modules.reviews.models import Review
 from shared.application.bcr1 import (
@@ -21,6 +22,7 @@ from shared.application.bcr1 import (
     nearest_rank_p95,
     prepare_dataset,
 )
+from shared.application.bcr1_reads import measure_read_operation
 
 
 def test_dataset_manifest_is_deterministic_for_fixed_seed() -> None:
@@ -93,6 +95,25 @@ def test_measurement_fails_without_removing_slow_samples() -> None:
     assert len(result.samples) == 100
 
 
+@pytest.mark.django_db
+def test_read_measurement_records_cold_warm_percentiles_queries_and_threshold() -> None:
+    timestamps = iter([0, 1_000_000_000] * 101)
+    result = measure_read_operation(
+        name="read",
+        requirement="observed",
+        prepare=lambda _warmup, index: lambda: index,
+        validate=lambda _value: None,
+        warmups=0,
+        samples=100,
+        limit_seconds=0.5,
+        clock_ns=lambda: next(timestamps),
+    )
+    assert result.cold_seconds == 1.0
+    assert result.p95_seconds == 1.0
+    assert result.status == "FAIL"
+    assert result.query_count_minimum == result.query_count_maximum == 0
+
+
 def _run(number: int, status: str) -> RunResult:
     operation = OperationResult(
         operation="write",
@@ -133,6 +154,7 @@ def test_reduced_dataset_uses_real_sqlite_and_matches_its_manifest_counts() -> N
     assert manifest.question_count == Question.objects.count() == 10
     assert manifest.attempt_count == Attempt.objects.count() == 100
     assert manifest.review_count == Review.objects.count() == 100
+    assert run_integrity_check().total_findings == 0
 
 
 @pytest.mark.django_db
@@ -154,3 +176,6 @@ def test_reduced_run_uses_the_three_real_persistent_operations() -> None:
         "complete_review",
     ]
     assert all(operation.sample_count == 1 for operation in result.operations)
+    assert result.read_benchmark is not None
+    assert result.read_benchmark["status"] == "PASS"
+    assert result.read_benchmark["pagination"]["status"] == "PASS"

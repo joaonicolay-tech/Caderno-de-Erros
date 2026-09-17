@@ -150,9 +150,13 @@ def question_list(request: HttpRequest) -> HttpResponse:
             page_notice = "A página solicitada não existe; mostramos uma página válida."
     parameters = request.GET.copy()
     for key in tuple(parameters):
-        if key not in form.fields:
+        if key not in form.fields and key != "page":
             parameters.pop(key)
+    return_parameters = parameters.copy()
+    if result is not None and "page" in return_parameters:
+        return_parameters["page"] = str(result.page.number)
     parameters.pop("page", None)
+    return_query = urlencode(return_parameters, doseq=True)
     active_filters = [
         ("Estado", dict(QuestionStatus.choices)[form.cleaned_data["status"]])
         if form.is_valid()
@@ -205,6 +209,11 @@ def question_list(request: HttpRequest) -> HttpResponse:
             "active_filters": [item for item in active_filters if item is not None],
             "query_without_page": urlencode(parameters, doseq=True),
             "current_query": urlencode(parameters, doseq=True),
+            "return_to": (
+                f"{reverse('questions:list')}?{return_query}"
+                if return_query
+                else reverse("questions:list")
+            ),
             "breadcrumbs": [("Início", reverse("accounts:home"))],
         },
     )

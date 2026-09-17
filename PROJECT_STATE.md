@@ -23,11 +23,27 @@
   com ensaio sintético reproduzível e documentação operacional.
 - V0.4-S7: concluída — entry point PowerShell portátil, wrapper Explorer,
   operação loopback, guia de atualização segura e integração documental com S5/S6.
-- Etapa de implementação atual: nenhuma; S8 permanece não autorizada.
+- V0.4-S8: concluída — hardening transversal, acessibilidade assistida, BCR-1
+  oficial, S5/S6/S7 e regressão integrados; candidato `READY_FOR_PILOT`.
+- Etapa de implementação atual: nenhuma; S9 permanece não autorizada.
 - P0/P1 aplicável aberto: nenhum.
-- V0.4 funcional: S1-S7 concluídas; nenhuma etapa autorizada.
+- V0.4 funcional: S1-S8 concluídas; nenhuma etapa autorizada.
 
 ## Última validação
+
+Gate de V0.4-S8 GREEN no encerramento, exit code 0: 327 testes aprovados em
+78,92 s, 88% de cobertura global, migrations, formatação, Ruff, mypy,
+detect-secrets, cobertura de domínio e pip-audit aprovados. O BCR-1 oficial
+passou em três execuções com 10.000 questões, 100.000 attempts e 100.000
+reviews; o dashboard ficou com p95 máximo de 1,8390 s e 15 queries, a paginação
+percorreu 8.000 IDs únicos sem omissão/duplicação e as gravações ficaram abaixo
+de 2 s. S5 terminou exit 0 com 17 checks e zero findings; S6 e S7 foram
+revalidados. A revisão A8 profunda foi **APPROVED**, sem Blocker/Major/Minor
+aberto, e o candidato foi classificado `READY_FOR_PILOT`. As limitações de
+browser/zoom/leitor de tela estão explícitas; não houve migration, piloto S9,
+promoção, commit, push, tag ou release. Uma execução dentro do sandbox ficou
+inconclusiva somente no pip-audit por `WinError 10013`; a repetição autorizada
+com rede real terminou GREEN em 114,3 s.
 
 Gate de V0.4-S7 GREEN no encerramento, exit code 0: 325 testes aprovados em
 70,31 s, 88% de cobertura global, migrations, formatação, Ruff, mypy,
@@ -124,6 +140,12 @@ baseline V0.3, Architecture v1.0 ou gate.
 - `quality/operational-execution-metrics.jsonl`: métricas A1–A10, V0.4-P0 e
   V0.4-S1-S7;
 - `quality/v04-s7-operation-result.md`: ensaio, review A8 e gate S7;
+- `quality/v04-s8-accessibility-result.md`: auditoria assistida, contraste,
+  teclado, foco, responsividade e limitações S8;
+- `quality/v04-s8-bcr1-result.md` e os JSONs associados: parâmetros, resultados
+  brutos e decisão do BCR-1/leitura V0.4;
+- `quality/v04-s8-candidate-result.md`: evidência integrada, review, gate e
+  decisão `READY_FOR_PILOT`;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -132,8 +154,8 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: avaliar e, em nova sessão, autorizar somente `V0.4-S8`, consumindo
-os comandos e a operação Windows comprovados em S5-S7 sem antecipar piloto. A recomendação não cria
-autoridade. Qualquer etapa V0.4,
-checkpoint Git, tag ou release exige autorização expressa própria; nenhuma
-etapa funcional está autorizada.
+Recomendação: revisar a evidência S8 e, em nova sessão, decidir se autoriza
+somente `V0.4-S9` para o piloto definido no plano V0.4. A recomendação e o
+estado `READY_FOR_PILOT` não criam autoridade. Piloto, promoção, checkpoint Git,
+tag ou release exigem autorização expressa própria; nenhuma etapa funcional
+está autorizada.

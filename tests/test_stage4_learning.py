@@ -208,8 +208,13 @@ def test_ct125_queue_timeline_and_correction_views_keep_csrf_and_escaping() -> N
         workspace=workspace, attempt=attempt, category=category
     )
     client = Client()
-    assert client.get(reverse("reviews:queue")).status_code == 200
+    queue_response = client.get(reverse("reviews:queue"))
+    assert queue_response.status_code == 200
+    assert queue_response.content.decode("utf-8").count("<main") == 1
     correction = reverse("reviews:correct-diagnosis", args=[attempt.id])
+    correction_response = client.get(correction)
+    assert correction_response.status_code == 200
+    assert correction_response.content.decode("utf-8").count("<main") == 1
     protected = Client(enforce_csrf_checks=True).post(
         correction, {"lock_version": classification.lock_version}
     )
@@ -227,3 +232,4 @@ def test_ct125_queue_timeline_and_correction_views_keep_csrf_and_escaping() -> N
         "utf-8"
     )
     assert "<script>x</script>" not in html
+    assert html.count("<main") == 1

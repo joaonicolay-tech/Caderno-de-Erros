@@ -1,0 +1,74 @@
+{
+  "task_id": "V0.4-S6",
+  "observed_at": "2026-09-17T14:44:09.970697+00:00",
+  "environment": {
+    "os": "Windows",
+    "python": "3.13.15",
+    "sqlite": "3.53.1",
+    "django": "5.2.17"
+  },
+  "dataset": "synthetic, 2 active questions, 2 initial errors, 1 S1 residue",
+  "steps": [
+    {
+      "command": "check_integrity",
+      "database": "synthetic_active",
+      "exit_code": 0,
+      "duration_seconds": 1.12708
+    },
+    {
+      "command": "backup_sqlite",
+      "database": "synthetic_active",
+      "exit_code": 0,
+      "duration_seconds": 1.158476
+    },
+    {
+      "command": "validate_backup",
+      "database": "synthetic_active",
+      "exit_code": 0,
+      "duration_seconds": 1.049581
+    },
+    {
+      "command": "restore_backup",
+      "database": "synthetic_active",
+      "exit_code": 0,
+      "duration_seconds": 1.083999
+    },
+    {
+      "command": "check_integrity",
+      "database": "restored",
+      "exit_code": 0,
+      "duration_seconds": 0.987477
+    },
+    {
+      "command": "shell",
+      "database": "restored",
+      "exit_code": 0,
+      "duration_seconds": 0.853595
+    }
+  ],
+  "size_bytes": 655360,
+  "recovery_duration_seconds": 2.928573,
+  "rto_sla": false,
+  "physical_integrity": "ok",
+  "foreign_key_findings": 0,
+  "s5_exit_code": 0,
+  "counts": {
+    "questions_question": 2,
+    "attempts_attempt": 2,
+    "errors_errorclassification": 1,
+    "errors_errorclassificationrevision": 1,
+    "reviews_reviewcycle": 2,
+    "reviews_review": 2,
+    "attempts_operationreceipt": 1,
+    "django_migrations": 24
+  },
+  "reconciliation_method": "exact SHA-256 equality before/after validation",
+  "reconciled": true,
+  "backup_unchanged": true,
+  "manifest_unchanged": true,
+  "active_unchanged": true,
+  "application_opened": true,
+  "result": "PASS",
+  "human_validation": "not performed",
+  "limitations": "Local synthetic drill, not BCR-1, pilot, production RTO or SLA."
+}

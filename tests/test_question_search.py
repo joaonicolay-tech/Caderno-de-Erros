@@ -356,6 +356,30 @@ def test_s4_pagination_preserves_valid_search_and_filter_parameters() -> None:
     assert "query=Pagina%C3%A7%C3%A3o" in html
     assert "initial_result=correct" in html
     assert "ignored" not in html
+    assert response.context["return_to"] == (
+        "/questions/?query=Pagina%C3%A7%C3%A3o&initial_result=correct&page=1"
+    )
+
+
+@pytest.mark.django_db
+def test_s8_list_detail_link_preserves_safe_consultation_context() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    question = _active_question(
+        workspace=workspace,
+        discipline=discipline,
+        subject=subject,
+        stem="Retorno preservado",
+    )
+
+    response = Client().get(reverse("questions:list"), {"query": "Retorno", "page": "1"})
+    html = response.content.decode("utf-8")
+
+    assert response.context["return_to"] == "/questions/?query=Retorno&page=1"
+    assert (
+        f'href="/questions/{question.id}/?return_to=/questions/%3Fquery%3DRetorno%26page%3D1"'
+        in html
+    )
 
 
 def test_ct142_list_template_is_semantic_keyboard_accessible_and_responsive() -> None:

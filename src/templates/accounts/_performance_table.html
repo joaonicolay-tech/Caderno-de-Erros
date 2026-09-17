@@ -1,6 +1,6 @@
 {% if breakdown.rows %}
   <div class="table-wrap">
-    <table>
+    <table aria-labelledby="{{ table_labelledby }}">
       <thead><tr><th scope="col">{{ label }}</th><th scope="col">Tentativas</th><th scope="col">Acertos</th><th scope="col">Erros</th><th scope="col">Taxa</th></tr></thead>
       <tbody>
         {% for row in breakdown.rows %}

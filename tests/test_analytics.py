@@ -358,6 +358,12 @@ def test_performance_categories_residue_and_drilldowns_reconcile(
     assert service.attempts(filters=period_filters).count() == 4
     assert first.workspace_id == workspace.id and ancient.discipline_id == history.id
 
+    paired_disciplines, paired_subjects = service.performance_pair()
+    all_history_disciplines = service.performance(level=PerformanceLevel.DISCIPLINE)
+    all_history_subjects = service.performance(level=PerformanceLevel.SUBJECT)
+    assert paired_disciplines == all_history_disciplines
+    assert paired_subjects == all_history_subjects
+
 
 @pytest.mark.django_db
 def test_cycle_status_is_exclusive_reconciled_and_workspace_scoped() -> None:

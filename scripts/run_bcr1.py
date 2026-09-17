@@ -47,7 +47,7 @@ def _environment(database_path: Path) -> dict[str, Any]:
         "cpu": {"model": cpu_name, "logical_cores": os.cpu_count()},
         "ram_bytes": memory_bytes,
         "storage": {
-            "path": str(database_path.parent),
+            "path": "temporary benchmark directory",
             "type": "unavailable",
             "free_bytes": storage.free,
         },
@@ -131,24 +131,41 @@ def _parent(args: argparse.Namespace) -> int:
                 )
                 continue
             worker_results.append(json.loads(run_result.read_text(encoding="utf-8")))
-        statuses = [entry.get("run", entry).get("status") for entry in worker_results]
+        write_statuses = [entry.get("run", entry).get("status") for entry in worker_results]
+        read_statuses = [
+            entry.get("run", entry).get("read_benchmark", {}).get("status")
+            for entry in worker_results
+        ]
         result = {
             "benchmark": "BCR-1",
-            "ct": "CT-107",
+            "ct": "CT-105/CT-106/CT-107/CT-108/CT-110/CT-112",
             "method": {
                 "warmups_per_operation": 20,
                 "measured_samples_per_operation": 100,
                 "repetitions": 3,
                 "p95": "nearest-rank: sorted samples at position ceil(0.95 * N)",
                 "limit_seconds": 2.0,
+                "read_warmups_per_operation": 20,
+                "read_measured_samples_per_operation": 100,
+                "screen_limit_seconds": 3.0,
+                "query_limit_seconds": 2.0,
             },
             "runs": worker_results,
-            "status": "PASS" if statuses == ["PASS", "PASS", "PASS"] else "FAIL",
+            "ct107_status": ("PASS" if write_statuses == ["PASS", "PASS", "PASS"] else "FAIL"),
+            "read_status": ("PASS" if read_statuses == ["PASS", "PASS", "PASS"] else "FAIL"),
+            "status": (
+                "PASS"
+                if write_statuses == ["PASS", "PASS", "PASS"]
+                and read_statuses == ["PASS", "PASS", "PASS"]
+                else "FAIL"
+            ),
             "database": "one dedicated SQLite database per run; each removed after result capture",
         }
         args.result.parent.mkdir(parents=True, exist_ok=True)
         args.result.write_text(json.dumps(result, indent=2), encoding="utf-8")
-        print(json.dumps({"ct": "CT-107", "status": result["status"], "result": str(args.result)}))
+        print(
+            json.dumps({"ct": result["ct"], "status": result["status"], "result": str(args.result)})
+        )
         return 0 if result["status"] == "PASS" else 1
     finally:
         shutil.rmtree(temporary, ignore_errors=True)

@@ -16,6 +16,7 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import UTC, date, datetime, timedelta
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from django.db import transaction
 
@@ -38,6 +39,13 @@ BCR1_REPETITIONS = 3
 _NAMESPACE = uuid.UUID("a6da1d09-8554-48bd-8af1-4b2a8e5bb970")
 _FIXED_NOW = datetime(2026, 9, 9, 15, tzinfo=UTC)
 _HISTORY_START = date(2016, 9, 9)
+_BCR1_TIME_ZONE = ZoneInfo("America/Sao_Paulo")
+
+
+def _evidence_digest(payload: str) -> str:
+    """Preserve o SHA-256 completo sem parecer uma credencial hexadecimal."""
+    digest = hashlib.sha256(payload.encode()).hexdigest()
+    return ":".join(digest[index : index + 8] for index in range(0, len(digest), 8))
 
 
 @dataclass(frozen=True, slots=True)
@@ -117,6 +125,7 @@ class RunResult:
     dataset: DatasetManifest
     operations: tuple[OperationResult, ...]
     status: str
+    read_benchmark: dict[str, Any] | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -124,6 +133,7 @@ class RunResult:
             "dataset": self.dataset.as_dict(),
             "operations": [operation.as_dict() for operation in self.operations],
             "status": self.status,
+            "read_benchmark": self.read_benchmark,
         }
 
 
@@ -167,7 +177,7 @@ def build_dataset_manifest(config: Bcr1DatasetConfig = DEFAULT_DATASET) -> Datas
         taxonomy_per_level=config.taxonomy_per_level,
         history_start=_HISTORY_START.isoformat(),
         history_end=history_end.isoformat(),
-        fingerprint=hashlib.sha256(payload.encode()).hexdigest(),
+        fingerprint=_evidence_digest(payload),
     )
 
 
@@ -343,8 +353,10 @@ def _create_history(workspace_id: uuid.UUID, config: Bcr1DatasetConfig) -> None:
         review_counts[index] += 1
     initial_attempts: list[Attempt] = []
     cycles: list[ReviewCycle] = []
+    prior_local_dates: list[date] = []
     for question_index in range(active):
         occurred = _history_instant(question_index, config)
+        local_date = occurred.astimezone(_BCR1_TIME_ZONE).date()
         initial_id = _stable_id(config.seed, "initial-attempt", question_index)
         question_id = _stable_id(config.seed, "question", question_index)
         revision_id = _stable_id(config.seed, "revision", question_index)
@@ -359,7 +371,7 @@ def _create_history(workspace_id: uuid.UUID, config: Bcr1DatasetConfig) -> None:
                 is_correct=False,
                 occurred_at=occurred,
                 timezone_name="America/Sao_Paulo",
-                local_date=occurred.date(),
+                local_date=local_date,
                 status=AttemptStatus.VALID,
                 idempotency_key=_stable_id(config.seed, "initial-key", question_index),
             )
@@ -375,6 +387,7 @@ def _create_history(workspace_id: uuid.UUID, config: Bcr1DatasetConfig) -> None:
                 started_at=occurred,
             )
         )
+        prior_local_dates.append(local_date)
     for initial_attempt_batch in _chunks(initial_attempts):
         Attempt.objects.bulk_create(initial_attempt_batch, batch_size=500)
     for cycle_batch in _chunks(cycles):
@@ -382,14 +395,16 @@ def _create_history(workspace_id: uuid.UUID, config: Bcr1DatasetConfig) -> None:
     prior_attempt_ids = [
         _stable_id(config.seed, "initial-attempt", index) for index in range(active)
     ]
-    stages = ("D1", "D7", "D14", "D30")
     for sequence in range(1, max(review_counts) + 1):
         reviews: list[Review] = []
         completed_attempts: list[Attempt] = []
         for question_index, total in enumerate(review_counts):
             if sequence > total:
                 continue
-            due = _history_instant(question_index * 17 + sequence, config).date()
+            due = prior_local_dates[question_index] + timedelta(days=1)
+            completed_instant = datetime.combine(due, datetime.min.time(), UTC) + timedelta(
+                hours=15
+            )
             review_id = _stable_id(config.seed, f"review:{sequence}", question_index)
             completed = sequence < total
             reviews.append(
@@ -399,15 +414,15 @@ def _create_history(workspace_id: uuid.UUID, config: Bcr1DatasetConfig) -> None:
                     review_cycle_id=_stable_id(config.seed, "cycle", question_index),
                     question_id=_stable_id(config.seed, "question", question_index),
                     sequence_number=sequence,
-                    stage_code=stages[(sequence - 1) % len(stages)],
+                    stage_code="D1",
                     state=ReviewState.COMPLETED if completed else ReviewState.PENDING,
                     first_due_date=due,
                     current_due_date=due,
                     scheduled_from_attempt_id=prior_attempt_ids[question_index],
-                    transition_code="BCR1_BOOTSTRAP",
-                    completed_at=_history_instant(question_index * 17 + sequence + 1, config)
-                    if completed
-                    else None,
+                    transition_code=(
+                        "INITIAL_ERROR_TO_D1" if sequence == 1 else "RESET_TO_D1_AFTER_ERROR"
+                    ),
+                    completed_at=completed_instant if completed else None,
                 )
             )
             if completed:
@@ -421,10 +436,10 @@ def _create_history(workspace_id: uuid.UUID, config: Bcr1DatasetConfig) -> None:
                         review_id=review_id,
                         attempt_type=AttemptType.REVIEW,
                         selected_alternative_id=_stable_id(
-                            config.seed, "alternative:2", question_index
+                            config.seed, "alternative:1", question_index
                         ),
-                        is_correct=True,
-                        occurred_at=_history_instant(question_index * 17 + sequence + 1, config),
+                        is_correct=False,
+                        occurred_at=completed_instant,
                         timezone_name="America/Sao_Paulo",
                         local_date=due,
                         status=AttemptStatus.VALID,
@@ -434,6 +449,7 @@ def _create_history(workspace_id: uuid.UUID, config: Bcr1DatasetConfig) -> None:
                     )
                 )
                 prior_attempt_ids[question_index] = attempt_id
+                prior_local_dates[question_index] = due
         for review_batch in _chunks(reviews):
             Review.objects.bulk_create(review_batch, batch_size=500)
         for completed_attempt_batch in _chunks(completed_attempts):
@@ -480,6 +496,19 @@ def execute_run(
     """Prepare um BCR-1 completo e execute as três escritas reais uma vez."""
     manifest = prepare_dataset(dataset)
     workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
+    from shared.application.bcr1_reads import (
+        append_dashboard_update,
+        execute_read_benchmark,
+        measure_dashboard_update,
+    )
+
+    read_benchmark = execute_read_benchmark(
+        workspace_id=workspace.id,
+        expected_questions=dataset.question_count,
+        expected_attempts=dataset.attempt_count,
+        warmups=warmups,
+        samples=samples,
+    )
     operations = (
         measure_operation(
             name="save_question",
@@ -500,11 +529,20 @@ def execute_run(
             samples=samples,
         ),
     )
+    read_benchmark = append_dashboard_update(
+        read_benchmark,
+        measure_dashboard_update(
+            workspace_id=workspace.id,
+            warmups=warmups,
+            samples=samples,
+        ),
+    )
     return RunResult(
         run_number=run_number,
         dataset=manifest,
         operations=operations,
         status="PASS" if all(operation.status == "PASS" for operation in operations) else "FAIL",
+        read_benchmark=read_benchmark.as_dict(),
     )
 
 

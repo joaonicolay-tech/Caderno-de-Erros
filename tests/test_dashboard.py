@@ -16,7 +16,6 @@ from modules.analytics.read_models import (
     ErrorCategoryBreakdown,
     ErrorCategoryRow,
     PerformanceBreakdown,
-    PerformanceLevel,
     PerformanceRow,
     Ratio,
     ReviewSummary,
@@ -54,10 +53,10 @@ def test_dashboard_renders_s2_values_and_residue_without_reinterpretation() -> N
     analytics.reviews.return_value = ReviewSummary(date(2026, 9, 10), 1, 2, 3, 4)
     math = PerformanceRow(uuid4(), "Matemática", None, 3, 2, 1, _ratio(2, 3))
     empty = PerformanceRow(uuid4(), "Sem amostra", None, 0, 0, 0, _ratio(0, 0))
-    analytics.performance.side_effect = [
+    analytics.performance_pair.return_value = (
         PerformanceBreakdown((math, empty), 0, 3),
         PerformanceBreakdown((math,), 1, 4),
-    ]
+    )
     analytics.error_categories.return_value = ErrorCategoryBreakdown(
         rows=(ErrorCategoryRow(uuid4(), "ATTENTION", "Atenção", 1, _ratio(1, 1)),),
         classified_errors=1,
@@ -80,8 +79,9 @@ def test_dashboard_renders_s2_values_and_residue_without_reinterpretation() -> N
     assert "Atenção:" in html
     assert "Erros válidos sem classificação:" in html
     assert "resíduo analítico, não uma categoria persistida" in html
-    assert analytics.performance.call_args_list[0].kwargs == {"level": PerformanceLevel.DISCIPLINE}
-    assert analytics.performance.call_args_list[1].kwargs == {"level": PerformanceLevel.SUBJECT}
+    assert '<table aria-labelledby="discipline-title">' in html
+    assert '<table aria-labelledby="subject-title">' in html
+    analytics.performance_pair.assert_called_once_with()
 
 
 def test_dashboard_view_delegates_analytics_to_s2() -> None:

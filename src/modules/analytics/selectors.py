@@ -56,13 +56,18 @@ def registered_questions(
 
 
 def performed_questions(*, workspace_id: uuid.UUID, period: AnalyticsPeriod) -> QuerySet[Question]:
-    attempts = valid_attempts(
+    attempts = Attempt.objects.filter(
         workspace_id=workspace_id,
-        filters=AttemptFilters(period=period, attempt_type=AttemptType.INITIAL),
+        question_id=OuterRef("pk"),
+        status=AttemptStatus.VALID,
+        attempt_type=AttemptType.INITIAL,
     )
+    if period.start is not None and period.end is not None:
+        attempts = attempts.filter(local_date__gte=period.start, local_date__lte=period.end)
     return (
-        Question.objects.filter(workspace_id=workspace_id, attempts__in=attempts)
-        .distinct()
+        Question.objects.filter(workspace_id=workspace_id)
+        .annotate(has_initial_attempt=Exists(attempts))
+        .filter(has_initial_attempt=True)
         .order_by("created_at", "id")
     )
 
