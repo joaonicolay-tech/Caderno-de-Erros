@@ -789,6 +789,14 @@ hardening e piloto. Não autoriza nem executa S6-S9.
 Comandos, salvaguardas, restore isolado com S5, reconciliação, falhas,
 RPO/RTO, retenção e ensaio sintético reproduzível. Não autoriza S7-S9.
 
+## V0.4-S7 — operação local Windows
+
+**Arquivo:** `V0.4_S7_Operacao_Windows.md`
+
+Entry point PowerShell portátil, wrapper para Explorer, loopback, ciclo de vida,
+checker S5, backup/validação S6, atualização local segura e troubleshooting.
+Não autoriza S8 ou S9.
+
 ## Project Development Architecture v1.0
 
 **Arquivo:** `PROJECT_DEVELOPMENT_ARCHITECTURE_V1.md`

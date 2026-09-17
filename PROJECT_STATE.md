@@ -21,11 +21,21 @@
 - V0.4-S6: concluída — snapshot SQLite consistente, restore isolado, checks
   físicos, reconciliação por SHA-256/fatos e invariant checker S5 integrados,
   com ensaio sintético reproduzível e documentação operacional.
-- Etapa de implementação atual: nenhuma; S7 permanece não autorizada.
+- V0.4-S7: concluída — entry point PowerShell portátil, wrapper Explorer,
+  operação loopback, guia de atualização segura e integração documental com S5/S6.
+- Etapa de implementação atual: nenhuma; S8 permanece não autorizada.
 - P0/P1 aplicável aberto: nenhum.
-- V0.4 funcional: S1-S6 concluídas; nenhuma etapa autorizada.
+- V0.4 funcional: S1-S7 concluídas; nenhuma etapa autorizada.
 
 ## Última validação
+
+Gate de V0.4-S7 GREEN no encerramento, exit code 0: 325 testes aprovados em
+70,31 s, 88% de cobertura global, migrations, formatação, Ruff, mypy,
+detect-secrets e pip-audit aprovados. O ensaio descartável iniciou por entry
+point de diretório externo, respondeu em loopback, encerrou liberando a porta e
+executou S5/backup/validação S6; a revisão A8 padrão foi **APPROVED**, sem
+Blocker/Major. Não houve migration, schema, instalador, restore destrutivo ou
+implementação de S8/S9.
 
 Gate de V0.4-S6 GREEN no encerramento, exit code 0: 322 testes aprovados em
 74,56 s, 88% de cobertura global, migrations, formatação, Ruff, mypy,
@@ -112,7 +122,8 @@ baseline V0.3, Architecture v1.0 ou gate.
   review, gate e ensaio sintético observados de S6;
 - `tasks/completed/v04-s6-backup-recovery.md`: contrato e encerramento de S6;
 - `quality/operational-execution-metrics.jsonl`: métricas A1–A10, V0.4-P0 e
-  V0.4-S1-S6;
+  V0.4-S1-S7;
+- `quality/v04-s7-operation-result.md`: ensaio, review A8 e gate S7;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -121,9 +132,8 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: avaliar e, em nova sessão, autorizar somente `V0.4-S7`,
-consumindo os comandos e o contrato operacional comprovados em S6 sem reabrir
-seu mecanismo ou antecipar hardening/piloto. A recomendação não cria
+Recomendação: avaliar e, em nova sessão, autorizar somente `V0.4-S8`, consumindo
+os comandos e a operação Windows comprovados em S5-S7 sem antecipar piloto. A recomendação não cria
 autoridade. Qualquer etapa V0.4,
 checkpoint Git, tag ou release exige autorização expressa própria; nenhuma
 etapa funcional está autorizada.

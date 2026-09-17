@@ -11,9 +11,9 @@ catálogo versionado das versões anteriores e implementa o ciclo de aprendizage
 e revisão: respostas iniciais, ciclos de revisão, agenda D1/D7/D14/D30, fila
 derivada, linha do tempo, diagnóstico auditável e suspensão por arquivamento.
 
-O gate final da V0.3 está GREEN, sem P0/P1 aplicável aberto. A V0.4 não foi
-iniciada e exige nova autorização formal. A documentação oficial está em
-[`docs/`](docs/).
+O gate final da V0.3 está GREEN, sem P0/P1 aplicável aberto. A V0.4 concluiu as
+etapas S1–S7 e exige nova autorização formal antes de S8. A documentação oficial
+está em [`docs/`](docs/).
 
 ## 1. Pré-requisitos
 
@@ -111,6 +111,16 @@ O resultado esperado após o primeiro bootstrap com o exemplo é:
 `1 1 pt-BR America/Sao_Paulo 10`.
 
 ## 6. Executar a aplicação
+
+Para a operação Windows da V0.4, prefira o entry point
+[`scripts/start-local.ps1`](scripts/start-local.ps1), inclusive se o PowerShell
+foi aberto fora da raiz do projeto. O guia completo, incluindo atalho Explorer,
+backup, checker e atualização segura, está em
+[`docs/V0.4_S7_Operacao_Windows.md`](docs/V0.4_S7_Operacao_Windows.md).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-local.ps1
+```
 
 ### Desenvolvimento
 
