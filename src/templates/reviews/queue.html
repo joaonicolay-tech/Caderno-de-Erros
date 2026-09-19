@@ -3,13 +3,19 @@
 {% block content %}
 <h1>Fila de revisões</h1>
 <p class="field-help">Fila derivada no fuso do Workspace.</p>
+{% if actionable_review %}
+  <p class="review-queue-action"><a class="button-link" href="{% url 'reviews:complete' actionable_review.id %}">Iniciar revisões pendentes</a></p>
+{% else %}
+  <p class="notice" role="status">Não há revisões acionáveis agora. As revisões futuras permanecem na fila.</p>
+{% endif %}
 
+{% if not selected_section or selected_section.0 == "Atrasadas" %}
 <section class="review-queue-section" aria-labelledby="overdue">
   <h2 id="overdue">Atrasadas</h2>
   {% for review in queue.overdue.entries %}
     {% with revision=review.question.queue_current_revision.0 %}
       <article class="review-queue-item">
-        <h3><a href="{% url 'reviews:complete' review.id %}">{{ revision.stem|truncatechars:160 }}</a></h3>
+        <h3><a class="review-queue-stem" href="{% url 'reviews:complete' review.id %}">{{ revision.stem }}</a></h3>
         {% if review.question.discipline or review.question.subject %}
           <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
         {% endif %}
@@ -20,13 +26,15 @@
     <p class="empty-state">Nenhuma revisão atrasada.</p>
   {% endfor %}
 </section>
+{% endif %}
 
+{% if not selected_section or selected_section.0 == "Devidas hoje" %}
 <section class="review-queue-section" aria-labelledby="due">
   <h2 id="due">Hoje</h2>
   {% for review in queue.due.entries %}
     {% with revision=review.question.queue_current_revision.0 %}
       <article class="review-queue-item">
-        <h3><a href="{% url 'reviews:complete' review.id %}">{{ revision.stem|truncatechars:160 }}</a></h3>
+        <h3><a class="review-queue-stem" href="{% url 'reviews:complete' review.id %}">{{ revision.stem }}</a></h3>
         {% if review.question.discipline or review.question.subject %}
           <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
         {% endif %}
@@ -37,13 +45,15 @@
     <p class="empty-state">Nenhuma revisão para hoje.</p>
   {% endfor %}
 </section>
+{% endif %}
 
+{% if not selected_section or selected_section.0 == "Futuras" %}
 <section class="review-queue-section" aria-labelledby="future">
   <h2 id="future">Futuras</h2>
   {% for review in queue.future.entries %}
     {% with revision=review.question.queue_current_revision.0 %}
       <article class="review-queue-item">
-        <h3>{{ revision.stem|truncatechars:160 }}</h3>
+        <h3 class="review-queue-stem">{{ revision.stem }}</h3>
         {% if review.question.discipline or review.question.subject %}
           <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
         {% endif %}
@@ -54,4 +64,5 @@
     <p class="empty-state">Nenhuma revisão futura.</p>
   {% endfor %}
 </section>
+{% endif %}
 {% endblock %}

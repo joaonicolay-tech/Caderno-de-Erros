@@ -27,9 +27,9 @@
     <p class="field-help">A data de referência é {{ reviews.reference_date|date:"d/m/Y" }}, no fuso do espaço.</p>
     <dl class="metric-grid">
       <div class="metric-card"><dt>Concluídas hoje</dt><dd>{{ reviews.completed_today }}</dd><small>Respostas de revisão válidas concluídas na data de referência.</small></div>
-      <div class="metric-card"><dt>Atrasadas</dt><dd><a href="{% url 'questions:list' %}?review_status=OVERDUE">{{ reviews.overdue }}</a></dd><small>Revisões pendentes com vencimento anterior a hoje.</small></div>
-      <div class="metric-card"><dt>Devidas hoje</dt><dd><a href="{% url 'questions:list' %}?review_status=DUE">{{ reviews.due }}</a></dd><small>Revisões pendentes com vencimento hoje.</small></div>
-      <div class="metric-card"><dt>Futuras</dt><dd><a href="{% url 'questions:list' %}?review_status=FUTURE">{{ reviews.future }}</a></dd><small>Revisões pendentes com vencimento posterior a hoje.</small></div>
+      <div class="metric-card"><dt>Atrasadas</dt><dd><a href="{% url 'reviews:queue' %}?section=OVERDUE" aria-label="{{ reviews.overdue }} revisões atrasadas">{{ reviews.overdue }}</a></dd><small>Revisões pendentes com vencimento anterior a hoje.</small></div>
+      <div class="metric-card"><dt>Devidas hoje</dt><dd><a href="{% url 'reviews:queue' %}?section=DUE" aria-label="{{ reviews.due }} revisões devidas hoje">{{ reviews.due }}</a></dd><small>Revisões pendentes com vencimento hoje.</small></div>
+      <div class="metric-card"><dt>Futuras</dt><dd><a href="{% url 'reviews:queue' %}?section=FUTURE" aria-label="{{ reviews.future }} revisões futuras">{{ reviews.future }}</a></dd><small>Revisões pendentes com vencimento posterior a hoje.</small></div>
     </dl>
     <p><a href="{% url 'reviews:queue' %}">Abrir fila de revisões existente</a></p>
   </section>

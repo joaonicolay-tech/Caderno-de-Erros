@@ -74,6 +74,11 @@ def test_dashboard_renders_s2_values_and_residue_without_reinterpretation() -> N
     assert "2 inicial(is) e 2 de revisão" in html
     assert "50,0%" in html
     assert "Concluídas hoje" in html and "Devidas hoje" in html
+    assert 'href="/reviews/?section=OVERDUE"' in html
+    assert 'href="/reviews/?section=DUE"' in html
+    assert 'href="/reviews/?section=FUTURE"' in html
+    assert 'aria-label="2 revisões atrasadas"' in html
+    assert 'href="/questions/?review_status=OVERDUE"' not in html
     assert "Matemática" in html and "66,7%" in html
     assert "Sem amostra" in html and "Sem dados" in html
     assert "Atenção:" in html

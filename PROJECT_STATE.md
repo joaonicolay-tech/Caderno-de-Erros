@@ -7,10 +7,11 @@
 - V0.4.1-HF1: concluído — fluxo de alternativas corrigido após V0.4.0, sem
   migration; a tag histórica anotada `v0.4.1` permanece inalterada e aponta
   para o commit de checkpoint HF1 `acbb497dbdc71f8a3d7893ae4772a87231c281f0`.
-- V0.4.2-UX1: concluída — fila de revisões enriquecida com enunciado curto,
-  disciplina/assunto, estágio, data e estado temporal existentes, sem mudar a
-  semântica de revisão, schema ou migration; código é candidato a v0.4.2, cuja
-  tag ainda não existe.
+- V0.4.2: release existente; a tag histórica `v0.4.2` permanece inalterada.
+- V0.4.3-UX2: concluída — indicadores de revisão direcionam à Fila por
+  subconjunto, a fila ganhou clamp visual e CTA apenas para pendências
+  acionáveis, sem mudar semântica, schema ou migration; é candidata a v0.4.3,
+  cuja tag não foi criada.
 - Arquitetura operacional: Project Development Architecture v1.0
   **APPROVED/FROZEN** em 12 de setembro de 2026.
 - Etapas operacionais A1–A10: concluídas.
@@ -42,6 +43,14 @@
 - V0.5: **NOT AUTHORIZED** e não iniciada.
 
 ## Última validação
+
+Gate final de V0.4.3-UX2 GREEN, exit code 0: 337 testes aprovados em 85,28 s,
+88% de cobertura global, migrations sem mudanças, formatação, Ruff, mypy,
+detect-secrets e pip-audit aprovados. A primeira execução ficou inconclusiva
+somente no pip-audit por WinError 10013 de rede/sandbox; a repetição autorizada
+com rede terminou GREEN. A revisão A8 padrão foi APPROVED, sem Blocker/Major.
+O cenário manual de futuras, links e 360 px foi observado; zoom 200% não foi
+observável. Não houve migration, commit, push, tag, release ou V0.5.
 
 Gate final de V0.4.1-HF1 GREEN, exit code 0: 332 testes aprovados em 87,85 s,
 88% de cobertura global, migrations sem mudanças, banco vazio, formatação,

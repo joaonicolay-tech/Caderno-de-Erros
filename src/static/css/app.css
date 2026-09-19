@@ -405,6 +405,18 @@ fieldset.form-section legend {
   display: inline-block;
 }
 
+.review-queue-action {
+  margin-block: 1.5rem;
+}
+
+.review-queue-stem {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  max-height: 3rem;
+  overflow: hidden;
+}
+
 .review-queue-item h3,
 .review-queue-context,
 .review-queue-meta {

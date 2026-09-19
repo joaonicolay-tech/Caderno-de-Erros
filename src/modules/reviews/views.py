@@ -18,7 +18,8 @@ from modules.errors.forms import ErrorClassificationCorrectionForm
 from modules.errors.models import ErrorCategory, ErrorClassification
 from modules.errors.services import ErrorDiagnosisConflictError, ErrorDiagnosisService
 
-from .selectors import get_learning_timeline, list_review_queue
+from .policies import ReviewTemporalStatus
+from .selectors import ReviewQueueSection, get_learning_timeline, list_review_queue
 from .services import CompleteReviewService
 
 SESSION_COOKIE = "review_session"
@@ -52,7 +53,22 @@ def queue(request: HttpRequest) -> HttpResponse:
         due_page=page("due_page"),
         future_page=page("future_page"),
     )
-    return render(request, "reviews/queue.html", {"workspace": workspace, "queue": result})
+    requested_section = request.GET.get("section", "").upper()
+    sections: dict[str, tuple[str, ReviewQueueSection]] = {
+        ReviewTemporalStatus.OVERDUE: ("Atrasadas", result.overdue),
+        ReviewTemporalStatus.DUE: ("Devidas hoje", result.due),
+        ReviewTemporalStatus.FUTURE: ("Futuras", result.future),
+    }
+    return render(
+        request,
+        "reviews/queue.html",
+        {
+            "workspace": workspace,
+            "queue": result,
+            "selected_section": sections.get(requested_section),
+            "actionable_review": (result.overdue.entries or result.due.entries or (None,))[0],
+        },
+    )
 
 
 @never_cache
