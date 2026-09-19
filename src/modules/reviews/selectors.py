@@ -7,12 +7,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from math import ceil
 
-from django.db.models import QuerySet
+from django.db.models import Prefetch, QuerySet
 
 from modules.accounts.models import Workspace
 from modules.attempts.models import Attempt
 from modules.errors.models import ErrorClassification, ErrorClassificationRevision
-from modules.questions.models import Question, QuestionStatus
+from modules.questions.models import Question, QuestionRevision, QuestionStatus
 from shared.domain.time import Calendar, Clock, LocalDate, SystemClock, TimeZoneId
 
 from .models import Review, ReviewCycle, ReviewCycleState, ReviewState
@@ -87,7 +87,21 @@ def list_review_queue(
             review_cycle__state=ReviewCycleState.ACTIVE,
             question__status=QuestionStatus.ACTIVE,
         )
-        .select_related("question", "review_cycle")
+        .select_related(
+            "question",
+            "question__discipline",
+            "question__subject",
+            "review_cycle",
+        )
+        .prefetch_related(
+            Prefetch(
+                "question__revisions",
+                queryset=QuestionRevision.objects.filter(is_current=True).only(
+                    "id", "question_id", "stem"
+                ),
+                to_attr="queue_current_revision",
+            )
+        )
         .order_by("current_due_date", "created_at", "id")
     )
     groups: dict[ReviewTemporalStatus, list[Review]] = {

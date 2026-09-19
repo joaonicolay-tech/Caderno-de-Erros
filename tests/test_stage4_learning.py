@@ -5,7 +5,9 @@ from datetime import UTC, date, datetime
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.db import connection
 from django.test import Client
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from modules.accounts.models import User, Workspace
@@ -49,7 +51,7 @@ def _workspace(email: str) -> Workspace:
     return workspace
 
 
-def _question(workspace: Workspace, suffix: str = "") -> Question:
+def _question(workspace: Workspace, suffix: str = "", stem: str = "Questão E4") -> Question:
     discipline = create_discipline(workspace_id=workspace.id, name=f"Disciplina E4 {suffix}")
     subject = create_subject(
         workspace_id=workspace.id, discipline_id=discipline.id, name="Assunto E4"
@@ -58,7 +60,7 @@ def _question(workspace: Workspace, suffix: str = "") -> Question:
         workspace_id=workspace.id,
         discipline_id=discipline.id,
         subject_id=subject.id,
-        stem="Questão E4",
+        stem=stem,
         alternatives=["Errada", "Certa"],
         correct_alternative_position=2,
     )
@@ -233,3 +235,76 @@ def test_ct125_queue_timeline_and_correction_views_keep_csrf_and_escaping() -> N
     )
     assert "<script>x</script>" not in html
     assert html.count("<main") == 1
+
+
+@pytest.mark.django_db
+def test_queue_renders_contextual_items_without_changing_temporal_groups(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
+    clock = FixedClock(Instant(datetime(2026, 9, 10, 2, tzinfo=UTC)))
+    overdue = _learning(
+        workspace, _question(workspace, "atrasada", "Questão atrasada"), date(2026, 9, 8)
+    )[2]
+    due = _learning(workspace, _question(workspace, "hoje", "Questão de hoje"), date(2026, 9, 9))[2]
+    future_one = _learning(
+        workspace, _question(workspace, "futura-1", "Primeira questão futura"), date(2026, 9, 10)
+    )[2]
+    future_two = _learning(
+        workspace, _question(workspace, "futura-2", "Segunda questão futura"), date(2026, 9, 10)
+    )[2]
+
+    queue = list_review_queue(workspace_id=workspace.id, clock=clock)
+    assert [review.id for review in queue.overdue.entries] == [overdue.id]
+    assert [review.id for review in queue.due.entries] == [due.id]
+    assert {review.id for review in queue.future.entries} == {future_one.id, future_two.id}
+
+    monkeypatch.setattr("modules.reviews.views.list_review_queue", lambda **_kwargs: queue)
+    html = Client().get(reverse("reviews:queue")).content.decode("utf-8")
+    for text in (
+        "Questão atrasada",
+        "Questão de hoje",
+        "Primeira questão futura",
+        "Segunda questão futura",
+        "Disciplina E4 futura-1 · Assunto E4",
+        "D1",
+        "Atrasada",
+        "Hoje",
+        "Futura",
+    ):
+        assert text in html
+    assert reverse("reviews:complete", args=[overdue.id]) in html
+    assert reverse("reviews:complete", args=[due.id]) in html
+    assert reverse("reviews:complete", args=[future_one.id]) not in html
+
+
+@pytest.mark.django_db
+def test_queue_truncates_a_long_question_stem(monkeypatch: pytest.MonkeyPatch) -> None:
+    workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
+    clock = FixedClock(Instant(datetime(2026, 9, 10, 2, tzinfo=UTC)))
+    stem = "Questão longa " + ("x" * 200)
+    review = _learning(workspace, _question(workspace, "longa", stem), date(2026, 9, 9))[2]
+    queue = list_review_queue(workspace_id=workspace.id, clock=clock)
+    monkeypatch.setattr("modules.reviews.views.list_review_queue", lambda **_kwargs: queue)
+
+    html = Client().get(reverse("reviews:queue")).content.decode("utf-8")
+    assert stem not in html
+    assert "Questão longa" in html
+    assert "…" in html
+    assert reverse("reviews:complete", args=[review.id]) in html
+
+
+@pytest.mark.django_db
+def test_queue_context_loading_does_not_grow_with_item_count() -> None:
+    workspace = _workspace("queue-queries@example.test")
+    clock = FixedClock(Instant(datetime(2026, 9, 10, 2, tzinfo=UTC)))
+    _learning(workspace, _question(workspace, "one"), date(2026, 9, 10))
+    with CaptureQueriesContext(connection) as one_item_queries:
+        list_review_queue(workspace_id=workspace.id, clock=clock)
+
+    for index in range(5):
+        _learning(workspace, _question(workspace, f"many-{index}"), date(2026, 9, 10))
+    with CaptureQueriesContext(connection) as many_item_queries:
+        list_review_queue(workspace_id=workspace.id, clock=clock)
+
+    assert len(many_item_queries) == len(one_item_queries)

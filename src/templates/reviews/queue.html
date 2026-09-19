@@ -1,8 +1,57 @@
 {% extends "base.html" %}
 {% block title %}Fila de revisões — Caderno de Erros{% endblock %}
 {% block content %}
-<h1>Fila de revisões</h1><p>Fila derivada no fuso do Workspace.</p>
-<section aria-labelledby="overdue"><h2 id="overdue">Atrasadas</h2>{% for review in queue.overdue.entries %}<p><a href="{% url 'reviews:complete' review.id %}">{{ review.stage_code }} — {{ review.current_due_date }}</a></p>{% empty %}<p>Nenhuma revisão atrasada.</p>{% endfor %}</section>
-<section aria-labelledby="due"><h2 id="due">Hoje</h2>{% for review in queue.due.entries %}<p><a href="{% url 'reviews:complete' review.id %}">{{ review.stage_code }} — {{ review.current_due_date }}</a></p>{% empty %}<p>Nenhuma revisão para hoje.</p>{% endfor %}</section>
-<section aria-labelledby="future"><h2 id="future">Futuras</h2>{% for review in queue.future.entries %}<p>{{ review.stage_code }} — {{ review.current_due_date }}</p>{% empty %}<p>Nenhuma revisão futura.</p>{% endfor %}</section>
+<h1>Fila de revisões</h1>
+<p class="field-help">Fila derivada no fuso do Workspace.</p>
+
+<section class="review-queue-section" aria-labelledby="overdue">
+  <h2 id="overdue">Atrasadas</h2>
+  {% for review in queue.overdue.entries %}
+    {% with revision=review.question.queue_current_revision.0 %}
+      <article class="review-queue-item">
+        <h3><a href="{% url 'reviews:complete' review.id %}">{{ revision.stem|truncatechars:160 }}</a></h3>
+        {% if review.question.discipline or review.question.subject %}
+          <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
+        {% endif %}
+        <p class="review-queue-meta"><strong>{{ review.stage_code }}</strong><span aria-hidden="true"> · </span>{{ review.current_due_date|date:"d/m/Y" }}<span aria-hidden="true"> · </span>Atrasada</p>
+      </article>
+    {% endwith %}
+  {% empty %}
+    <p class="empty-state">Nenhuma revisão atrasada.</p>
+  {% endfor %}
+</section>
+
+<section class="review-queue-section" aria-labelledby="due">
+  <h2 id="due">Hoje</h2>
+  {% for review in queue.due.entries %}
+    {% with revision=review.question.queue_current_revision.0 %}
+      <article class="review-queue-item">
+        <h3><a href="{% url 'reviews:complete' review.id %}">{{ revision.stem|truncatechars:160 }}</a></h3>
+        {% if review.question.discipline or review.question.subject %}
+          <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
+        {% endif %}
+        <p class="review-queue-meta"><strong>{{ review.stage_code }}</strong><span aria-hidden="true"> · </span>{{ review.current_due_date|date:"d/m/Y" }}<span aria-hidden="true"> · </span>Hoje</p>
+      </article>
+    {% endwith %}
+  {% empty %}
+    <p class="empty-state">Nenhuma revisão para hoje.</p>
+  {% endfor %}
+</section>
+
+<section class="review-queue-section" aria-labelledby="future">
+  <h2 id="future">Futuras</h2>
+  {% for review in queue.future.entries %}
+    {% with revision=review.question.queue_current_revision.0 %}
+      <article class="review-queue-item">
+        <h3>{{ revision.stem|truncatechars:160 }}</h3>
+        {% if review.question.discipline or review.question.subject %}
+          <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
+        {% endif %}
+        <p class="review-queue-meta"><strong>{{ review.stage_code }}</strong><span aria-hidden="true"> · </span>{{ review.current_due_date|date:"d/m/Y" }}<span aria-hidden="true"> · </span>Futura</p>
+      </article>
+    {% endwith %}
+  {% empty %}
+    <p class="empty-state">Nenhuma revisão futura.</p>
+  {% endfor %}
+</section>
 {% endblock %}

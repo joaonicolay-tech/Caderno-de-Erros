@@ -5,8 +5,12 @@
 - Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag histórica
   `v0.4.0` permanece inalterada.
 - V0.4.1-HF1: concluído — fluxo de alternativas corrigido após V0.4.0, sem
-  migration; código preparado para checkpoint Git humano de v0.4.1, cuja tag
-  ainda não foi criada.
+  migration; a tag histórica anotada `v0.4.1` permanece inalterada e aponta
+  para o commit de checkpoint HF1 `acbb497dbdc71f8a3d7893ae4772a87231c281f0`.
+- V0.4.2-UX1: concluída — fila de revisões enriquecida com enunciado curto,
+  disciplina/assunto, estágio, data e estado temporal existentes, sem mudar a
+  semântica de revisão, schema ou migration; código é candidato a v0.4.2, cuja
+  tag ainda não existe.
 - Arquitetura operacional: Project Development Architecture v1.0
   **APPROVED/FROZEN** em 12 de setembro de 2026.
 - Etapas operacionais A1–A10: concluídas.
