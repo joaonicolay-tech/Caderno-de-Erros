@@ -36,6 +36,10 @@
               <div id="{{ field.name }}-errors">{{ field.errors }}</div>
             </div>
           {% endfor %}
+          {% if legend == "Alternativas e gabarito" %}
+            <button type="submit" name="action" value="add-alternative" class="button-secondary">Adicionar alternativa</button>
+            <p class="field-help">Para remover uma alternativa antes de salvar, apague o texto dela. A ativação exige pelo menos duas alternativas e um único gabarito.</p>
+          {% endif %}
         </fieldset>
       {% endfor %}
       <div class="button-row">

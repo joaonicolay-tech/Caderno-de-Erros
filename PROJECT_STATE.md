@@ -2,8 +2,11 @@
 
 ## Estado atual
 
-- Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag `v0.4.0` ainda
-  não foi criada.
+- Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag histórica
+  `v0.4.0` permanece inalterada.
+- V0.4.1-HF1: concluído — fluxo de alternativas corrigido após V0.4.0, sem
+  migration; código preparado para checkpoint Git humano de v0.4.1, cuja tag
+  ainda não foi criada.
 - Arquitetura operacional: Project Development Architecture v1.0
   **APPROVED/FROZEN** em 12 de setembro de 2026.
 - Etapas operacionais A1–A10: concluídas.
@@ -35,6 +38,19 @@
 - V0.5: **NOT AUTHORIZED** e não iniciada.
 
 ## Última validação
+
+Gate final de V0.4.1-HF1 GREEN, exit code 0: 332 testes aprovados em 87,85 s,
+88% de cobertura global, migrations sem mudanças, banco vazio, formatação,
+Ruff, mypy, cobertura de domínio, `detect-secrets` e `pip-audit` aprovados;
+duração total 123,3 s. A primeira passagem foi inconclusiva somente no
+`pip-audit`, por `WinError 10013` de rede/sandbox, portanto
+`gate_first_pass: false` e incidente `infrastructure/network`; a repetição
+autorizada com rede informou "No known vulnerabilities found". O review A8
+padrão foi **APPROVED**, sem Blocker, Major ou Minor aberto. O hotfix removeu
+somente o limite funcional A-D de formulário/edição, mantendo a regra RF-011 /
+RN-012 de duas ou mais alternativas distintas e exatamente uma correta, sem
+máximo arbitrário, migration, alteração de fila, V0.5, commit, push, tag ou
+release. `v0.4.0` foi verificada e permanece inalterada; `v0.4.1` não existe.
 
 Gate final de V0.4-S9 GREEN, exit code 0: 327 testes aprovados em 76,53 s, 88%
 de cobertura global, migrations sem mudanças, banco vazio, formatação, Ruff,

@@ -125,6 +125,38 @@ def test_initial_atomic_facts_and_replay(
         evaluate(service, item)
 
 
+@pytest.mark.django_db
+def test_initial_attempt_accepts_correct_alternative_after_d() -> None:
+    workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
+    discipline = create_discipline(workspace_id=workspace.id, name="Disciplina cinco opções")
+    subject = create_subject(workspace_id=workspace.id, discipline_id=discipline.id, name="Assunto")
+    item = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Selecione a quinta",
+        alternatives=["A", "B", "C", "D", "E"],
+        correct_alternative_position=5,
+    )
+    service = AttemptService(
+        actor_id=workspace.owner_user_id,
+        workspace_id=workspace.id,
+        session="cinco-opcoes",
+        store=ContextStore(),
+    )
+
+    presentation = service.presentation(item.id)
+    token = service.evaluate(
+        question_id=item.id,
+        revision_id=presentation["revision_id"],
+        lock_version=presentation["lock_version"],
+        alternative_id=presentation["alternatives"][4][0],
+    )
+
+    assert len(presentation["alternatives"]) == 5
+    assert service.feedback(token)["is_correct"] is True
+
+
 def test_context_ttl_cancel_bindings_and_tampering(
     setup: tuple[AttemptService, Question, Workspace],
 ) -> None:

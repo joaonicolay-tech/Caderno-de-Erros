@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, cast
 
 from django import forms
@@ -70,29 +71,6 @@ class QuestionQuickEntryForm(forms.Form):
         strip=False,
         widget=forms.Textarea(attrs={"rows": 5}),
     )
-    alternative_1 = forms.CharField(
-        label="Alternativa A", max_length=ALTERNATIVE_TEXT_MAX_LENGTH, required=False, strip=False
-    )
-    alternative_2 = forms.CharField(
-        label="Alternativa B", max_length=ALTERNATIVE_TEXT_MAX_LENGTH, required=False, strip=False
-    )
-    alternative_3 = forms.CharField(
-        label="Alternativa C", max_length=ALTERNATIVE_TEXT_MAX_LENGTH, required=False, strip=False
-    )
-    alternative_4 = forms.CharField(
-        label="Alternativa D", max_length=ALTERNATIVE_TEXT_MAX_LENGTH, required=False, strip=False
-    )
-    correct_alternative = forms.ChoiceField(
-        label="Gabarito",
-        choices=[
-            ("", "Selecione o gabarito"),
-            ("1", "Alternativa A"),
-            ("2", "Alternativa B"),
-            ("3", "Alternativa C"),
-            ("4", "Alternativa D"),
-        ],
-        required=False,
-    )
     explanation = forms.CharField(
         label="Explicação",
         max_length=QUESTION_EXPLANATION_MAX_LENGTH,
@@ -154,8 +132,20 @@ class QuestionQuickEntryForm(forms.Form):
         strip=False,
     )
 
-    def __init__(self, *args: Any, workspace_id: Any, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *args: Any,
+        workspace_id: Any,
+        alternative_count: int | None = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(*args, **kwargs)
+        self.alternative_count = self._alternative_count(
+            data=args[0] if args else kwargs.get("data"),
+            initial=kwargs.get("initial"),
+            requested=alternative_count,
+        )
+        self._add_alternative_fields()
         cast(
             "forms.ModelChoiceField[Discipline]", self.fields["discipline"]
         ).queryset = list_disciplines(workspace_id=workspace_id)
@@ -179,6 +169,62 @@ class QuestionQuickEntryForm(forms.Form):
                 continue
             field.widget.attrs["aria-describedby"] = f"{name}-help {name}-errors"
 
+    @staticmethod
+    def alternative_label(position: int) -> str:
+        """Converta posição positiva em rótulo alfabético sem limite artificial."""
+        result = ""
+        while position:
+            position, remainder = divmod(position - 1, 26)
+            result = chr(65 + remainder) + result
+        return result
+
+    @classmethod
+    def _alternative_count(
+        cls,
+        *,
+        data: Any,
+        initial: dict[str, Any] | None,
+        requested: int | None,
+    ) -> int:
+        if requested is not None:
+            return max(4, requested)
+        if data is not None:
+            indexes = {
+                int(match.group(1))
+                for name in data
+                if (match := re.fullmatch(r"alternative_(\d+)", name)) and int(match.group(1)) > 0
+            }
+            if indexes == set(range(1, len(indexes) + 1)):
+                return max(4, len(indexes))
+        if initial:
+            initial_indexes = [
+                int(match.group(1))
+                for name in initial
+                if (match := re.fullmatch(r"alternative_(\d+)", name)) and int(match.group(1)) > 0
+            ]
+            if initial_indexes:
+                return max(4, max(initial_indexes))
+        return 4
+
+    def _add_alternative_fields(self) -> None:
+        for index in range(1, self.alternative_count + 1):
+            label = self.alternative_label(index)
+            self.fields[f"alternative_{index}"] = forms.CharField(
+                label=f"Alternativa {label}",
+                max_length=ALTERNATIVE_TEXT_MAX_LENGTH,
+                required=False,
+                strip=False,
+            )
+        self.fields["correct_alternative"] = forms.ChoiceField(
+            label="Gabarito",
+            choices=[("", "Selecione o gabarito")]
+            + [
+                (str(index), f"Alternativa {self.alternative_label(index)}")
+                for index in range(1, self.alternative_count + 1)
+            ],
+            required=False,
+        )
+
     def full_clean(self) -> None:
         super().full_clean()
         for name in self.errors:
@@ -188,14 +234,14 @@ class QuestionQuickEntryForm(forms.Form):
             self.fields[first].widget.attrs["autofocus"] = True
 
     def alternative_inputs(self) -> tuple[list[AlternativeInput], int | None]:
-        """Converta as quatro posições exibidas preservando sua ordem relativa."""
+        """Converta as posições exibidas preservando sua ordem relativa."""
         values: list[AlternativeInput] = []
         correct_position: int | None = None
         selected = self.cleaned_data["correct_alternative"]
-        for index in range(1, 5):
+        for index in range(1, self.alternative_count + 1):
             value = self.cleaned_data[f"alternative_{index}"]
             if value and value.strip():
-                values.append(AlternativeInput(text=value, label=chr(64 + index)))
+                values.append(AlternativeInput(text=value, label=self.alternative_label(index)))
                 if selected == str(index):
                     correct_position = len(values)
         return values, correct_position

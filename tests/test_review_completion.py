@@ -130,6 +130,64 @@ def test_ct023_initial_error_has_one_due_d1_in_active_cycle() -> None:
         "2026-09-09",
     )
     assert workspace.review_cycles.get().state == ReviewCycleState.ACTIVE
+
+
+@pytest.mark.django_db
+def test_review_accepts_correct_alternative_after_d() -> None:
+    workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
+    clock = FixedClock(Instant(datetime(2026, 9, 8, 15, tzinfo=UTC)))
+    discipline = create_discipline(workspace_id=workspace.id, name="Disciplina cinco opções")
+    subject = create_subject(workspace_id=workspace.id, discipline_id=discipline.id, name="Assunto")
+    question = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Selecione a quinta",
+        alternatives=["A", "B", "C", "D", "E"],
+        correct_alternative_position=5,
+        clock=clock,
+    )
+    store = ContextStore()
+    initial = AttemptService(
+        actor_id=workspace.owner_user_id,
+        workspace_id=workspace.id,
+        session="cinco-opcoes",
+        store=store,
+        clock=clock,
+    )
+    shown = initial.presentation(question.id)
+    token = initial.evaluate(
+        question_id=question.id,
+        revision_id=shown["revision_id"],
+        lock_version=shown["lock_version"],
+        alternative_id=shown["alternatives"][0][0],
+    )
+    initial.confirm(
+        token=token,
+        key=uuid.uuid4(),
+        category_id=workspace.error_categories.get(code=ErrorCategoryCode.ATTENTION).id,
+    )
+    clock.set(Instant(datetime(2026, 9, 9, 15, tzinfo=UTC)))
+    review = Review.objects.get(state=ReviewState.PENDING)
+    service = CompleteReviewService(
+        actor_id=workspace.owner_user_id,
+        workspace_id=workspace.id,
+        session="cinco-opcoes",
+        store=store,
+        clock=clock,
+    )
+
+    shown = service.presentation(review.id)
+    token = service.evaluate(
+        review_id=review.id,
+        revision_id=shown["revision_id"],
+        lock_version=shown["lock_version"],
+        review_lock_version=shown["review_lock_version"],
+        alternative_id=shown["alternatives"][4][0],
+    )
+
+    assert len(shown["alternatives"]) == 5
+    assert service.feedback(token)["is_correct"] is True
     assert workspace.reviews.filter(state=ReviewState.PENDING).count() == 1
 
 

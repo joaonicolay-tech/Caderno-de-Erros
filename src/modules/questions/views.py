@@ -62,14 +62,8 @@ def _field_groups(form: QuestionQuickEntryForm) -> list[tuple[str, list[Any]]]:
         (
             "Alternativas e gabarito",
             [
-                form[name]
-                for name in (
-                    "alternative_1",
-                    "alternative_2",
-                    "alternative_3",
-                    "alternative_4",
-                    "correct_alternative",
-                )
+                *[form[f"alternative_{index}"] for index in range(1, form.alternative_count + 1)],
+                form["correct_alternative"],
             ],
         ),
         ("Explicações opcionais", [form[name] for name in ("explanation", "trap_note", "notes")]),
@@ -237,7 +231,7 @@ def _initial_from_question(*, workspace: Workspace, question: Question) -> dict[
             notes=revision.notes,
         )
         alternatives = list(revision.alternatives.all().order_by("position"))
-        for alternative in alternatives[:4]:
+        for alternative in alternatives:
             initial[f"alternative_{alternative.position}"] = alternative.text
         if revision.correct_alternative_id:
             correct = next(
@@ -327,6 +321,25 @@ def _render_form(
     )
 
 
+def _add_alternative_form(
+    request: HttpRequest,
+    *,
+    form_class: type[QuestionQuickEntryForm],
+    workspace: Workspace,
+    initial: dict[str, Any] | None = None,
+) -> QuestionQuickEntryForm:
+    """Reexiba os valores enviados com uma posição adicional, sem gravar dados."""
+    return form_class(
+        request.POST,
+        initial=initial,
+        workspace_id=workspace.id,
+        alternative_count=form_class(
+            request.POST, initial=initial, workspace_id=workspace.id
+        ).alternative_count
+        + 1,
+    )
+
+
 def _question_or_404(*, workspace: Workspace, question_id: uuid.UUID) -> Question:
     try:
         return get_question(workspace_id=workspace.id, question_id=question_id)
@@ -343,7 +356,15 @@ def quick_entry(request: HttpRequest) -> HttpResponse:
     form = QuestionQuickEntryForm(
         request.POST if request.method == "POST" else None, workspace_id=workspace.id
     )
-    if request.method == "POST" and form.is_valid():
+    if request.method == "POST" and request.POST.get("action") == "add-alternative":
+        form = _add_alternative_form(
+            request, form_class=QuestionQuickEntryForm, workspace=workspace
+        )
+    if (
+        request.method == "POST"
+        and request.POST.get("action") != "add-alternative"
+        and form.is_valid()
+    ):
         try:
             values = _command_values(form)
             if request.POST.get("action") == "draft":
@@ -380,12 +401,23 @@ def draft_activate(request: HttpRequest, question_id: uuid.UUID) -> HttpResponse
         raise Http404("Rascunho não encontrado.") from error
     if question.status != QuestionStatus.DRAFT:
         raise Http404("Rascunho não encontrado.")
-    form = DraftActivationForm(
+    form: QuestionQuickEntryForm = DraftActivationForm(
         request.POST if request.method == "POST" else None,
         initial=_initial_from_question(workspace=workspace, question=question),
         workspace_id=workspace.id,
     )
-    if request.method == "POST" and form.is_valid():
+    if request.method == "POST" and request.POST.get("action") == "add-alternative":
+        form = _add_alternative_form(
+            request,
+            form_class=DraftActivationForm,
+            workspace=workspace,
+            initial=_initial_from_question(workspace=workspace, question=question),
+        )
+    if (
+        request.method == "POST"
+        and request.POST.get("action") != "add-alternative"
+        and form.is_valid()
+    ):
         try:
             values = _command_values(form)
             if values["discipline_id"] is None or values["subject_id"] is None:
@@ -455,12 +487,23 @@ def question_edit(request: HttpRequest, question_id: uuid.UUID) -> HttpResponse:
     question = _question_or_404(workspace=workspace, question_id=question_id)
     if question.status == QuestionStatus.ARCHIVED:
         raise Http404("Questão arquivada não pode ser editada.")
-    form = QuestionEditForm(
+    form: QuestionQuickEntryForm = QuestionEditForm(
         request.POST if request.method == "POST" else None,
         initial=_initial_from_question(workspace=workspace, question=question),
         workspace_id=workspace.id,
     )
-    if request.method == "POST" and form.is_valid():
+    if request.method == "POST" and request.POST.get("action") == "add-alternative":
+        form = _add_alternative_form(
+            request,
+            form_class=QuestionEditForm,
+            workspace=workspace,
+            initial=_initial_from_question(workspace=workspace, question=question),
+        )
+    if (
+        request.method == "POST"
+        and request.POST.get("action") != "add-alternative"
+        and form.is_valid()
+    ):
         try:
             QuestionCommandService.edit(
                 workspace_id=workspace.id,

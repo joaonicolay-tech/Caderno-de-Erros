@@ -106,6 +106,92 @@ def test_ct011_ct007_direct_active_creation_keeps_order_answer_and_feedback() ->
 
 
 @pytest.mark.django_db
+def test_quick_entry_supports_more_than_four_alternatives_and_correct_answer_after_d() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    payload = _payload(discipline_id=discipline.id, subject_id=subject.id)
+    payload.update(
+        alternative_3="5",
+        alternative_4="6",
+        alternative_5="7",
+        correct_alternative="5",
+    )
+
+    response = Client().post(
+        reverse("questions:quick-entry"), {**payload, "action": "activate"}, follow=True
+    )
+
+    question = Question.objects.get(workspace=workspace)
+    revision = question.revisions.get(is_current=True)
+    alternatives = list(revision.alternatives.order_by("position"))
+    html = response.content.decode("utf-8")
+    assert [item.label for item in alternatives] == ["A", "B", "C", "D", "E"]
+    assert revision.correct_alternative_id == alternatives[4].id
+    assert "E." in html and "7" in html
+
+
+@pytest.mark.django_db
+def test_add_alternative_re_renders_submitted_values_without_javascript() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    response = Client().post(
+        reverse("questions:quick-entry"),
+        {
+            **_payload(discipline_id=discipline.id, subject_id=subject.id),
+            "action": "add-alternative",
+        },
+    )
+
+    html = response.content.decode("utf-8")
+    assert response.status_code == 200
+    assert 'name="alternative_5"' in html
+    assert 'value="2" selected' in html
+    assert "Escolha salvar rascunho ou ativar" not in html
+
+
+@pytest.mark.django_db
+def test_edit_preserves_extra_alternatives_and_their_correct_answer() -> None:
+    workspace = _workspace()
+    discipline, subject, _ = _taxonomy(workspace)
+    question = create_active(
+        workspace_id=workspace.id,
+        discipline_id=discipline.id,
+        subject_id=subject.id,
+        stem="Cinco alternativas",
+        alternatives=["Um", "Dois", "Três", "Quatro", "Cinco"],
+        correct_alternative_position=5,
+    )
+    payload = _payload(discipline_id=discipline.id, subject_id=subject.id)
+    payload.update(
+        lock_version=str(question.lock_version),
+        stem="Cinco alternativas editadas",
+        alternative_1="Um",
+        alternative_2="Dois",
+        alternative_3="Três",
+        alternative_4="Quatro",
+        alternative_5="Cinco",
+        correct_alternative="5",
+    )
+
+    page = Client().get(reverse("questions:edit", args=[question.id]))
+    response = Client().post(reverse("questions:edit", args=[question.id]), payload, follow=True)
+
+    question.refresh_from_db()
+    current = question.revisions.get(is_current=True)
+    assert 'name="alternative_5"' in page.content.decode("utf-8")
+    assert list(current.alternatives.order_by("position").values_list("text", flat=True)) == [
+        "Um",
+        "Dois",
+        "Três",
+        "Quatro",
+        "Cinco",
+    ]
+    assert current.correct_alternative is not None
+    assert current.correct_alternative.position == 5
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
 def test_ct005_ct006_draft_is_recoverable_and_only_activation_requires_minimums() -> None:
     workspace = _workspace()
     client = Client()
