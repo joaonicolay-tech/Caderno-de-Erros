@@ -353,6 +353,9 @@ Demo automatizada e manual do ciclo completo, incluindo erro D30, atraso, abando
 
 ## 7. V0.4 — Primeiro MVP utilizável
 
+**Status: PROMOTED em 19 de setembro de 2026.** A tag `v0.4.0` ainda não foi
+criada; V0.5 permanece `NOT AUTHORIZED`.
+
 ### 7.1 Objetivo
 
 Transformar o núcleo técnico da V0.3 em uma aplicação local que o estudante possa usar de forma controlada para seu caderno de erros real, com indicadores básicos, pesquisa, recuperação e qualidade mínima de liberação.

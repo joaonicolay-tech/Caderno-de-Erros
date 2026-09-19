@@ -795,7 +795,24 @@ RPO/RTO, retenção e ensaio sintético reproduzível. Não autoriza S7-S9.
 
 Entry point PowerShell portátil, wrapper para Explorer, loopback, ciclo de vida,
 checker S5, backup/validação S6, atualização local segura e troubleshooting.
-Não autoriza S8 ou S9.
+Foi a superfície operacional reutilizada pelo piloto S9.
+
+## V0.4-S8 — candidato, BCR-1 e acessibilidade
+
+**Arquivos:** `../quality/v04-s8-candidate-result.md`,
+`../quality/v04-s8-bcr1-result.md` e
+`../quality/v04-s8-accessibility-result.md`
+
+Registra o candidato `READY_FOR_PILOT`, o benchmark oficial e a evidência
+assistida de acessibilidade, com limitações explícitas.
+
+## V0.4-S9 — piloto controlado e promoção
+
+**Arquivos:** `../quality/v04-s9-pilot-result.md` e
+`../quality/v04-promotion-result.md`
+
+Registra ambiente protegido, backup, baseline, cenários, findings, retestes,
+gate, review A8 e a decisão final de promoção da V0.4.
 
 ## Project Development Architecture v1.0
 

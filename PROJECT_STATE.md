@@ -2,7 +2,8 @@
 
 ## Estado atual
 
-- Produto: V0.3 **PROMOVIDA**; tag protegida `v0.3.0`.
+- Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag `v0.4.0` ainda
+  não foi criada.
 - Arquitetura operacional: Project Development Architecture v1.0
   **APPROVED/FROZEN** em 12 de setembro de 2026.
 - Etapas operacionais A1–A10: concluídas.
@@ -25,11 +26,27 @@
   operação loopback, guia de atualização segura e integração documental com S5/S6.
 - V0.4-S8: concluída — hardening transversal, acessibilidade assistida, BCR-1
   oficial, S5/S6/S7 e regressão integrados; candidato `READY_FOR_PILOT`.
-- Etapa de implementação atual: nenhuma; S9 permanece não autorizada.
+- V0.4-S9: concluída — piloto protegido, backups pré e pós-piloto, cenários do
+  MVP, checker, recovery, operação Windows, gate e review aprovados; decisão
+  final `V0.4 PROMOTED`.
+- Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
-- V0.4 funcional: S1-S8 concluídas; nenhuma etapa autorizada.
+- V0.4: S1–S9 concluídas e promoção documental registrada.
+- V0.5: **NOT AUTHORIZED** e não iniciada.
 
 ## Última validação
+
+Gate final de V0.4-S9 GREEN, exit code 0: 327 testes aprovados em 76,53 s, 88%
+de cobertura global, migrations sem mudanças, banco vazio, formatação, Ruff,
+mypy, cobertura de domínio, `detect-secrets` e `pip-audit` aprovados; duração
+total 109,8 s. A primeira passagem também foi GREEN, exit 0 em 124,3 s. O
+piloto isolado cobriu dashboard, consulta,
+busca/filtros/paginação, detalhe/timeline, tentativa inicial, classificação e
+resíduo, revisão, analytics, isolamento por Workspace, checker, recovery e
+restart. S5 final teve exit 0, 17 checks e zero findings; backups pré e
+pós-piloto foram restaurados e reconciliados isoladamente. O review A8 profundo
+foi **APPROVED**, sem Blocker/Major/Minor aberto. Nenhum código, schema ou
+migration mudou; não houve commit, push, tag ou release.
 
 Gate de V0.4-S8 GREEN no encerramento, exit code 0: 327 testes aprovados em
 78,92 s, 88% de cobertura global, migrations, formatação, Ruff, mypy,
@@ -146,6 +163,12 @@ baseline V0.3, Architecture v1.0 ou gate.
   brutos e decisão do BCR-1/leitura V0.4;
 - `quality/v04-s8-candidate-result.md`: evidência integrada, review, gate e
   decisão `READY_FOR_PILOT`;
+- `quality/v04-s9-pilot-result.md`: ambiente, baselines, cenários, findings,
+  retestes, S5/S6/S7 e cleanup do piloto;
+- `quality/v04-promotion-result.md`: checklist P0/S9, gate, review e decisão
+  `V0.4 PROMOTED`;
+- `tasks/completed/v04-s9-controlled-pilot-promotion.md`: contrato e
+  encerramento de S9;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -154,8 +177,7 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: revisar a evidência S8 e, em nova sessão, decidir se autoriza
-somente `V0.4-S9` para o piloto definido no plano V0.4. A recomendação e o
-estado `READY_FOR_PILOT` não criam autoridade. Piloto, promoção, checkpoint Git,
-tag ou release exigem autorização expressa própria; nenhuma etapa funcional
-está autorizada.
+Recomendação: realizar o checkpoint Git humano da promoção V0.4. Depois desse
+checkpoint, a tag `v0.4.0` está tecnicamente apta a ser criada mediante
+autorização específica. Nenhum commit, tag ou release está autorizado por este
+estado; V0.5 permanece `NOT AUTHORIZED`.

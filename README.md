@@ -6,14 +6,15 @@ O projeto também é utilizado como exercício prático de engenharia de softwar
 
 ## Estado atual
 
-A V0.3 está formalmente promovida. Ela preserva a fundação, a taxonomia e o
-catálogo versionado das versões anteriores e implementa o ciclo de aprendizagem
-e revisão: respostas iniciais, ciclos de revisão, agenda D1/D7/D14/D30, fila
-derivada, linha do tempo, diagnóstico auditável e suspensão por arquivamento.
+A V0.4 está formalmente promovida como primeiro MVP local utilizável. Ela
+preserva a fundação, o catálogo e o ciclo de aprendizagem V0.3 e acrescenta
+dashboard explicável, consulta e histórico navegáveis, analytics
+reconciliáveis, checker de invariantes, backup/recuperação comprovados e
+operação Windows documentada.
 
-O gate final da V0.3 está GREEN, sem P0/P1 aplicável aberto. A V0.4 concluiu as
-etapas S1–S7 e exige nova autorização formal antes de S8. A documentação oficial
-está em [`docs/`](docs/).
+O gate final da V0.4 está GREEN, sem P0/P1, Blocker ou Major aberto. A tag
+`v0.4.0` ainda não foi criada e V0.5 permanece não autorizada. A documentação
+oficial está em [`docs/`](docs/).
 
 ## 1. Pré-requisitos
 
@@ -263,13 +264,14 @@ o perfil de teste em ambiente isolado e descarte o banco ao encerrar.
 - **Teste temporário bloqueado pelo Windows:** encerre processos Python que ainda
   mantenham arquivos abertos e execute novamente; não redirecione testes para banco real.
 
-## 13. Limitações conhecidas da V0.3
+## 13. Limitações conhecidas da V0.4
 
-- Não há dashboard ou analytics de aprendizagem.
 - Não há categorias pessoais, autenticação remota, API, notificações ou PWA.
 - O servidor é exclusivamente local; hospedagem e PostgreSQL pertencem a marcos futuros.
-- Backup/restauração são comandos técnicos; não há interface, agenda, rotação, nuvem ou
-  garantia de RPO/RTO nesta versão.
+- Backup/restauração são comandos técnicos; não há interface, agenda, rotação ou nuvem.
+  RPO/RTO são objetivos operacionais documentados, não SLA automático.
+- A evidência de acessibilidade é assistida e explicitamente limitada; não constitui
+  declaração de conformidade WCAG integral nem teste com leitor de tela.
 - O HTMX está versionado, mas não é carregado até existir interação que o justifique.
 - O workflow de CI de um provedor será definido somente após escolha formal; o gate
   Windows local é a fonte única atual.
