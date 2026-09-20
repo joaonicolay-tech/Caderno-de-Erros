@@ -8,10 +8,12 @@
   migration; a tag histórica anotada `v0.4.1` permanece inalterada e aponta
   para o commit de checkpoint HF1 `acbb497dbdc71f8a3d7893ae4772a87231c281f0`.
 - V0.4.2: release existente; a tag histórica `v0.4.2` permanece inalterada.
-- V0.4.3-UX2: concluída — indicadores de revisão direcionam à Fila por
-  subconjunto, a fila ganhou clamp visual e CTA apenas para pendências
-  acionáveis, sem mudar semântica, schema ou migration; é candidata a v0.4.3,
-  cuja tag não foi criada.
+- V0.4.3-UX2: release histórica; seus indicadores direcionam à Fila por
+  subconjunto e o CTA usa apenas pendências acionáveis, sem mudança semântica,
+  schema ou migration.
+- V0.4.4-HF2: concluída — a Fila resume stems em no máximo 500 caracteres e
+  o CTA foi validado em cenários isolados; candidato `v0.4.4` preparado, sem
+  tag criada.
 - Arquitetura operacional: Project Development Architecture v1.0
   **APPROVED/FROZEN** em 12 de setembro de 2026.
 - Etapas operacionais A1–A10: concluídas.

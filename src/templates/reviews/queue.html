@@ -15,7 +15,7 @@
   {% for review in queue.overdue.entries %}
     {% with revision=review.question.queue_current_revision.0 %}
       <article class="review-queue-item">
-        <h3><a class="review-queue-stem" href="{% url 'reviews:complete' review.id %}">{{ revision.stem }}</a></h3>
+        <h3><a class="review-queue-stem" href="{% url 'reviews:complete' review.id %}">{{ revision.stem|truncatechars:500 }}</a></h3>
         {% if review.question.discipline or review.question.subject %}
           <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
         {% endif %}
@@ -34,7 +34,7 @@
   {% for review in queue.due.entries %}
     {% with revision=review.question.queue_current_revision.0 %}
       <article class="review-queue-item">
-        <h3><a class="review-queue-stem" href="{% url 'reviews:complete' review.id %}">{{ revision.stem }}</a></h3>
+        <h3><a class="review-queue-stem" href="{% url 'reviews:complete' review.id %}">{{ revision.stem|truncatechars:500 }}</a></h3>
         {% if review.question.discipline or review.question.subject %}
           <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
         {% endif %}
@@ -53,7 +53,7 @@
   {% for review in queue.future.entries %}
     {% with revision=review.question.queue_current_revision.0 %}
       <article class="review-queue-item">
-        <h3 class="review-queue-stem">{{ revision.stem }}</h3>
+        <h3 class="review-queue-stem">{{ revision.stem|truncatechars:500 }}</h3>
         {% if review.question.discipline or review.question.subject %}
           <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
         {% endif %}

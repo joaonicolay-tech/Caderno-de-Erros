@@ -9,6 +9,7 @@ from django.db import connection
 from django.test import Client
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
+from django.utils.text import Truncator
 
 from modules.accounts.models import User, Workspace
 from modules.attempts.context import InitialAttemptError
@@ -279,20 +280,50 @@ def test_queue_renders_contextual_items_without_changing_temporal_groups(
 
 
 @pytest.mark.django_db
-def test_queue_truncates_a_long_question_stem(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_queue_summarizes_long_question_stems_without_changing_review_content(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
     clock = FixedClock(Instant(datetime(2026, 9, 10, 2, tzinfo=UTC)))
-    stem = "Questão longa " + ("x" * 200)
+    stem = "Questão longa " + ("x" * 1_500)
     review = _learning(workspace, _question(workspace, "longa", stem), date(2026, 9, 9))[2]
     queue = list_review_queue(workspace_id=workspace.id, clock=clock)
     monkeypatch.setattr("modules.reviews.views.list_review_queue", lambda **_kwargs: queue)
 
     html = Client().get(reverse("reviews:queue")).content.decode("utf-8")
-    assert stem in html
+    summary = Truncator(stem).chars(500)
+    assert summary in html
+    assert stem not in html
+    assert len(summary) == 500
+    assert summary[-1] != stem[499]
     assert "Questão longa" in html
     assert "review-queue-stem" in html
     assert "-webkit-line-clamp: 2" in open("src/static/css/app.css", encoding="utf-8").read()
     assert reverse("reviews:complete", args=[review.id]) in html
+    complete_html = (
+        Client().get(reverse("reviews:complete", args=[review.id])).content.decode("utf-8")
+    )
+    assert stem in complete_html
+
+
+@pytest.mark.django_db
+def test_queue_keeps_short_and_boundary_question_stems_intact(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
+    clock = FixedClock(Instant(datetime(2026, 9, 10, 2, tzinfo=UTC)))
+    short_stem = "Questão curta"
+    boundary_stem = "b" * 500
+    _learning(workspace, _question(workspace, "short", short_stem), date(2026, 9, 9))
+    _learning(workspace, _question(workspace, "boundary", boundary_stem), date(2026, 9, 9))
+    queue = list_review_queue(workspace_id=workspace.id, clock=clock)
+    monkeypatch.setattr("modules.reviews.views.list_review_queue", lambda **_kwargs: queue)
+
+    html = Client().get(reverse("reviews:queue")).content.decode("utf-8")
+
+    assert short_stem in html
+    assert boundary_stem in html
+    assert f"{boundary_stem[:499]}…" not in html
 
 
 @pytest.mark.django_db

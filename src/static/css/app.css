@@ -401,7 +401,7 @@ fieldset.form-section legend {
   margin: 0;
 }
 
-.review-queue-item h3 a {
+.review-queue-item h3 a:not(.review-queue-stem) {
   display: inline-block;
 }
 
