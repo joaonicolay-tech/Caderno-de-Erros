@@ -18,12 +18,15 @@ class AuditEventCode(models.TextChoices):
     PERSONAL_CATEGORY_RENAMED = "PERSONAL_CATEGORY_RENAMED", "Categoria pessoal renomeada"
     PERSONAL_CATEGORY_ARCHIVED = "PERSONAL_CATEGORY_ARCHIVED", "Categoria pessoal arquivada"
     PERSONAL_CATEGORY_MERGED = "PERSONAL_CATEGORY_MERGED", "Categoria pessoal consolidada"
+    ATTEMPT_VOIDED = "ATTEMPT_VOIDED", "Tentativa anulada"
+    ATTEMPT_REPLACED = "ATTEMPT_REPLACED", "Tentativa substituída"
 
 
 class AuditEntityType(models.TextChoices):
     REVIEW = "REVIEW", "Review"
     REVIEW_CYCLE = "REVIEW_CYCLE", "Ciclo de revisão"
     ERROR_CATEGORY = "ERROR_CATEGORY", "Categoria de erro"
+    ATTEMPT = "ATTEMPT", "Tentativa"
 
 
 class AuditEventQuerySet(models.QuerySet["AuditEvent"]):
@@ -94,6 +97,28 @@ class AuditEvent(models.Model):
                     | ~Q(event_code=AuditEventCode.REVIEW_RESCHEDULED)
                 ),
                 name="audit_reschedule_metadata_valid",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    Q(
+                        event_code__in=(
+                            AuditEventCode.ATTEMPT_VOIDED,
+                            AuditEventCode.ATTEMPT_REPLACED,
+                        ),
+                        entity_type=AuditEntityType.ATTEMPT,
+                        reason_code__isnull=False,
+                        previous_date__isnull=True,
+                        new_date__isnull=True,
+                        timezone_name__isnull=True,
+                    )
+                    | ~Q(
+                        event_code__in=(
+                            AuditEventCode.ATTEMPT_VOIDED,
+                            AuditEventCode.ATTEMPT_REPLACED,
+                        )
+                    )
+                ),
+                name="audit_attempt_metadata_valid",
             ),
         ]
 

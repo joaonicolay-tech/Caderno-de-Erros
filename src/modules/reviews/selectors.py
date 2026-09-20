@@ -12,6 +12,7 @@ from django.db.models import Prefetch, QuerySet
 from modules.accounts.models import Workspace
 from modules.attempts.models import Attempt
 from modules.errors.models import ErrorClassification, ErrorClassificationRevision
+from modules.operations.models import AuditEvent, AuditEventCode
 from modules.questions.models import Question, QuestionRevision, QuestionStatus
 from shared.domain.time import Calendar, Clock, LocalDate, SystemClock, TimeZoneId
 
@@ -142,20 +143,60 @@ def get_learning_timeline(
     """Combine fatos imutáveis; empate = instante, precedência de tipo, id."""
     question = Question.objects.get(pk=question_id, workspace_id=workspace_id)
     events: list[TimelineEvent] = []
-    attempts = Attempt.objects.filter(
-        workspace_id=workspace_id, question_id=question_id
-    ).select_related("question_revision")
+    attempts = list(
+        Attempt.objects.filter(workspace_id=workspace_id, question_id=question_id).select_related(
+            "question_revision"
+        )
+    )
+    successor_by_predecessor = {
+        attempt.replaces_attempt_id: attempt.id
+        for attempt in attempts
+        if attempt.replaces_attempt_id is not None
+    }
     for attempt in attempts:
+        if attempt.status == "VOIDED":
+            replacement_id = successor_by_predecessor.get(attempt.id)
+            state_label = (
+                f"anulada; substituída por {replacement_id}"
+                if replacement_id is not None
+                else "anulada sem substituição"
+            )
+        elif attempt.replaces_attempt_id is not None:
+            state_label = f"válida; substitui {attempt.replaces_attempt_id}"
+        else:
+            state_label = "válida"
         events.append(
             TimelineEvent(
                 attempt.occurred_at,
                 10,
                 attempt.id,
                 f"attempt_{attempt.attempt_type.lower()}",
-                "Tentativa",
+                f"Tentativa ({state_label})",
                 attempt.timezone_name,
                 attempt.local_date,
                 attempt.question_revision.version_number,
+            )
+        )
+    attempt_ids = [attempt.id for attempt in attempts]
+    audit_events = AuditEvent.objects.filter(
+        workspace_id=workspace_id,
+        event_code__in=(
+            AuditEventCode.ATTEMPT_VOIDED,
+            AuditEventCode.ATTEMPT_REPLACED,
+        ),
+        entity_id__in=attempt_ids,
+    )
+    for audit in audit_events:
+        relation = (
+            f"; sucessora {audit.related_entity_id}" if audit.related_entity_id is not None else ""
+        )
+        events.append(
+            TimelineEvent(
+                audit.created_at,
+                15,
+                audit.id,
+                audit.event_code.lower(),
+                f"{audit.get_event_code_display()}{relation}; correlação {audit.correlation_id}",
             )
         )
     classifications = ErrorClassification.objects.filter(
@@ -229,6 +270,16 @@ def get_learning_timeline(
         if cycle.suspended_at:
             events.append(
                 TimelineEvent(cycle.suspended_at, 40, cycle.id, "cycle_suspended", "Ciclo suspenso")
+            )
+        if cycle.superseded_at:
+            events.append(
+                TimelineEvent(
+                    cycle.superseded_at,
+                    40,
+                    cycle.id,
+                    "cycle_superseded",
+                    "Ciclo substituído por reconstrução",
+                )
             )
     if question.archived_at:
         events.append(

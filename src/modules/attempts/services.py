@@ -286,3 +286,19 @@ class AttemptService:
             self._lock(token, context)
             attempt = self._create_attempt(context, key)
             return self._receipt(context, key, digest, attempt)
+
+
+from .corrections import (  # noqa: E402
+    AttemptCorrectionConflictError,
+    AttemptCorrectionImpact,
+    AttemptCorrectionResult,
+    AttemptCorrectionService,
+)
+
+__all__ = [
+    "AttemptCorrectionConflictError",
+    "AttemptCorrectionImpact",
+    "AttemptCorrectionResult",
+    "AttemptCorrectionService",
+    "AttemptService",
+]

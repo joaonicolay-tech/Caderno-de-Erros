@@ -311,13 +311,13 @@ print(json.dumps({
         "future_reviews": 1,
         "foreign_keys": [],
         "physical": "ok",
-        "s5_checks": 20,
+        "s5_checks": 22,
         "s5_findings": 0,
         "s5_read_only": True,
     }
     assert evidence["pre_backup_size"] > 0
     assert evidence["candidate_backup_size"] > 0
-    assert (evidence["restore_checks"], evidence["restore_findings"]) == (20, 0)
+    assert (evidence["restore_checks"], evidence["restore_findings"]) == (22, 0)
     assert evidence["restore_categories"] == 10
     assert evidence["rollback"] == {
         "categories": 10,

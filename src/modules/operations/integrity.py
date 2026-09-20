@@ -27,6 +27,9 @@ _DATE_PATTERN: Final = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 _SAFE_CODES: Final = frozenset(
     {
         "ACTIVE",
+        "ATTEMPT_CORRECTION",
+        "ATTEMPT_REPLACED",
+        "ATTEMPT_VOIDED",
         "ARCHIVED",
         "ERROR_CATEGORY",
         "MANUAL",
@@ -44,6 +47,8 @@ _SAFE_CODES: Final = frozenset(
         "ATTENTION",
         "CALCULATION",
         "COMPLETED",
+        "CORRECTION_RETRY_VOIDED",
+        "CORRECTION_PRESERVE_MANUAL",
         "CONCEPTUAL",
         "D1",
         "D7",
@@ -67,6 +72,7 @@ _SAFE_CODES: Final = frozenset(
         "REVIEW",
         "REVIEW_COMPLETION",
         "SUSPENDED",
+        "SUPERSEDED",
         "TIME_SHORTAGE",
         "TRAP",
         "VALID",
@@ -337,6 +343,22 @@ INVARIANT_CATALOG: Final[tuple[InvariantSpec, ...]] = (
         _SAFE_ACTION,
     ),
     InvariantSpec(
+        "ATT-003",
+        "Lifecycle e grafo de substituição coerentes",
+        "VOIDED, sucessoras, contexto e ponta devem formar cadeia finita e determinística.",
+        "attempt correction",
+        "Campos de void fecham; sucessora preserva contexto; não há ciclo nem VALID não terminal.",
+        "SQL relacional recursivo",
+        InvariantSeverity.CRITICAL,
+        "Constraints locais não expressam aciclicidade nem o contexto composto da cadeia.",
+        "Analytics, classificação e reconstrução podem escolher fatos divergentes.",
+        "Percorrer replaces_attempt em CTE finita e validar estados/contexto.",
+        "Baixo; VOIDED sem sucessora é explicitamente permitido.",
+        "V0.5-S1 V05-INV-005/006/007",
+        "O lifecycle ou grafo de substituição da Attempt é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
         "REV-001",
         "Origem do ReviewCycle coerente",
         "Ciclo deve preservar questão, revisão e origem no mesmo contexto.",
@@ -481,6 +503,22 @@ INVARIANT_CATALOG: Final[tuple[InvariantSpec, ...]] = (
         _SAFE_ACTION,
     ),
     InvariantSpec(
+        "REV-006",
+        "Projeção reconstruída de Review coerente",
+        "Ciclo superseded não tem pendência e correção corrente usa origem local válida.",
+        "review reconstruction",
+        "SUPERSEDED preserva fatos sem fila; ATTEMPT_CORRECTION corrente é determinística.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "A relação entre história preservada e projeção atual atravessa tabelas.",
+        "Fila pode manter agenda anulada ou duplicar ciclo corrente.",
+        "Validar estados, pendências, origem e uma única projeção ativa por questão.",
+        "Baixo; ciclos históricos completed/suspended permanecem aceitos.",
+        "V0.5-S1 V05-INV-006/007",
+        "A projeção reconstruída de revisão é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
         "AUD-001",
         "Auditoria funcional mínima e isolada",
         "Eventos S2A devem usar entidade técnica do mesmo Workspace e metadados fechados.",
@@ -609,7 +647,50 @@ _SQL_RULES: Final[dict[str, str]] = {
                                       OR rv.question_id != a.question_id))
            OR (replaced.id IS NOT NULL AND (replaced.workspace_id != a.workspace_id
                                             OR replaced.question_id != a.question_id
+                                            OR replaced.question_revision_id != a.question_revision_id
+                                            OR COALESCE(replaced.review_id, '') != COALESCE(a.review_id, '')
+                                            OR replaced.attempt_type != a.attempt_type
                                             OR replaced.status != 'VOIDED'))
+    """,
+    "ATT-003": """
+        WITH RECURSIVE ancestry(start_id, current_id) AS (
+            SELECT a.id, a.replaces_attempt_id
+            FROM attempts_attempt a
+            WHERE a.replaces_attempt_id IS NOT NULL
+            UNION
+            SELECT ancestry.start_id, parent.replaces_attempt_id
+            FROM ancestry
+            JOIN attempts_attempt parent ON parent.id = ancestry.current_id
+            WHERE parent.replaces_attempt_id IS NOT NULL
+        ), graph_findings AS (
+            SELECT a.id AS entity_id, 'invalid_void_state' AS observed
+            FROM attempts_attempt a
+            WHERE (a.status = 'VALID' AND
+                   (a.voided_at IS NOT NULL OR a.void_reason IS NOT NULL))
+               OR (a.status = 'VOIDED' AND
+                   (a.voided_at IS NULL OR a.void_reason IS NULL OR a.void_reason = ''))
+            UNION
+            SELECT child.id, 'invalid_replacement_context'
+            FROM attempts_attempt child
+            JOIN attempts_attempt parent ON parent.id = child.replaces_attempt_id
+            WHERE parent.status != 'VOIDED'
+               OR parent.workspace_id != child.workspace_id
+               OR parent.question_id != child.question_id
+               OR parent.question_revision_id != child.question_revision_id
+               OR COALESCE(parent.review_id, '') != COALESCE(child.review_id, '')
+               OR parent.attempt_type != child.attempt_type
+            UNION
+            SELECT parent.id, 'valid_non_terminal'
+            FROM attempts_attempt parent
+            JOIN attempts_attempt child ON child.replaces_attempt_id = parent.id
+            WHERE parent.status = 'VALID'
+            UNION
+            SELECT start_id, 'cycle'
+            FROM ancestry
+            WHERE current_id = start_id
+        )
+        SELECT entity_id, 'Attempt' AS entity_type, observed
+        FROM graph_findings
     """,
     "REV-001": """
         SELECT c.id AS entity_id, 'ReviewCycle' AS entity_type,
@@ -624,13 +705,21 @@ _SQL_RULES: Final[dict[str, str]] = {
                (a.id IS NULL OR a.workspace_id != c.workspace_id
                 OR a.question_id != c.question_id
                 OR a.question_revision_id != c.origin_question_revision_id
-                OR a.attempt_type != 'INITIAL' OR a.is_correct != 0 OR a.status != 'VALID'))
+                OR a.attempt_type != 'INITIAL' OR a.is_correct != 0
+                OR (c.state != 'SUPERSEDED' AND a.status != 'VALID')))
            OR (c.origin_kind = 'QUESTION_ACTIVATION' AND c.origin_attempt_id IS NOT NULL)
            OR (c.origin_kind = 'MANUAL' AND
                (a.id IS NULL OR a.workspace_id != c.workspace_id
                 OR a.question_id != c.question_id
                 OR a.question_revision_id != c.origin_question_revision_id
-                OR a.attempt_type != 'INITIAL' OR a.is_correct != 1 OR a.status != 'VALID'))
+                OR a.attempt_type != 'INITIAL' OR a.is_correct != 1
+                OR (c.state != 'SUPERSEDED' AND a.status != 'VALID')))
+           OR (c.origin_kind = 'ATTEMPT_CORRECTION' AND
+               ((a.id IS NOT NULL AND
+                 (a.workspace_id != c.workspace_id OR a.question_id != c.question_id
+                  OR a.question_revision_id != c.origin_question_revision_id
+                  OR (c.state != 'SUPERSEDED' AND a.status != 'VALID')))
+                OR (c.state = 'COMPLETED' AND a.id IS NULL)))
     """,
     "REV-002": """
         SELECT r.id AS entity_id, 'Review' AS entity_type,
@@ -642,25 +731,29 @@ _SQL_RULES: Final[dict[str, str]] = {
         WHERE r.workspace_id != c.workspace_id OR r.question_id != c.question_id
            OR r.workspace_id != q.workspace_id
            OR (anchor.id IS NULL AND NOT (
-                c.origin_kind = 'QUESTION_ACTIVATION' AND r.sequence_number = 1
-                AND r.stage_code = 'D1' AND r.transition_code = 'QUESTION_ACTIVATION_D1'))
+                r.sequence_number = 1 AND r.stage_code = 'D1' AND (
+                    (c.origin_kind = 'QUESTION_ACTIVATION'
+                     AND r.transition_code = 'QUESTION_ACTIVATION_D1')
+                    OR (c.origin_kind = 'ATTEMPT_CORRECTION'
+                        AND r.transition_code = 'CORRECTION_RETRY_VOIDED'))))
            OR (anchor.id IS NOT NULL AND
                (anchor.workspace_id != r.workspace_id OR anchor.question_id != r.question_id
-                OR anchor.status != 'VALID'
+                OR (r.state = 'PENDING' AND anchor.status != 'VALID')
                  OR (r.sequence_number = 1 AND NOT (
                     (c.origin_kind = 'INITIAL_ERROR' AND anchor.id = c.origin_attempt_id
                      AND anchor.attempt_type = 'INITIAL' AND anchor.is_correct = 0
                      AND r.transition_code = 'INITIAL_ERROR_TO_D1')
                     OR (c.origin_kind = 'MANUAL' AND anchor.id = c.origin_attempt_id
                         AND anchor.attempt_type = 'INITIAL' AND anchor.is_correct = 1
-                        AND r.transition_code = 'MANUAL_INCLUSION_D1')))
-                OR (r.sequence_number > 1 AND
+                        AND r.transition_code = 'MANUAL_INCLUSION_D1')
+                    OR c.origin_kind = 'ATTEMPT_CORRECTION'))
+                OR (r.sequence_number > 1 AND c.origin_kind != 'ATTEMPT_CORRECTION' AND
                     (anchor.attempt_type != 'REVIEW' OR NOT EXISTS (
                         SELECT 1 FROM reviews_review previous
                         WHERE previous.id = anchor.review_id
                           AND previous.review_cycle_id = r.review_cycle_id
                           AND previous.sequence_number = r.sequence_number - 1)))))
-           OR (r.state = 'COMPLETED' AND NOT EXISTS (
+           OR (r.state = 'COMPLETED' AND c.state != 'SUPERSEDED' AND NOT EXISTS (
                 SELECT 1 FROM attempts_attempt done
                 WHERE done.review_id = r.id AND done.attempt_type = 'REVIEW'
                   AND done.status = 'VALID'))
@@ -685,7 +778,7 @@ _SQL_RULES: Final[dict[str, str]] = {
            OR (c.state = 'COMPLETED' AND
                ((SELECT COUNT(*) FROM reviews_review r
                  WHERE r.review_cycle_id = c.id AND r.state = 'PENDING') != 0 OR
-                NOT EXISTS (
+                (c.origin_kind != 'ATTEMPT_CORRECTION' AND NOT EXISTS (
                     SELECT 1 FROM reviews_review terminal
                     JOIN attempts_attempt a ON a.review_id = terminal.id
                     WHERE terminal.review_cycle_id = c.id AND terminal.stage_code = 'D30'
@@ -693,7 +786,17 @@ _SQL_RULES: Final[dict[str, str]] = {
                       AND a.attempt_type = 'REVIEW' AND a.is_correct = 1
                       AND terminal.sequence_number = (
                           SELECT MAX(last.sequence_number) FROM reviews_review last
-                          WHERE last.review_cycle_id = c.id))))
+                          WHERE last.review_cycle_id = c.id)))
+                OR (c.origin_kind = 'ATTEMPT_CORRECTION' AND NOT EXISTS (
+                    SELECT 1 FROM attempts_attempt corrected
+                    JOIN reviews_review original ON original.id = corrected.review_id
+                    WHERE corrected.id = c.origin_attempt_id
+                      AND corrected.status = 'VALID' AND corrected.is_correct = 1
+                      AND original.stage_code = 'D30'))))
+           OR (c.state = 'SUPERSEDED' AND
+               (c.superseded_at IS NULL OR EXISTS (
+                   SELECT 1 FROM reviews_review pending
+                   WHERE pending.review_cycle_id = c.id AND pending.state = 'PENDING')))
     """,
     "REV-004": """
         WITH ranked AS (
@@ -710,19 +813,35 @@ _SQL_RULES: Final[dict[str, str]] = {
         JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id
         LEFT JOIN attempts_attempt a ON a.id = r.scheduled_from_attempt_id
         WHERE r.sequence_number != r.expected_sequence
-           OR (r.sequence_number = 1 AND r.stage_code != 'D1')
+           OR (r.sequence_number = 1 AND r.stage_code != 'D1'
+               AND c.origin_kind != 'ATTEMPT_CORRECTION')
            OR (r.sequence_number = 1 AND a.id IS NOT NULL AND NOT (
                 (c.origin_kind = 'INITIAL_ERROR'
                  AND r.transition_code = 'INITIAL_ERROR_TO_D1'
                  AND r.first_due_date = date(a.local_date, '+1 day'))
                 OR (c.origin_kind = 'MANUAL'
-                    AND r.transition_code = 'MANUAL_INCLUSION_D1')))
+                    AND r.transition_code = 'MANUAL_INCLUSION_D1')
+                OR (c.origin_kind = 'ATTEMPT_CORRECTION' AND (
+                    (r.transition_code = 'CORRECTION_RETRY_VOIDED')
+                    OR (r.transition_code = 'CORRECTION_PRESERVE_MANUAL')
+                    OR (r.transition_code = 'RESET_TO_D1_AFTER_ERROR'
+                        AND r.stage_code = 'D1')
+                    OR (r.transition_code = 'ADVANCE_D1_TO_D7'
+                        AND r.stage_code = 'D7')
+                    OR (r.transition_code = 'ADVANCE_D7_TO_D14'
+                        AND r.stage_code = 'D14')
+                    OR (r.transition_code = 'ADVANCE_D14_TO_D30'
+                        AND r.stage_code = 'D30')))))
            OR (r.sequence_number > 1 AND NOT (
                 (r.transition_code = 'RESET_TO_D1_AFTER_ERROR' AND r.stage_code = 'D1')
                 OR (r.transition_code = 'ADVANCE_D1_TO_D7' AND r.stage_code = 'D7')
                 OR (r.transition_code = 'ADVANCE_D7_TO_D14' AND r.stage_code = 'D14')
                 OR (r.transition_code = 'ADVANCE_D14_TO_D30' AND r.stage_code = 'D30')))
-           OR (a.id IS NOT NULL AND r.sequence_number > 1 AND r.first_due_date != date(
+           OR (a.id IS NOT NULL
+               AND (r.sequence_number > 1 OR c.origin_kind = 'ATTEMPT_CORRECTION')
+               AND r.transition_code NOT IN (
+                   'CORRECTION_RETRY_VOIDED', 'CORRECTION_PRESERVE_MANUAL')
+               AND r.first_due_date != date(
                 a.local_date,
                 CASE r.transition_code
                     WHEN 'RESET_TO_D1_AFTER_ERROR' THEN '+1 day'
@@ -747,7 +866,7 @@ _SQL_RULES: Final[dict[str, str]] = {
         JOIN attempts_attempt a ON a.id = e.attempt_id
         JOIN errors_error_category c ON c.id = e.category_id
         WHERE e.workspace_id != a.workspace_id OR e.workspace_id != c.workspace_id
-           OR a.is_correct = 1 OR a.status != 'VALID'
+           OR a.is_correct = 1
             OR (c.category_kind = 'STANDARD' AND c.code NOT IN (
                  'CONCEPTUAL', 'INTERPRETATION', 'CALCULATION', 'ATTENTION',
                  'FORMULA_RULE', 'PROCEDURE', 'TRAP', 'TIME_SHORTAGE', 'GUESS', 'OTHER'
@@ -865,6 +984,26 @@ _SQL_RULES: Final[dict[str, str]] = {
               SELECT 1 FROM reviews_reviewschedulechange h WHERE h.review_id = r.id
           )
     """,
+    "REV-006": """
+        SELECT c.id AS entity_id, 'ReviewCycle' AS entity_type,
+               c.state AS state, c.origin_kind AS origin_kind
+        FROM reviews_reviewcycle c
+        LEFT JOIN attempts_attempt a ON a.id = c.origin_attempt_id
+        WHERE (c.state = 'SUPERSEDED' AND
+               (c.superseded_at IS NULL OR EXISTS (
+                   SELECT 1 FROM reviews_review pending
+                   WHERE pending.review_cycle_id = c.id AND pending.state = 'PENDING')))
+           OR (c.state != 'SUPERSEDED' AND c.superseded_at IS NOT NULL)
+           OR (c.origin_kind = 'ATTEMPT_CORRECTION' AND c.state != 'SUPERSEDED' AND
+               (a.id IS NOT NULL AND
+                (a.workspace_id != c.workspace_id OR a.question_id != c.question_id
+                 OR a.status != 'VALID')))
+           OR (c.state = 'ACTIVE' AND (
+               SELECT COUNT(*) FROM reviews_reviewcycle current
+               WHERE current.question_id = c.question_id
+                 AND current.workspace_id = c.workspace_id
+                 AND current.state = 'ACTIVE') != 1)
+    """,
     "AUD-001": """
         SELECT a.id AS entity_id, 'AuditEvent' AS entity_type,
                a.event_code AS event_code, a.entity_type AS audited_entity_type
@@ -880,6 +1019,12 @@ _SQL_RULES: Final[dict[str, str]] = {
                               'PERSONAL_CATEGORY_MERGED') AND source.id = a.entity_id
         LEFT JOIN errors_error_category target
           ON a.event_code = 'PERSONAL_CATEGORY_MERGED' AND target.id = a.related_entity_id
+        LEFT JOIN attempts_attempt attempt_source
+          ON a.event_code IN ('ATTEMPT_VOIDED', 'ATTEMPT_REPLACED')
+         AND attempt_source.id = a.entity_id
+        LEFT JOIN attempts_attempt attempt_target
+          ON a.event_code = 'ATTEMPT_REPLACED'
+         AND attempt_target.id = a.related_entity_id
         WHERE (a.reason_code IS NOT NULL AND
                (a.reason_code NOT GLOB '[A-Z]*' OR a.reason_code GLOB '*[^A-Z0-9_]*'))
            OR (a.event_code = 'REVIEW_RESCHEDULED' AND
@@ -895,6 +1040,16 @@ _SQL_RULES: Final[dict[str, str]] = {
                 OR source.workspace_id != a.workspace_id OR target.workspace_id != a.workspace_id))
            OR (a.event_code IN ('PERSONAL_CATEGORY_RENAMED', 'PERSONAL_CATEGORY_ARCHIVED',
                                 'PERSONAL_CATEGORY_MERGED') AND a.reason_code IS NULL)
+           OR (a.event_code = 'ATTEMPT_VOIDED' AND
+               (a.entity_type != 'ATTEMPT' OR attempt_source.id IS NULL
+                OR attempt_source.workspace_id != a.workspace_id
+                OR attempt_source.status != 'VOIDED' OR a.reason_code IS NULL))
+           OR (a.event_code = 'ATTEMPT_REPLACED' AND
+               (a.entity_type != 'ATTEMPT' OR attempt_source.id IS NULL
+                OR attempt_target.id IS NULL OR attempt_source.workspace_id != a.workspace_id
+                OR attempt_target.workspace_id != a.workspace_id
+                OR attempt_target.replaces_attempt_id != attempt_source.id
+                OR a.reason_code IS NULL))
            OR (a.event_code != 'REVIEW_RESCHEDULED' AND
                (a.previous_date IS NOT NULL OR a.new_date IS NOT NULL OR a.timezone_name IS NOT NULL))
     """,

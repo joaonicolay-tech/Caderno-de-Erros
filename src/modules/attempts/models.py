@@ -50,6 +50,29 @@ class AttemptQuerySet(models.QuerySet["Attempt"]):
     def delete(self) -> tuple[int, dict[str, int]]:
         raise ValidationError("Attempt não pode ser excluída isoladamente.")
 
+    def mark_voided(
+        self,
+        *,
+        attempt_id: uuid.UUID,
+        workspace_id: uuid.UUID,
+        voided_at: datetime,
+        void_reason: str,
+    ) -> int:
+        """Faça somente a transição estrutural autorizada, com CAS em VALID."""
+        queryset = super().filter(
+            pk=attempt_id,
+            workspace_id=workspace_id,
+            status=AttemptStatus.VALID,
+            voided_at__isnull=True,
+            void_reason__isnull=True,
+        )
+        return models.QuerySet.update(
+            queryset,
+            status=AttemptStatus.VOIDED,
+            voided_at=voided_at,
+            void_reason=void_reason,
+        )
+
 
 class Attempt(models.Model):
     """Fato imutável de resposta inicial ou de revisão."""
@@ -246,15 +269,27 @@ class Attempt(models.Model):
                     "A Review deve pertencer à questão e ao Workspace da tentativa."
                 )
         if self.replaces_attempt_id:
+            if self.replaces_attempt_id == self.id:
+                raise ValidationError("A Attempt não pode substituir a si mesma.")
             replaced = (
                 type(self)
                 .objects.filter(pk=self.replaces_attempt_id)
-                .only("workspace_id", "question_id", "status")
+                .only(
+                    "workspace_id",
+                    "question_id",
+                    "question_revision_id",
+                    "review_id",
+                    "attempt_type",
+                    "status",
+                )
                 .first()
             )
             if replaced is not None and (
                 replaced.workspace_id != self.workspace_id
                 or replaced.question_id != self.question_id
+                or replaced.question_revision_id != self.question_revision_id
+                or replaced.review_id != self.review_id
+                or replaced.attempt_type != self.attempt_type
                 or replaced.status != AttemptStatus.VOIDED
             ):
                 raise ValidationError(

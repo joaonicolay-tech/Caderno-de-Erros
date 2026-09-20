@@ -186,7 +186,7 @@ def _add_completed_d1_and_pending_d7(
 
 def test_catalog_has_stable_complete_entries() -> None:
     ids = [spec.invariant_id for spec in INVARIANT_CATALOG]
-    assert len(ids) == len(set(ids)) == 20
+    assert len(ids) == len(set(ids)) == 22
     assert ids == [
         "DB-001",
         "DB-002",
@@ -198,6 +198,7 @@ def test_catalog_has_stable_complete_entries() -> None:
         "QUE-003",
         "ATT-001",
         "ATT-002",
+        "ATT-003",
         "REV-001",
         "REV-002",
         "REV-003",
@@ -207,6 +208,7 @@ def test_catalog_has_stable_complete_entries() -> None:
         "OPS-001",
         "CAT-001",
         "REV-005",
+        "REV-006",
         "AUD-001",
     ]
     for spec in INVARIANT_CATALOG:

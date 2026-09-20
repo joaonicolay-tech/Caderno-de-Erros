@@ -19,6 +19,7 @@ class ReviewCycleOriginKind(models.TextChoices):
     INITIAL_ERROR = "INITIAL_ERROR", "Erro inicial"
     QUESTION_ACTIVATION = "QUESTION_ACTIVATION", "Ativacao da questao"
     MANUAL = "MANUAL", "Inclusão manual"
+    ATTEMPT_CORRECTION = "ATTEMPT_CORRECTION", "Correção de tentativa"
 
 
 class ReviewCycleState(models.TextChoices):
@@ -27,6 +28,7 @@ class ReviewCycleState(models.TextChoices):
     ACTIVE = "ACTIVE", "Ativo"
     COMPLETED = "COMPLETED", "Concluído"
     SUSPENDED = "SUSPENDED", "Suspenso"
+    SUPERSEDED = "SUPERSEDED", "Substituído por reconstrução"
 
 
 class ReviewState(models.TextChoices):
@@ -89,6 +91,7 @@ class ReviewCycle(models.Model):
     started_at = models.DateTimeField()
     completed_at = models.DateTimeField(null=True, blank=True)
     suspended_at = models.DateTimeField(null=True, blank=True)
+    superseded_at = models.DateTimeField(null=True, blank=True)
     suspension_reason = models.CharField(max_length=1000, null=True, blank=True)  # noqa: DJ001
     lock_version = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -126,6 +129,7 @@ class ReviewCycle(models.Model):
                         origin_kind=ReviewCycleOriginKind.MANUAL,
                         origin_attempt__isnull=False,
                     )
+                    | Q(origin_kind=ReviewCycleOriginKind.ATTEMPT_CORRECTION)
                 ),
                 name="cycle_origin_attempt_valid",
             ),
@@ -147,19 +151,28 @@ class ReviewCycle(models.Model):
                         state=ReviewCycleState.ACTIVE,
                         completed_at__isnull=True,
                         suspended_at__isnull=True,
+                        superseded_at__isnull=True,
                         suspension_reason__isnull=True,
                     )
                     | Q(
                         state=ReviewCycleState.COMPLETED,
                         completed_at__isnull=False,
                         suspended_at__isnull=True,
+                        superseded_at__isnull=True,
                         suspension_reason__isnull=True,
                     )
                     | Q(
                         state=ReviewCycleState.SUSPENDED,
                         completed_at__isnull=True,
                         suspended_at__isnull=False,
+                        superseded_at__isnull=True,
                         suspension_reason__isnull=False,
+                    )
+                    | Q(
+                        state=ReviewCycleState.SUPERSEDED,
+                        suspended_at__isnull=True,
+                        superseded_at__isnull=False,
+                        suspension_reason__isnull=True,
                     )
                 ),
                 name="cycle_state_dates_valid",
@@ -207,6 +220,17 @@ class ReviewCycle(models.Model):
         if self.origin_kind == ReviewCycleOriginKind.QUESTION_ACTIVATION:
             if self.origin_attempt_id is not None:
                 raise ValidationError("Activation cycle cannot have an origin attempt.")
+            return
+        if self.origin_kind == ReviewCycleOriginKind.ATTEMPT_CORRECTION:
+            if attempt is not None and (
+                attempt.workspace_id != self.workspace_id
+                or attempt.question_id != self.question_id
+                or attempt.question_revision_id != self.origin_question_revision_id
+                or attempt.status != AttemptStatus.VALID
+            ):
+                raise ValidationError(
+                    "A projeção corrigida exige Attempt válida do mesmo contexto."
+                )
             return
         if self.origin_kind == ReviewCycleOriginKind.MANUAL:
             if attempt is None or (
@@ -359,7 +383,10 @@ class Review(models.Model):
                 | Q(
                     sequence_number=1,
                     stage_code=ReviewStageCode.D1,
-                    transition_code="QUESTION_ACTIVATION_D1",
+                    transition_code__in=(
+                        "QUESTION_ACTIVATION_D1",
+                        "CORRECTION_RETRY_VOIDED",
+                    ),
                 ),
                 name="review_activation_anchor_valid",
             ),
@@ -418,12 +445,20 @@ class Review(models.Model):
         if anchor is None:
             if (
                 cycle is None
-                or cycle.origin_kind != ReviewCycleOriginKind.QUESTION_ACTIVATION
                 or self.sequence_number != 1
                 or self.stage_code != ReviewStageCode.D1
-                or self.transition_code != "QUESTION_ACTIVATION_D1"
+                or not (
+                    (
+                        cycle.origin_kind == ReviewCycleOriginKind.QUESTION_ACTIVATION
+                        and self.transition_code == "QUESTION_ACTIVATION_D1"
+                    )
+                    or (
+                        cycle.origin_kind == ReviewCycleOriginKind.ATTEMPT_CORRECTION
+                        and self.transition_code == "CORRECTION_RETRY_VOIDED"
+                    )
+                )
             ):
-                raise ValidationError("Only the activation D1 may omit its origin attempt.")
+                raise ValidationError("A Review sem âncora não corresponde a uma D1 permitida.")
             return
         if anchor is not None and (
             anchor.workspace_id != self.workspace_id
