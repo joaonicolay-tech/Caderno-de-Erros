@@ -41,12 +41,27 @@
   final `V0.4 PROMOTED`.
 - V0.5-P0: concluído — plano executável em
   `tasks/plans/v05-release-execution-plan.md`; implementação V0.5 não iniciada.
+- V0.5-S1: concluída — contrato normativo em
+  `docs/V0.5_S1_Contratos_Normativos_e_Invariantes.md`; OD01 resolvida por
+  retenção sanitizada de 90 dias e expurgo, OD02 parcialmente resolvida para
+  lifecycle, OD03--OD06 deferidas. A antiga S2 foi decomposta em S2A--S2D;
+  nenhuma delas foi autorizada ou implementada.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
 - V0.5: planejamento concluído; implementação **NOT AUTHORIZED** e não iniciada.
 
 ## Última validação
+
+Gate documental V0.5-S1 GREEN, exit code 0: 338 testes aprovados em 78,21 s,
+88% de cobertura global, migrations sem mudanças, formatação, Ruff, mypy,
+detect-secrets e pip-audit aprovados; duração total 116,8 s. A8 profundo foi
+APPROVED, sem Blocker ou Major. S1 registrou somente contratos normativos,
+decisões humanas de retenção/merge de categorias, reclassificação XL e
+decomposição S2A--S2D; não houve código funcional, schema, migration,
+backfill, dado operacional, teste funcional, commit, push, tag, release ou
+autorização de S2A--S2D. A primeira captura do gate não preservou o exit code;
+a repetição completa e verificável terminou GREEN.
 
 Gate final de V0.4.3-UX2 GREEN, exit code 0: 337 testes aprovados em 85,28 s,
 88% de cobertura global, migrations sem mudanças, formatação, Ruff, mypy,
@@ -203,7 +218,12 @@ baseline V0.3, Architecture v1.0 ou gate.
 - `tasks/completed/v04-s9-controlled-pilot-promotion.md`: contrato e
   encerramento de S9;
 - `tasks/plans/v05-release-execution-plan.md`: planejamento oficial da V0.5,
-  sem autorização funcional;
+  com S2 reavaliada/decomposta, sem autorização funcional;
+- `docs/V0.5_S1_Contratos_Normativos_e_Invariantes.md`: decisões, lifecycle,
+  auditoria, invariantes, compatibilidade e handoff normativos da S1;
+- `quality/v05-s1-normative-contract-result.md`: A8 e gate documental S1;
+- `tasks/completed/v05-s1-normative-contracts-and-invariants.md`: contrato e
+  evidência de encerramento S1;
 - `quality/v05-p0-planning-result.md`: review A8 e gate de V0.5-P0;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
@@ -213,6 +233,6 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: revisão humana do plano V0.5 antes de uma nova autorização
-independente de `V0.5-S1`. Nenhum commit, push, tag ou release é autorizado por
-este estado; implementação V0.5 permanece `NOT AUTHORIZED`.
+Recomendação: revisão humana do contrato S1 e da decomposição antes de uma nova
+autorização independente de `V0.5-S2A`. Nenhum commit, push, tag ou release é
+autorizado por este estado; implementação V0.5 permanece `NOT AUTHORIZED`.

@@ -131,8 +131,8 @@ start-local/loopback; V0.5 só acrescenta UI segura e procedimentos de upgrade.
 
 | ID | Pergunta e fonte ambígua | Opções/impacto | Bloqueia | Resolver |
 | --- | --- | --- | --- | --- |
-| V05-OD01 | política final de anulação, exclusão, reconstrução e retenção (RF-ABR-007, RN-ABR-005) | regras de retenção/auditoria e modelo de eventos; risco de perda | S2 | antes de migration/design S2, decisão humana necessária |
-| V05-OD02 | FL-ABR-001--004, 009--010 não fechados pelo Roadmap | semântica de management e exportação | S2/S7 conforme item | no contrato inicial aplicável |
+| V05-OD01 | política final de anulação, exclusão, reconstrução e retenção (RF-ABR-007, RN-ABR-005) | **RESOLVED em S1:** arquivamento padrão; lifecycle transacional; auditoria sanitizada de exclusão por 90 dias, com expurgo obrigatório posterior | — | contrato `docs/V0.5_S1_Contratos_Normativos_e_Invariantes.md` |
+| V05-OD02 | FL-ABR-001--004, 009--010 não fechados pelo Roadmap | **PARTIALLY_RESOLVED em S1:** correção prospectiva sem reinterpretar histórico, retenção e consolidação pessoal→pessoal ativa definidas; reativação fora do P0/S2; recibos deferidos a S8; prioridade a S6 | S2A--S2D/S6/S8 conforme item | contrato S1 e futura autorização aplicável |
 | V05-OD03 | desempate e janela PRI (PT-ABR-008) | determinismo da recomendação | S6, não S1--S5 | antes de testes de prioridade |
 | V05-OD04 | recalcular domínio em nova fórmula (RN-ABR-004) | cálculo on-demand versus versão/snapshot; compatibilidade | S5, não política pura S4 | antes de persistência/snapshot |
 | V05-OD05 | formato final export/backup (RNF-ABR-006) | schema/manifesto/importabilidade | S7 | durante plano A4 S7 |
@@ -143,21 +143,27 @@ start-local/loopback; V0.5 só acrescenta UI segura e procedimentos de upgrade.
 | ID | Objetivo/escopo e exclusões | Deps | Size/risk/migration | A4; A7; A8 | Done When resumido |
 | --- | --- | --- | --- | --- | --- |
 | S1 | Fechar decisões normativas V0.5 aplicáveis e contrato de invariantes/dados; sem feature/migration | P0 | M/high/UNLIKELY | checklist; Terra High; deep | decisões resolvidas/registradas sem inventar regra; matriz e vetores futuros definidos |
-| S2 | Lifecycle seguro: categorias, reagendar/incluir, anular/substituir, correção, exclusão e auditoria transacional; sem domínio/portabilidade UI | S1 mandatory | L/high/EXPECTED | plano; Sol High; deep | dados V0.4.4 preservados, fatos auditáveis, reconstrução reconciliada e upgrade/rollback provados |
-| S3 | Gestão UI: confirmações, categorias e filtros salvos; sem algoritmo/polimento geral | S2 for lifecycle; S1 for filters | M/high/EXPECTED | checklist; Sol Medium; standard (deep if deletion UI changes data) | fluxos Workspace-scoped, keyboard/error/empty states e testes UI passam |
+| S2A | Fundação auditável e gestão não destrutiva: auditoria funcional, categorias pessoais, consolidação pessoal→pessoal, reagendamento e inclusão manual; sem void, gabarito ou delete | S1 mandatory | L/high/EXPECTED | plano; Sol High; deep | dados V0.4.4 preservados, auditoria/Workspace/agenda reconciliados e upgrade/rollback provados |
+| S2B | Correção estrutural de Attempt: anulação, substituição, reconstrução e reconciliação; sem gabarito/delete | S2A mandatory | L/high/EXPECTED | plano; Sol High; deep | cadeia acíclica, fatos imutáveis, fila/métricas reconstruídas e upgrade/rollback provados |
+| S2C | Correção prospectiva e auditável de gabarito por nova revisão; sem reinterpretar Attempt histórico ou delete | S2A mandatory | L/high/EXPECTED | plano; Sol High; deep | versão usada preservada, futuro usa revisão corrente e nenhuma métrica/review histórica muda implicitamente |
+| S2D | Exclusão permanente por agregado e retenção sanitizada de auditoria por 90 dias; sem export/import/UI geral | S2A mandatory | L/high/EXPECTED | plano; Sol High; deep | elegibilidade, transação, expurgo futuro, backup/recovery e ausência de órfãos provados |
+| S3 | Gestão UI: confirmações, categorias e filtros salvos; sem algoritmo/polimento geral | S2A--S2D mandatory; S1 for filters | M/high/EXPECTED | checklist; Sol Medium; standard (deep if deletion UI changes data) | fluxos Workspace-scoped, keyboard/error/empty states e testes UI passam |
 | S4 | Política pura DOM-HEUR-1.0, confiança, vetores e explicações; sem persistência/snapshots/UI | S1 mandatory | L/high/UNLIKELY | plano; Sol High; deep | vetores normativos/bordas determinísticos e nenhuma semântica V0.4 alterada |
-| S5 | Aplicar domínio/reabertura/agregações e explicação consultável; snapshots apenas se benchmark justificar | S2 + S4 mandatory | L/high/UNKNOWN | plano; Sol High; deep | isolamento, compatibilidade, recálculo e invariantes novos provados |
+| S5 | Aplicar domínio/reabertura/agregações e explicação consultável; snapshots apenas se benchmark justificar | S2A--S2D + S4 mandatory | L/high/UNKNOWN | plano; Sol High; deep | isolamento, compatibilidade, recálculo e invariantes novos provados |
 | S6 | PRI-HEUR-1.0 e recomendação explicável; sem substituir fila/scheduling | S5 + OD03 mandatory | M/high/UNLIKELY | checklist; Sol Medium; deep | insuficiência/motivos/desempate determinísticos e UI acessível |
-| S7 | CEI-EXPORT-1.0, UI backup/restore e staging seguro; sem API/overwrite | S1/OD05 + S2 mandatory | L/high/UNLIKELY | plano; Sol High; deep | validação antes da mutação, round-trip/rejeição, pré-backup e relatórios |
-| S8 | Evoluir S5/S6, testar upgrade V0.4.4 e PostgreSQL crítico; sem repair/checker mutável | S2, S5, S7 mandatory | L/high/UNLIKELY | plano; Sol High; deep | invariantes/read-only, restore e migration/compatibility evidence GREEN |
+| S7 | CEI-EXPORT-1.0, UI backup/restore e staging seguro; sem API/overwrite | S1/OD05 + S2A--S2D mandatory | L/high/UNLIKELY | plano; Sol High; deep | validação antes da mutação, round-trip/rejeição, pré-backup e relatórios |
+| S8 | Evoluir S5/S6, testar upgrade V0.4.4 e PostgreSQL crítico; sem repair/checker mutável | S2A--S2D, S5, S7 mandatory | L/high/UNLIKELY | plano; Sol High; deep | invariantes/read-only, restore e migration/compatibility evidence GREEN |
 | S9 | Hardening beta: BCR aplicável, acessibilidade, segurança/local operation e documentação; FTS só com falha medida | S3, S6, S7, S8 mandatory | L/high/UNLIKELY | plano; Sol Medium; deep | evidência medida, UX central, Windows e docs beta completos |
 | S10 | Piloto controlado e decisão documental V0.5; sem V1/tag/release | S9 mandatory | L/high/UNLIKELY | plano; Sol High; deep | cópia protegida, backup/restore, findings tratados e promoção decidida |
 
-Nenhuma etapa é XL. S3 e S4 podem avançar em paralelo depois de S1; S7 pode
-planejar formato após S1, mas só manipula dados após S2. Caminho crítico:
-`S1 → S2 → S4 → S5 → S6 → S9 → S10`, com `S7 → S8 → S9` também obrigatório.
-Relações citadas como mandatory são bloqueantes; as demais são convenient e
-podem ser coordenadas sem estado parcial compartilhado.
+S2 foi reavaliada em S1 como **XL** e, por isso, não permanece executável como
+unidade. S2A é sua fundação; S2B, S2C e S2D são checkpoints L/high independentes
+depois dela. S3 e S4 podem avançar em paralelo quando suas dependências forem
+satisfeitas; S7 pode planejar formato após S1, mas só manipula dados após
+S2A--S2D. Caminho crítico: `S1 → S2A → (S2B, S2C, S2D) → S4 → S5 → S6 → S9 →
+S10`, com `S2A--S2D → S7 → S8 → S9` também obrigatório. Relações citadas como
+mandatory são bloqueantes; as demais são convenient e não autorizam estado
+parcial compartilhado.
 
 ## 8. Risks, testes, recovery e promoção
 
@@ -233,3 +239,12 @@ Minor aberto neste plano.
   tag, commit, push, release ou autorização de V0.5-S1.
 - Verificações finais e métricas prospectivas: registradas no contrato
   arquivado, artefato de review e `quality/operational-execution-metrics.jsonl`.
+
+## 12. Atualização normativa S1
+
+S1 fechou OD01 pela decisão humana de retenção sanitizada por 90 dias e
+expurgo obrigatório, e fechou as parcelas de OD02 necessárias para lifecycle:
+consolidação exclusiva categoria pessoal→categoria pessoal ativa, métricas
+atuais pelo alvo e histórico append-only preservado. Não houve feature,
+migration, schema, backfill, dado operacional ou autorização de S2A--S2D.
+O contrato canônico é `docs/V0.5_S1_Contratos_Normativos_e_Invariantes.md`.
