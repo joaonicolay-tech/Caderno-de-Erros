@@ -12,8 +12,8 @@
   subconjunto e o CTA usa apenas pendências acionáveis, sem mudança semântica,
   schema ou migration.
 - V0.4.4-HF2: concluída — a Fila resume stems em no máximo 500 caracteres e
-  o CTA foi validado em cenários isolados; candidato `v0.4.4` preparado, sem
-  tag criada.
+  o CTA foi validado em cenários isolados; a tag anotada `v0.4.4` existe e
+  aponta para `46e887e0c4fa4dd6f7e128ab63802223d99c9e29`.
 - Arquitetura operacional: Project Development Architecture v1.0
   **APPROVED/FROZEN** em 12 de setembro de 2026.
 - Etapas operacionais A1–A10: concluídas.
@@ -39,10 +39,12 @@
 - V0.4-S9: concluída — piloto protegido, backups pré e pós-piloto, cenários do
   MVP, checker, recovery, operação Windows, gate e review aprovados; decisão
   final `V0.4 PROMOTED`.
+- V0.5-P0: concluído — plano executável em
+  `tasks/plans/v05-release-execution-plan.md`; implementação V0.5 não iniciada.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: **NOT AUTHORIZED** e não iniciada.
+- V0.5: planejamento concluído; implementação **NOT AUTHORIZED** e não iniciada.
 
 ## Última validação
 
@@ -200,6 +202,9 @@ baseline V0.3, Architecture v1.0 ou gate.
   `V0.4 PROMOTED`;
 - `tasks/completed/v04-s9-controlled-pilot-promotion.md`: contrato e
   encerramento de S9;
+- `tasks/plans/v05-release-execution-plan.md`: planejamento oficial da V0.5,
+  sem autorização funcional;
+- `quality/v05-p0-planning-result.md`: review A8 e gate de V0.5-P0;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -208,7 +213,6 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: realizar o checkpoint Git humano da promoção V0.4. Depois desse
-checkpoint, a tag `v0.4.0` está tecnicamente apta a ser criada mediante
-autorização específica. Nenhum commit, tag ou release está autorizado por este
-estado; V0.5 permanece `NOT AUTHORIZED`.
+Recomendação: revisão humana do plano V0.5 antes de uma nova autorização
+independente de `V0.5-S1`. Nenhum commit, push, tag ou release é autorizado por
+este estado; implementação V0.5 permanece `NOT AUTHORIZED`.
