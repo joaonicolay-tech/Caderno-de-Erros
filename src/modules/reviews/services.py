@@ -4,6 +4,7 @@ import hashlib
 import json
 import uuid
 from collections.abc import Callable
+from datetime import date
 from typing import Any
 
 from django.core.exceptions import ValidationError
@@ -22,9 +23,19 @@ from modules.attempts.models import (
 )
 from modules.attempts.persistence import run_sqlite_critical_write
 from modules.attempts.services import AttemptService
-from modules.errors.models import ErrorCategory, ErrorCategoryCode, ErrorClassification
+from modules.errors.models import (
+    ErrorCategory,
+    ErrorCategoryCode,
+    ErrorCategoryKind,
+    ErrorCategoryState,
+    ErrorClassification,
+)
+from modules.operations.correlation import correlation_scope
 from modules.operations.events import EventCode, EventOutcome
+from modules.operations.models import AuditEntityType, AuditEventCode
+from modules.operations.services import record_audit_event
 from modules.operations.structured_logging import emit_event
+from modules.operations.validators import normalize_reason_code
 from modules.questions.models import Alternative, Question, QuestionRevision, QuestionStatus
 from shared.domain.time import Calendar, Clock, LocalDate, SystemClock, TimeZoneId
 
@@ -33,6 +44,8 @@ from .models import (
     ReviewCycle,
     ReviewCycleOriginKind,
     ReviewCycleState,
+    ReviewScheduleChange,
+    ReviewStageCode,
     ReviewState,
 )
 from .policies import (
@@ -42,6 +55,190 @@ from .policies import (
     ReviewStructuralState,
     ReviewTemporalStatus,
 )
+
+
+class ReviewManagementConflictError(RuntimeError):
+    """O agregado não está elegível ou mudou concorrentemente."""
+
+
+class ReviewScheduleService:
+    """Reagende somente a data operacional e preserve o fato original."""
+
+    def __init__(self, *, workspace_id: uuid.UUID, clock: Clock | None = None) -> None:
+        self.workspace_id = workspace_id
+        self.clock = clock or SystemClock()
+        self.calendar = Calendar(self.clock)
+
+    def reschedule(
+        self,
+        *,
+        review_id: uuid.UUID,
+        new_due_date: date,
+        reason_code: str,
+        expected_lock_version: int,
+        correlation_id: str | None = None,
+    ) -> Review:
+        reason = normalize_reason_code(reason_code, required=True)
+        if reason is None:  # pragma: no cover - guaranteed by required=True
+            raise ValidationError("Um código de motivo é obrigatório.")
+
+        def write() -> Review:
+            with transaction.atomic(durable=True):
+                with correlation_scope(correlation_id) as correlation:
+                    review = (
+                        Review.objects.select_for_update()
+                        .select_related("workspace", "question", "review_cycle")
+                        .filter(pk=review_id, workspace_id=self.workspace_id)
+                        .first()
+                    )
+                    if review is None or (
+                        review.state != ReviewState.PENDING
+                        or review.question.status != QuestionStatus.ACTIVE
+                        or review.review_cycle.state != ReviewCycleState.ACTIVE
+                        or review.question.workspace_id != self.workspace_id
+                        or review.review_cycle.workspace_id != self.workspace_id
+                        or review.lock_version != expected_lock_version
+                    ):
+                        raise ReviewManagementConflictError(
+                            "Review pendente ativa não disponível neste Workspace."
+                        )
+                    today = self.calendar.today(TimeZoneId(review.workspace.timezone_name)).value
+                    if new_due_date < today:
+                        raise ValidationError("A nova data deve ser hoje ou futura.")
+                    if new_due_date == review.current_due_date:
+                        raise ValidationError("A nova data deve alterar a agenda operacional.")
+                    previous_due_date = review.current_due_date
+                    changed = Review.objects.filter(
+                        pk=review.id,
+                        workspace_id=self.workspace_id,
+                        state=ReviewState.PENDING,
+                        lock_version=expected_lock_version,
+                    ).update(
+                        current_due_date=new_due_date,
+                        lock_version=F("lock_version") + 1,
+                        updated_at=self.clock.now().value,
+                    )
+                    if changed != 1:
+                        raise ReviewManagementConflictError("A Review mudou; recarregue.")
+                    ReviewScheduleChange.objects.create(
+                        workspace_id=self.workspace_id,
+                        review=review,
+                        previous_due_date=previous_due_date,
+                        new_due_date=new_due_date,
+                        timezone_name=review.workspace.timezone_name,
+                        reason_code=reason,
+                        correlation_id=correlation,
+                    )
+                    record_audit_event(
+                        workspace_id=self.workspace_id,
+                        event_code=AuditEventCode.REVIEW_RESCHEDULED,
+                        entity_type=AuditEntityType.REVIEW,
+                        entity_id=review.id,
+                        correlation_id=correlation,
+                        reason_code=reason,
+                        previous_date=previous_due_date,
+                        new_date=new_due_date,
+                        timezone_name=review.workspace.timezone_name,
+                    )
+                    review.refresh_from_db()
+                    return review
+
+        return run_sqlite_critical_write(write)
+
+
+class ManualReviewInclusionService:
+    """Inclua uma INITIAL correta em novo ciclo sem criar outra Attempt."""
+
+    def __init__(self, *, workspace_id: uuid.UUID, clock: Clock | None = None) -> None:
+        self.workspace_id = workspace_id
+        self.clock = clock or SystemClock()
+        self.calendar = Calendar(self.clock)
+
+    def include(
+        self,
+        *,
+        question_id: uuid.UUID,
+        reason_code: str | None = None,
+        correlation_id: str | None = None,
+    ) -> ReviewCycle:
+        reason = normalize_reason_code(reason_code, required=False)
+
+        def write() -> ReviewCycle:
+            try:
+                with transaction.atomic(durable=True):
+                    with correlation_scope(correlation_id) as correlation:
+                        question = (
+                            Question.objects.select_for_update()
+                            .filter(
+                                pk=question_id,
+                                workspace_id=self.workspace_id,
+                                status=QuestionStatus.ACTIVE,
+                            )
+                            .first()
+                        )
+                        if question is None:
+                            raise ReviewManagementConflictError(
+                                "Question ativa não disponível neste Workspace."
+                            )
+                        initial = (
+                            Attempt.objects.filter(
+                                workspace_id=self.workspace_id,
+                                question=question,
+                                attempt_type=AttemptType.INITIAL,
+                                status=AttemptStatus.VALID,
+                                is_correct=True,
+                            )
+                            .select_related("question_revision")
+                            .first()
+                        )
+                        if (
+                            initial is None
+                            or ReviewCycle.objects.filter(
+                                workspace_id=self.workspace_id,
+                                question=question,
+                                state=ReviewCycleState.ACTIVE,
+                            ).exists()
+                        ):
+                            raise ReviewManagementConflictError(
+                                "Inclusão manual exige INITIAL correta válida e nenhum ciclo ativo."
+                            )
+                        workspace = Workspace.objects.get(pk=self.workspace_id)
+                        due = Calendar.add_days(
+                            self.calendar.today(TimeZoneId(workspace.timezone_name)), 1
+                        ).value
+                        cycle = ReviewCycle.objects.create(
+                            workspace=workspace,
+                            question=question,
+                            origin_attempt=initial,
+                            origin_question_revision=initial.question_revision,
+                            origin_kind=ReviewCycleOriginKind.MANUAL,
+                            started_at=self.clock.now().value,
+                        )
+                        Review.objects.create(
+                            workspace=workspace,
+                            question=question,
+                            review_cycle=cycle,
+                            sequence_number=1,
+                            stage_code=ReviewStageCode.D1,
+                            first_due_date=due,
+                            current_due_date=due,
+                            scheduled_from_attempt=initial,
+                            transition_code="MANUAL_INCLUSION_D1",
+                        )
+                        record_audit_event(
+                            workspace_id=self.workspace_id,
+                            event_code=AuditEventCode.MANUAL_REVIEW_INCLUDED,
+                            entity_type=AuditEntityType.REVIEW_CYCLE,
+                            entity_id=cycle.id,
+                            related_entity_id=question.id,
+                            correlation_id=correlation,
+                            reason_code=reason,
+                        )
+                        return cycle
+            except IntegrityError as error:
+                raise ReviewManagementConflictError("A Question já possui ciclo ativo.") from error
+
+        return run_sqlite_critical_write(write)
 
 
 class QuestionActivationReviewService:
@@ -132,6 +329,10 @@ class CompleteReviewService:
         if (
             category is None
             or len(description) > 500
+            or (
+                category.category_kind == ErrorCategoryKind.PERSONAL
+                and category.state != ErrorCategoryState.ACTIVE
+            )
             or (category.code == ErrorCategoryCode.OTHER and not description)
         ):
             raise InitialAttemptError("INVALID_DIAGNOSIS")
@@ -360,6 +561,10 @@ class CompleteReviewService:
         if (
             category is None
             or len(description) > 500
+            or (
+                category.category_kind == ErrorCategoryKind.PERSONAL
+                and category.state != ErrorCategoryState.ACTIVE
+            )
             or (category.code == ErrorCategoryCode.OTHER and not description)
         ):
             raise InitialAttemptError("INVALID_DIAGNOSIS")

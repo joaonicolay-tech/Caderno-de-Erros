@@ -18,8 +18,8 @@ from django.db import connection, models
 
 from modules.accounts.models import User, Workspace
 from modules.attempts.models import Attempt, AttemptType, OperationKind, OperationReceipt
-from modules.errors.models import ErrorCategoryCode, ErrorClassification
-from modules.errors.services import seed_standard_error_categories
+from modules.errors.models import ErrorCategoryCode, ErrorCategoryState, ErrorClassification
+from modules.errors.services import PersonalCategoryService, seed_standard_error_categories
 from modules.operations.integrity import (
     INVARIANT_CATALOG,
     IntegrityCheckOperationalError,
@@ -30,6 +30,7 @@ from modules.operations.management.commands.check_integrity import (
     EXIT_FINDINGS,
     EXIT_OPERATIONAL_FAILURE,
 )
+from modules.operations.models import AuditEntityType, AuditEvent, AuditEventCode
 from modules.operations.structured_logging import StructuredJsonFormatter
 from modules.questions.models import Alternative, Question, QuestionRevision
 from modules.questions.services import create_active
@@ -185,7 +186,7 @@ def _add_completed_d1_and_pending_d7(
 
 def test_catalog_has_stable_complete_entries() -> None:
     ids = [spec.invariant_id for spec in INVARIANT_CATALOG]
-    assert len(ids) == len(set(ids)) == 17
+    assert len(ids) == len(set(ids)) == 20
     assert ids == [
         "DB-001",
         "DB-002",
@@ -204,6 +205,9 @@ def test_catalog_has_stable_complete_entries() -> None:
         "ERR-001",
         "ERR-002",
         "OPS-001",
+        "CAT-001",
+        "REV-005",
+        "AUD-001",
     ]
     for spec in INVARIANT_CATALOG:
         assert all(
@@ -243,6 +247,39 @@ def test_healthy_database_is_read_only_and_unclassified_error_is_valid() -> None
     assert result.checks_executed == len(INVARIANT_CATALOG)
     assert result.queries_executed == len(INVARIANT_CATALOG) + 1
     assert _snapshot() == before
+
+
+@pytest.mark.django_db(transaction=True)
+def test_s2a_checker_detects_cross_workspace_merge_schedule_without_history_and_audit() -> None:
+    first = _workspace("s2a-corrupt-a")
+    second = _workspace("s2a-corrupt-b")
+    source = PersonalCategoryService(workspace_id=first.id).create(display_name="Origem")
+    foreign_target = PersonalCategoryService(workspace_id=second.id).create(display_name="Alvo")
+    review = _question(first, "s2a schedule").reviews.get()
+    _raw_update(
+        "UPDATE errors_error_category SET state = %s, merged_into_id = %s WHERE id = %s",
+        ErrorCategoryState.MERGED,
+        _uuid(foreign_target.id),
+        _uuid(source.id),
+    )
+    _raw_update(
+        "UPDATE reviews_review SET current_due_date = %s WHERE id = %s",
+        date(2026, 9, 30),
+        _uuid(review.id),
+    )
+    AuditEvent.objects.create(
+        workspace=first,
+        event_code=AuditEventCode.PERSONAL_CATEGORY_ARCHIVED,
+        entity_type=AuditEntityType.ERROR_CATEGORY,
+        entity_id=foreign_target.id,
+        correlation_id=uuid.uuid4(),
+        reason_code="MAINTENANCE",
+    )
+
+    result = run_integrity_check()
+
+    ids = {finding.invariant_id for finding in result.findings}
+    assert {"CAT-001", "REV-005", "AUD-001"}.issubset(ids)
 
 
 @pytest.mark.django_db(transaction=True)
@@ -340,8 +377,17 @@ def test_review_schedule_and_attempt_local_date_findings_are_specific() -> None:
     result = run_integrity_check()
     ids = {finding.invariant_id for finding in result.findings}
 
-    assert {"ATT-002", "REV-004"}.issubset(ids)
-    assert all(finding.severity == InvariantSeverity.ERROR for finding in result.findings)
+    assert {"ATT-002", "REV-004", "REV-005"}.issubset(ids)
+    assert all(
+        finding.severity == InvariantSeverity.ERROR
+        for finding in result.findings
+        if finding.invariant_id in {"ATT-002", "REV-004"}
+    )
+    assert all(
+        finding.severity == InvariantSeverity.CRITICAL
+        for finding in result.findings
+        if finding.invariant_id == "REV-005"
+    )
 
 
 @pytest.mark.django_db(transaction=True)
@@ -351,6 +397,13 @@ def test_taxonomy_cycle_timezone_and_category_cross_workspace_are_detected() -> 
     question_a = _question(first, "relations-a")
     question_b = _question(second, "relations-b")
     category = first.error_categories.get(code=ErrorCategoryCode.GUESS)
+    foreign_category = second.error_categories.get(code=ErrorCategoryCode.GUESS)
+    attempt = _attempt(first, question_a, correct=False)
+    ErrorClassification.objects.create(
+        workspace=first,
+        attempt=attempt,
+        category=category,
+    )
     assert question_b.discipline_id is not None
     assert question_a.subject_id is not None
     _raw_update(
@@ -368,7 +421,12 @@ def test_taxonomy_cycle_timezone_and_category_cross_workspace_are_detected() -> 
         _uuid(first.id),
     )
     _raw_update(
-        "UPDATE errors_error_category SET code = 'INVALID_CODE' WHERE id = %s",
+        "DELETE FROM errors_error_category WHERE id = %s",
+        _uuid(foreign_category.id),
+    )
+    _raw_update(
+        "UPDATE errors_error_category SET workspace_id = %s WHERE id = %s",
+        _uuid(second.id),
         _uuid(category.id),
     )
 

@@ -261,7 +261,11 @@ def _migration_hashes(raw_hashes: object) -> dict[str, str]:
     return expected_hashes
 
 
-def verify_migration_history(root: Path, manifest: Mapping[str, object]) -> None:
+def verify_migration_history(
+    root: Path,
+    manifest: Mapping[str, object],
+    additional_manifest: Mapping[str, object] | None = None,
+) -> None:
     raw_legacy_hashes = manifest.get("migration_sha256")
     if raw_legacy_hashes is not None:
         expected_hashes = _migration_hashes(raw_legacy_hashes)
@@ -274,6 +278,16 @@ def verify_migration_history(root: Path, manifest: Mapping[str, object]) -> None
                 f"Migrações repetidas entre histórico e marco atual: {', '.join(overlap)}."
             )
         expected_hashes = historical_hashes | current_hashes
+    if additional_manifest is not None:
+        additional_hashes = _migration_hashes(
+            additional_manifest.get("additional_migration_sha256")
+        )
+        overlap = sorted(set(expected_hashes) & set(additional_hashes))
+        if overlap:
+            raise GateVerificationError(
+                "Migrações repetidas no manifesto adicional: " + ", ".join(overlap) + "."
+            )
+        expected_hashes |= additional_hashes
     discovered = {
         path.relative_to(root).as_posix()
         for path in (root / "src" / "modules").glob("*/migrations/[0-9]*.py")
@@ -292,13 +306,22 @@ def verify_migration_history(root: Path, manifest: Mapping[str, object]) -> None
         raise GateVerificationError(f"Migrações protegidas alteradas: {', '.join(changed)}.")
 
 
-def verify_repository(root: Path, manifest_path: Path) -> None:
+def verify_repository(
+    root: Path,
+    manifest_path: Path,
+    additional_migrations_path: Path | None = None,
+) -> None:
     manifest = load_json_object(manifest_path)
+    additional_manifest = (
+        load_json_object(additional_migrations_path)
+        if additional_migrations_path is not None
+        else None
+    )
     verify_markdown_links(root)
     definitions = collect_definitions(root)
     verify_references(root, manifest, definitions)
     verify_test_evidence(root, manifest)
-    verify_migration_history(root, manifest)
+    verify_migration_history(root, manifest, additional_manifest)
 
 
 def verify_coverage(root: Path, manifest_path: Path, coverage_path: Path) -> None:
@@ -352,6 +375,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("command", choices=("repository", "coverage"))
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--manifest", type=Path)
+    parser.add_argument("--additional-migrations", type=Path)
     parser.add_argument("--coverage-file", type=Path)
     return parser
 
@@ -363,7 +387,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     release = str(load_json_object(manifest_path).get("release", "release desconhecida"))
     try:
         if arguments.command == "repository":
-            verify_repository(root, manifest_path)
+            verify_repository(root, manifest_path, arguments.additional_migrations)
             print(f"Rastreabilidade, Markdown e migrações protegidas de {release}: OK")
         else:
             if arguments.coverage_file is None:

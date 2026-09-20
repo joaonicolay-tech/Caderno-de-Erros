@@ -40,18 +40,31 @@
   MVP, checker, recovery, operação Windows, gate e review aprovados; decisão
   final `V0.4 PROMOTED`.
 - V0.5-P0: concluído — plano executável em
-  `tasks/plans/v05-release-execution-plan.md`; implementação V0.5 não iniciada.
+  `tasks/plans/v05-release-execution-plan.md`.
 - V0.5-S1: concluída — contrato normativo em
   `docs/V0.5_S1_Contratos_Normativos_e_Invariantes.md`; OD01 resolvida por
   retenção sanitizada de 90 dias e expurgo, OD02 parcialmente resolvida para
-  lifecycle, OD03--OD06 deferidas. A antiga S2 foi decomposta em S2A--S2D;
-  nenhuma delas foi autorizada ou implementada.
+  lifecycle, OD03--OD06 deferidas. A antiga S2 foi decomposta em S2A--S2D.
+- V0.5-S2A: concluída — fundação auditável append-only, categorias pessoais
+  não destrutivas, merge com projeção canônica, reagendamento e inclusão
+  manual foram implementados com migrations aditivas, upgrade/recovery
+  isolados, checker ampliado para 20 checks e gate GREEN.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: planejamento concluído; implementação **NOT AUTHORIZED** e não iniciada.
+- V0.5: P0, S1 e S2A concluídas; S2B, S2C e S2D **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S2A GREEN na segunda execução, exit code 0: 356 testes
+aprovados em 113,51 s, 87% de cobertura global, cobertura de domínio conforme
+o mínimo de 80%, banco vazio e migrations aprovados, formatação, Ruff, mypy,
+detect-secrets e pip-audit aprovados; duração total 157,6 s. A primeira
+execução terminou RED no controle de rastreabilidade porque as migrations S2A
+ainda não estavam no conjunto protegido; a correção preservou o manifesto
+histórico e acrescentou um manifesto exclusivo S2A, validado por 20 testes do
+gate. A8 deep foi APPROVED, sem Blocker/Major/Minor aberto. Não houve commit,
+push, tag, release ou antecipação de S2B/S2C/S2D.
 
 Gate documental V0.5-S1 GREEN, exit code 0: 338 testes aprovados em 78,21 s,
 88% de cobertura global, migrations sem mudanças, formatação, Ruff, mypy,
@@ -224,6 +237,13 @@ baseline V0.3, Architecture v1.0 ou gate.
 - `quality/v05-s1-normative-contract-result.md`: A8 e gate documental S1;
 - `tasks/completed/v05-s1-normative-contracts-and-invariants.md`: contrato e
   evidência de encerramento S1;
+- `tasks/plans/v05-s2a-auditable-foundation-plan.md`: plano A4 fechado antes
+  da implementação S2A;
+- `quality/v05-s2a-foundation-result.md` e
+  `quality/v05-s2a-migrations.json`: implementação, A8, upgrade/recovery, gate
+  e proteção das migrations S2A;
+- `tasks/completed/v05-s2a-auditable-foundation-and-nondestructive-management.md`:
+  contrato e evidência de encerramento S2A;
 - `quality/v05-p0-planning-result.md`: review A8 e gate de V0.5-P0;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
@@ -233,6 +253,6 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: revisão humana do contrato S1 e da decomposição antes de uma nova
-autorização independente de `V0.5-S2A`. Nenhum commit, push, tag ou release é
-autorizado por este estado; implementação V0.5 permanece `NOT AUTHORIZED`.
+Recomendação: revisão humana da entrega S2A e, se aprovada, autorização
+independente de `V0.5-S2B`. Nenhum commit, push, tag ou release é autorizado
+por este estado; S2B, S2C e S2D permanecem `NOT AUTHORIZED`.

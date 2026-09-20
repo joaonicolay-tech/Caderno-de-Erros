@@ -28,6 +28,18 @@ _SAFE_CODES: Final = frozenset(
     {
         "ACTIVE",
         "ARCHIVED",
+        "ERROR_CATEGORY",
+        "MANUAL",
+        "MANUAL_INCLUSION_D1",
+        "MERGED",
+        "PERSONAL",
+        "REVIEW_CYCLE",
+        "REVIEW_RESCHEDULED",
+        "MANUAL_REVIEW_INCLUDED",
+        "PERSONAL_CATEGORY_RENAMED",
+        "PERSONAL_CATEGORY_ARCHIVED",
+        "PERSONAL_CATEGORY_MERGED",
+        "STANDARD",
         "ATTEMPT",
         "ATTENTION",
         "CALCULATION",
@@ -76,6 +88,7 @@ _SAFE_CODES: Final = frozenset(
         "errors_error_category",
         "errors_errorclassification",
         "errors_errorclassificationrevision",
+        "operations_auditevent",
         "questions_alternative",
         "questions_board",
         "questions_exam",
@@ -85,6 +98,7 @@ _SAFE_CODES: Final = frozenset(
         "questions_source",
         "reviews_review",
         "reviews_reviewcycle",
+        "reviews_reviewschedulechange",
         "taxonomy_discipline",
         "taxonomy_subject",
         "taxonomy_subsubject",
@@ -434,6 +448,54 @@ INVARIANT_CATALOG: Final[tuple[InvariantSpec, ...]] = (
         "O recibo idempotente aponta para resultado incompatível.",
         _SAFE_ACTION,
     ),
+    InvariantSpec(
+        "CAT-001",
+        "Lifecycle e consolidação de categoria coerentes",
+        "Categorias padrão permanecem estáveis e merge pessoal termina em alvo ativo local.",
+        "error category",
+        "Kind/state/target respeitam V05-INV-001, V05-INV-011 e V05-INV-012.",
+        "SQL relacional recursivo",
+        InvariantSeverity.CRITICAL,
+        "Constraints locais não validam Workspace nem cadeias entre linhas.",
+        "Analytics pode vazar Workspace, entrar em ciclo ou contar alvo incorreto.",
+        "Validar lifecycle, alvo e cadeia até categoria pessoal ACTIVE.",
+        "Baixo; categorias arquivadas sem merge são válidas.",
+        "V0.5-S1 V05-INV-001/011/012",
+        "O lifecycle ou a cadeia de categoria é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "REV-005",
+        "Histórico de reagendamento coerente",
+        "A última mudança auditada deve explicar a data operacional da Review.",
+        "review reschedule",
+        "Mudança, Review e AuditEvent coincidem em Workspace, correlação e datas.",
+        "SQL relacional/window",
+        InvariantSeverity.CRITICAL,
+        "A atomicidade de serviço não é uma constraint intertabelas.",
+        "Fila pode usar data sem histórico ou auditoria correspondente.",
+        "Comparar cada mudança, evento correlato e última data por Review.",
+        "Baixo; Review sem reagendamento é explicitamente válida.",
+        "V0.5-S1 V05-INV-002/003/014",
+        "O histórico de reagendamento é incompatível.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "AUD-001",
+        "Auditoria funcional mínima e isolada",
+        "Eventos S2A devem usar entidade técnica do mesmo Workspace e metadados fechados.",
+        "functional audit",
+        "Evento, entidade, relação, correlação e razão codificada respeitam V05-INV-014.",
+        "SQL relacional",
+        InvariantSeverity.CRITICAL,
+        "entity_id é referência técnica deliberadamente sem FK genérica.",
+        "Uma trilha órfã ou cross-Workspace deixa de explicar a mutação.",
+        "Resolver somente os tipos fechados S2A sem ler conteúdo funcional.",
+        "Baixo; motivo opcional da inclusão manual continua permitido.",
+        "V0.5-S1 V05-INV-001/014",
+        "Um evento de auditoria funcional é incompatível.",
+        _SAFE_ACTION,
+    ),
 )
 
 
@@ -564,6 +626,11 @@ _SQL_RULES: Final[dict[str, str]] = {
                 OR a.question_revision_id != c.origin_question_revision_id
                 OR a.attempt_type != 'INITIAL' OR a.is_correct != 0 OR a.status != 'VALID'))
            OR (c.origin_kind = 'QUESTION_ACTIVATION' AND c.origin_attempt_id IS NOT NULL)
+           OR (c.origin_kind = 'MANUAL' AND
+               (a.id IS NULL OR a.workspace_id != c.workspace_id
+                OR a.question_id != c.question_id
+                OR a.question_revision_id != c.origin_question_revision_id
+                OR a.attempt_type != 'INITIAL' OR a.is_correct != 1 OR a.status != 'VALID'))
     """,
     "REV-002": """
         SELECT r.id AS entity_id, 'Review' AS entity_type,
@@ -580,9 +647,13 @@ _SQL_RULES: Final[dict[str, str]] = {
            OR (anchor.id IS NOT NULL AND
                (anchor.workspace_id != r.workspace_id OR anchor.question_id != r.question_id
                 OR anchor.status != 'VALID'
-                OR (r.sequence_number = 1 AND
-                    (c.origin_kind != 'INITIAL_ERROR' OR anchor.id != c.origin_attempt_id
-                     OR anchor.attempt_type != 'INITIAL'))
+                 OR (r.sequence_number = 1 AND NOT (
+                    (c.origin_kind = 'INITIAL_ERROR' AND anchor.id = c.origin_attempt_id
+                     AND anchor.attempt_type = 'INITIAL' AND anchor.is_correct = 0
+                     AND r.transition_code = 'INITIAL_ERROR_TO_D1')
+                    OR (c.origin_kind = 'MANUAL' AND anchor.id = c.origin_attempt_id
+                        AND anchor.attempt_type = 'INITIAL' AND anchor.is_correct = 1
+                        AND r.transition_code = 'MANUAL_INCLUSION_D1')))
                 OR (r.sequence_number > 1 AND
                     (anchor.attempt_type != 'REVIEW' OR NOT EXISTS (
                         SELECT 1 FROM reviews_review previous
@@ -636,12 +707,16 @@ _SQL_RULES: Final[dict[str, str]] = {
                CAST(r.sequence_number AS TEXT) AS sequence_number,
                r.stage_code AS stage_code, r.transition_code AS transition_code
         FROM ranked r
+        JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id
         LEFT JOIN attempts_attempt a ON a.id = r.scheduled_from_attempt_id
         WHERE r.sequence_number != r.expected_sequence
            OR (r.sequence_number = 1 AND r.stage_code != 'D1')
-           OR (r.sequence_number = 1 AND a.id IS NOT NULL AND
-               (r.transition_code != 'INITIAL_ERROR_TO_D1'
-                OR r.first_due_date != date(a.local_date, '+1 day')))
+           OR (r.sequence_number = 1 AND a.id IS NOT NULL AND NOT (
+                (c.origin_kind = 'INITIAL_ERROR'
+                 AND r.transition_code = 'INITIAL_ERROR_TO_D1'
+                 AND r.first_due_date = date(a.local_date, '+1 day'))
+                OR (c.origin_kind = 'MANUAL'
+                    AND r.transition_code = 'MANUAL_INCLUSION_D1')))
            OR (r.sequence_number > 1 AND NOT (
                 (r.transition_code = 'RESET_TO_D1_AFTER_ERROR' AND r.stage_code = 'D1')
                 OR (r.transition_code = 'ADVANCE_D1_TO_D7' AND r.stage_code = 'D7')
@@ -661,7 +736,7 @@ _SQL_RULES: Final[dict[str, str]] = {
         SELECT c.id AS entity_id, 'ErrorCategory' AS entity_type,
                NULL AS attempt_id, c.code AS category_code
         FROM errors_error_category c
-        WHERE c.code NOT IN (
+        WHERE c.category_kind = 'STANDARD' AND c.code NOT IN (
             'CONCEPTUAL', 'INTERPRETATION', 'CALCULATION', 'ATTENTION',
             'FORMULA_RULE', 'PROCEDURE', 'TRAP', 'TIME_SHORTAGE', 'GUESS', 'OTHER'
         )
@@ -673,10 +748,11 @@ _SQL_RULES: Final[dict[str, str]] = {
         JOIN errors_error_category c ON c.id = e.category_id
         WHERE e.workspace_id != a.workspace_id OR e.workspace_id != c.workspace_id
            OR a.is_correct = 1 OR a.status != 'VALID'
-           OR c.code NOT IN (
-                'CONCEPTUAL', 'INTERPRETATION', 'CALCULATION', 'ATTENTION',
-                'FORMULA_RULE', 'PROCEDURE', 'TRAP', 'TIME_SHORTAGE', 'GUESS', 'OTHER'
-           )
+            OR (c.category_kind = 'STANDARD' AND c.code NOT IN (
+                 'CONCEPTUAL', 'INTERPRETATION', 'CALCULATION', 'ATTENTION',
+                 'FORMULA_RULE', 'PROCEDURE', 'TRAP', 'TIME_SHORTAGE', 'GUESS', 'OTHER'
+           ))
+           OR c.category_kind NOT IN ('STANDARD', 'PERSONAL')
            OR (c.code = 'OTHER' AND e.other_description IS NULL)
     """,
     "ERR-002": """
@@ -718,6 +794,109 @@ _SQL_RULES: Final[dict[str, str]] = {
            OR (o.operation_kind = 'INITIAL_ERROR'
                AND (a.attempt_type != 'INITIAL' OR a.is_correct != 0))
            OR (o.operation_kind = 'REVIEW_COMPLETION' AND a.attempt_type != 'REVIEW')
+    """,
+    "CAT-001": """
+        WITH RECURSIVE walk(source_id, workspace_id, current_id, path, cycle) AS (
+            SELECT c.id, c.workspace_id, c.merged_into_id, ',' || c.id || ',', 0
+            FROM errors_error_category c
+            WHERE c.category_kind = 'PERSONAL' AND c.state = 'MERGED'
+            UNION ALL
+            SELECT w.source_id, w.workspace_id, target.merged_into_id,
+                   w.path || target.id || ',',
+                   CASE WHEN instr(w.path, ',' || target.id || ',') > 0
+                             OR target.workspace_id != w.workspace_id
+                             OR target.category_kind != 'PERSONAL'
+                        THEN 1 ELSE 0 END
+            FROM walk w
+            JOIN errors_error_category target ON target.id = w.current_id
+            WHERE w.cycle = 0 AND target.state = 'MERGED'
+        ), invalid_chain AS (
+            SELECT DISTINCT w.source_id
+            FROM walk w
+            LEFT JOIN errors_error_category terminal ON terminal.id = w.current_id
+            WHERE w.cycle = 1 OR terminal.id IS NULL
+               OR (terminal.state != 'MERGED' AND
+                   (terminal.workspace_id != w.workspace_id
+                    OR terminal.category_kind != 'PERSONAL'
+                    OR terminal.state != 'ACTIVE'))
+        )
+        SELECT c.id AS entity_id, 'ErrorCategory' AS entity_type,
+               c.category_kind AS category_kind, c.state AS state
+        FROM errors_error_category c
+        LEFT JOIN errors_error_category target ON target.id = c.merged_into_id
+        WHERE (c.category_kind = 'STANDARD' AND
+               (c.state != 'ACTIVE' OR c.merged_into_id IS NOT NULL OR c.code NOT IN (
+                 'CONCEPTUAL', 'INTERPRETATION', 'CALCULATION', 'ATTENTION',
+                 'FORMULA_RULE', 'PROCEDURE', 'TRAP', 'TIME_SHORTAGE', 'GUESS', 'OTHER')))
+           OR (c.category_kind = 'PERSONAL' AND
+               (c.code NOT LIKE 'PERSONAL_%' OR c.name_key = ''
+                OR (c.state = 'MERGED') != (c.merged_into_id IS NOT NULL)))
+           OR c.category_kind NOT IN ('STANDARD', 'PERSONAL')
+           OR c.id IN (SELECT source_id FROM invalid_chain)
+    """,
+    "REV-005": """
+        WITH latest AS (
+            SELECT h.*,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY h.review_id ORDER BY h.created_at DESC, h.id DESC
+                   ) AS latest_rank
+            FROM reviews_reviewschedulechange h
+        )
+        SELECT h.id AS entity_id, 'ReviewScheduleChange' AS entity_type,
+               h.review_id AS review_id, h.reason_code AS reason_code
+        FROM latest h
+        JOIN reviews_review r ON r.id = h.review_id
+        LEFT JOIN operations_auditevent a
+          ON a.workspace_id = h.workspace_id
+         AND a.event_code = 'REVIEW_RESCHEDULED'
+         AND a.entity_type = 'REVIEW'
+         AND a.entity_id = h.review_id
+         AND a.correlation_id = h.correlation_id
+        WHERE h.workspace_id != r.workspace_id OR h.previous_due_date = h.new_due_date
+           OR a.id IS NULL OR a.previous_date != h.previous_due_date
+           OR a.new_date != h.new_due_date OR a.reason_code != h.reason_code
+           OR a.timezone_name != h.timezone_name
+           OR (h.latest_rank = 1 AND r.current_due_date != h.new_due_date)
+        UNION ALL
+        SELECT r.id, 'Review', r.id, 'MISSING_SCHEDULE_CHANGE'
+        FROM reviews_review r
+        WHERE r.current_due_date != r.first_due_date
+          AND NOT EXISTS (
+              SELECT 1 FROM reviews_reviewschedulechange h WHERE h.review_id = r.id
+          )
+    """,
+    "AUD-001": """
+        SELECT a.id AS entity_id, 'AuditEvent' AS entity_type,
+               a.event_code AS event_code, a.entity_type AS audited_entity_type
+        FROM operations_auditevent a
+        LEFT JOIN reviews_review r
+          ON a.event_code = 'REVIEW_RESCHEDULED' AND r.id = a.entity_id
+        LEFT JOIN reviews_reviewcycle c
+          ON a.event_code = 'MANUAL_REVIEW_INCLUDED' AND c.id = a.entity_id
+        LEFT JOIN questions_question q
+          ON a.event_code = 'MANUAL_REVIEW_INCLUDED' AND q.id = a.related_entity_id
+        LEFT JOIN errors_error_category source
+          ON a.event_code IN ('PERSONAL_CATEGORY_RENAMED', 'PERSONAL_CATEGORY_ARCHIVED',
+                              'PERSONAL_CATEGORY_MERGED') AND source.id = a.entity_id
+        LEFT JOIN errors_error_category target
+          ON a.event_code = 'PERSONAL_CATEGORY_MERGED' AND target.id = a.related_entity_id
+        WHERE (a.reason_code IS NOT NULL AND
+               (a.reason_code NOT GLOB '[A-Z]*' OR a.reason_code GLOB '*[^A-Z0-9_]*'))
+           OR (a.event_code = 'REVIEW_RESCHEDULED' AND
+               (a.entity_type != 'REVIEW' OR r.id IS NULL OR r.workspace_id != a.workspace_id))
+           OR (a.event_code = 'MANUAL_REVIEW_INCLUDED' AND
+               (a.entity_type != 'REVIEW_CYCLE' OR c.id IS NULL OR q.id IS NULL
+                OR c.workspace_id != a.workspace_id OR q.workspace_id != a.workspace_id))
+           OR (a.event_code IN ('PERSONAL_CATEGORY_RENAMED', 'PERSONAL_CATEGORY_ARCHIVED') AND
+               (a.entity_type != 'ERROR_CATEGORY' OR source.id IS NULL
+                OR source.workspace_id != a.workspace_id OR a.related_entity_id IS NOT NULL))
+           OR (a.event_code = 'PERSONAL_CATEGORY_MERGED' AND
+               (a.entity_type != 'ERROR_CATEGORY' OR source.id IS NULL OR target.id IS NULL
+                OR source.workspace_id != a.workspace_id OR target.workspace_id != a.workspace_id))
+           OR (a.event_code IN ('PERSONAL_CATEGORY_RENAMED', 'PERSONAL_CATEGORY_ARCHIVED',
+                                'PERSONAL_CATEGORY_MERGED') AND a.reason_code IS NULL)
+           OR (a.event_code != 'REVIEW_RESCHEDULED' AND
+               (a.previous_date IS NOT NULL OR a.new_date IS NOT NULL OR a.timezone_name IS NOT NULL))
     """,
 }
 
@@ -924,7 +1103,7 @@ def _append_workspace_timezone_findings(
     return total
 
 
-def _append_activation_schedule_findings(
+def _append_inaugural_schedule_findings(
     database: sqlite3.Connection,
     spec: InvariantSpec,
     findings: list[IntegrityFinding],
@@ -937,7 +1116,7 @@ def _append_activation_schedule_findings(
         "FROM reviews_review r "
         "JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id "
         "JOIN accounts_workspace w ON w.id = r.workspace_id "
-        "WHERE c.origin_kind = 'QUESTION_ACTIVATION' AND r.sequence_number = 1 "
+        "WHERE c.origin_kind IN ('QUESTION_ACTIVATION', 'MANUAL') AND r.sequence_number = 1 "
         "ORDER BY r.id"
     )
     for technical_id, started_at, timezone_name, first_due_date in rows:
@@ -1011,7 +1190,7 @@ def run_integrity_check(
                         limit=finding_limit,
                     )
                     if spec.invariant_id == "REV-004":
-                        count += _append_activation_schedule_findings(
+                        count += _append_inaugural_schedule_findings(
                             database, spec, findings, limit=finding_limit
                         )
                         queries_executed += 1

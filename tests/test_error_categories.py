@@ -181,7 +181,7 @@ def test_seed_creates_no_unrelated_domain_tables_or_records() -> None:
     project_tables = {
         name
         for name in connection.introspection.table_names()
-        if name.startswith(("accounts_", "attempts_", "errors_", "reviews_"))
+        if name.startswith(("accounts_", "attempts_", "errors_", "reviews_", "operations_"))
     }
     assert project_tables == {
         "accounts_user",
@@ -191,8 +191,10 @@ def test_seed_creates_no_unrelated_domain_tables_or_records() -> None:
         "errors_error_category",
         "errors_errorclassification",
         "errors_errorclassificationrevision",
+        "operations_auditevent",
         "reviews_review",
         "reviews_reviewcycle",
+        "reviews_reviewschedulechange",
     }
     for learning_table in project_tables - {
         "accounts_user",

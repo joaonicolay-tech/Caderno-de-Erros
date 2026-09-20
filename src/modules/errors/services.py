@@ -4,20 +4,26 @@ import logging
 import uuid
 from dataclasses import dataclass
 
-from django.db import transaction
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from django.db.models import F, Max
 
 from modules.accounts.models import Workspace
 from modules.attempts.persistence import run_sqlite_critical_write
 from modules.operations.correlation import correlation_scope
 from modules.operations.events import EventCode, EventOutcome
+from modules.operations.models import AuditEntityType, AuditEventCode
+from modules.operations.services import record_audit_event
 from modules.operations.structured_logging import emit_event
+from modules.operations.validators import normalize_reason_code
 from shared.domain.time import Clock, SystemClock
 
 from .catalog import STANDARD_ERROR_CATEGORIES, normalize_name_key
 from .models import (
     ErrorCategory,
     ErrorCategoryCode,
+    ErrorCategoryKind,
+    ErrorCategoryState,
     ErrorClassification,
     ErrorClassificationRevision,
 )
@@ -33,6 +39,249 @@ class StandardCategorySeedResult:
 
 class ErrorDiagnosisConflictError(RuntimeError):
     """A projeção de diagnóstico mudou desde a versão apresentada."""
+
+
+class PersonalCategoryConflictError(RuntimeError):
+    """A categoria pessoal não está elegível ou mudou concorrentemente."""
+
+
+def _personal_name(value: str) -> tuple[str, str]:
+    display_name = " ".join(value.split())
+    if not display_name or len(display_name) > 120:
+        raise ValidationError("O nome da categoria pessoal deve possuir de 1 a 120 caracteres.")
+    return display_name, normalize_name_key(display_name)
+
+
+class PersonalCategoryService:
+    """Gerencie categorias pessoais sem reescrever classificações históricas."""
+
+    def __init__(self, *, workspace_id: uuid.UUID) -> None:
+        self.workspace_id = workspace_id
+
+    def create(self, *, display_name: str) -> ErrorCategory:
+        name, name_key = _personal_name(display_name)
+
+        def write() -> ErrorCategory:
+            try:
+                with transaction.atomic(durable=True):
+                    if not Workspace.objects.filter(pk=self.workspace_id).exists():
+                        raise PersonalCategoryConflictError("Workspace não disponível.")
+                    if ErrorCategory.objects.filter(
+                        workspace_id=self.workspace_id,
+                        category_kind=ErrorCategoryKind.PERSONAL,
+                        name_key=name_key,
+                    ).exists():
+                        raise PersonalCategoryConflictError(
+                            "Já existe categoria pessoal com esse nome no Workspace."
+                        )
+                    return ErrorCategory.objects.create(
+                        workspace_id=self.workspace_id,
+                        code=f"PERSONAL_{uuid.uuid4().hex.upper()}",
+                        display_name=name,
+                        name_key=name_key,
+                        description="",
+                        category_kind=ErrorCategoryKind.PERSONAL,
+                        state=ErrorCategoryState.ACTIVE,
+                    )
+            except IntegrityError as error:
+                raise PersonalCategoryConflictError(
+                    "Já existe categoria pessoal com esse nome no Workspace."
+                ) from error
+
+        return run_sqlite_critical_write(write)
+
+    def rename(
+        self,
+        *,
+        category_id: uuid.UUID,
+        display_name: str,
+        reason_code: str,
+        expected_lock_version: int,
+        correlation_id: str | None = None,
+    ) -> ErrorCategory:
+        name, name_key = _personal_name(display_name)
+        reason = normalize_reason_code(reason_code, required=True)
+
+        def write() -> ErrorCategory:
+            try:
+                with transaction.atomic(durable=True):
+                    with correlation_scope(correlation_id) as correlation:
+                        category = self._locked_active_or_archived(category_id)
+                        if category.lock_version != expected_lock_version:
+                            raise PersonalCategoryConflictError("A categoria mudou; recarregue.")
+                        changed = (
+                            ErrorCategory.objects.filter(
+                                pk=category.id,
+                                workspace_id=self.workspace_id,
+                                category_kind=ErrorCategoryKind.PERSONAL,
+                                lock_version=expected_lock_version,
+                            )
+                            .exclude(state=ErrorCategoryState.MERGED)
+                            .update(
+                                display_name=name,
+                                name_key=name_key,
+                                lock_version=F("lock_version") + 1,
+                            )
+                        )
+                        if changed != 1:
+                            raise PersonalCategoryConflictError("A categoria mudou; recarregue.")
+                        record_audit_event(
+                            workspace_id=self.workspace_id,
+                            event_code=AuditEventCode.PERSONAL_CATEGORY_RENAMED,
+                            entity_type=AuditEntityType.ERROR_CATEGORY,
+                            entity_id=category.id,
+                            correlation_id=correlation,
+                            reason_code=reason,
+                        )
+                        category.refresh_from_db()
+                        return category
+            except IntegrityError as error:
+                raise PersonalCategoryConflictError(
+                    "Já existe categoria pessoal com esse nome no Workspace."
+                ) from error
+
+        return run_sqlite_critical_write(write)
+
+    def archive(
+        self,
+        *,
+        category_id: uuid.UUID,
+        reason_code: str,
+        expected_lock_version: int,
+        correlation_id: str | None = None,
+    ) -> ErrorCategory:
+        reason = normalize_reason_code(reason_code, required=True)
+
+        def write() -> ErrorCategory:
+            with transaction.atomic(durable=True):
+                with correlation_scope(correlation_id) as correlation:
+                    category = self._locked_active(category_id)
+                    changed = ErrorCategory.objects.filter(
+                        pk=category.id,
+                        workspace_id=self.workspace_id,
+                        category_kind=ErrorCategoryKind.PERSONAL,
+                        state=ErrorCategoryState.ACTIVE,
+                        lock_version=expected_lock_version,
+                    ).update(
+                        state=ErrorCategoryState.ARCHIVED,
+                        lock_version=F("lock_version") + 1,
+                    )
+                    if changed != 1:
+                        raise PersonalCategoryConflictError("A categoria mudou; recarregue.")
+                    record_audit_event(
+                        workspace_id=self.workspace_id,
+                        event_code=AuditEventCode.PERSONAL_CATEGORY_ARCHIVED,
+                        entity_type=AuditEntityType.ERROR_CATEGORY,
+                        entity_id=category.id,
+                        correlation_id=correlation,
+                        reason_code=reason,
+                    )
+                    category.refresh_from_db()
+                    return category
+
+        return run_sqlite_critical_write(write)
+
+    def merge(
+        self,
+        *,
+        source_id: uuid.UUID,
+        target_id: uuid.UUID,
+        reason_code: str,
+        expected_lock_version: int,
+        correlation_id: str | None = None,
+    ) -> ErrorCategory:
+        if source_id == target_id:
+            raise PersonalCategoryConflictError("Uma categoria não pode ser consolidada em si.")
+        reason = normalize_reason_code(reason_code, required=True)
+
+        def write() -> ErrorCategory:
+            with transaction.atomic(durable=True):
+                with correlation_scope(correlation_id) as correlation:
+                    categories = {
+                        item.id: item
+                        for item in ErrorCategory.objects.select_for_update().filter(
+                            workspace_id=self.workspace_id,
+                            category_kind=ErrorCategoryKind.PERSONAL,
+                        )
+                    }
+                    source = categories.get(source_id)
+                    target = categories.get(target_id)
+                    if (
+                        source is None
+                        or target is None
+                        or source.state != ErrorCategoryState.ACTIVE
+                        or target.state != ErrorCategoryState.ACTIVE
+                        or source.lock_version != expected_lock_version
+                    ):
+                        raise PersonalCategoryConflictError(
+                            "Merge exige origem e alvo pessoais ativos do mesmo Workspace."
+                        )
+                    current = target
+                    visited: set[uuid.UUID] = set()
+                    while current.merged_into_id is not None:
+                        if current.id == source.id or current.id in visited:
+                            raise PersonalCategoryConflictError("Merge criaria um ciclo.")
+                        visited.add(current.id)
+                        next_category = categories.get(current.merged_into_id)
+                        if next_category is None:
+                            raise PersonalCategoryConflictError("Cadeia de merge inválida.")
+                        current = next_category
+                    changed = ErrorCategory.objects.filter(
+                        pk=source.id,
+                        workspace_id=self.workspace_id,
+                        category_kind=ErrorCategoryKind.PERSONAL,
+                        state=ErrorCategoryState.ACTIVE,
+                        lock_version=expected_lock_version,
+                    ).update(
+                        state=ErrorCategoryState.MERGED,
+                        merged_into=target,
+                        lock_version=F("lock_version") + 1,
+                    )
+                    if changed != 1:
+                        raise PersonalCategoryConflictError("A categoria mudou; recarregue.")
+                    record_audit_event(
+                        workspace_id=self.workspace_id,
+                        event_code=AuditEventCode.PERSONAL_CATEGORY_MERGED,
+                        entity_type=AuditEntityType.ERROR_CATEGORY,
+                        entity_id=source.id,
+                        related_entity_id=target.id,
+                        correlation_id=correlation,
+                        reason_code=reason,
+                    )
+                    source.refresh_from_db()
+                    return source
+
+        return run_sqlite_critical_write(write)
+
+    def _locked_active(self, category_id: uuid.UUID) -> ErrorCategory:
+        category = (
+            ErrorCategory.objects.select_for_update()
+            .filter(
+                pk=category_id,
+                workspace_id=self.workspace_id,
+                category_kind=ErrorCategoryKind.PERSONAL,
+                state=ErrorCategoryState.ACTIVE,
+            )
+            .first()
+        )
+        if category is None:
+            raise PersonalCategoryConflictError("Categoria pessoal ativa não disponível.")
+        return category
+
+    def _locked_active_or_archived(self, category_id: uuid.UUID) -> ErrorCategory:
+        category = (
+            ErrorCategory.objects.select_for_update()
+            .filter(
+                pk=category_id,
+                workspace_id=self.workspace_id,
+                category_kind=ErrorCategoryKind.PERSONAL,
+                state__in=[ErrorCategoryState.ACTIVE, ErrorCategoryState.ARCHIVED],
+            )
+            .first()
+        )
+        if category is None:
+            raise PersonalCategoryConflictError("Categoria pessoal não disponível.")
+        return category
 
 
 class ErrorDiagnosisService:
@@ -75,6 +324,13 @@ class ErrorDiagnosisService:
                 if classification.attempt.is_correct:
                     raise ErrorDiagnosisConflictError(
                         "Somente tentativa incorreta possui diagnóstico."
+                    )
+                if (
+                    category.category_kind == ErrorCategoryKind.PERSONAL
+                    and category.state != ErrorCategoryState.ACTIVE
+                ):
+                    raise ErrorDiagnosisConflictError(
+                        "Somente categoria pessoal ativa aceita nova classificação."
                     )
                 if category.code == ErrorCategoryCode.OTHER and description is None:
                     raise ValueError("A categoria OTHER exige descrição.")

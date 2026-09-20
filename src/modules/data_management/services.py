@@ -22,7 +22,8 @@ from django.db.migrations.loader import MigrationLoader
 
 from modules.accounts.models import UserStatus, WorkspaceLocale
 from modules.accounts.services import LOCAL_USER_ID, LOCAL_WORKSPACE_ID
-from modules.errors.catalog import STANDARD_ERROR_CATEGORIES
+from modules.errors.catalog import STANDARD_ERROR_CATEGORIES, normalize_name_key
+from modules.errors.models import ErrorCategoryKind, ErrorCategoryState
 from modules.operations.correlation import correlation_scope
 from modules.operations.events import EventCode, EventOutcome
 from modules.operations.integrity import (
@@ -480,7 +481,8 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
                 "SELECT id, owner_user_id, locale, timezone_name FROM accounts_workspace",
             )
             category_rows = database.execute(
-                "SELECT code, display_name, description, workspace_id FROM errors_error_category"
+                "SELECT id, code, display_name, description, workspace_id, category_kind, "
+                "state, merged_into_id, name_key FROM errors_error_category"
             ).fetchall()
             counts = {
                 "discipline_count": _fetch_one(
@@ -590,7 +592,11 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
                 "OR c.workspace_id != a.workspace_id OR c.question_id != a.question_id "
                 "OR a.question_revision_id != qr.id OR a.attempt_type != 'INITIAL' "
                 "OR a.is_correct = 1 OR a.status != 'VALID')) "
-                "OR (c.origin_kind = 'QUESTION_ACTIVATION' AND c.origin_attempt_id IS NOT NULL) LIMIT 1",
+                "OR (c.origin_kind = 'QUESTION_ACTIVATION' AND c.origin_attempt_id IS NOT NULL) "
+                "OR (c.origin_kind = 'MANUAL' AND (a.id IS NULL "
+                "OR c.workspace_id != a.workspace_id OR c.question_id != a.question_id "
+                "OR a.question_revision_id != qr.id OR a.attempt_type != 'INITIAL' "
+                "OR a.is_correct != 1 OR a.status != 'VALID')) LIMIT 1",
                 "SELECT 1 FROM reviews_review r "
                 "JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id "
                 "JOIN questions_question q ON q.id = r.question_id "
@@ -649,19 +655,81 @@ def _reconcile_minimal_foundation(path: Path) -> ReconciliationResult:
         for definition in STANDARD_ERROR_CATEGORIES
     }
     restored_categories: dict[str, tuple[str, str]] = {}
-    for code, display_name, description, workspace_id in category_rows:
-        if (
-            _uuid(workspace_id, invalid_message="A categoria possui Workspace inválido.")
-            != LOCAL_WORKSPACE_ID
-            or code in restored_categories
+    personal_categories: dict[UUID, tuple[str, UUID | None]] = {}
+    personal_names: set[str] = set()
+    for (
+        category_id,
+        code,
+        display_name,
+        description,
+        workspace_id,
+        category_kind,
+        state,
+        merged_into_id,
+        name_key,
+    ) in category_rows:
+        if _uuid(workspace_id, invalid_message="A categoria possui Workspace inválido.") != (
+            LOCAL_WORKSPACE_ID
         ):
             raise RestoreError("As categorias restauradas violam o isolamento do Workspace.")
-        restored_categories[cast(str, code)] = (
-            cast(str, display_name),
-            cast(str, description),
+        if category_kind == ErrorCategoryKind.STANDARD:
+            if (
+                state != ErrorCategoryState.ACTIVE
+                or merged_into_id is not None
+                or code in restored_categories
+            ):
+                raise RestoreError("Uma categoria padrão restaurada possui lifecycle inválido.")
+            restored_categories[cast(str, code)] = (
+                cast(str, display_name),
+                cast(str, description),
+            )
+            continue
+        normalized_name = normalize_name_key(cast(str, display_name))
+        category_uuid = _uuid(
+            category_id,
+            invalid_message="A categoria pessoal possui identificador inválido.",
         )
+        target_uuid = (
+            _uuid(
+                merged_into_id,
+                invalid_message="O alvo de categoria pessoal possui identificador inválido.",
+            )
+            if merged_into_id is not None
+            else None
+        )
+        if (
+            category_kind != ErrorCategoryKind.PERSONAL
+            or not cast(str, code).startswith("PERSONAL_")
+            or not normalized_name
+            or normalized_name != name_key
+            or normalized_name in personal_names
+            or state not in ErrorCategoryState.values
+            or (state == ErrorCategoryState.MERGED) != (target_uuid is not None)
+        ):
+            raise RestoreError("Uma categoria pessoal restaurada possui lifecycle inválido.")
+        personal_names.add(normalized_name)
+        personal_categories[category_uuid] = (cast(str, state), target_uuid)
     if restored_categories != expected_categories:
         raise RestoreError("As dez categorias padrão restauradas não correspondem ao catálogo.")
+    for category_id, (state, target_id) in personal_categories.items():
+        if state != ErrorCategoryState.MERGED:
+            continue
+        visited = {category_id}
+        current_id = target_id
+        while current_id is not None:
+            if current_id in visited:
+                raise RestoreError("Uma consolidação pessoal restaurada possui ciclo.")
+            visited.add(current_id)
+            target = personal_categories.get(current_id)
+            if target is None:
+                raise RestoreError("Uma consolidação pessoal restaurada possui alvo inválido.")
+            target_state, current_id = target
+            if target_state == ErrorCategoryState.ACTIVE:
+                break
+            if target_state != ErrorCategoryState.MERGED:
+                raise RestoreError("Uma consolidação pessoal restaurada não termina ativa.")
+        else:
+            raise RestoreError("Uma consolidação pessoal restaurada não possui alvo ativo.")
 
     return ReconciliationResult(
         migration_count=len(applied_migrations),

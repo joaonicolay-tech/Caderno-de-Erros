@@ -11,6 +11,7 @@ $env:UV_PYTHON_INSTALL_DIR = Join-Path $toolsDirectory "python"
 $qualityReportsDirectory = Join-Path $toolsDirectory "quality"
 $coverageReport = ".tools/quality/coverage.json"
 $gateManifest = "quality/v03-stage5-gate.json"
+$additionalMigrationsManifest = "quality/v05-s2a-migrations.json"
 $pytestBaseTemp = Join-Path ([System.IO.Path]::GetTempPath()) (
     "cei-pytest-" + [Guid]::NewGuid().ToString("N")
 )
@@ -88,7 +89,8 @@ Invoke-Tool "validar runtime" @(
 )
 Invoke-Tool "validar rastreabilidade e baseline documental" @(
     "run", "--locked", "python", "scripts/verify_v01.py", "repository",
-    "--manifest", $gateManifest
+    "--manifest", $gateManifest,
+    "--additional-migrations", $additionalMigrationsManifest
 )
 Invoke-Tool "verificar perfil de desenvolvimento" @(
     "run", "--locked", "python", "manage.py", "check",

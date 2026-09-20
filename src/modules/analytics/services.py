@@ -8,7 +8,10 @@ from decimal import Decimal
 from django.db.models import Count, Q, QuerySet
 
 from modules.attempts.models import Attempt, AttemptStatus, AttemptType
-from modules.errors.models import ErrorCategory
+from modules.errors.selectors import (
+    effective_category_projection,
+    source_category_ids_for_target,
+)
 from modules.questions.models import Question
 from modules.reviews.models import Review
 from modules.reviews.policies import ReviewTemporalStatus
@@ -367,62 +370,45 @@ class AnalyticsService:
 
     def error_categories(self, *, filters: AttemptFilters | None = None) -> ErrorCategoryBreakdown:
         filters = filters or AttemptFilters()
-        prefix = "classifications__attempt__"
-        eligible = _attempt_condition(
-            workspace_id=self.workspace_id,
-            filters=filters,
-            prefix=prefix,
-        ) & Q(
-            classifications__workspace_id=self.workspace_id,
-            classifications__attempt__is_correct=False,
+        eligible_attempts = valid_attempts(workspace_id=self.workspace_id, filters=filters).filter(
+            is_correct=False
         )
-        categories = (
-            ErrorCategory.objects.filter(workspace_id=self.workspace_id)
-            .annotate(analytics_errors=Count("classifications", filter=eligible))
-            .order_by("code", "id")
-        )
-        raw_rows: list[tuple[ErrorCategory, int]] = []
-        classified = 0
-        for category in categories:
-            errors = int(category.__dict__["analytics_errors"])
-            raw_rows.append((category, errors))
-            classified += errors
+        grouped_counts: dict[uuid.UUID | None, int] = {
+            row["error_classification__category_id"]: int(row["analytics_errors"])
+            for row in eligible_attempts.filter(
+                Q(error_classification__isnull=True)
+                | Q(
+                    error_classification__workspace_id=self.workspace_id,
+                    error_classification__category__workspace_id=self.workspace_id,
+                )
+            )
+            .order_by()
+            .values("error_classification__category_id")
+            .annotate(analytics_errors=Count("id"))
+        }
+        unclassified = grouped_counts.pop(None, 0)
+        source_counts = {
+            source_id: errors
+            for source_id, errors in grouped_counts.items()
+            if source_id is not None
+        }
+        projection = effective_category_projection(workspace_id=self.workspace_id)
+        effective_counts = {category.id: 0 for category in projection.categories}
+        for source_id, errors in source_counts.items():
+            target_id = projection.target_by_source.get(source_id)
+            if target_id in effective_counts:
+                effective_counts[target_id] += errors
+        classified = sum(effective_counts.values())
         rows = tuple(
             ErrorCategoryRow(
                 category_id=category.id,
                 code=category.code,
                 display_name=category.display_name,
-                errors=errors,
-                share_of_classified=_ratio(errors, classified),
+                errors=effective_counts[category.id],
+                share_of_classified=_ratio(effective_counts[category.id], classified),
             )
-            for category, errors in raw_rows
+            for category in projection.categories
         )
-        unclassified_attempts = Attempt.objects.filter(
-            workspace_id=self.workspace_id,
-            question_id__in=Question.objects.filter(workspace_id=self.workspace_id).values("id"),
-            status=AttemptStatus.VALID,
-            attempt_type__in=(AttemptType.INITIAL, AttemptType.REVIEW),
-            is_correct=False,
-            error_classification__isnull=True,
-        )
-        if filters.period.start is not None and filters.period.end is not None:
-            unclassified_attempts = unclassified_attempts.filter(
-                local_date__gte=filters.period.start,
-                local_date__lte=filters.period.end,
-            )
-        if filters.attempt_type is not None:
-            unclassified_attempts = unclassified_attempts.filter(attempt_type=filters.attempt_type)
-        if filters.discipline_id is not None:
-            unclassified_attempts = unclassified_attempts.filter(
-                question__discipline_id=filters.discipline_id,
-                question__discipline__workspace_id=self.workspace_id,
-            )
-        if filters.subject_id is not None:
-            unclassified_attempts = unclassified_attempts.filter(
-                question__subject_id=filters.subject_id,
-                question__subject__workspace_id=self.workspace_id,
-            )
-        unclassified = unclassified_attempts.count()
         return ErrorCategoryBreakdown(
             rows=rows,
             classified_errors=classified,
@@ -443,9 +429,13 @@ class AnalyticsService:
         if category_id is None:
             queryset = queryset.filter(error_classification__isnull=True)
         else:
+            source_ids = source_category_ids_for_target(
+                workspace_id=self.workspace_id,
+                target_id=category_id,
+            )
             queryset = queryset.filter(
                 error_classification__workspace_id=self.workspace_id,
-                error_classification__category_id=category_id,
+                error_classification__category_id__in=source_ids,
                 error_classification__category__workspace_id=self.workspace_id,
             )
         return queryset.select_related("question", "error_classification__category")

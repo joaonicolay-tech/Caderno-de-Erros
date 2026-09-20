@@ -9,14 +9,16 @@ from django.db.models import Q
 
 from modules.accounts.models import Workspace
 from modules.attempts.models import Attempt, AttemptStatus, AttemptType
+from modules.operations.validators import normalize_reason_code
 from modules.questions.models import Question, QuestionRevision
 
 
 class ReviewCycleOriginKind(models.TextChoices):
-    """Origem automática disponível no recorte V0.3."""
+    """Origem do ciclo sob a política fixa."""
 
     INITIAL_ERROR = "INITIAL_ERROR", "Erro inicial"
     QUESTION_ACTIVATION = "QUESTION_ACTIVATION", "Ativacao da questao"
+    MANUAL = "MANUAL", "Inclusão manual"
 
 
 class ReviewCycleState(models.TextChoices):
@@ -120,6 +122,10 @@ class ReviewCycle(models.Model):
                         origin_kind=ReviewCycleOriginKind.QUESTION_ACTIVATION,
                         origin_attempt__isnull=True,
                     )
+                    | Q(
+                        origin_kind=ReviewCycleOriginKind.MANUAL,
+                        origin_attempt__isnull=False,
+                    )
                 ),
                 name="cycle_origin_attempt_valid",
             ),
@@ -201,6 +207,19 @@ class ReviewCycle(models.Model):
         if self.origin_kind == ReviewCycleOriginKind.QUESTION_ACTIVATION:
             if self.origin_attempt_id is not None:
                 raise ValidationError("Activation cycle cannot have an origin attempt.")
+            return
+        if self.origin_kind == ReviewCycleOriginKind.MANUAL:
+            if attempt is None or (
+                attempt.workspace_id != self.workspace_id
+                or attempt.question_id != self.question_id
+                or attempt.question_revision_id != self.origin_question_revision_id
+                or attempt.attempt_type != AttemptType.INITIAL
+                or not attempt.is_correct
+                or attempt.status != AttemptStatus.VALID
+            ):
+                raise ValidationError(
+                    "O ciclo manual exige tentativa inicial correta válida do mesmo contexto."
+                )
             return
         if (
             self.origin_kind != ReviewCycleOriginKind.INITIAL_ERROR
@@ -350,6 +369,16 @@ class Review(models.Model):
         return f"{self.review_cycle_id} #{self.sequence_number} {self.stage_code}"
 
     def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self._state.adding:
+            stored = (
+                type(self)
+                .objects.only("first_due_date", "stage_code", "policy_code")
+                .get(pk=self.pk)
+            )
+            if self.first_due_date != stored.first_due_date:
+                raise ValidationError("first_due_date é imutável.")
+            if self.stage_code != stored.stage_code or self.policy_code != stored.policy_code:
+                raise ValidationError("Estágio e policy de uma Review existente são imutáveis.")
         self._validate_references()
         if (
             self.state == ReviewState.PENDING
@@ -402,3 +431,66 @@ class Review(models.Model):
             or anchor.status != AttemptStatus.VALID
         ):
             raise ValidationError("A âncora da Review deve ser válida e do mesmo contexto.")
+
+
+class ReviewScheduleChangeQuerySet(models.QuerySet["ReviewScheduleChange"]):
+    def update(self, **kwargs: Any) -> int:
+        raise ValidationError("ReviewScheduleChange é append-only.")
+
+    def delete(self) -> tuple[int, dict[str, int]]:
+        raise ValidationError("ReviewScheduleChange é append-only.")
+
+
+class ReviewScheduleChange(models.Model):
+    """Fato imutável de uma mudança manual de data operacional."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    workspace = models.ForeignKey(
+        Workspace,
+        on_delete=models.PROTECT,
+        related_name="review_schedule_changes",
+    )
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.PROTECT,
+        related_name="schedule_changes",
+    )
+    previous_due_date = models.DateField()
+    new_due_date = models.DateField()
+    timezone_name = models.CharField(max_length=64)
+    reason_code = models.CharField(max_length=64)
+    correlation_id = models.UUIDField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = ReviewScheduleChangeQuerySet.as_manager()
+
+    class Meta:
+        db_table = "reviews_reviewschedulechange"
+        indexes: ClassVar[list[models.Index]] = [
+            models.Index(
+                fields=["workspace", "review", "created_at"],
+                name="schedule_ws_review_time_idx",
+            )
+        ]
+        constraints: ClassVar[list[models.BaseConstraint]] = [
+            models.CheckConstraint(
+                condition=~Q(reason_code=""),
+                name="schedule_reason_not_empty",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.review_id}:{self.previous_due_date}->{self.new_due_date}"
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self._state.adding:
+            raise ValidationError("ReviewScheduleChange é append-only.")
+        self.reason_code = normalize_reason_code(self.reason_code, required=True) or ""
+        review = Review.objects.filter(pk=self.review_id).only("workspace_id").first()
+        if review is None or review.workspace_id != self.workspace_id:
+            raise ValidationError("A mudança deve pertencer ao Workspace da Review.")
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args: Any, **kwargs: Any) -> tuple[int, dict[str, int]]:
+        raise ValidationError("ReviewScheduleChange é append-only.")
