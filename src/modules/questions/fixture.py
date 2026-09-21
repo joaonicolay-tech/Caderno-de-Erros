@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from uuid import UUID, uuid5
 
 from django.conf import settings
-from django.db import transaction
+from django.db import models, transaction
 
 from modules.accounts.services import LOCAL_WORKSPACE_ID
 from modules.taxonomy.models import Discipline, Subject, Subsubject
@@ -106,7 +106,8 @@ def _revision(
         for position, label in enumerate(("A", "B", "C", "D"), start=1)
     )
     Alternative.objects.bulk_create(alternatives)
-    QuestionRevision.objects.filter(pk=revision.id).update(
+    models.QuerySet.update(
+        QuestionRevision.objects.filter(pk=revision.id),
         correct_alternative_id=alternatives[1].id,
         is_current=current,
         created_at=_INSTANT,
@@ -194,7 +195,7 @@ def load_v02_fixture(*, seed: str = FIXTURE_SEED) -> FixtureLoadResult:
         current=True,
         change_kind=RevisionChangeKind.INITIAL,
     )
-    QuestionRevision.objects.filter(pk=first.id).update(is_current=False)
+    models.QuerySet.update(QuestionRevision.objects.filter(pk=first.id), is_current=False)
     _revision(
         question=active,
         name="active:two",

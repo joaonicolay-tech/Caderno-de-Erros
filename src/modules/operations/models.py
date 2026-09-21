@@ -20,6 +20,7 @@ class AuditEventCode(models.TextChoices):
     PERSONAL_CATEGORY_MERGED = "PERSONAL_CATEGORY_MERGED", "Categoria pessoal consolidada"
     ATTEMPT_VOIDED = "ATTEMPT_VOIDED", "Tentativa anulada"
     ATTEMPT_REPLACED = "ATTEMPT_REPLACED", "Tentativa substituída"
+    ANSWER_KEY_CORRECTED = "ANSWER_KEY_CORRECTED", "Gabarito corrigido"
 
 
 class AuditEntityType(models.TextChoices):
@@ -27,6 +28,7 @@ class AuditEntityType(models.TextChoices):
     REVIEW_CYCLE = "REVIEW_CYCLE", "Ciclo de revisão"
     ERROR_CATEGORY = "ERROR_CATEGORY", "Categoria de erro"
     ATTEMPT = "ATTEMPT", "Tentativa"
+    QUESTION = "QUESTION", "Questão"
 
 
 class AuditEventQuerySet(models.QuerySet["AuditEvent"]):
@@ -49,6 +51,7 @@ class AuditEvent(models.Model):
     event_code = models.CharField(max_length=40, choices=AuditEventCode.choices)
     entity_type = models.CharField(max_length=32, choices=AuditEntityType.choices)
     entity_id = models.UUIDField()
+    previous_entity_id = models.UUIDField(null=True, blank=True)
     related_entity_id = models.UUIDField(null=True, blank=True)
     correlation_id = models.UUIDField()
     reason_code = models.CharField(max_length=64, null=True, blank=True)  # noqa: DJ001
@@ -119,6 +122,25 @@ class AuditEvent(models.Model):
                     )
                 ),
                 name="audit_attempt_metadata_valid",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    Q(
+                        event_code=AuditEventCode.ANSWER_KEY_CORRECTED,
+                        entity_type=AuditEntityType.QUESTION,
+                        previous_entity_id__isnull=False,
+                        related_entity_id__isnull=False,
+                        reason_code__isnull=False,
+                        previous_date__isnull=True,
+                        new_date__isnull=True,
+                        timezone_name__isnull=True,
+                    )
+                    | (
+                        ~Q(event_code=AuditEventCode.ANSWER_KEY_CORRECTED)
+                        & Q(previous_entity_id__isnull=True)
+                    )
+                ),
+                name="audit_answer_key_metadata_valid",
             ),
         ]
 

@@ -199,6 +199,42 @@ def get_learning_timeline(
                 f"{audit.get_event_code_display()}{relation}; correlação {audit.correlation_id}",
             )
         )
+    revision_numbers = dict(
+        QuestionRevision.objects.filter(
+            workspace_id=workspace_id,
+            question_id=question_id,
+        ).values_list("id", "version_number")
+    )
+    answer_key_events = AuditEvent.objects.filter(
+        workspace_id=workspace_id,
+        event_code=AuditEventCode.ANSWER_KEY_CORRECTED,
+        entity_type="QUESTION",
+        entity_id=question_id,
+    )
+    for audit in answer_key_events:
+        previous_number = (
+            revision_numbers.get(audit.previous_entity_id)
+            if audit.previous_entity_id is not None
+            else None
+        )
+        new_number = (
+            revision_numbers.get(audit.related_entity_id)
+            if audit.related_entity_id is not None
+            else None
+        )
+        events.append(
+            TimelineEvent(
+                audit.created_at,
+                15,
+                audit.id,
+                "answer_key_corrected",
+                (
+                    f"Gabarito corrigido: revisão {previous_number} → {new_number}; "
+                    f"correlação {audit.correlation_id}"
+                ),
+                revision_number=new_number,
+            )
+        )
     classifications = ErrorClassification.objects.filter(
         workspace_id=workspace_id, attempt__question_id=question_id
     ).select_related("category")

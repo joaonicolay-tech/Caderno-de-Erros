@@ -53,6 +53,8 @@ from .validators import (
     validate_reference_year,
 )
 
+RevisionFaultHook = Callable[[str], None]
+
 
 @dataclass(frozen=True, slots=True)
 class AlternativeInput:
@@ -518,6 +520,7 @@ def _create_revision(
     notes: str | None,
     change_kind: str,
     change_reason: str | None,
+    fault_hook: RevisionFaultHook | None = None,
 ) -> QuestionRevision:
     latest = question.revisions.aggregate(maximum=Max("version_number"))["maximum"]
     version_number = 1 if latest is None else int(latest) + 1
@@ -533,6 +536,8 @@ def _create_revision(
         change_kind=change_kind,
         change_reason=change_reason,
     )
+    if fault_hook is not None:
+        fault_hook("after_revision")
     rows = [
         Alternative(
             workspace_id=question.workspace_id,
@@ -545,14 +550,54 @@ def _create_revision(
         for position, (text_value, label, text_key) in enumerate(alternatives, start=1)
     ]
     Alternative.objects.bulk_create(rows)
+    if fault_hook is not None:
+        fault_hook("after_alternatives")
     if correct_alternative_position is not None:
         correct = rows[correct_alternative_position - 1]
-        QuestionRevision.objects.filter(pk=revision.id).update(correct_alternative_id=correct.id)
+        models.QuerySet.update(
+            QuestionRevision.objects.filter(pk=revision.id),
+            correct_alternative_id=correct.id,
+        )
         revision.correct_alternative_id = correct.id
-    question.revisions.filter(is_current=True).update(is_current=False)
-    QuestionRevision.objects.filter(pk=revision.id).update(is_current=True)
+    if fault_hook is not None:
+        fault_hook("before_current")
+    models.QuerySet.update(question.revisions.filter(is_current=True), is_current=False)
+    models.QuerySet.update(QuestionRevision.objects.filter(pk=revision.id), is_current=True)
     revision.is_current = True
+    if fault_hook is not None:
+        fault_hook("after_current")
     return revision
+
+
+def _guard_critical_revision_with_history(
+    *,
+    question: Question,
+    change_kind: str,
+    alternatives: list[tuple[str, str | None, str]],
+    correct_alternative_position: int | None,
+) -> None:
+    """Exija a fronteira auditada S2C quando já existem fatos de Attempt."""
+    from modules.attempts.models import Attempt
+
+    if not Attempt.objects.filter(question_id=question.id).exists():
+        return
+    current = question.revisions.filter(is_current=True).first()
+    content_is_critical = change_kind == RevisionChangeKind.CRITICAL_CORRECTION
+    if current is not None:
+        current_alternatives = list(current.alternatives.order_by("position"))
+        current_answer = _revision_answer_position(
+            revision=current,
+            alternatives=current_alternatives,
+        )
+        content_is_critical = content_is_critical or (
+            [(item.text, item.label) for item in current_alternatives]
+            != [(text, label) for text, label, _text_key in alternatives]
+            or current_answer != correct_alternative_position
+        )
+    if content_is_critical:
+        raise QuestionCatalogStateConflictError(
+            "Questão com Attempts exige o serviço auditado de correção de gabarito."
+        )
 
 
 def _origin_has_data(value: QuestionOriginInput) -> bool:
@@ -1028,6 +1073,12 @@ def save_revision(
             alternatives=content[1],
             correct_alternative_position=content[2],
         )
+    _guard_critical_revision_with_history(
+        question=question,
+        change_kind=change_kind,
+        alternatives=content[1],
+        correct_alternative_position=content[2],
+    )
     revision = _create_revision(
         question=question,
         stem=content[0],
@@ -1366,6 +1417,12 @@ def edit_question(
             alternatives=content[1],
             correct_alternative_position=content[2],
             stem=content[0],
+        )
+        _guard_critical_revision_with_history(
+            question=question,
+            change_kind=change_kind,
+            alternatives=content[1],
+            correct_alternative_position=content[2],
         )
         _create_revision(
             question=question,

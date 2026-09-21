@@ -30,6 +30,7 @@ V03_STAGE4_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage4-gate.json"
 V03_STAGE5_MANIFEST_PATH = PROJECT_ROOT / "quality" / "v03-stage5-gate.json"
 V05_S2A_MIGRATIONS_PATH = PROJECT_ROOT / "quality" / "v05-s2a-migrations.json"
 V05_S2B_MIGRATIONS_PATH = PROJECT_ROOT / "quality" / "v05-s2b-migrations.json"
+V05_S2C_MIGRATIONS_PATH = PROJECT_ROOT / "quality" / "v05-s2c-migrations.json"
 STAGE1_MANIFEST_REVISION = "".join(
     ("b64552c1cc6201a82245", "61a6c25f29a2bb8f4a47")  # pragma: allowlist secret
 )
@@ -79,7 +80,7 @@ def test_current_repository_satisfies_v03_stage5_contract() -> None:
     verify_repository(
         PROJECT_ROOT,
         V03_STAGE5_MANIFEST_PATH,
-        V05_S2B_MIGRATIONS_PATH,
+        V05_S2C_MIGRATIONS_PATH,
     )
 
 
@@ -185,7 +186,7 @@ def test_changed_historical_migration_is_blocking() -> None:
         verify_migration_history(
             PROJECT_ROOT,
             manifest,
-            load_json_object(V05_S2B_MIGRATIONS_PATH),
+            load_json_object(V05_S2C_MIGRATIONS_PATH),
         )
 
 

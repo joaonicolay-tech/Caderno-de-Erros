@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "release": "V0.5-S2C",
+  "baseline_manifest": "quality/v03-stage5-gate.json",
+  "predecessor_manifest": "quality/v05-s2b-migrations.json",
+  "additional_migration_sha256": {
+    "src/modules/errors/migrations/0003_errorcategory_category_kind_and_more.py": [153,247,117,70,7,165,79,204,41,220,109,214,169,7,40,134,22,118,81,32,148,190,59,147,151,129,50,3,125,178,6,65],
+    "src/modules/operations/migrations/0001_initial.py": [251,202,110,180,249,147,76,177,69,232,23,252,223,114,162,237,8,150,129,200,169,14,110,178,200,33,228,131,82,42,190,160],
+    "src/modules/reviews/migrations/0003_reviewschedulechange_and_more.py": [73,72,106,156,99,149,122,168,74,97,226,76,172,17,253,131,216,171,28,235,21,5,70,153,57,52,216,36,49,86,157,128],
+    "src/modules/operations/migrations/0002_attempt_audit_events.py": [149,252,22,97,77,47,156,20,129,124,196,233,210,167,5,190,78,185,142,49,0,62,221,89,35,41,186,65,224,109,162,13],
+    "src/modules/reviews/migrations/0004_attempt_correction_projection.py": [111,153,233,63,125,228,252,241,126,108,57,30,37,99,30,191,153,147,7,129,182,241,244,16,180,4,202,98,53,133,142,245],
+    "src/modules/operations/migrations/0003_answer_key_correction_audit.py": [88,115,168,233,51,246,128,48,119,157,252,12,129,113,153,77,216,252,30,199,55,1,173,145,210,17,37,216,185,247,204,179]
+  }
+}

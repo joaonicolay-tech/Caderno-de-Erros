@@ -297,6 +297,26 @@ class RevisionChangeKind(models.TextChoices):
     CRITICAL_CORRECTION = "CRITICAL_CORRECTION", "Correção crítica"
 
 
+class QuestionRevisionQuerySet(models.QuerySet["QuestionRevision"]):
+    """Feche mutações genéricas de snapshots já publicados."""
+
+    def update(self, **kwargs: Any) -> int:
+        raise ValidationError("QuestionRevision é imutável; crie uma nova revisão.")
+
+    def delete(self) -> tuple[int, dict[str, int]]:
+        raise ValidationError("QuestionRevision é imutável; não pode ser excluída.")
+
+
+class AlternativeQuerySet(models.QuerySet["Alternative"]):
+    """Feche mutações genéricas de alternativas pertencentes a snapshots."""
+
+    def update(self, **kwargs: Any) -> int:
+        raise ValidationError("Alternative é imutável; crie uma nova revisão.")
+
+    def delete(self) -> tuple[int, dict[str, int]]:
+        raise ValidationError("Alternative é imutável; não pode ser excluída.")
+
+
 class Question(models.Model):
     """Identidade estável, estado e classificação acadêmica atual."""
 
@@ -497,6 +517,8 @@ class QuestionRevision(models.Model):
     change_reason = models.CharField(max_length=1000, null=True, blank=True)  # noqa: DJ001
     created_at = models.DateTimeField(auto_now_add=True)
 
+    objects = QuestionRevisionQuerySet.as_manager()
+
     class Meta:
         db_table = "questions_questionrevision"
         indexes: ClassVar[list[models.Index]] = [
@@ -579,6 +601,8 @@ class Alternative(models.Model):
     text_key = models.TextField(editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    objects = AlternativeQuerySet.as_manager()
+
     class Meta:
         db_table = "questions_alternative"
         constraints: ClassVar[list[models.BaseConstraint]] = [
@@ -618,6 +642,9 @@ class Alternative(models.Model):
         self.text_key = normalized.text_key
         self.label = normalize_alternative_label(self.label)
         super().save(*args, **kwargs)
+
+    def delete(self, *args: Any, **kwargs: Any) -> tuple[int, dict[str, int]]:
+        raise ValidationError("Alternative é imutável; não pode ser excluída.")
 
 
 class QuestionOrigin(models.Model):

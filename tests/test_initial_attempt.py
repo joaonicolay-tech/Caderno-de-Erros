@@ -9,7 +9,7 @@ from typing import Any
 from unittest.mock import Mock
 
 import pytest
-from django.db import OperationalError, close_old_connections
+from django.db import OperationalError, close_old_connections, models
 from django.test import Client
 from django.urls import reverse
 
@@ -511,7 +511,8 @@ def test_context_invalidated_by_current_state(
     if change == "workspace":
         Workspace.objects.filter(pk=workspace.id).update(lock_version=2)
     elif change == "revision":
-        item.revisions.update(is_current=False)
+        # Injeção deliberada abaixo do guard append-only para simular corrupção externa.
+        models.QuerySet.update(item.revisions.all(), is_current=False)
     else:
         Question.objects.filter(pk=item.id).update(
             status="ARCHIVED", archived_at=service.clock.now().value

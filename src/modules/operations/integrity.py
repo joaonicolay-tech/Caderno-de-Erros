@@ -30,6 +30,7 @@ _SAFE_CODES: Final = frozenset(
         "ATTEMPT_CORRECTION",
         "ATTEMPT_REPLACED",
         "ATTEMPT_VOIDED",
+        "ANSWER_KEY_CORRECTED",
         "ARCHIVED",
         "ERROR_CATEGORY",
         "MANUAL",
@@ -69,6 +70,7 @@ _SAFE_CODES: Final = frozenset(
         "PROCEDURE",
         "QUESTION_ACTIVATION",
         "QUESTION_ACTIVATION_D1",
+        "QUESTION",
         "REVIEW",
         "REVIEW_COMPLETION",
         "SUSPENDED",
@@ -1025,6 +1027,14 @@ _SQL_RULES: Final[dict[str, str]] = {
         LEFT JOIN attempts_attempt attempt_target
           ON a.event_code = 'ATTEMPT_REPLACED'
          AND attempt_target.id = a.related_entity_id
+        LEFT JOIN questions_question answer_question
+          ON a.event_code = 'ANSWER_KEY_CORRECTED' AND answer_question.id = a.entity_id
+        LEFT JOIN questions_questionrevision previous_revision
+          ON a.event_code = 'ANSWER_KEY_CORRECTED'
+         AND previous_revision.id = a.previous_entity_id
+        LEFT JOIN questions_questionrevision new_revision
+          ON a.event_code = 'ANSWER_KEY_CORRECTED'
+         AND new_revision.id = a.related_entity_id
         WHERE (a.reason_code IS NOT NULL AND
                (a.reason_code NOT GLOB '[A-Z]*' OR a.reason_code GLOB '*[^A-Z0-9_]*'))
            OR (a.event_code = 'REVIEW_RESCHEDULED' AND
@@ -1050,6 +1060,18 @@ _SQL_RULES: Final[dict[str, str]] = {
                 OR attempt_target.workspace_id != a.workspace_id
                 OR attempt_target.replaces_attempt_id != attempt_source.id
                 OR a.reason_code IS NULL))
+           OR (a.event_code = 'ANSWER_KEY_CORRECTED' AND
+               (a.entity_type != 'QUESTION' OR answer_question.id IS NULL
+                OR previous_revision.id IS NULL OR new_revision.id IS NULL
+                OR answer_question.workspace_id != a.workspace_id
+                OR previous_revision.workspace_id != a.workspace_id
+                OR new_revision.workspace_id != a.workspace_id
+                OR previous_revision.question_id != answer_question.id
+                OR new_revision.question_id != answer_question.id
+                OR new_revision.version_number != previous_revision.version_number + 1
+                OR new_revision.change_kind != 'CRITICAL_CORRECTION'
+                OR a.reason_code IS NULL))
+           OR (a.event_code != 'ANSWER_KEY_CORRECTED' AND a.previous_entity_id IS NOT NULL)
            OR (a.event_code != 'REVIEW_RESCHEDULED' AND
                (a.previous_date IS NOT NULL OR a.new_date IS NOT NULL OR a.timezone_name IS NOT NULL))
     """,

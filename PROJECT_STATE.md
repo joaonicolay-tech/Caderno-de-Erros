@@ -53,12 +53,27 @@
   imutável, ponta efetiva centralizada, reconstrução de Reviews/ciclos,
   analytics e classificação reconciliados, auditoria sanitizada e checker
   ampliado para 22 checks, com upgrade/recovery isolados e gate GREEN.
+- V0.5-S2C: concluída — correção prospectiva de gabarito por nova
+  `QuestionRevision` imutável, current atômica, auditoria sanitizada,
+  histórico de Attempts/analytics/Reviews preservado, fatos futuros vinculados
+  à revisão nova e upgrade/recovery isolados com gate GREEN.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: P0, S1, S2A e S2B concluídas; S2C e S2D **NOT AUTHORIZED**.
+- V0.5: P0, S1, S2A, S2B e S2C concluídas; S2D **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S2C GREEN na segunda execução, exit code 0: 388 testes
+aprovados em 133,04 s, 87% de cobertura global, cobertura de domínio conforme
+o mínimo de 80%, banco vazio e migrations aprovados, formatação, Ruff, mypy,
+detect-secrets e pip-audit aprovados; duração total 172,9 s. A primeira
+execução terminou RED no mypy por duas anotações do novo teste, corrigidas sem
+mudança semântica. Upgrade real V0.4.4-equivalent→S2A→S2B→S2C,
+reverse/forward pré-fatos, backup/restore isolado, current, Attempts R1/R2,
+cadeia S2B, analytics, Reviews e checker com 22 checks foram reconciliados. A8
+deep foi APPROVED, sem Blocker/Major/Minor aberto. Não houve commit, push, tag,
+release ou antecipação de S2D.
 
 Gate final V0.5-S2B GREEN na primeira execução, exit code 0: 374 testes
 aprovados em 156,28 s, 87% de cobertura global, cobertura de domínio conforme
@@ -264,6 +279,13 @@ baseline V0.3, Architecture v1.0 ou gate.
   e proteção das migrations S2B;
 - `tasks/completed/v05-s2b-attempt-correction-reconstruction.md`: contrato e
   evidência de encerramento S2B;
+- `tasks/plans/v05-s2c-answer-key-correction-plan.md`: plano A4 fechado antes
+  da implementação S2C;
+- `quality/v05-s2c-answer-key-correction-result.md` e
+  `quality/v05-s2c-migrations.json`: implementação, A8, upgrade/recovery, gate
+  e proteção da migration S2C;
+- `tasks/completed/v05-s2c-answer-key-correction.md`: contrato e evidência de
+  encerramento S2C;
 - `quality/v05-p0-planning-result.md`: review A8 e gate de V0.5-P0;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
@@ -273,7 +295,6 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: revisão humana da entrega S2B e, se aprovada, autorização
-independente de `V0.5-S2C`, preservando S2D para contrato próprio. Nenhum
-commit, push, tag ou release é autorizado por este estado; S2C e S2D
-permanecem `NOT AUTHORIZED`.
+Recomendação: revisão humana da entrega S2C e, somente se aprovada, autorização
+independente de `V0.5-S2D` por contrato próprio. Nenhum commit, push, tag ou
+release é autorizado por este estado; S2D permanece `NOT AUTHORIZED`.
