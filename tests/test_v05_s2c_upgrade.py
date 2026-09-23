@@ -70,6 +70,11 @@ s2b = [
     ("taxonomy", "0001_initial"),
 ]
 s2c = [*s2b[:3], ("operations", "0003_answer_key_correction_audit"), *s2b[4:]]
+s2d = [
+    *s2b[:3],
+    ("operations", "0004_remove_auditevent_audit_event_code_valid_and_more"),
+    *s2b[4:],
+]
 
 executor = MigrationExecutor(connection)
 executor.migrate(v044)
@@ -312,6 +317,9 @@ future_attempt = Attempt.objects.get(pk=receipt.result_entity_id)
 
 integrity = run_integrity_check()
 activity = AnalyticsService(workspace_id=LOCAL_WORKSPACE_ID, clock=clock).activity()
+# A prova de restore S6 exige um backup no esquema atual após exercitar S2C.
+executor = MigrationExecutor(connection)
+executor.migrate(s2d)
 candidate = create_sqlite_backup(Path(os.environ["CEI_CANDIDATE_BACKUP"]))
 restore = restore_sqlite_backup(
     Path(os.environ["CEI_CANDIDATE_BACKUP"]),

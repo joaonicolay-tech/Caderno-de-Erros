@@ -87,5 +87,17 @@ class ContextStore:
             self._contexts.pop(token, None)
             self._claims.pop(token, None)
 
+    def has_live_question_context(
+        self, *, workspace_id: uuid.UUID, question_id: uuid.UUID, now: datetime
+    ) -> bool:
+        """Bloqueie exclusão enquanto um contexto efêmero local ainda é válido."""
+        with self._lock:
+            return any(
+                context.workspace_id == workspace_id
+                and context.question_id == question_id
+                and now < context.expires_at
+                for context in self._contexts.values()
+            )
+
 
 contexts = ContextStore()

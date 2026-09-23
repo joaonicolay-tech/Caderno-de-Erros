@@ -11,7 +11,7 @@ def record_audit_event(
     workspace_id: uuid.UUID,
     event_code: str,
     entity_type: str,
-    entity_id: uuid.UUID,
+    entity_id: uuid.UUID | None,
     correlation_id: str | uuid.UUID,
     previous_entity_id: uuid.UUID | None = None,
     related_entity_id: uuid.UUID | None = None,

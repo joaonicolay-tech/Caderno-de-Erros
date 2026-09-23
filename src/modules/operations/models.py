@@ -21,6 +21,10 @@ class AuditEventCode(models.TextChoices):
     ATTEMPT_VOIDED = "ATTEMPT_VOIDED", "Tentativa anulada"
     ATTEMPT_REPLACED = "ATTEMPT_REPLACED", "Tentativa substituída"
     ANSWER_KEY_CORRECTED = "ANSWER_KEY_CORRECTED", "Gabarito corrigido"
+    QUESTION_PERMANENTLY_DELETED = (
+        "QUESTION_PERMANENTLY_DELETED",
+        "Questão excluída permanentemente",
+    )
 
 
 class AuditEntityType(models.TextChoices):
@@ -50,7 +54,7 @@ class AuditEvent(models.Model):
     )
     event_code = models.CharField(max_length=40, choices=AuditEventCode.choices)
     entity_type = models.CharField(max_length=32, choices=AuditEntityType.choices)
-    entity_id = models.UUIDField()
+    entity_id = models.UUIDField(null=True, blank=True)
     previous_entity_id = models.UUIDField(null=True, blank=True)
     related_entity_id = models.UUIDField(null=True, blank=True)
     correlation_id = models.UUIDField()
@@ -75,6 +79,11 @@ class AuditEvent(models.Model):
             ),
         ]
         constraints: ClassVar[list[models.BaseConstraint]] = [
+            models.UniqueConstraint(
+                fields=["workspace", "event_code", "correlation_id"],
+                condition=Q(event_code=AuditEventCode.QUESTION_PERMANENTLY_DELETED),
+                name="audit_delete_correlation_uq",
+            ),
             models.CheckConstraint(
                 condition=Q(event_code__in=AuditEventCode.values),
                 name="audit_event_code_valid",
@@ -142,10 +151,31 @@ class AuditEvent(models.Model):
                 ),
                 name="audit_answer_key_metadata_valid",
             ),
+            models.CheckConstraint(
+                condition=(
+                    Q(
+                        event_code=AuditEventCode.QUESTION_PERMANENTLY_DELETED,
+                        entity_type=AuditEntityType.QUESTION,
+                        entity_id__isnull=True,
+                        previous_entity_id__isnull=True,
+                        related_entity_id__isnull=True,
+                        previous_date__isnull=True,
+                        new_date__isnull=True,
+                        timezone_name__isnull=True,
+                        reason_code__isnull=False,
+                    )
+                    | (
+                        ~Q(event_code=AuditEventCode.QUESTION_PERMANENTLY_DELETED)
+                        & Q(entity_id__isnull=False)
+                    )
+                ),
+                name="audit_delete_metadata_valid",
+            ),
         ]
 
     def __str__(self) -> str:
-        return f"{self.event_code}:{self.entity_type}:{self.entity_id}"
+        technical_id = self.id if self.entity_id is None else self.entity_id
+        return f"{self.event_code}:{self.entity_type}:{technical_id}"
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         if not self._state.adding:

@@ -31,6 +31,7 @@ _SAFE_CODES: Final = frozenset(
         "ATTEMPT_REPLACED",
         "ATTEMPT_VOIDED",
         "ANSWER_KEY_CORRECTED",
+        "QUESTION_PERMANENTLY_DELETED",
         "ARCHIVED",
         "ERROR_CATEGORY",
         "MANUAL",
@@ -523,7 +524,7 @@ INVARIANT_CATALOG: Final[tuple[InvariantSpec, ...]] = (
     InvariantSpec(
         "AUD-001",
         "Auditoria funcional mínima e isolada",
-        "Eventos S2A devem usar entidade técnica do mesmo Workspace e metadados fechados.",
+        "Eventos funcionais devem usar entidade técnica válida ou metadados S2D minimizados.",
         "functional audit",
         "Evento, entidade, relação, correlação e razão codificada respeitam V05-INV-014.",
         "SQL relacional",
@@ -1071,6 +1072,12 @@ _SQL_RULES: Final[dict[str, str]] = {
                 OR new_revision.version_number != previous_revision.version_number + 1
                 OR new_revision.change_kind != 'CRITICAL_CORRECTION'
                 OR a.reason_code IS NULL))
+           OR (a.event_code = 'QUESTION_PERMANENTLY_DELETED' AND
+               (a.entity_type != 'QUESTION' OR a.entity_id IS NOT NULL
+                OR a.related_entity_id IS NOT NULL OR a.previous_entity_id IS NOT NULL
+                OR a.previous_date IS NOT NULL OR a.new_date IS NOT NULL
+                OR a.timezone_name IS NOT NULL OR a.reason_code IS NULL))
+           OR (a.event_code != 'QUESTION_PERMANENTLY_DELETED' AND a.entity_id IS NULL)
            OR (a.event_code != 'ANSWER_KEY_CORRECTED' AND a.previous_entity_id IS NOT NULL)
            OR (a.event_code != 'REVIEW_RESCHEDULED' AND
                (a.previous_date IS NOT NULL OR a.new_date IS NOT NULL OR a.timezone_name IS NOT NULL))

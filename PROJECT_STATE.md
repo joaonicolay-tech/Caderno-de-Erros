@@ -57,12 +57,26 @@
   `QuestionRevision` imutável, current atômica, auditoria sanitizada,
   histórico de Attempts/analytics/Reviews preservado, fatos futuros vinculados
   à revisão nova e upgrade/recovery isolados com gate GREEN.
+- V0.5-S2D: concluída — exclusão permanente transacional do agregado Question
+  com preview de impacto, elegibilidade e confirmação reforçada; backup S6 e
+  restore S5 obrigatórios para histórico, exceção controlada para eventos e
+  recibos vinculados, auditoria final sem ID da Question e expurgo manual após
+  90 dias. Upgrade/recovery isolados, A8 deep e gate GREEN registrados em
+  `quality/v05-s2d-permanent-deletion-result.md`.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: P0, S1, S2A, S2B e S2C concluídas; S2D **NOT AUTHORIZED**.
+- V0.5: P0, S1 e S2A–S2D concluídas; S3 e posteriores **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S2D GREEN, exit code 0: 409 testes em 182,52 s, 87% de
+cobertura global, mínimos de domínio, migrations, três perfis, formatação,
+Ruff, mypy, detect-secrets e pip-audit aprovados; duração total 226,8 s.
+Upgrade V0.4.4-equivalent→S2A→S2B→S2C→S2D, backup/restore pré e pós-delete,
+`integrity_check`, `foreign_key_check` e checker S5 foram reconciliados em
+cópias isoladas. A8 deep APPROVED, sem Blocker/Major/Minor aberto. Nenhum
+commit, push, tag, release ou antecipação de S3+.
 
 Gate final V0.5-S2C GREEN na segunda execução, exit code 0: 388 testes
 aprovados em 133,04 s, 87% de cobertura global, cobertura de domínio conforme
@@ -286,6 +300,14 @@ baseline V0.3, Architecture v1.0 ou gate.
   e proteção da migration S2C;
 - `tasks/completed/v05-s2c-answer-key-correction.md`: contrato e evidência de
   encerramento S2C;
+- `tasks/plans/v05-s2d-permanent-deletion-plan.md`: auditoria A4 do grafo e
+  decisões destrutivas S2D;
+- `quality/v05-s2d-human-decision-gate.md`: autorização das decisões pendentes;
+- `quality/v05-s2d-permanent-deletion-result.md` e
+  `quality/v05-s2d-migrations.json`: implementação, A8, upgrade/recovery, gate
+  e proteção da migration S2D;
+- `tasks/completed/v05-s2d-permanent-deletion.md`: contrato e evidência de
+  encerramento S2D;
 - `quality/v05-p0-planning-result.md`: review A8 e gate de V0.5-P0;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
@@ -295,6 +317,6 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Recomendação: revisão humana da entrega S2C e, somente se aprovada, autorização
-independente de `V0.5-S2D` por contrato próprio. Nenhum commit, push, tag ou
-release é autorizado por este estado; S2D permanece `NOT AUTHORIZED`.
+Revisão humana da entrega S2D pode preceder eventual autorização independente
+de uma próxima tarefa. Nenhum commit, push, tag, release, S3 ou etapa posterior
+está autorizado por este estado.
