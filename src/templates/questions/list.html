@@ -36,6 +36,44 @@
     </fieldset>
   </form>
 
+  {% if form.is_valid %}
+    <form method="post" action="{% url 'search:create-filter' %}" class="panel" aria-labelledby="save-filter-title">
+      {% csrf_token %}
+      <h2 id="save-filter-title">Salvar filtros atuais</h2>
+      <p>O filtro guardará somente os critérios desta lista; a página atual não será salva.</p>
+      <label for="saved-filter-name">Nome do filtro</label>
+      <input id="saved-filter-name" name="name" maxlength="80" required aria-describedby="saved-filter-name-help">
+      <p id="saved-filter-name-help" class="field-help">Use um nome único para cada filtro desta lista.</p>
+      <input type="hidden" name="payload" value="{{ filter_payload_json }}">
+      <button type="submit">Salvar filtro</button>
+    </form>
+  {% endif %}
+
+  <section class="panel" aria-labelledby="saved-filters-title">
+    <h2 id="saved-filters-title">Filtros salvos</h2>
+    {% if saved_filters %}
+      <ul>
+        {% for saved_filter, compatibility_problem in saved_filters %}
+          <li>
+            <strong>{{ saved_filter.name }}</strong>
+            {% if compatibility_problem %}
+              <span class="notice">Precisa de ajuste: {{ compatibility_problem }}</span>
+            {% endif %}
+            {% if compatibility_problem %}
+              <span aria-label="Filtro indisponível">Aplicar indisponível</span>
+            {% else %}
+              <a href="{% url 'search:apply-filter' saved_filter.id %}">Aplicar</a>
+            {% endif %}
+            <a href="{% url 'search:rename-filter' saved_filter.id %}">Renomear</a>
+            <a href="{% url 'search:delete-filter' saved_filter.id %}">Excluir</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty-state">Nenhum filtro salvo para esta lista.</p>
+    {% endif %}
+  </section>
+
   {% if page_notice %}<p class="notice" role="status">{{ page_notice }}</p>{% endif %}
   {% if active_filters %}
     <section class="active-filters" aria-labelledby="active-filters-title">

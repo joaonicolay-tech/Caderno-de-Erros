@@ -17,6 +17,7 @@
           <li><a href="{% url 'accounts:home' %}">Início</a></li>
           {% if workspace %}
             <li><a href="{% url 'taxonomy:index' %}">Taxonomia</a></li>
+            <li><a href="{% url 'categories:list' %}">Categorias de erro</a></li>
             <li><a href="{% url 'questions:list' %}">Questões</a></li>
             <li><a href="{% url 'questions:quick-entry' %}">Nova questão</a></li>
             <li><a href="{% url 'accounts:settings' %}">Configurações</a></li>

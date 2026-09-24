@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir filtro salvo — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumbs" aria-label="Trilha de navegação">
+    <ol>
+      {% for label, url in breadcrumbs %}
+        {% if url %}<li><a href="{{ url }}">{{ label }}</a></li>{% else %}<li aria-current="page">{{ label }}</li>{% endif %}
+      {% endfor %}
+    </ol>
+  </nav>
+  <h1>Excluir filtro salvo</h1>
+  <p>O filtro <strong>{{ saved_filter.name }}</strong> será removido. Isso não altera questões nem históricos.</p>
+  <form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="feedback feedback-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="field-group{% if form.confirm.errors %} field-error{% endif %}">
+      <label for="{{ form.confirm.id_for_label }}">{{ form.confirm.label }}</label>
+      {{ form.confirm }}
+      <div id="{{ form.confirm.id_for_label }}-help"{% if form.confirm.errors %} class="errorlist" role="alert"{% else %} class="field-help"{% endif %}>{% if form.confirm.errors %}{{ form.confirm.errors }}{% else %}{{ form.confirm.help_text }}{% endif %}</div>
+    </div>
+    <div class="button-row">
+      <button class="button-danger" type="submit">Excluir filtro salvo</button>
+      <a class="button-link button-secondary" href="{% url 'questions:list' %}">Cancelar</a>
+    </div>
+  </form>
+{% endblock %}

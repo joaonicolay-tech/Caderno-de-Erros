@@ -49,6 +49,7 @@ class TimelineEvent:
     timezone_name: str | None = None
     local_date: object | None = None
     revision_number: int | None = None
+    correction_available: bool = False
 
 
 def _section(entries: list[Review], page: int, page_size: int) -> ReviewQueueSection:
@@ -175,6 +176,9 @@ def get_learning_timeline(
                 attempt.timezone_name,
                 attempt.local_date,
                 attempt.question_revision.version_number,
+                correction_available=(
+                    attempt.status == "VALID" and attempt.id not in successor_by_predecessor
+                ),
             )
         )
     attempt_ids = [attempt.id for attempt in attempts]

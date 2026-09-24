@@ -1,9 +1,14 @@
 """Views finas dos fluxos web autorizados do catálogo de questões."""
 
+import json
 import uuid
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any, cast
 from urllib.parse import urlencode, urlsplit
 
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import DatabaseError
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
@@ -13,9 +18,17 @@ from django.views.decorators.http import require_GET, require_http_methods
 from modules.accounts.exceptions import WorkspaceAccessDenied
 from modules.accounts.models import Workspace
 from modules.accounts.services import LOCAL_USER_ID, LOCAL_WORKSPACE_ID, get_workspace_for_owner
+from modules.data_management.exceptions import DataManagementError
 from modules.search.forms import QuestionSearchForm
+from modules.search.models import SavedFilter
+from modules.search.saved_filter_services import (
+    check_filter_compatibilities,
+    payload_from_search_form,
+)
 from modules.search.selectors import list_questions, paginate_questions
 
+from .corrections import AnswerKeyCorrectionConflictError, AnswerKeyCorrectionService
+from .deletion import PermanentDeletionConflictError, PermanentQuestionDeletionService
 from .exceptions import (
     OriginCatalogError,
     QuestionCatalogConcurrencyError,
@@ -28,6 +41,7 @@ from .forms import (
     QuestionEditForm,
     QuestionQuickEntryForm,
 )
+from .management_forms import AnswerKeyCorrectionForm, PermanentQuestionDeleteForm
 from .models import Question, QuestionStatus
 from .selectors import get_current_revision, get_question, list_question_revisions
 from .services import QuestionCommandService
@@ -104,6 +118,20 @@ def _detail_feedback(request: HttpRequest) -> str:
         "activated": "Questão ativa criada com sucesso a partir do rascunho.",
         "edited": "Questão atualizada com sucesso.",
         "archived": "Questão arquivada. Seu conteúdo e suas revisões foram preservados.",
+        "answer-key-corrected": "Gabarito corrigido para tentativas futuras; revisões e respostas históricas foram preservadas.",
+    }.get(request.GET.get("result", ""), "")
+
+
+def _list_feedback(request: HttpRequest) -> str:
+    return {
+        "deleted": "A questão elegível foi excluída permanentemente.",
+        "deleted-cleanup-warning": (
+            "A questão foi excluída. A remoção do diretório temporário de restore falhou; "
+            "mantenha a pasta backups para inspeção manual antes da limpeza."
+        ),
+        "filter-saved": "Filtro salvo nesta lista.",
+        "filter-renamed": "Filtro renomeado.",
+        "filter-deleted": "Filtro salvo excluído.",
     }.get(request.GET.get("result", ""), "")
 
 
@@ -192,6 +220,19 @@ def question_list(request: HttpRequest) -> HttpResponse:
         if form.is_valid() and form.cleaned_data["error_category"]
         else None,
     ]
+    saved_filter_rows = list(
+        SavedFilter.objects.filter(
+            workspace_id=workspace.id,
+            owner_user_id=LOCAL_USER_ID,
+        ).order_by("name_key", "id")
+    )
+    compatibility_by_id = check_filter_compatibilities(
+        saved_filter_rows,
+        workspace_id=workspace.id,
+    )
+    saved_filters: list[tuple[SavedFilter, str]] = [
+        (saved_filter, compatibility_by_id[saved_filter.id]) for saved_filter in saved_filter_rows
+    ]
     return render(
         request,
         "questions/list.html",
@@ -203,6 +244,13 @@ def question_list(request: HttpRequest) -> HttpResponse:
             "active_filters": [item for item in active_filters if item is not None],
             "query_without_page": urlencode(parameters, doseq=True),
             "current_query": urlencode(parameters, doseq=True),
+            "feedback": _list_feedback(request),
+            "saved_filters": saved_filters,
+            "filter_payload_json": json.dumps(
+                payload_from_search_form(form) if form.is_valid() else {},
+                ensure_ascii=True,
+                separators=(",", ":"),
+            ),
             "return_to": (
                 f"{reverse('questions:list')}?{return_query}"
                 if return_query
@@ -472,9 +520,213 @@ def question_detail(request: HttpRequest, question_id: uuid.UUID) -> HttpRespons
             "revisions": list(reversed(revisions)),
             "origin": getattr(question, "origin", None),
             "feedback": _detail_feedback(request),
+            "can_correct_answer_key": (
+                question.status == QuestionStatus.ACTIVE and current_revision is not None
+            ),
             "return_to": return_to,
             "breadcrumbs": [("Início", reverse("accounts:home")), ("Consulta", return_to)],
         },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def answer_key_correction(request: HttpRequest, question_id: uuid.UUID) -> HttpResponse:
+    """Adapte a UI ao service S2C sem criar ou editar revisions diretamente."""
+    workspace = _local_workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    question = _question_or_404(workspace=workspace, question_id=question_id)
+    revision = get_current_revision(workspace_id=workspace.id, question_id=question.id)
+    if revision is None:
+        raise Http404("A questão não possui revisão corrente para corrigir.")
+    alternatives = list(revision.alternatives.order_by("position", "id"))
+    current_position = next(
+        (item.position for item in alternatives if item.id == revision.correct_alternative_id),
+        None,
+    )
+    form = AnswerKeyCorrectionForm(
+        request.POST if request.method == "POST" else None,
+        initial={
+            "expected_revision_id": revision.id,
+            "correct_alternative_position": str(current_position or ""),
+        },
+        alternatives=alternatives,
+    )
+    stale_conflict = False
+    if request.method == "POST" and form.is_valid():
+        try:
+            AnswerKeyCorrectionService(workspace_id=workspace.id).correct(
+                question_id=question.id,
+                expected_revision_id=form.cleaned_data["expected_revision_id"],
+                correct_alternative_position=int(form.cleaned_data["correct_alternative_position"]),
+                reason_code=form.cleaned_data["reason_code"],
+            )
+            return redirect(
+                f"{reverse('questions:detail', args=[question.id])}?result=answer-key-corrected"
+            )
+        except AnswerKeyCorrectionConflictError as error:
+            stale_conflict = True
+            form.add_error(None, str(error))
+        except (ValidationError, DatabaseError, ValueError) as error:
+            form.add_error(None, str(error))
+    return render(
+        request,
+        "questions/answer_key_correction.html",
+        {
+            "workspace": workspace,
+            "question": question,
+            "revision": revision,
+            "alternatives": alternatives,
+            "current_position": current_position,
+            "form": form,
+            "stale_conflict": stale_conflict,
+            "breadcrumbs": [
+                ("Início", reverse("accounts:home")),
+                ("Detalhe da questão", reverse("questions:detail", args=[question.id])),
+                ("Corrigir gabarito", ""),
+            ],
+        },
+        status=409 if stale_conflict else 400 if request.method == "POST" and form.errors else 200,
+    )
+
+
+_DELETION_BLOCKER_LABELS = {
+    "CROSS_WORKSPACE_REFERENCE": "Foi encontrada uma referência de outro Workspace.",
+    "REVISION_EXTERNAL_REFERENCE": "Uma revisão possui referência externa ao agregado.",
+    "SHARED_CROSS_WORKSPACE_REFERENCE": "Uma dependência compartilhada pertence a outro Workspace.",
+    "ATTEMPT_EXTERNAL_REFERENCE": "Uma Attempt possui referência externa ao agregado.",
+    "CYCLE_EXTERNAL_REFERENCE": "Um ciclo de Review possui referência externa ao agregado.",
+    "REVIEW_EXTERNAL_REFERENCE": "Uma Review possui referência externa ao agregado.",
+    "EXTERNAL_DEPENDENCY": "Existe dependência fora do agregado autorizado.",
+    "RECEIPT_RETENTION": "Um recibo ainda está no período mínimo de retenção.",
+    "TRANSIENT_CONTEXT": "Há contexto de resposta temporário ainda válido.",
+}
+
+_DELETION_IMPACT_LABELS = {
+    "questions": "Questions",
+    "revisions": "Revisões de conteúdo",
+    "alternatives": "Alternativas históricas",
+    "attempts": "Attempts históricas",
+    "reviews": "Reviews",
+    "cycles": "Ciclos de Review",
+    "schedule_changes": "Reagendamentos",
+    "classifications": "Classificações",
+    "classification_revisions": "Revisões de classificação",
+    "origins": "Origens",
+}
+
+
+@require_http_methods(["GET", "POST"])
+def permanent_delete_preview(request: HttpRequest, question_id: uuid.UUID) -> HttpResponse:
+    """Mostre e confirme somente pelo preview/delete oficiais de S2D."""
+    workspace = _local_workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    question = _question_or_404(workspace=workspace, question_id=question_id)
+    service = PermanentQuestionDeletionService(workspace_id=workspace.id)
+    try:
+        preview = service.preview(question_id=question.id)
+    except Question.DoesNotExist as error:
+        raise Http404("Questão não encontrada neste Workspace.") from error
+
+    form = PermanentQuestionDeleteForm(
+        request.POST if request.method == "POST" else None,
+        initial={
+            "expected_fingerprint": preview.fingerprint,
+            "confirmation_token": preview.confirmation_token,
+            "correlation_id": uuid.uuid4(),
+        },
+        required_token=preview.confirmation_token,
+        backup_required=preview.backup_required,
+    )
+    stale_conflict = False
+    backup_failure = False
+    if request.method == "POST" and form.is_valid():
+        if not preview.eligible:
+            stale_conflict = True
+            form.add_error(None, "O preview atual está bloqueado; nenhuma exclusão foi aplicada.")
+        else:
+            backup_path = None
+            restore_path = None
+            deletion_completed = False
+            backup_directory = Path(settings.BASE_DIR) / "backups"
+            try:
+                if preview.backup_required:
+                    backup_path = backup_directory / (
+                        f"pre-delete-{form.cleaned_data['correlation_id'].hex}.sqlite3"
+                    )
+                    with TemporaryDirectory(
+                        prefix=".s3-delete-restore-",
+                        dir=backup_directory,
+                    ) as restore_directory:
+                        restore_path = Path(restore_directory) / "isolated-restore.sqlite3"
+                        service.delete(
+                            question_id=question.id,
+                            expected_fingerprint=form.cleaned_data["expected_fingerprint"],
+                            confirmation_token=form.cleaned_data["confirmation_token"],
+                            reason_code="USER_CONFIRMED_PERMANENT_DELETE",
+                            correlation_id=form.cleaned_data["correlation_id"],
+                            backup_path=backup_path,
+                            isolated_restore_path=restore_path,
+                        )
+                        deletion_completed = True
+                else:
+                    service.delete(
+                        question_id=question.id,
+                        expected_fingerprint=form.cleaned_data["expected_fingerprint"],
+                        confirmation_token=form.cleaned_data["confirmation_token"],
+                        reason_code="USER_CONFIRMED_PERMANENT_DELETE",
+                        correlation_id=form.cleaned_data["correlation_id"],
+                    )
+                    deletion_completed = True
+                return redirect(f"{reverse('questions:list')}?result=deleted")
+            except PermanentDeletionConflictError:
+                stale_conflict = True
+                form.add_error(
+                    None,
+                    "O estado mudou ou a confirmação não é mais válida. A exclusão não ocorreu; abra um novo preview.",
+                )
+            except (DataManagementError, OSError, ValueError, DatabaseError):
+                if deletion_completed:
+                    return redirect(f"{reverse('questions:list')}?result=deleted-cleanup-warning")
+                backup_failure = preview.backup_required
+                form.add_error(
+                    None,
+                    (
+                        "O backup ou restore isolado não foi validado. A exclusão não ocorreu; preserve eventuais artefatos e tente novamente."
+                        if backup_failure
+                        else "A exclusão não foi concluída. O agregado permanece disponível; abra um novo preview."
+                    ),
+                )
+
+    blockers = [
+        _DELETION_BLOCKER_LABELS.get(code, "Uma dependência impede a exclusão permanente.")
+        for code in preview.blockers
+    ]
+    impact = [
+        (_DELETION_IMPACT_LABELS.get(name, "Dependência do agregado"), count)
+        for name, count in preview.impact
+    ]
+    return render(
+        request,
+        "questions/permanent_delete_preview.html",
+        {
+            "workspace": workspace,
+            "question": question,
+            "preview": preview,
+            "blockers": blockers,
+            "impact": impact,
+            "archive_is_default": "ARCHIVE_IS_DEFAULT" in preview.warnings,
+            "form": form,
+            "stale_conflict": stale_conflict,
+            "backup_failure": backup_failure,
+            "breadcrumbs": [
+                ("Início", reverse("accounts:home")),
+                ("Detalhe da questão", reverse("questions:detail", args=[question.id])),
+                ("Preview de exclusão permanente", ""),
+            ],
+        },
+        status=409 if stale_conflict else 400 if request.method == "POST" and form.errors else 200,
     )
 
 

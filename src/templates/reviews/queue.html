@@ -20,6 +20,7 @@
           <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
         {% endif %}
         <p class="review-queue-meta"><strong>{{ review.stage_code }}</strong><span aria-hidden="true"> · </span>{{ review.current_due_date|date:"d/m/Y" }}<span aria-hidden="true"> · </span>Atrasada</p>
+        <a class="button-link button-secondary" href="{% url 'reviews:reschedule' review.id %}">Reagendar</a>
       </article>
     {% endwith %}
   {% empty %}
@@ -39,6 +40,7 @@
           <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
         {% endif %}
         <p class="review-queue-meta"><strong>{{ review.stage_code }}</strong><span aria-hidden="true"> · </span>{{ review.current_due_date|date:"d/m/Y" }}<span aria-hidden="true"> · </span>Hoje</p>
+        <a class="button-link button-secondary" href="{% url 'reviews:reschedule' review.id %}">Reagendar</a>
       </article>
     {% endwith %}
   {% empty %}
@@ -58,6 +60,7 @@
           <p class="review-queue-context">{% if review.question.discipline %}{{ review.question.discipline.name }}{% endif %}{% if review.question.discipline and review.question.subject %} · {% endif %}{% if review.question.subject %}{{ review.question.subject.name }}{% endif %}</p>
         {% endif %}
         <p class="review-queue-meta"><strong>{{ review.stage_code }}</strong><span aria-hidden="true"> · </span>{{ review.current_due_date|date:"d/m/Y" }}<span aria-hidden="true"> · </span>Futura</p>
+        <a class="button-link button-secondary" href="{% url 'reviews:reschedule' review.id %}">Reagendar</a>
       </article>
     {% endwith %}
   {% empty %}

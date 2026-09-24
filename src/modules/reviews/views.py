@@ -4,8 +4,10 @@ import secrets
 import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
@@ -17,10 +19,23 @@ from modules.attempts.forms import CancelForm, ReviewAnswerForm, ReviewConfirmat
 from modules.errors.forms import ErrorClassificationCorrectionForm
 from modules.errors.models import ErrorCategory, ErrorClassification
 from modules.errors.services import ErrorDiagnosisConflictError, ErrorDiagnosisService
+from modules.questions.models import Question
 
+from .management_forms import ManualReviewInclusionForm, ReviewRescheduleForm
+from .models import Review
 from .policies import ReviewTemporalStatus
-from .selectors import ReviewQueueSection, get_learning_timeline, list_review_queue
-from .services import CompleteReviewService
+from .selectors import (
+    ReviewQueueSection,
+    get_learning_timeline,
+    get_review_pending_detail,
+    list_review_queue,
+)
+from .services import (
+    CompleteReviewService,
+    ManualReviewInclusionService,
+    ReviewManagementConflictError,
+    ReviewScheduleService,
+)
 
 SESSION_COOKIE = "review_session"
 COOKIE_SALT = "review-session-v1"
@@ -67,7 +82,103 @@ def queue(request: HttpRequest) -> HttpResponse:
             "queue": result,
             "selected_section": sections.get(requested_section),
             "actionable_review": (result.overdue.entries or result.due.entries or (None,))[0],
+            "feedback": {
+                "rescheduled": "Data da revisão atualizada.",
+                "manual-included": "Nova revisão manual incluída.",
+            }.get(request.GET.get("result", ""), ""),
         },
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+def reschedule(request: HttpRequest, review_id: uuid.UUID) -> HttpResponse:
+    workspace = _workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    try:
+        review = get_review_pending_detail(workspace_id=workspace.id, review_id=review_id)
+    except Review.DoesNotExist as error:
+        raise Http404("Review pendente não encontrada neste Workspace.") from error
+    form = ReviewRescheduleForm(
+        request.POST if request.method == "POST" else None,
+        initial={
+            "expected_lock_version": review.lock_version,
+            "new_due_date": review.current_due_date,
+        },
+    )
+    stale_conflict = False
+    if request.method == "POST" and form.is_valid():
+        try:
+            ReviewScheduleService(workspace_id=workspace.id).reschedule(
+                review_id=review.id,
+                new_due_date=form.cleaned_data["new_due_date"],
+                reason_code=form.cleaned_data["reason_code"],
+                expected_lock_version=form.cleaned_data["expected_lock_version"],
+            )
+            return redirect(f"{reverse('reviews:queue')}?result=rescheduled")
+        except ReviewManagementConflictError as error:
+            stale_conflict = True
+            form.add_error(None, str(error))
+        except (ValidationError, ValueError) as error:
+            form.add_error(None, str(error))
+    return render(
+        request,
+        "reviews/reschedule.html",
+        {
+            "workspace": workspace,
+            "review": review,
+            "form": form,
+            "stale_conflict": stale_conflict,
+            "breadcrumbs": [
+                ("Início", reverse("accounts:home")),
+                ("Fila de revisões", reverse("reviews:queue")),
+                ("Reagendar", ""),
+            ],
+        },
+        status=409 if stale_conflict else 400 if request.method == "POST" and form.errors else 200,
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+def manual_inclusion(request: HttpRequest, question_id: uuid.UUID) -> HttpResponse:
+    workspace = _workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    try:
+        question = Question.objects.select_related("discipline", "subject").get(
+            pk=question_id,
+            workspace_id=workspace.id,
+        )
+    except Question.DoesNotExist as error:
+        raise Http404("Questão não encontrada neste Workspace.") from error
+    form = ManualReviewInclusionForm(request.POST if request.method == "POST" else None)
+    if request.method == "POST" and form.is_valid():
+        try:
+            ManualReviewInclusionService(workspace_id=workspace.id).include(
+                question_id=question.id,
+                reason_code=form.cleaned_data["reason_code"] or None,
+            )
+            return redirect(f"{reverse('reviews:queue')}?result=manual-included")
+        except ReviewManagementConflictError as error:
+            form.add_error(None, str(error))
+        except (ValidationError, ValueError) as error:
+            form.add_error(None, str(error))
+    return render(
+        request,
+        "reviews/manual_inclusion.html",
+        {
+            "workspace": workspace,
+            "question": question,
+            "form": form,
+            "breadcrumbs": [
+                ("Início", reverse("accounts:home")),
+                ("Detalhe da questão", reverse("questions:detail", args=[question.id])),
+                ("Incluir revisão", ""),
+            ],
+        },
+        status=400 if request.method == "POST" and form.errors else 200,
     )
 
 
@@ -81,7 +192,16 @@ def timeline(request: HttpRequest, question_id: uuid.UUID) -> HttpResponse:
         events = get_learning_timeline(workspace_id=workspace.id, question_id=question_id)
     except Exception as error:
         raise Http404("Histórico não encontrado.") from error
-    return render(request, "reviews/timeline.html", {"workspace": workspace, "events": events})
+    feedback = {
+        "attempt-voided": "Attempt anulada. O fato permanece no histórico e as projeções atuais foram reconstruídas.",
+        "attempt-replaced": "Attempt substituída. A antiga permanece no histórico e uma nova Attempt foi criada.",
+        "answer-key-corrected": "Gabarito corrigido para tentativas futuras; tentativas históricas mantêm sua revisão.",
+    }.get(request.GET.get("result", ""), "")
+    return render(
+        request,
+        "reviews/timeline.html",
+        {"workspace": workspace, "events": events, "feedback": feedback},
+    )
 
 
 @never_cache

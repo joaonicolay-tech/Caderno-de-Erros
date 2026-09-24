@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Preview de exclusão permanente - Caderno de Erros{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumbs" aria-label="Trilha de navegação">
+    <ol>
+      {% for label, url in breadcrumbs %}
+        {% if url %}<li><a href="{{ url }}">{{ label }}</a></li>{% else %}<li aria-current="page">{{ label }}</li>{% endif %}
+      {% endfor %}
+    </ol>
+  </nav>
+  <h1>Preview de exclusão permanente</h1>
+  <p>Questão: <strong>{{ question.draft_title|default:question.id }}</strong></p>
+  {% if preview.eligible %}
+    <p class="notice" role="status">Este preview está elegível. A exclusão exige uma confirmação explícita.</p>
+  {% else %}
+    <section class="feedback feedback-error" aria-labelledby="blocked-title">
+      <h2 id="blocked-title">Exclusão bloqueada</h2>
+      <p>Nenhuma exclusão foi feita. Resolva os bloqueios antes de abrir um novo preview.</p>
+      <ul>{% for blocker in blockers %}<li>{{ blocker }}</li>{% empty %}<li>O serviço não autorizou a operação.</li>{% endfor %}</ul>
+    </section>
+  {% endif %}
+
+  {% if archive_is_default %}
+    <p class="notice" role="note">Arquivar a questão é a opção padrão e preserva o agregado e seus fatos históricos.</p>
+  {% endif %}
+
+  <section class="panel" aria-labelledby="impact-title">
+    <h2 id="impact-title">Impacto previsto</h2>
+    {% if impact %}
+      <dl class="summary-list">
+        {% for label, count in impact %}<div><dt>{{ label }}</dt><dd>{{ count }}</dd></div>{% endfor %}
+      </dl>
+    {% else %}<p>Nenhuma dependência foi identificada.</p>{% endif %}
+  </section>
+
+  {% if preview.backup_required %}
+    <section class="panel" aria-labelledby="backup-title">
+      <h2 id="backup-title">Backup e restore isolado obrigatórios</h2>
+      <p>Como há histórico, o servidor criará um backup, validará sua integridade e fará um restore isolado antes de chamar a exclusão.</p>
+      <p>Se qualquer etapa falhar, o agregado permanece disponível e a operação não será informada como concluída.</p>
+    </section>
+  {% endif %}
+
+  {% if stale_conflict %}<p class="feedback feedback-error" role="alert" tabindex="-1">{{ form.non_field_errors }}</p>{% endif %}
+  {% if backup_failure %}<p class="feedback feedback-error" role="alert">A validação de recuperação falhou; confira os artefatos de backup antes de tentar novamente.</p>{% endif %}
+
+  {% if preview.eligible %}
+    <form method="post" aria-label="Confirmar exclusão permanente">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="feedback feedback-error" role="alert" tabindex="-1">{{ form.non_field_errors }}</div>{% endif %}
+      {% for field in form %}
+        {% if field.is_hidden %}{{ field }}{% else %}
+          <div class="field-group{% if field.errors %} field-error{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            <div id="{{ field.id_for_label }}-help"{% if field.errors %} class="errorlist" role="alert"{% else %} class="field-help"{% endif %}>
+              {% if field.errors %}{{ field.errors }}{% else %}{{ field.help_text }}{% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+      <div class="button-row">
+        <button class="button-danger" type="submit">Excluir definitivamente</button>
+        <a class="button-link button-secondary" href="{% url 'questions:detail' question.id %}">Cancelar e voltar ao detalhe</a>
+      </div>
+    </form>
+  {% else %}
+    <a class="button-link button-secondary" href="{% url 'questions:detail' question.id %}">Voltar ao detalhe</a>
+  {% endif %}
+{% endblock %}

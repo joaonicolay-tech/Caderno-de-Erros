@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Categorias de erro — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumbs" aria-label="Trilha de navegação">
+    <ol>{% for label, url in breadcrumbs %}{% if url %}<li><a href="{{ url }}">{{ label }}</a></li>{% else %}<li aria-current="page">{{ label }}</li>{% endif %}{% endfor %}</ol>
+  </nav>
+  <h1>Categorias de erro</h1>
+  {% if feedback %}<p class="feedback feedback-success" role="status">{{ feedback }}</p>{% endif %}
+  <p>Categorias pessoais podem ser organizadas sem apagar classificações históricas.</p>
+  <p><a class="button-link" href="{% url 'categories:create' %}">Criar categoria pessoal</a></p>
+
+  <section class="panel" aria-labelledby="personal-categories-title">
+    <h2 id="personal-categories-title">Categorias pessoais</h2>
+    {% if personal_categories %}
+      <ul>
+        {% for category in personal_categories %}
+          <li>
+            <strong>{{ category.display_name }}</strong>
+            <span class="status-badge">{{ category.get_state_display }}</span>
+            {% if category.state == "MERGED" %}<p>Consolidada em {{ category.merged_into.display_name }}. O histórico da origem permanece preservado.</p>{% endif %}
+            <div class="button-row">
+              {% if category.state != "MERGED" %}<a href="{% url 'categories:rename' category.id %}">Renomear</a>{% endif %}
+              {% if category.state == "ACTIVE" %}
+                <a href="{% url 'categories:archive' category.id %}">Arquivar</a>
+                <a href="{% url 'categories:merge' category.id %}">Consolidar</a>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty-state">Nenhuma categoria pessoal foi criada.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel" aria-labelledby="standard-categories-title">
+    <h2 id="standard-categories-title">Categorias padrão</h2>
+    <p>As categorias padrão são somente leitura e não podem ser renomeadas, arquivadas, consolidadas ou excluídas.</p>
+    <ul>
+      {% for category in standard_categories %}
+        <li>{{ category.display_name }} — Padrão; somente leitura</li>
+      {% empty %}<li>Nenhuma categoria padrão disponível.</li>{% endfor %}
+    </ul>
+  </section>
+{% endblock %}

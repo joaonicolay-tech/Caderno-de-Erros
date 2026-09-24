@@ -319,7 +319,7 @@ integrity = run_integrity_check()
 activity = AnalyticsService(workspace_id=LOCAL_WORKSPACE_ID, clock=clock).activity()
 # A prova de restore S6 exige um backup no esquema atual após exercitar S2C.
 executor = MigrationExecutor(connection)
-executor.migrate(s2d)
+executor.migrate([*s2d, ("search", "0001_initial")])
 candidate = create_sqlite_backup(Path(os.environ["CEI_CANDIDATE_BACKUP"]))
 restore = restore_sqlite_backup(
     Path(os.environ["CEI_CANDIDATE_BACKUP"]),

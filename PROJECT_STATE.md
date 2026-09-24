@@ -63,12 +63,25 @@
   recibos vinculados, auditoria final sem ID da Question e expurgo manual após
   90 dias. Upgrade/recovery isolados, A8 deep e gate GREEN registrados em
   `quality/v05-s2d-permanent-deletion-result.md`.
+- V0.5-S3: concluída — UI de gestão integra serviços S2A–S2D sem alterar suas
+  regras; `SavedFilter` usa migration aditiva isolada, testes de upgrade/rollback,
+  isolamento Workspace, estados stale e gate completo GREEN, com A8 standard em
+  `quality/v05-s3-management-ui-result.md`.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: P0, S1 e S2A–S2D concluídas; S3 e posteriores **NOT AUTHORIZED**.
+- V0.5: P0, S1 e S2A–S3 concluídas; S4 e posteriores **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S3 GREEN na terceira tentativa, exit code 0: 423 testes
+aprovados em 193,93 s, 87% de cobertura global, cobertura mínima de domínio,
+migration em banco vazio e upgrade/rollback, formatação, Ruff, mypy,
+detect-secrets e pip-audit aprovados; duração observada do gate 238 s. A primeira
+tentativa falhou em anotações mypy; a segunda em quatro expectativas de UI e
+dois probes de restore no schema anterior, corrigidos e repetidos. A8 standard
+APPROVED, sem Blocker/Major/Minor aberto. Nenhum commit, push, tag, release ou
+início de S4+.
 
 Gate final V0.5-S2D GREEN, exit code 0: 409 testes em 182,52 s, 87% de
 cobertura global, mínimos de domínio, migrations, três perfis, formatação,

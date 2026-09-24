@@ -4,21 +4,190 @@ import secrets
 import uuid
 
 from django.conf import settings
-from django.http import HttpRequest, HttpResponse
+from django.core.exceptions import ValidationError
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
-from modules.accounts.services import LOCAL_USER_ID, LOCAL_WORKSPACE_ID
+from modules.accounts.exceptions import WorkspaceAccessDenied
+from modules.accounts.models import Workspace
+from modules.accounts.services import (
+    LOCAL_USER_ID,
+    LOCAL_WORKSPACE_ID,
+    get_workspace_for_owner,
+)
 from modules.errors.models import ErrorCategory
 
 from .context import InitialAttemptError
+from .correction_forms import AttemptReplacementForm, AttemptVoidForm
+from .corrections import (
+    AttemptCorrectionConflictError,
+    AttemptCorrectionImpact,
+    AttemptCorrectionService,
+)
 from .forms import AnswerForm, CancelForm, ConfirmationForm
 from .models import Attempt, AttemptStatus, AttemptType
+from .selectors import AttemptChainError, resolve_attempt_chain
 from .services import AttemptService
 
 SESSION_COOKIE = "initial_session"
 COOKIE_SALT = "initial-session-v1"
+
+
+def _workspace() -> Workspace | None:
+    try:
+        return get_workspace_for_owner(
+            actor_user_id=LOCAL_USER_ID,
+            workspace_id=LOCAL_WORKSPACE_ID,
+        )
+    except WorkspaceAccessDenied:
+        return None
+
+
+def _correction_preview(
+    *, workspace: Workspace, attempt_id: uuid.UUID
+) -> tuple[AttemptCorrectionImpact, Attempt]:
+    service = AttemptCorrectionService(workspace_id=workspace.id)
+    try:
+        impact = service.preview(attempt_id=attempt_id)
+        chain = resolve_attempt_chain(workspace_id=workspace.id, attempt_id=attempt_id)
+    except (AttemptCorrectionConflictError, AttemptChainError) as error:
+        raise Http404("Attempt não disponível para correção neste Workspace.") from error
+    tip = chain.tip
+    if tip is None or tip.id != impact.effective_tip_id:
+        raise Http404("A ponta efetiva não está disponível.")
+    return impact, tip
+
+
+@never_cache
+@require_http_methods(["GET"])
+def correction_preview(request: HttpRequest, attempt_id: uuid.UUID) -> HttpResponse:
+    workspace = _workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    impact, tip = _correction_preview(workspace=workspace, attempt_id=attempt_id)
+    return render(
+        request,
+        "attempts/correction_preview.html",
+        {
+            "workspace": workspace,
+            "impact": impact,
+            "attempt": tip,
+            "breadcrumbs": [
+                ("Início", reverse("accounts:home")),
+                ("Linha do tempo", reverse("reviews:timeline", args=[tip.question_id])),
+                ("Corrigir Attempt", ""),
+            ],
+        },
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+def void_attempt(request: HttpRequest, attempt_id: uuid.UUID) -> HttpResponse:
+    workspace = _workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    impact, attempt = _correction_preview(workspace=workspace, attempt_id=attempt_id)
+    form = AttemptVoidForm(
+        request.POST if request.method == "POST" else None,
+        initial={
+            "expected_tip_id": impact.effective_tip_id,
+            "correlation_id": uuid.uuid4(),
+        },
+    )
+    stale_conflict = False
+    if request.method == "POST" and form.is_valid():
+        try:
+            AttemptCorrectionService(workspace_id=workspace.id).void(
+                attempt_id=attempt_id,
+                expected_tip_id=form.cleaned_data["expected_tip_id"],
+                reason_code=form.cleaned_data["reason_code"],
+                correlation_id=form.cleaned_data["correlation_id"],
+            )
+            return redirect(
+                f"{reverse('reviews:timeline', args=[attempt.question_id])}?result=attempt-voided"
+            )
+        except AttemptCorrectionConflictError as error:
+            stale_conflict = True
+            form.add_error(None, str(error))
+        except (ValidationError, ValueError) as error:
+            form.add_error(None, str(error))
+    return render(
+        request,
+        "attempts/correction_void.html",
+        {
+            "workspace": workspace,
+            "impact": impact,
+            "attempt": attempt,
+            "form": form,
+            "stale_conflict": stale_conflict,
+            "breadcrumbs": [
+                ("Início", reverse("accounts:home")),
+                ("Linha do tempo", reverse("reviews:timeline", args=[attempt.question_id])),
+                ("Anular Attempt", ""),
+            ],
+        },
+        status=409 if stale_conflict else 400 if request.method == "POST" and form.errors else 200,
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+def replace_attempt(request: HttpRequest, attempt_id: uuid.UUID) -> HttpResponse:
+    workspace = _workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    impact, attempt = _correction_preview(workspace=workspace, attempt_id=attempt_id)
+    form = AttemptReplacementForm(
+        request.POST if request.method == "POST" else None,
+        initial={
+            "expected_tip_id": impact.effective_tip_id,
+            "correlation_id": uuid.uuid4(),
+            "idempotency_key": uuid.uuid4(),
+        },
+        workspace_id=workspace.id,
+        revision_id=attempt.question_revision_id,
+    )
+    stale_conflict = False
+    if request.method == "POST" and form.is_valid():
+        try:
+            AttemptCorrectionService(workspace_id=workspace.id).replace(
+                attempt_id=attempt_id,
+                expected_tip_id=form.cleaned_data["expected_tip_id"],
+                selected_alternative_id=form.cleaned_data["selected_alternative"].id,
+                reason_code=form.cleaned_data["reason_code"],
+                perceived_ease=form.cleaned_data["perceived_ease"] or None,
+                idempotency_key=form.cleaned_data["idempotency_key"],
+                correlation_id=form.cleaned_data["correlation_id"],
+            )
+            return redirect(
+                f"{reverse('reviews:timeline', args=[attempt.question_id])}?result=attempt-replaced"
+            )
+        except AttemptCorrectionConflictError as error:
+            stale_conflict = True
+            form.add_error(None, str(error))
+        except (ValidationError, ValueError) as error:
+            form.add_error(None, str(error))
+    return render(
+        request,
+        "attempts/correction_replace.html",
+        {
+            "workspace": workspace,
+            "impact": impact,
+            "attempt": attempt,
+            "form": form,
+            "stale_conflict": stale_conflict,
+            "breadcrumbs": [
+                ("Início", reverse("accounts:home")),
+                ("Linha do tempo", reverse("reviews:timeline", args=[attempt.question_id])),
+                ("Substituir Attempt", ""),
+            ],
+        },
+        status=409 if stale_conflict else 400 if request.method == "POST" and form.errors else 200,
+    )
 
 
 @never_cache

@@ -22,6 +22,13 @@
         <a class="button-link" href="{% url 'questions:edit' question.id %}">Editar questão</a>
         <a class="button-link button-danger" href="{% url 'questions:archive' question.id %}">Arquivar questão</a>
       {% endif %}
+      {% if can_correct_answer_key %}
+        <a class="button-link button-secondary" href="{% url 'questions:answer-key-correction' question.id %}">Corrigir gabarito para tentativas futuras</a>
+      {% endif %}
+      {% if question.status == "ACTIVE" %}
+        <a class="button-link button-secondary" href="{% url 'reviews:manual-inclusion' question.id %}">Incluir revisão manual</a>
+      {% endif %}
+      <a class="button-link button-danger" href="{% url 'questions:permanent-delete-preview' question.id %}">Solicitar exclusão permanente</a>
       {% if question.status == "DRAFT" %}
         <a class="button-link button-secondary" href="{% url 'questions:draft-activate' question.id %}">Completar e ativar</a>
       {% endif %}

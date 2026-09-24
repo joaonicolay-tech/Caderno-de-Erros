@@ -126,6 +126,8 @@ after = {
     "revisions": QuestionRevision.objects.filter(question_id=question.id).count(),
     "audit": sorted(AuditEvent.objects.values_list("event_code", flat=True)),
 }
+# Validate the isolated restore against the current schema after proving S2D facts survive.
+MigrationExecutor(connection).migrate([*s2d, ("search", "0001_initial")])
 checker_before = run_integrity_check()
 service = PermanentQuestionDeletionService(workspace_id=LOCAL_WORKSPACE_ID)
 preview = service.preview(question_id=question.id)

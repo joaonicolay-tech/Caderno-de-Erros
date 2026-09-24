@@ -276,7 +276,7 @@ def test_queue_renders_contextual_items_without_changing_temporal_groups(
         assert text in html
     assert reverse("reviews:complete", args=[overdue.id]) in html
     assert reverse("reviews:complete", args=[due.id]) in html
-    assert reverse("reviews:complete", args=[future_one.id]) not in html
+    assert f'href="{reverse("reviews:complete", args=[future_one.id])}"' not in html
 
 
 @pytest.mark.django_db
@@ -346,10 +346,10 @@ def test_queue_drill_down_and_cta_only_expose_actionable_reviews(
     assert '<h2 id="overdue">Atrasadas</h2>' in overdue_html
     assert '<h2 id="due">Hoje</h2>' not in overdue_html
     assert reverse("reviews:complete", args=[overdue.id]) in overdue_html
-    assert reverse("reviews:complete", args=[due.id]) not in overdue_html
-    assert reverse("reviews:complete", args=[future.id]) not in overdue_html
+    assert f'href="{reverse("reviews:complete", args=[due.id])}"' not in overdue_html
+    assert f'href="{reverse("reviews:complete", args=[future.id])}"' not in overdue_html
     assert '<h2 id="future">Futuras</h2>' in future_html
-    assert reverse("reviews:complete", args=[future.id]) not in future_html
+    assert f'href="{reverse("reviews:complete", args=[future.id])}"' not in future_html
     assert "Não há revisões acionáveis agora." not in future_html
     assert '<h2 id="overdue">Atrasadas</h2>' in invalid_html
 
@@ -367,7 +367,7 @@ def test_queue_without_actionable_reviews_explains_that_future_reviews_cannot_st
     html = Client().get(reverse("reviews:queue")).content.decode("utf-8")
 
     assert "Não há revisões acionáveis agora." in html
-    assert reverse("reviews:complete", args=[future.id]) not in html
+    assert f'href="{reverse("reviews:complete", args=[future.id])}"' not in html
 
 
 @pytest.mark.django_db

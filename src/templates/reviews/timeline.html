@@ -1,3 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Linha do tempo — Caderno de Erros{% endblock %}
-{% block content %}<h1>Linha do tempo</h1><p>Fatos históricos, inclusive após arquivamento.</p><ol>{% for event in events %}<li><time datetime="{{ event.occurred_at|date:'c' }}">{{ event.occurred_at }}</time> — {{ event.label }}{% if event.revision_number %} — revisão apresentada {{ event.revision_number }}{% endif %}</li>{% empty %}<li>Nenhum fato de aprendizagem registrado.</li>{% endfor %}</ol>{% endblock %}
+{% block content %}
+  <h1>Linha do tempo</h1>
+  <p>Fatos históricos, inclusive após arquivamento.</p>
+  <ol>
+    {% for event in events %}
+      <li>
+        <time datetime="{{ event.occurred_at|date:'c' }}">{{ event.occurred_at }}</time> — {{ event.label }}
+        {% if event.revision_number %} — revisão apresentada {{ event.revision_number }}{% endif %}
+        {% if event.correction_available %}
+          <a href="{% url 'attempts:correction-preview' event.source_id %}">Corrigir Attempt</a>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>Nenhum fato de aprendizagem registrado.</li>
+    {% endfor %}
+  </ol>
+{% endblock %}

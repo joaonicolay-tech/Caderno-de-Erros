@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Corrigir Attempt — Caderno de Erros{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumbs" aria-label="Trilha de navegação"><ol>{% for label, url in breadcrumbs %}{% if url %}<li><a href="{{ url }}">{{ label }}</a></li>{% else %}<li aria-current="page">{{ label }}</li>{% endif %}{% endfor %}</ol></nav>
+  <h1>Corrigir Attempt</h1>
+  <section class="panel" aria-labelledby="attempt-title">
+    <h2 id="attempt-title">Attempt efetiva {{ impact.effective_tip_id }}</h2>
+    <dl class="summary-list">
+      <div><dt>Questão</dt><dd>{{ attempt.question_id }}</dd></div>
+      <div><dt>Resposta observada</dt><dd>{% if attempt.selected_alternative.label %}{{ attempt.selected_alternative.label }} — {% endif %}{{ attempt.selected_alternative.text }}</dd></div>
+      <div><dt>Resultado</dt><dd>{% if attempt.is_correct %}Correta{% else %}Incorreta{% endif %}</dd></div>
+      <div><dt>Data</dt><dd>{{ attempt.local_date|date:"d/m/Y" }}</dd></div>
+      <div><dt>Diagnóstico associado</dt><dd>{% if impact.has_classification %}Sim{% else %}Não{% endif %}</dd></div>
+      <div><dt>Ciclos ativos afetados</dt><dd>{{ impact.affected_active_cycles }}</dd></div>
+      <div><dt>Revisões pendentes afetadas</dt><dd>{{ impact.affected_pending_reviews }}</dd></div>
+    </dl>
+  </section>
+  <p>Escolha anular quando o evento não deveria existir. Escolha substituir quando o evento ocorreu, mas seus dados foram registrados incorretamente.</p>
+  <div class="button-row">
+    <a class="button-link button-danger" href="{% url 'attempts:void' attempt.id %}">Anular Attempt</a>
+    <a class="button-link" href="{% url 'attempts:replace' attempt.id %}">Substituir Attempt</a>
+    <a class="button-link button-secondary" href="{% url 'reviews:timeline' attempt.question_id %}">Cancelar</a>
+  </div>
+{% endblock %}

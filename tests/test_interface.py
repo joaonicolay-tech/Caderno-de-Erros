@@ -126,6 +126,7 @@ def test_initialized_home_only_links_existing_capabilities_and_preserves_unicode
     assert links == {
         "/",
         "/configuracoes/",
+        "/categories/",
         "/questions/",
         "/questions/new/",
         "/reviews/",
