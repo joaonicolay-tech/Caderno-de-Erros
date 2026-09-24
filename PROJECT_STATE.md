@@ -67,12 +67,25 @@
   regras; `SavedFilter` usa migration aditiva isolada, testes de upgrade/rollback,
   isolamento Workspace, estados stale e gate completo GREEN, com A8 standard em
   `quality/v05-s3-management-ui-result.md`.
+- V0.5-S4: concluída — policy pura `DOM-HEUR-1.0` e adapter read-only por
+  Question ativa; decisões humanas sobre suficiência, `Eq` e `C_q` registradas
+  no A4; sem migration, persistência, UI, Priority ou reopening operacional.
+  A8 deep APPROVED e gate GREEN em `quality/v05-s4-domain-heuristic-result.md`.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: P0, S1 e S2A–S3 concluídas; S4 e posteriores **NOT AUTHORIZED**.
+- V0.5: P0, S1 e S2A–S4 concluídas; S5 e posteriores **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S4 GREEN na segunda tentativa, exit code 0: 455 testes
+aprovados em 178,44 s, 87% de cobertura global, migration em banco vazio,
+formatação, Ruff, mypy, cobertura de domínio, detect-secrets e pip-audit
+aprovados; duração observada do gate 217,8 s. A primeira execução também foi
+GREEN (454 testes); A8 corrigiu depois um caso de cobertura hierárquica antes
+da validação final. A8 deep APPROVED, sem Blocker/Major/Minor aberto. Dois
+`ResourceWarning` de conexão SQLite em teste S2D existente não afetaram o
+resultado. Nenhum commit, push, tag, release ou início de S5+.
 
 Gate final V0.5-S3 GREEN na terceira tentativa, exit code 0: 423 testes
 aprovados em 193,93 s, 87% de cobertura global, cobertura mínima de domínio,
@@ -321,6 +334,11 @@ baseline V0.3, Architecture v1.0 ou gate.
   e proteção da migration S2D;
 - `tasks/completed/v05-s2d-permanent-deletion.md`: contrato e evidência de
   encerramento S2D;
+- `tasks/plans/v05-s4-domain-heuristic-plan.md` e
+  `quality/v05-s4-domain-heuristic-result.md`: A4, decisões humanas, A8 deep e
+  gate da policy DOM-HEUR-1.0;
+- `tasks/completed/v05-s4-domain-heuristic.md`: contrato e evidência de
+  encerramento S4;
 - `quality/v05-p0-planning-result.md`: review A8 e gate de V0.5-P0;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
@@ -330,6 +348,6 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Revisão humana da entrega S2D pode preceder eventual autorização independente
-de uma próxima tarefa. Nenhum commit, push, tag, release, S3 ou etapa posterior
-está autorizado por este estado.
+Nenhuma próxima tarefa está autorizada. Uma autorização futura deve ser
+registrada separadamente em `tasks/current.md`; S5 e etapas posteriores não
+foram iniciadas. Nenhum commit, push, tag ou release foi autorizado.
