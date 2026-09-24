@@ -113,6 +113,14 @@ class AttemptCorrectionService:
                     workspace_id=self.workspace_id,
                     clock=self.clock,
                 ).rebuild(voided=voided, replacement=None)
+                from modules.domain.services import DomainLifecycleService
+
+                DomainLifecycleService(
+                    workspace_id=self.workspace_id, clock=self.clock
+                ).reconcile_in_transaction(
+                    question_id=voided.question_id,
+                    trigger_code="ESSENTIAL_EVIDENCE_VOIDED",
+                )
                 self._fault(fault_hook, "after_reconstruction")
                 self._fault(fault_hook, "before_audit")
                 record_audit_event(
@@ -191,6 +199,16 @@ class AttemptCorrectionService:
                     workspace_id=self.workspace_id,
                     clock=self.clock,
                 ).rebuild(voided=voided, replacement=replacement)
+                from modules.domain.services import DomainLifecycleService
+
+                DomainLifecycleService(
+                    workspace_id=self.workspace_id, clock=self.clock
+                ).reconcile_in_transaction(
+                    question_id=voided.question_id,
+                    trigger_code="NEW_VALID_ERROR"
+                    if not replacement.is_correct
+                    else "ESSENTIAL_EVIDENCE_VOIDED",
+                )
                 self._fault(fault_hook, "after_reconstruction")
                 self._fault(fault_hook, "before_audit")
                 record_audit_event(

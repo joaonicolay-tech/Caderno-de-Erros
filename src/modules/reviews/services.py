@@ -40,6 +40,7 @@ from modules.questions.models import Alternative, Question, QuestionRevision, Qu
 from shared.domain.time import Calendar, Clock, LocalDate, SystemClock, TimeZoneId
 
 from .models import (
+    ManualCyclePurpose,
     Review,
     ReviewCycle,
     ReviewCycleOriginKind,
@@ -212,6 +213,7 @@ class ManualReviewInclusionService:
                             origin_attempt=initial,
                             origin_question_revision=initial.question_revision,
                             origin_kind=ReviewCycleOriginKind.MANUAL,
+                            manual_purpose=ManualCyclePurpose.INCLUSION,
                             started_at=self.clock.now().value,
                         )
                         Review.objects.create(
@@ -471,6 +473,14 @@ class CompleteReviewService:
                 )
                 self._complete_review_row(review, decision.evaluated_at.value)
                 self._advance_cycle_and_review(review, attempt, decision)
+                from modules.domain.services import DomainLifecycleService
+
+                DomainLifecycleService(
+                    workspace_id=workspace.id, clock=self.clock
+                ).reconcile_in_transaction(
+                    question_id=review.question_id,
+                    trigger_code="NEW_VALID_ERROR" if not attempt.is_correct else None,
+                )
                 return OperationReceipt.objects.create(
                     workspace=workspace,
                     operation_kind=OperationKind.REVIEW_COMPLETION,

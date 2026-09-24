@@ -22,6 +22,11 @@ class ReviewCycleOriginKind(models.TextChoices):
     ATTEMPT_CORRECTION = "ATTEMPT_CORRECTION", "Correção de tentativa"
 
 
+class ManualCyclePurpose(models.TextChoices):
+    INCLUSION = "INCLUSION", "Inclusão manual"
+    MASTERY_REOPEN = "MASTERY_REOPEN", "Reabertura de domínio"
+
+
 class ReviewCycleState(models.TextChoices):
     """Estados estruturais persistidos do ciclo."""
 
@@ -82,6 +87,9 @@ class ReviewCycle(models.Model):
         choices=ReviewCycleOriginKind.choices,
         default=ReviewCycleOriginKind.INITIAL_ERROR,
     )
+    manual_purpose = models.CharField(  # noqa: DJ001
+        max_length=24, choices=ManualCyclePurpose.choices, null=True, blank=True
+    )
     policy_code = models.CharField(max_length=64, default=POLICY_CODE)
     state = models.CharField(
         max_length=16,
@@ -114,6 +122,19 @@ class ReviewCycle(models.Model):
             models.CheckConstraint(
                 condition=Q(origin_kind__in=ReviewCycleOriginKind.values),
                 name="cycle_origin_kind_valid",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    Q(
+                        origin_kind=ReviewCycleOriginKind.MANUAL,
+                        manual_purpose__in=ManualCyclePurpose.values,
+                    )
+                    | (
+                        ~Q(origin_kind=ReviewCycleOriginKind.MANUAL)
+                        & Q(manual_purpose__isnull=True)
+                    )
+                ),
+                name="cycle_manual_purpose_valid",
             ),
             models.CheckConstraint(
                 condition=(
@@ -237,12 +258,15 @@ class ReviewCycle(models.Model):
                 attempt.workspace_id != self.workspace_id
                 or attempt.question_id != self.question_id
                 or attempt.question_revision_id != self.origin_question_revision_id
-                or attempt.attempt_type != AttemptType.INITIAL
-                or not attempt.is_correct
                 or attempt.status != AttemptStatus.VALID
+                or (
+                    self.manual_purpose == ManualCyclePurpose.INCLUSION
+                    and (attempt.attempt_type != AttemptType.INITIAL or not attempt.is_correct)
+                )
+                or self.manual_purpose not in ManualCyclePurpose.values
             ):
                 raise ValidationError(
-                    "O ciclo manual exige tentativa inicial correta válida do mesmo contexto."
+                    "O ciclo manual exige Attempt válida e propósito do mesmo contexto."
                 )
             return
         if (

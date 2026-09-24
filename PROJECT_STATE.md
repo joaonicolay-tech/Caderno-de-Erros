@@ -71,12 +71,27 @@
   Question ativa; decisões humanas sobre suficiência, `Eq` e `C_q` registradas
   no A4; sem migration, persistência, UI, Priority ou reopening operacional.
   A8 deep APPROVED e gate GREEN em `quality/v05-s4-domain-heuristic-result.md`.
+- V0.5-S5: concluída — Domain corrente on-demand sobre fatos efetivos e policy
+  vigente, transições de mastery em `MasteryStateEvent` append-only,
+  reabertura manual distinta da inclusão S2A, envelhecimento sem scheduler e
+  agregações hierárquicas em lote. Migration aditiva, upgrade/recovery isolados,
+  A8 deep APPROVED e gate GREEN em `quality/v05-s5-domain-application-result.md`.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: P0, S1 e S2A–S4 concluídas; S5 e posteriores **NOT AUTHORIZED**.
+- V0.5: P0, S1 e S2A–S5 concluídas; S6 e posteriores **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S5 GREEN na segunda tentativa, exit code 0: 473 testes
+aprovados em 239,30 s, 87% de cobertura global, migration em banco vazio,
+upgrade/recovery isolados, formatação, Ruff, mypy, cobertura de domínio,
+detect-secrets e pip-audit aprovados; duração total 285,9 s. A primeira
+tentativa também foi GREEN (470 testes); A8 acrescentou explicabilidade dos
+critérios RN-079 e proteção de reverse antes da validação final. A8 deep
+APPROVED, sem Blocker/Major/Minor aberto. Dois `ResourceWarning` de SQLite
+não afetaram o resultado. Sem snapshot, scheduler, commit, push, tag, release
+ou início de S6+.
 
 Gate final V0.5-S4 GREEN na segunda tentativa, exit code 0: 455 testes
 aprovados em 178,44 s, 87% de cobertura global, migration em banco vazio,

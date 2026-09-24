@@ -143,6 +143,13 @@ class PolicyExplanation:
 
 
 @dataclass(frozen=True, slots=True)
+class MasteryCriterion:
+    code: str
+    satisfied: bool
+    evidence_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class DomainResult:
     question_id: uuid.UUID
     policy_version: str
@@ -154,6 +161,7 @@ class DomainResult:
     sufficiency: EvidenceSufficiency
     maturity: DomainMaturity
     mastery: MasteryState
+    mastery_criteria: tuple[MasteryCriterion, ...]
     vector: KnownDomainVector
     included_attempt_ids: tuple[str, ...]
     excluded_evidence: tuple[ExcludedEvidence, ...]
@@ -538,10 +546,15 @@ def evaluate_domain(input_: DomainInput) -> DomainResult:
         + vector.limitation_codes,
     )
     band = _domain_band(vector.domain_index_exact)
-    mastery = _mastery_state(
+    mastery_criteria = _mastery_criteria(
         attempts=attempts,
         vector=vector,
         active_overdue=input_.has_active_overdue_review,
+    )
+    mastery = (
+        MasteryState.DOMINATED
+        if all(item.satisfied for item in mastery_criteria)
+        else MasteryState.NOT_DOMINATED
     )
     explanations = (
         PolicyExplanation("A_Q", vector.aq.evidence_ids),
@@ -579,6 +592,7 @@ def evaluate_domain(input_: DomainInput) -> DomainResult:
         sufficiency=sufficiency,
         maturity=maturity,
         mastery=mastery,
+        mastery_criteria=mastery_criteria,
         vector=vector,
         included_attempt_ids=tuple(item.evidence_id for item in attempts),
         excluded_evidence=excluded,
@@ -658,28 +672,38 @@ def _domain_band(value: Fraction | None) -> DomainBand | None:
     return DomainBand.STRONG
 
 
-def _mastery_state(
+def _mastery_criteria(
     *, attempts: Sequence[AttemptEvidence], vector: KnownDomainVector, active_overdue: bool
-) -> MasteryState:
+) -> tuple[MasteryCriterion, ...]:
     errors = tuple(index for index, attempt in enumerate(attempts) if not attempt.is_correct)
     last_error = errors[-1] if errors else -1
-    has_correct_d30_after_error = any(
-        attempt.attempt_kind == AttemptKind.REVIEW
+    correct_d30 = tuple(
+        attempt
+        for attempt in attempts[last_error + 1 :]
+        if attempt.attempt_kind == AttemptKind.REVIEW
         and attempt.review_stage == ReviewStage.D30
         and attempt.is_correct
-        for attempt in attempts[last_error + 1 :]
     )
     reviews = tuple(attempt for attempt in attempts if attempt.attempt_kind == AttemptKind.REVIEW)
     last_two_correct = len(reviews) >= 2 and all(item.is_correct for item in reviews[-2:])
     index_exact = vector.domain_index_exact or _fraction(vector.domain_index)
     confidence = vector.confidence
-    dominated = (
-        has_correct_d30_after_error
-        and index_exact is not None
-        and index_exact >= 85
-        and confidence is not None
-        and confidence >= 80
-        and last_two_correct
-        and not active_overdue
+    return (
+        MasteryCriterion(
+            "RN079_CORRECT_D30_AFTER_LAST_ERROR",
+            bool(correct_d30),
+            tuple(item.evidence_id for item in correct_d30),
+        ),
+        MasteryCriterion(
+            "RN079_DOMAIN_INDEX_AT_LEAST_85", index_exact is not None and index_exact >= 85
+        ),
+        MasteryCriterion(
+            "RN079_CONFIDENCE_AT_LEAST_80", confidence is not None and confidence >= 80
+        ),
+        MasteryCriterion(
+            "RN079_LAST_TWO_REVIEWS_CORRECT",
+            last_two_correct,
+            tuple(item.evidence_id for item in reviews[-2:]),
+        ),
+        MasteryCriterion("RN079_NO_ACTIVE_OVERDUE_REVIEW", not active_overdue),
     )
-    return MasteryState.DOMINATED if dominated else MasteryState.NOT_DOMINATED

@@ -32,6 +32,7 @@ V05_S2A_MIGRATIONS_PATH = PROJECT_ROOT / "quality" / "v05-s2a-migrations.json"
 V05_S2B_MIGRATIONS_PATH = PROJECT_ROOT / "quality" / "v05-s2b-migrations.json"
 V05_S2D_MIGRATIONS_PATH = PROJECT_ROOT / "quality" / "v05-s2d-migrations.json"
 V05_S3_MIGRATIONS_PATH = PROJECT_ROOT / "quality" / "v05-s3-migrations.json"
+V05_S5_MIGRATIONS_PATH = PROJECT_ROOT / "quality" / "v05-s5-migrations.json"
 STAGE1_MANIFEST_REVISION = "".join(
     ("b64552c1cc6201a82245", "61a6c25f29a2bb8f4a47")  # pragma: allowlist secret
 )
@@ -81,7 +82,7 @@ def test_current_repository_satisfies_v03_stage5_contract() -> None:
     verify_repository(
         PROJECT_ROOT,
         V03_STAGE5_MANIFEST_PATH,
-        V05_S3_MIGRATIONS_PATH,
+        V05_S5_MIGRATIONS_PATH,
     )
 
 
@@ -92,6 +93,17 @@ def test_s3_migration_manifest_preserves_s2d_hashes_and_adds_only_saved_filter()
     assert isinstance(s2d, dict) and isinstance(hashes, dict)
     assert all(hashes[path] == digest for path, digest in s2d.items())
     assert set(hashes) - set(s2d) == {"src/modules/search/migrations/0001_initial.py"}
+
+
+def test_s5_migration_manifest_preserves_s3_and_adds_only_mastery_schema() -> None:
+    s3 = load_json_object(V05_S3_MIGRATIONS_PATH)["additional_migration_sha256"]
+    s5 = load_json_object(V05_S5_MIGRATIONS_PATH)["additional_migration_sha256"]
+    assert isinstance(s3, dict) and isinstance(s5, dict)
+    assert all(s5[path] == digest for path, digest in s3.items())
+    assert set(s5) - set(s3) == {
+        "src/modules/domain/migrations/0001_initial.py",
+        "src/modules/reviews/migrations/0005_reviewcycle_manual_purpose_and_more.py",
+    }
 
 
 @pytest.mark.parametrize(
@@ -196,7 +208,7 @@ def test_changed_historical_migration_is_blocking() -> None:
         verify_migration_history(
             PROJECT_ROOT,
             manifest,
-            load_json_object(V05_S3_MIGRATIONS_PATH),
+            load_json_object(V05_S5_MIGRATIONS_PATH),
         )
 
 

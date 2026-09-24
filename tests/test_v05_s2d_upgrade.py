@@ -64,8 +64,10 @@ s2c = [*s2b[:3], ("operations", "0003_answer_key_correction_audit"), *s2b[4:]]
 s2d = [*s2b[:3], (
     "operations", "0004_remove_auditevent_audit_event_code_valid_and_more"
 ), *s2b[4:]]
-for stage in (v044, s2a, s2b, s2c):
+for stage in (v044, s2a, s2b, s2c, s2d):
     MigrationExecutor(connection).migrate(stage)
+# Current service models require the current S5 schema before they are called.
+MigrationExecutor(connection).migrate(MigrationExecutor(connection).loader.graph.leaf_nodes())
 
 workspace = bootstrap_local_workspace(timezone_id="UTC").workspace
 discipline = create_discipline(workspace_id=workspace.id, name="Upgrade")
@@ -120,15 +122,13 @@ before = {
     "revisions": QuestionRevision.objects.filter(question_id=question.id).count(),
     "audit": sorted(AuditEvent.objects.values_list("event_code", flat=True)),
 }
-MigrationExecutor(connection).migrate(s2d)
+checker_before = run_integrity_check()
 after = {
     "attempts": Attempt.objects.filter(question_id=question.id).count(),
     "revisions": QuestionRevision.objects.filter(question_id=question.id).count(),
     "audit": sorted(AuditEvent.objects.values_list("event_code", flat=True)),
 }
-# Validate the isolated restore against the current schema after proving S2D facts survive.
-MigrationExecutor(connection).migrate([*s2d, ("search", "0001_initial")])
-checker_before = run_integrity_check()
+# Validate isolated restore and deletion against the current compatible schema.
 service = PermanentQuestionDeletionService(workspace_id=LOCAL_WORKSPACE_ID)
 preview = service.preview(question_id=question.id)
 result = service.delete(

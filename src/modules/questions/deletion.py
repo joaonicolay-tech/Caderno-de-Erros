@@ -23,6 +23,7 @@ from modules.data_management.services import (
     restore_sqlite_backup,
     validate_sqlite_backup,
 )
+from modules.domain.models import MasteryStateEvent
 from modules.errors.models import ErrorCategory, ErrorClassification, ErrorClassificationRevision
 from modules.operations.models import AuditEntityType, AuditEvent, AuditEventCode
 from modules.operations.services import record_audit_event
@@ -70,6 +71,7 @@ class PermanentDeletionResult:
 
 
 _TABLES = (
+    ("mastery_events", "domain_masterystateevent"),
     ("schedule_changes", "reviews_reviewschedulechange"),
     ("classification_revisions", "errors_errorclassificationrevision"),
     ("classifications", "errors_errorclassification"),
@@ -325,6 +327,14 @@ class PermanentQuestionDeletionService:
             "lock_version",
         )
         cycle_ids = _ids(graph["cycles"])
+        graph["mastery_events"] = _rows(
+            MasteryStateEvent.objects.filter(question_id=question_id),
+            "id",
+            "workspace_id",
+            "question_id",
+            "trigger_attempt_id",
+            "manual_cycle_id",
+        )
         graph["reviews"] = _rows(
             Review.objects.filter(question_id=question_id),
             "id",
@@ -363,6 +373,7 @@ class PermanentQuestionDeletionService:
             | review_ids
             | _ids(graph["schedule_changes"])
             | _ids(graph["origins"])
+            | _ids(graph["mastery_events"])
         )
         graph["audit_events"] = _rows(
             AuditEvent.objects.filter(
@@ -438,6 +449,12 @@ class PermanentQuestionDeletionService:
             for row in graph["reviews"]
         ):
             blockers.append("REVIEW_EXTERNAL_REFERENCE")
+        if any(
+            (row["trigger_attempt_id"] is not None and row["trigger_attempt_id"] not in attempt_ids)
+            or (row["manual_cycle_id"] is not None and row["manual_cycle_id"] not in cycle_ids)
+            for row in graph["mastery_events"]
+        ):
+            blockers.append("MASTERY_EXTERNAL_REFERENCE")
         if (
             Attempt.objects.filter(
                 Q(question_revision_id__in=revision_ids)
@@ -455,6 +472,11 @@ class PermanentQuestionDeletionService:
             .exists()
             or Review.objects.filter(
                 Q(review_cycle_id__in=cycle_ids) | Q(scheduled_from_attempt_id__in=attempt_ids)
+            )
+            .exclude(question_id=question_id)
+            .exists()
+            or MasteryStateEvent.objects.filter(
+                Q(trigger_attempt_id__in=attempt_ids) | Q(manual_cycle_id__in=cycle_ids)
             )
             .exclude(question_id=question_id)
             .exists()
@@ -479,6 +501,7 @@ class PermanentQuestionDeletionService:
                 "schedule_changes",
                 "origins",
                 "audit_events",
+                "mastery_events",
                 "receipts",
             )
         )
@@ -551,6 +574,7 @@ class PermanentQuestionDeletionService:
             ("schedule_changes", ReviewScheduleChange),
             ("origins", QuestionOrigin),
             ("audit_events", AuditEvent),
+            ("mastery_events", MasteryStateEvent),
             ("receipts", OperationReceipt),
         ):
             if model.objects.filter(pk__in=_ids(graph[key])).exists():

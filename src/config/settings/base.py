@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "modules.accounts.apps.AccountsConfig",
     "modules.attempts.apps.AttemptsConfig",
     "modules.questions.apps.QuestionsConfig",
+    "modules.domain.apps.DomainConfig",
     "modules.search.apps.SearchConfig",
     "modules.taxonomy.apps.TaxonomyConfig",
     "modules.errors.apps.ErrorsConfig",

@@ -1247,6 +1247,11 @@ def archive_question(
                     raise QuestionCatalogConcurrencyError(
                         "O ciclo mudou; recarregue a versão atual."
                     )
+            from modules.domain.services import DomainLifecycleService
+
+            DomainLifecycleService(workspace_id=workspace_id, clock=source).archive_in_transaction(
+                question=question
+            )
             updated = Question.objects.filter(
                 pk=question.id,
                 workspace_id=workspace_id,

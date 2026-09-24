@@ -217,6 +217,11 @@ pre_fact_counts = {
 executor = MigrationExecutor(connection)
 executor.migrate(s2c)
 
+# Serviços importados do checkout atual exigem o schema vigente após a prova
+# histórica de reverse/forward S2C, inclusive o discriminador MANUAL de S5.
+executor = MigrationExecutor(connection)
+executor.migrate([*s2d, ("search", "0001_initial"), ("domain", "0001_initial")])
+
 clock = FixedClock(Instant(datetime(2026, 9, 20, 18, tzinfo=UTC)))
 personal = PersonalCategoryService(workspace_id=LOCAL_WORKSPACE_ID)
 source = personal.create(display_name="Origem rica")
@@ -318,8 +323,6 @@ future_attempt = Attempt.objects.get(pk=receipt.result_entity_id)
 integrity = run_integrity_check()
 activity = AnalyticsService(workspace_id=LOCAL_WORKSPACE_ID, clock=clock).activity()
 # A prova de restore S6 exige um backup no esquema atual após exercitar S2C.
-executor = MigrationExecutor(connection)
-executor.migrate([*s2d, ("search", "0001_initial")])
 candidate = create_sqlite_backup(Path(os.environ["CEI_CANDIDATE_BACKUP"]))
 restore = restore_sqlite_backup(
     Path(os.environ["CEI_CANDIDATE_BACKUP"]),

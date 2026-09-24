@@ -36,6 +36,7 @@ s2d = [
     ("taxonomy", "0001_initial"),
 ]
 MigrationExecutor(connection).migrate(s2d)
+MigrationExecutor(connection).migrate([*s2d, ("domain", "0001_initial")])
 workspace = bootstrap_local_workspace(timezone_id="UTC").workspace
 discipline = create_discipline(workspace_id=workspace.id, name="Migration S3")
 subject = create_subject(workspace_id=workspace.id, discipline_id=discipline.id, name="Upgrade")
