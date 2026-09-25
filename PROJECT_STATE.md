@@ -76,12 +76,27 @@
   reabertura manual distinta da inclusão S2A, envelhecimento sem scheduler e
   agregações hierárquicas em lote. Migration aditiva, upgrade/recovery isolados,
   A8 deep APPROVED e gate GREEN em `quality/v05-s5-domain-application-result.md`.
+- V0.5-S6: concluída — recomendação opcional por Subject `PRI-HEUR-1.0`,
+  calculada on-demand com Domain S5 e fatos REVIEW efetivos. Decisões humanas
+  de 2026-09-24 fecharam OD03: R em 90 dias, D em duas janelas de 30 dias,
+  desempate técnico por UUID e coleta de evidência quando faltar componente.
+  Sem migration, snapshot, scheduler ou alteração da Review Queue. A8 deep
+  APPROVED e gate GREEN em `quality/v05-s6-priority-heuristic-result.md`.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: P0, S1 e S2A–S5 concluídas; S6 e posteriores **NOT AUTHORIZED**.
+- V0.5: P0, S1 e S2A–S6 concluídas; S7 e posteriores **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S6 GREEN na terceira tentativa, exit code 0: 487 testes
+aprovados em 213,29 s, 87% de cobertura global, banco vazio, migrations,
+formatação, Ruff, mypy, cobertura de domínio, detect-secrets e pip-audit
+aprovados; duração observada do gate 257 s. A primeira tentativa falhou na
+expectativa exata de links do painel após a nova rota; a segunda foi GREEN,
+e a terceira validou também o benchmark adicional. A8 deep APPROVED, Blocker
+0/Major 0. `gate_first_pass=false`. Sem commit, push, tag, release ou início
+de S7+.
 
 Gate final V0.5-S5 GREEN na segunda tentativa, exit code 0: 473 testes
 aprovados em 239,30 s, 87% de cobertura global, migration em banco vazio,

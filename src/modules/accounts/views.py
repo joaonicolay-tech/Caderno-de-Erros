@@ -1,5 +1,7 @@
 """Apresentação fina do espaço e da configuração local."""
 
+from decimal import Decimal, localcontext
+from fractions import Fraction
 from typing import Any
 
 from django.db import DatabaseError
@@ -9,6 +11,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from modules.analytics import AnalyticsService
+from modules.priority.services import list_subject_priorities
 from shared.application.bootstrap import bootstrap_local_workspace
 
 from .exceptions import LocalBootstrapConflict, WorkspaceAccessDenied, WorkspaceConcurrencyError
@@ -62,6 +65,67 @@ def home(request: HttpRequest) -> HttpResponse:
                 request,
                 {"configured": "Configuração inicial concluída com sucesso."},
             ),
+        },
+    )
+
+
+def _display_factor(value: Fraction | None) -> str:
+    if value is None:
+        return "Indisponível"
+    with localcontext() as context:
+        context.prec = 20
+        return f"{Decimal(value.numerator) / Decimal(value.denominator):.2f}"
+
+
+def priority(request: HttpRequest) -> HttpResponse:
+    """Show optional advice; reading it has no operational side effects."""
+    workspace = _local_workspace()
+    if workspace is None:
+        return redirect("accounts:initial-setup")
+    recommendation = list_subject_priorities(workspace_id=workspace.id)
+    explanations = {
+        "LOW_DOMAIN": "Domínio baixo",
+        "OVERDUE_REVIEWS": "Revisões atrasadas",
+        "RECURRING_ERRORS": "Erros de revisão recorrentes",
+        "RECENT_DECLINE": "Queda recente no desempenho",
+        "NO_CONTRIBUTING_RISK": "Nenhum fator elevou a prioridade",
+    }
+    insufficiency = {
+        "MISSING_CONFIDENCE": "Confiança de domínio indisponível",
+        "LOW_CONFIDENCE": "Confiança de domínio abaixo de 40",
+        "MISSING_DOMAIN_EVIDENCE": "Domínio sem evidência",
+        "NO_ACTIVE_QUESTIONS": "Nenhuma questão ativa",
+        "MISSING_RECURRENCE_EVIDENCE": "Menos de três questões com duas revisões válidas nos últimos 90 dias",
+        "MISSING_RECENT_DECLINE_BASELINE": "Menos de três questões com revisões válidas nas duas janelas de 30 dias",
+    }
+
+    def display(row: Any) -> dict[str, Any]:
+        result = row.result
+        return {
+            "subject": row.subject,
+            "score": _display_factor(result.score),
+            "confidence": result.confidence,
+            "w": _display_factor(result.w),
+            "o": _display_factor(result.o),
+            "r": _display_factor(result.r),
+            "d": _display_factor(result.d),
+            "active": result.active_question_count,
+            "overdue": result.overdue_question_count,
+            "recurrence_eligible": result.recurrence_eligible_count,
+            "recurring": result.recurring_question_count,
+            "comparable": result.comparable_question_count,
+            "explanations": tuple(explanations[code] for code in result.explanation_codes),
+            "reasons": tuple(insufficiency[code] for code in result.reason_codes),
+        }
+
+    return render(
+        request,
+        "accounts/priority.html",
+        {
+            "workspace": workspace,
+            "evaluated_on": recommendation.evaluated_on,
+            "ranked": tuple(display(row) for row in recommendation.ranked),
+            "collecting": tuple(display(row) for row in recommendation.collect_more_evidence),
         },
     )
 

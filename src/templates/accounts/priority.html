@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}O que estudar agora? — Caderno de Erros{% endblock %}
+
+{% block content %}
+<section aria-labelledby="priority-title">
+  <h1 id="priority-title">O que estudar agora?</h1>
+  <p>Recomendação opcional por assunto, calculada em {{ evaluated_on|date:"d/m/Y" }} no fuso deste espaço. Você pode escolher outro assunto ou ignorar a sugestão. A <a href="{% url 'reviews:queue' %}">fila de revisões</a> permanece independente.</p>
+  <p>Política PRI-HEUR-1.0: 40% fraqueza, 30% atraso, 20% recorrência e 10% queda recente. Pontuações exibidas com duas casas; a ordenação usa o valor completo.</p>
+</section>
+
+<section aria-labelledby="ranked-title">
+  <h2 id="ranked-title">Assuntos recomendados</h2>
+  {% if ranked %}
+    <ol>
+      {% for row in ranked %}
+      <li>
+        <h3>{{ row.subject.name }}</h3>
+        <p><strong>Prioridade: {{ row.score }}</strong> de 100; confiança: {{ row.confidence|floatformat:2 }} de 100.</p>
+        <p>Fraqueza {{ row.w }}; atraso {{ row.o }}; recorrência {{ row.r }}; queda recente {{ row.d }}.</p>
+        <p>Evidência: {{ row.active }} questões ativas, {{ row.overdue }} com revisão atrasada, {{ row.recurring }} com erro recorrente entre {{ row.recurrence_eligible }} elegíveis, {{ row.comparable }} comparáveis para queda.</p>
+        <p>Motivos: {% for reason in row.explanations %}{{ reason }}{% if not forloop.last %}; {% endif %}{% endfor %}.</p>
+        <p><a href="{% url 'taxonomy:subsubject-list' row.subject.id %}">Abrir assunto {{ row.subject.name }}</a></p>
+      </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p class="empty-state">Ainda não há assuntos com evidência suficiente para recomendar.</p>
+  {% endif %}
+</section>
+
+{% if collecting %}
+<section aria-labelledby="collecting-title">
+  <h2 id="collecting-title">Coletar mais evidências</h2>
+  <ul>
+  {% for row in collecting %}
+    <li><strong>{{ row.subject.name }}</strong>: {% for reason in row.reasons %}{{ reason }}{% if not forloop.last %}; {% endif %}{% endfor %}. Revisões atrasadas, se houver, continuam na <a href="{% url 'reviews:queue' %}">fila</a>.</li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}
