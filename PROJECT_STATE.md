@@ -82,6 +82,12 @@
   desempate técnico por UUID e coleta de evidência quando faltar componente.
   Sem migration, snapshot, scheduler ou alteração da Review Queue. A8 deep
   APPROVED e gate GREEN em `quality/v05-s6-priority-heuristic-result.md`.
+- V0.5-S7: concluída — `CEI-EXPORT-1.0` documentado em ZIP/JSON UTF-8 com
+  importação transacional apenas em instalação vazia compatível; UI local de
+  export, backup e restore com staging, preview, confirmação, pré-backup e
+  adoção offline com retorno. A nova decisão humana de S7 fechou V05-OD05;
+  sem migration. A8 deep APPROVED e gate final GREEN (498 testes) em
+  `quality/v05-s7-portability-result.md`. S8+ não estão autorizadas.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.

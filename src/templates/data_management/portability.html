@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Exportação, backup e restauração — Caderno de Erros{% endblock %}
+{% block content %}
+<h1>Exportação, backup e restauração</h1>
+{% if error %}<p class="feedback feedback-error" role="alert">{{ error }}</p>{% endif %}
+{% if feedback %}<p class="feedback feedback-success" role="status">{{ feedback }}</p>{% endif %}
+<section aria-labelledby="export-title">
+  <h2 id="export-title">Exportar dados funcionais</h2>
+  <p>Baixe um pacote CEI-EXPORT-1.0 com JSON UTF-8. O download não altera seus dados.</p>
+  <form method="post">{% csrf_token %}<button name="action" value="export">Baixar exportação</button></form>
+</section>
+<section aria-labelledby="backup-title">
+  <h2 id="backup-title">Criar backup operacional</h2>
+  <p>Baixe o SQLite e seu manifesto em um ZIP de transporte. Guarde ambos em local protegido.</p>
+  <form method="post">{% csrf_token %}<button name="action" value="backup">Criar e baixar backup</button></form>
+</section>
+<section aria-labelledby="restore-title">
+  <h2 id="restore-title">Restaurar backup operacional</h2>
+  <p>Extraia o ZIP de backup. Selecione o arquivo SQLite e o manifesto. A validação ocorre em área isolada e não altera o banco ativo.</p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="backup-file">Arquivo SQLite de backup</label>
+    <input id="backup-file" type="file" name="backup" required accept=".sqlite3">
+    <label for="manifest-file">Manifesto JSON do backup</label>
+    <input id="manifest-file" type="file" name="manifest" required accept=".json">
+    <button name="action" value="preview">Validar e mostrar impacto</button>
+  </form>
+  {% if preview %}
+  <div role="status">
+    <h3>Impacto do backup validado</h3>
+    <p>O restore substituirá o estado completo da instalação após encerramento da aplicação.</p>
+    <table><caption>Contagens atuais e do backup</caption><thead><tr><th scope="col">Dado</th><th scope="col">Atual</th><th scope="col">Backup</th></tr></thead><tbody>
+      <tr><th scope="row">Questões</th><td>{{ current_counts.questions }}</td><td>{{ preview.candidate.question_count }}</td></tr>
+      <tr><th scope="row">Tentativas</th><td>{{ current_counts.attempts }}</td><td>{{ preview.candidate.attempt_count }}</td></tr>
+      <tr><th scope="row">Ciclos</th><td>{{ current_counts.cycles }}</td><td>{{ preview.candidate.review_cycle_count }}</td></tr>
+      <tr><th scope="row">Revisões</th><td>{{ current_counts.reviews }}</td><td>{{ preview.candidate.review_count }}</td></tr>
+    </tbody></table>
+    <p>Para confirmar, selecione os mesmos dois arquivos novamente. Uma cópia validada do estado atual será criada antes da adoção.</p>
+  </div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="token" value="{{ token }}">
+    <label for="confirm-backup">Mesmo arquivo SQLite</label>
+    <input id="confirm-backup" type="file" name="backup" required accept=".sqlite3">
+    <label for="confirm-manifest">Mesmo manifesto JSON</label>
+    <input id="confirm-manifest" type="file" name="manifest" required accept=".json">
+    <div class="check-group"><input id="restore-confirmed" type="checkbox" name="confirmed" required><label for="restore-confirmed">Entendo que o estado atual será substituído após o encerramento da aplicação.</label></div>
+    <label for="restore-phrase">Digite RESTAURAR</label>
+    <input id="restore-phrase" name="confirmation" required autocomplete="off" aria-describedby="restore-phrase-help">
+    <p id="restore-phrase-help">A confirmação prepara o restore; a adoção ocorrerá pelo comando offline indicado na próxima tela.</p>
+    <button name="action" value="confirm">Confirmar e preparar restore</button>
+  </form>
+  <form method="post">{% csrf_token %}<button class="button-secondary" name="action" value="cancel">Cancelar</button></form>
+  {% endif %}
+  {% if ticket %}
+  <div role="status">
+    <h3>Restore preparado</h3>
+    <p>O banco ativo ainda não foi alterado. Encerre a aplicação com Ctrl+C. No terminal local, execute:</p>
+    <pre>.\.venv\Scripts\python.exe manage.py apply_prepared_restore --ticket {{ ticket }} --settings={{ settings_module }}</pre>
+    <p>Após o comando informar sucesso, reinicie a aplicação. O pré-backup validado permanece disponível para recuperação.</p>
+    <form method="post">{% csrf_token %}<input type="hidden" name="ticket" value="{{ ticket }}"><button class="button-secondary" name="action" value="cancel_prepared">Descartar restore pendente</button></form>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

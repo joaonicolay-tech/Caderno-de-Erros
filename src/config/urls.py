@@ -4,6 +4,7 @@ from django.urls import include, path
 from django.urls.resolvers import URLPattern, URLResolver
 
 urlpatterns: list[URLPattern | URLResolver] = [
+    path("", include("modules.data_management.urls")),
     path("", include("modules.operations.urls")),
     path("categories/", include("modules.errors.urls")),
     path("taxonomy/", include("modules.taxonomy.urls")),

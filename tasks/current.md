@@ -1,4 +1,4 @@
-﻿# Task Contract
+# Task Contract
 
 Status: NO_TASK_AUTHORIZED
 
