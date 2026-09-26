@@ -316,7 +316,7 @@ print(json.dumps({
     assert evidence["schedule_change_preserved"] == 1
     assert {"ATTEMPT_VOIDED", "ATTEMPT_REPLACED"}.issubset(evidence["audit_codes"])
     assert evidence["activity"] == [1, 1, 1]
-    assert evidence["checker"] == [22, 0]
+    assert evidence["checker"] == [25, 0]
     assert (evidence["physical"], evidence["foreign_keys"]) == ("ok", [])
     assert evidence["backup_size"] > 0
-    assert evidence["restore"] == [22, 0]
+    assert evidence["restore"] == [25, 0]

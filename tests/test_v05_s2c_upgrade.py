@@ -405,10 +405,10 @@ print(json.dumps({
         "ATTEMPT_REPLACED",
         "ANSWER_KEY_CORRECTED",
     }.issubset(evidence["audit_codes"])
-    assert evidence["checker"] == [22, 0]
+    assert evidence["checker"] == [25, 0]
     assert (evidence["physical"], evidence["foreign_keys"]) == ("ok", [])
     assert evidence["backup_size"] > 0
-    assert evidence["restore"] == [22, 0]
+    assert evidence["restore"] == [25, 0]
     assert evidence["restored_current"] == 2
     assert [row[0] for row in evidence["restored_chain"]] == ["VOIDED", "VALID"]
     assert "ANSWER_KEY_CORRECTED" in evidence["restored_audit"]

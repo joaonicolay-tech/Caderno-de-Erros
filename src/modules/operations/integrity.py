@@ -537,6 +537,54 @@ INVARIANT_CATALOG: Final[tuple[InvariantSpec, ...]] = (
         "Um evento de auditoria funcional é incompatível.",
         _SAFE_ACTION,
     ),
+    InvariantSpec(
+        "SAV-001",
+        "Filtro salvo compatível com Workspace e schema",
+        "Owner, contexto e payload fechado devem permanecer válidos no Workspace.",
+        "saved filter",
+        "Owner local, schema 1 e valores/referências aceitos pela lista de questões.",
+        "SQL read-only com JSON1",
+        InvariantSeverity.ERROR,
+        "As FKs simples não verificam tenant, schema ou referências no JSON.",
+        "Um filtro incompatível pode selecionar dados incorretos ou falhar na leitura.",
+        "Validar shape, escolhas e referências sem interpretar schema desconhecido.",
+        "Filtros de versão futura são incompatíveis com o leitor V0.5.",
+        "V0.5-S3 saved_filter_services.validate_questions_list_payload",
+        "O filtro salvo é incompatível com o Workspace ou schema atual.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "DOM-001",
+        "Histórico de domínio com referências locais",
+        "Eventos de domínio devem ter sequência e referências do mesmo contexto.",
+        "mastery event",
+        "Sequência contígua, Question, trigger e ciclo local coerentes.",
+        "SQL relacional/window",
+        InvariantSeverity.CRITICAL,
+        "FK e unicidade não verificam tenant composto nem lacunas de sequência.",
+        "Um evento incorreto compromete o histórico de domínio.",
+        "Comparar referências e forma registrada sem recalcular a policy histórica.",
+        "Uma Attempt gatilho pode ter sido anulada posteriormente; status não é reavaliado.",
+        "V0.5-S5 domain.models.MasteryStateEvent",
+        "O evento de domínio possui sequência ou referências incompatíveis.",
+        _SAFE_ACTION,
+    ),
+    InvariantSpec(
+        "AUD-002",
+        "Retenção da auditoria sanitizada S2D",
+        "Evento final sanitizado vencido requer expurgo manual separado.",
+        "functional audit retention",
+        "Nenhum evento QUESTION_PERMANENTLY_DELETED permanece após 90 dias UTC.",
+        "SQL read-only com relógio UTC",
+        InvariantSeverity.ERROR,
+        "O expurgo é manual e pode deixar evento vencido armazenado.",
+        "A retenção contratada deixa de ser cumprida.",
+        "Comparar created_at com o limite de 90 dias, sem apagar evento.",
+        "Usar instante UTC exato, sem data civil do Workspace.",
+        "V0.5-S2D operations.retention.RETENTION",
+        "Um evento de exclusão sanitizado ultrapassou o prazo de retenção.",
+        _SAFE_ACTION,
+    ),
 )
 
 
@@ -1085,6 +1133,86 @@ _SQL_RULES: Final[dict[str, str]] = {
            OR (a.event_code != 'REVIEW_RESCHEDULED' AND
                (a.previous_date IS NOT NULL OR a.new_date IS NOT NULL OR a.timezone_name IS NOT NULL))
     """,
+    "SAV-001": """
+        WITH filters AS (
+            SELECT f.*, CASE WHEN json_valid(f.payload) THEN f.payload ELSE '{}' END AS safe_payload
+            FROM search_savedfilter f
+        )
+        SELECT f.id AS entity_id, 'SavedFilter' AS entity_type
+        FROM filters f
+        JOIN accounts_workspace w ON w.id = f.workspace_id
+        WHERE f.owner_user_id != w.owner_user_id
+           OR f.context_code != 'QUESTIONS_LIST' OR f.schema_version != 1
+           OR json_valid(f.payload) = 0 OR json_type(f.safe_payload) != 'object'
+           OR EXISTS (
+               SELECT 1 FROM json_each(f.safe_payload) item
+               WHERE item.key NOT IN ('query', 'status', 'discipline', 'subject',
+                                      'subsubject', 'review_status', 'initial_result',
+                                      'error_category')
+                  OR item.type NOT IN ('text', 'null')
+           )
+           OR length(COALESCE(json_extract(f.safe_payload, '$.query'), '')) > 200
+           OR COALESCE(json_extract(f.safe_payload, '$.status'), '')
+              NOT IN ('', 'DRAFT', 'ACTIVE', 'ARCHIVED')
+           OR COALESCE(json_extract(f.safe_payload, '$.review_status'), '')
+              NOT IN ('', 'OVERDUE', 'DUE', 'FUTURE')
+           OR COALESCE(json_extract(f.safe_payload, '$.initial_result'), '')
+              NOT IN ('', 'correct', 'incorrect')
+           OR (COALESCE(json_extract(f.safe_payload, '$.discipline'), '') != ''
+               AND NOT EXISTS (
+                   SELECT 1 FROM taxonomy_discipline d
+                   WHERE d.id = lower(replace(json_extract(f.safe_payload, '$.discipline'), '-', ''))
+                     AND d.workspace_id = f.workspace_id))
+           OR (COALESCE(json_extract(f.safe_payload, '$.subject'), '') != ''
+               AND NOT EXISTS (
+                   SELECT 1 FROM taxonomy_subject s
+                   WHERE s.id = lower(replace(json_extract(f.safe_payload, '$.subject'), '-', ''))
+                     AND s.workspace_id = f.workspace_id
+                     AND (COALESCE(json_extract(f.safe_payload, '$.discipline'), '') = ''
+                          OR s.discipline_id = lower(replace(
+                              json_extract(f.safe_payload, '$.discipline'), '-', '')))))
+           OR (COALESCE(json_extract(f.safe_payload, '$.subsubject'), '') != ''
+               AND NOT EXISTS (
+                   SELECT 1 FROM taxonomy_subsubject ss
+                   JOIN taxonomy_subject s ON s.id = ss.subject_id
+                   WHERE ss.id = lower(replace(
+                       json_extract(f.safe_payload, '$.subsubject'), '-', ''))
+                     AND ss.workspace_id = f.workspace_id
+                     AND (COALESCE(json_extract(f.safe_payload, '$.subject'), '') = ''
+                          OR ss.subject_id = lower(replace(
+                              json_extract(f.safe_payload, '$.subject'), '-', '')))
+                     AND (COALESCE(json_extract(f.safe_payload, '$.discipline'), '') = ''
+                          OR s.discipline_id = lower(replace(
+                              json_extract(f.safe_payload, '$.discipline'), '-', '')))))
+           OR (COALESCE(json_extract(f.safe_payload, '$.error_category'), '')
+               NOT IN ('', 'unclassified') AND NOT EXISTS (
+                   SELECT 1 FROM errors_error_category c
+                   WHERE c.id = lower(replace(
+                       json_extract(f.safe_payload, '$.error_category'), '-', ''))
+                     AND c.workspace_id = f.workspace_id AND c.state = 'ACTIVE'))
+    """,
+    "DOM-001": """
+        WITH ranked AS (
+            SELECT e.*, ROW_NUMBER() OVER (
+                PARTITION BY e.question_id ORDER BY e.sequence, e.id
+            ) AS expected_sequence
+            FROM domain_masterystateevent e
+        )
+        SELECT e.id AS entity_id, 'MasteryStateEvent' AS entity_type
+        FROM ranked e
+        JOIN questions_question q ON q.id = e.question_id
+        LEFT JOIN attempts_attempt a ON a.id = e.trigger_attempt_id
+        LEFT JOIN reviews_reviewcycle c ON c.id = e.manual_cycle_id
+        WHERE e.workspace_id != q.workspace_id
+           OR e.sequence != e.expected_sequence
+           OR (a.id IS NOT NULL AND (a.workspace_id != e.workspace_id
+                OR a.question_id != e.question_id))
+           OR (c.id IS NOT NULL AND (c.workspace_id != e.workspace_id
+                OR c.question_id != e.question_id OR c.origin_kind != 'MANUAL'
+                OR c.manual_purpose != 'MASTERY_REOPEN'))
+           OR (e.event_type = 'MANUAL_REOPENED' AND c.id IS NULL)
+           OR (e.event_type != 'MANUAL_REOPENED' AND c.id IS NOT NULL)
+    """,
 }
 
 
@@ -1334,14 +1462,50 @@ def _append_inaugural_schedule_findings(
     return total
 
 
+def _append_expired_audit_findings(
+    database: sqlite3.Connection,
+    spec: InvariantSpec,
+    findings: list[IntegrityFinding],
+    *,
+    limit: int,
+    now: datetime,
+) -> int:
+    cutoff = now.astimezone(UTC) - timedelta(days=90)
+    total = 0
+    rows = database.execute(
+        "SELECT id, created_at FROM operations_auditevent "
+        "WHERE event_code = 'QUESTION_PERMANENTLY_DELETED' ORDER BY id"
+    )
+    for technical_id, created_at in rows:
+        try:
+            instant = datetime.fromisoformat(str(created_at))
+            if instant.tzinfo is None:
+                instant = instant.replace(tzinfo=UTC)
+        except (TypeError, ValueError):
+            total += 1
+        else:
+            if instant.astimezone(UTC) > cutoff:
+                continue
+            total += 1
+        if len(findings) < limit:
+            findings.append(
+                _finding(spec, entity_type="AuditEvent", technical_id=str(technical_id))
+            )
+    return total
+
+
 def run_integrity_check(
     *,
     using: str = "default",
     finding_limit: int = DEFAULT_FINDING_LIMIT,
+    now: datetime | None = None,
 ) -> IntegrityCheckResult:
     """Execute todas as invariantes sobre snapshot lógico e conexão mode=ro."""
     if not 1 <= finding_limit <= MAX_FINDING_LIMIT:
         raise ValueError(f"finding_limit deve estar entre 1 e {MAX_FINDING_LIMIT}.")
+    instant = now or datetime.now(UTC)
+    if instant.tzinfo is None or instant.utcoffset() is None:
+        raise ValueError("now precisa ser um instante com fuso.")
     path = _database_path(using)
     findings: list[IntegrityFinding] = []
     totals: Counter[InvariantSeverity] = Counter()
@@ -1367,6 +1531,10 @@ def run_integrity_check(
                 elif spec.invariant_id == "WS-003":
                     count = _append_workspace_timezone_findings(
                         database, spec, findings, limit=finding_limit
+                    )
+                elif spec.invariant_id == "AUD-002":
+                    count = _append_expired_audit_findings(
+                        database, spec, findings, limit=finding_limit, now=instant
                     )
                 else:
                     count = _append_sql_findings(

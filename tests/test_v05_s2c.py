@@ -207,7 +207,7 @@ def test_r1_r2_r3_copy_only_answer_and_audit_idempotently() -> None:
             reason_code="MISSING_PREVIOUS",
         )
     integrity = run_integrity_check()
-    assert (integrity.checks_executed, integrity.total_findings) == (22, 0)
+    assert (integrity.checks_executed, integrity.total_findings) == (25, 0)
 
 
 @pytest.mark.django_db

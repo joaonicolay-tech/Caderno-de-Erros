@@ -7,6 +7,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import UTC, date, datetime, timedelta
 from io import StringIO
+from pathlib import Path
 from typing import Any, cast
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
@@ -18,7 +19,14 @@ from django.db import connection, models
 
 from modules.accounts.models import User, Workspace
 from modules.attempts.models import Attempt, AttemptType, OperationKind, OperationReceipt
-from modules.errors.models import ErrorCategoryCode, ErrorCategoryState, ErrorClassification
+from modules.domain.models import MasteryStateEvent
+from modules.errors.models import (
+    ErrorCategory,
+    ErrorCategoryCode,
+    ErrorCategoryState,
+    ErrorClassification,
+    ErrorClassificationRevision,
+)
 from modules.errors.services import PersonalCategoryService, seed_standard_error_categories
 from modules.operations.integrity import (
     INVARIANT_CATALOG,
@@ -32,10 +40,19 @@ from modules.operations.management.commands.check_integrity import (
 )
 from modules.operations.models import AuditEntityType, AuditEvent, AuditEventCode
 from modules.operations.structured_logging import StructuredJsonFormatter
-from modules.questions.models import Alternative, Question, QuestionRevision
+from modules.questions.models import (
+    Alternative,
+    Board,
+    Exam,
+    Question,
+    QuestionOrigin,
+    QuestionRevision,
+    Source,
+)
 from modules.questions.services import create_active
-from modules.reviews.models import Review, ReviewCycle, ReviewState
-from modules.taxonomy.models import Discipline, Subject
+from modules.reviews.models import Review, ReviewCycle, ReviewScheduleChange, ReviewState
+from modules.search.models import SavedFilter
+from modules.taxonomy.models import Discipline, Subject, Subsubject
 from modules.taxonomy.services import create_discipline, create_subject
 from shared.domain.time import FixedClock, Instant
 
@@ -123,16 +140,28 @@ def _attempt(
 
 def _snapshot() -> dict[str, list[dict[str, object]]]:
     model_types: tuple[type[models.Model], ...] = (
+        User,
         Workspace,
         Discipline,
         Subject,
+        Subsubject,
+        Board,
+        Exam,
+        Source,
         Question,
+        QuestionOrigin,
         QuestionRevision,
         Alternative,
         Attempt,
+        ErrorCategory,
+        ErrorClassificationRevision,
         ReviewCycle,
         Review,
+        ReviewScheduleChange,
         ErrorClassification,
+        SavedFilter,
+        MasteryStateEvent,
+        AuditEvent,
         OperationReceipt,
     )
     return {model._meta.label: _model_rows(model) for model in model_types}
@@ -186,7 +215,7 @@ def _add_completed_d1_and_pending_d7(
 
 def test_catalog_has_stable_complete_entries() -> None:
     ids = [spec.invariant_id for spec in INVARIANT_CATALOG]
-    assert len(ids) == len(set(ids)) == 22
+    assert len(ids) == len(set(ids)) == 25
     assert ids == [
         "DB-001",
         "DB-002",
@@ -210,6 +239,9 @@ def test_catalog_has_stable_complete_entries() -> None:
         "REV-005",
         "REV-006",
         "AUD-001",
+        "SAV-001",
+        "DOM-001",
+        "AUD-002",
     ]
     for spec in INVARIANT_CATALOG:
         assert all(
@@ -248,6 +280,189 @@ def test_healthy_database_is_read_only_and_unclassified_error_is_valid() -> None
     assert result.findings == ()
     assert result.checks_executed == len(INVARIANT_CATALOG)
     assert result.queries_executed == len(INVARIANT_CATALOG) + 1
+    assert _snapshot() == before
+
+
+@pytest.mark.django_db(transaction=True)
+def test_s8_valid_filter_and_mastery_event_remain_read_only() -> None:
+    workspace = _workspace("s8-valid")
+    question = _question(workspace, "s8-valid")
+    SavedFilter.objects.create(
+        workspace=workspace,
+        owner_user=workspace.owner_user,
+        name="Todas",
+        name_key="todas",
+        payload={},
+    )
+    MasteryStateEvent.objects.create(
+        workspace=workspace,
+        question=question,
+        sequence=1,
+        event_type="DOMINATED",
+        formula_code="DOM-HEUR-1.0",
+        evaluated_on=REFERENCE_INSTANT.date(),
+        occurred_at=REFERENCE_INSTANT,
+    )
+    AuditEvent.objects.create(
+        workspace=workspace,
+        event_code=AuditEventCode.QUESTION_PERMANENTLY_DELETED,
+        entity_type=AuditEntityType.QUESTION,
+        correlation_id=uuid.uuid4(),
+        reason_code="USER_REQUEST",
+    )
+    before = _snapshot()
+    database_file = str(connection.settings_dict["NAME"])
+    files = [Path(database_file + suffix) for suffix in ("", "-wal", "-shm", "-journal")]
+    file_state = {str(path): path.read_bytes() if path.exists() else None for path in files}
+
+    result = run_integrity_check()
+
+    assert result.total_findings == 0
+    assert _snapshot() == before
+    assert {str(path): path.read_bytes() if path.exists() else None for path in files} == file_state
+
+
+@pytest.mark.django_db(transaction=True)
+def test_s8_invalid_filter_mastery_and_expired_audit_are_detected_without_repair() -> None:
+    first = _workspace("s8-invalid-a")
+    second = _workspace("s8-invalid-b")
+    first_question = _question(first, "s8-invalid-a")
+    second_question = _question(second, "s8-invalid-b")
+    saved_filter = SavedFilter.objects.create(
+        workspace=first,
+        owner_user=first.owner_user,
+        name="Incompatível",
+        name_key="incompativel",
+        payload={"discipline": str(second_question.discipline_id)},
+    )
+    event = MasteryStateEvent.objects.create(
+        workspace=first,
+        question=first_question,
+        sequence=1,
+        event_type="DOMINATED",
+        formula_code="DOM-HEUR-1.0",
+        evaluated_on=REFERENCE_INSTANT.date(),
+        occurred_at=REFERENCE_INSTANT,
+    )
+    sequence_gap = MasteryStateEvent.objects.create(
+        workspace=first,
+        question=first_question,
+        sequence=2,
+        event_type="AUTO_REOPENED",
+        formula_code="DOM-HEUR-1.0",
+        evaluated_on=REFERENCE_INSTANT.date(),
+        occurred_at=REFERENCE_INSTANT,
+    )
+    audit = AuditEvent.objects.create(
+        workspace=first,
+        event_code=AuditEventCode.QUESTION_PERMANENTLY_DELETED,
+        entity_type=AuditEntityType.QUESTION,
+        correlation_id=uuid.uuid4(),
+        reason_code="USER_REQUEST",
+    )
+    _raw_update(
+        "UPDATE search_savedfilter SET owner_user_id = %s WHERE id = %s",
+        _uuid(second.owner_user_id),
+        _uuid(saved_filter.id),
+    )
+    _raw_update(
+        "UPDATE domain_masterystateevent SET question_id = %s WHERE id = %s",
+        _uuid(second_question.id),
+        _uuid(event.id),
+    )
+    _raw_update(
+        "UPDATE domain_masterystateevent SET sequence = 3 WHERE id = %s",
+        _uuid(sequence_gap.id),
+    )
+    _raw_update(
+        "UPDATE operations_auditevent SET created_at = %s WHERE id = %s",
+        (datetime.now(UTC) - timedelta(days=91)).isoformat(),
+        _uuid(audit.id),
+    )
+    before = _snapshot()
+
+    result = run_integrity_check()
+
+    assert {"SAV-001", "DOM-001", "AUD-002"}.issubset(
+        {finding.invariant_id for finding in result.findings}
+    )
+    assert _snapshot() == before
+
+
+@pytest.mark.django_db(transaction=True)
+def test_s8_saved_filter_schema_and_closed_payload_are_diagnosed() -> None:
+    workspace = _workspace("s8-filter-schema")
+    foreign = _workspace("s8-filter-foreign")
+    filters = (
+        SavedFilter.objects.create(
+            workspace=workspace,
+            owner_user=workspace.owner_user,
+            name="Versão",
+            name_key="versao",
+            schema_version=2,
+            payload={},
+        ),
+        SavedFilter.objects.create(
+            workspace=workspace,
+            owner_user=workspace.owner_user,
+            name="Campo",
+            name_key="campo",
+            payload={"future_field": "unknown"},
+        ),
+        SavedFilter.objects.create(
+            workspace=workspace,
+            owner_user=workspace.owner_user,
+            name="Categoria",
+            name_key="categoria",
+            payload={
+                "error_category": str(
+                    foreign.error_categories.get(code=ErrorCategoryCode.ATTENTION).id
+                )
+            },
+        ),
+    )
+    before = _snapshot()
+
+    result = run_integrity_check()
+
+    assert {
+        finding.technical_id for finding in result.findings if finding.invariant_id == "SAV-001"
+    } == {str(item.id).replace("-", "") for item in filters}
+    assert _snapshot() == before
+
+
+@pytest.mark.django_db(transaction=True)
+def test_s8_audit_retention_uses_exact_utc_instant_and_never_purges() -> None:
+    workspace = _workspace("s8-retention")
+    fixed_now = datetime(2026, 9, 25, 12, tzinfo=UTC)
+    cutoff = fixed_now - timedelta(days=90)
+    events = [
+        AuditEvent.objects.create(
+            workspace=workspace,
+            event_code=AuditEventCode.QUESTION_PERMANENTLY_DELETED,
+            entity_type=AuditEntityType.QUESTION,
+            correlation_id=uuid.uuid4(),
+            reason_code="USER_REQUEST",
+        )
+        for _ in range(2)
+    ]
+    _raw_update(
+        "UPDATE operations_auditevent SET created_at = %s WHERE id = %s",
+        cutoff.isoformat(),
+        _uuid(events[0].id),
+    )
+    _raw_update(
+        "UPDATE operations_auditevent SET created_at = %s WHERE id = %s",
+        (cutoff + timedelta(microseconds=1)).isoformat(),
+        _uuid(events[1].id),
+    )
+    before = _snapshot()
+
+    result = run_integrity_check(now=fixed_now)
+
+    assert [
+        finding.technical_id for finding in result.findings if finding.invariant_id == "AUD-002"
+    ] == [events[0].id.hex]
     assert _snapshot() == before
 
 

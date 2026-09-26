@@ -85,7 +85,7 @@ def test_recovery_accepts_s1_residue_and_preserves_all_files(recovery_backup: Pa
         restored = recovery_backup.with_name(f"restored-{index}.sqlite3")
         result = services.restore_sqlite_backup(recovery_backup, restored)
         assert result.integrity.total_findings == 0
-        assert result.integrity.checks_executed == 22
+        assert result.integrity.checks_executed == 25
         assert result.reconciliation.attempt_count == 1
         assert result.reconciliation.classification_count == 0
         assert result.reconciliation.review_count == 1

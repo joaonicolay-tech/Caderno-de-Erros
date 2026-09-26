@@ -673,5 +673,5 @@ def test_s6_backup_restore_accepts_personal_chain_and_reschedule(tmp_path: Path)
     result = restore_sqlite_backup(backup, restored)
 
     assert result.reconciliation.category_count == 13
-    assert result.integrity.checks_executed == 22
+    assert result.integrity.checks_executed == 25
     assert result.integrity.total_findings == 0

@@ -87,13 +87,27 @@
   export, backup e restore com staging, preview, confirmação, pré-backup e
   adoção offline com retorno. A nova decisão humana de S7 fechou V05-OD05;
   sem migration. A8 deep APPROVED e gate final GREEN (498 testes) em
-  `quality/v05-s7-portability-result.md`. S8+ não estão autorizadas.
+  `quality/v05-s7-portability-result.md`.
+- V0.5-S8: concluída — checker read-only ampliado de 22 para 25 checks/IDs do catálogo;
+  upgrade por migrations reais a partir de fixture V0.4.4, backup/restore
+  isolados, reconciliação e round trip CEI verificados. Matriz crítica em
+  PostgreSQL 18.6 real passou em banco descartável, removido após a prova.
+  Sem migration S8; A8 deep APPROVED, Blocker 0/Major 0, gate final GREEN
+  (502 testes) em `quality/v05-s8-integrity-compatibility-result.md`.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: P0, S1 e S2A–S6 concluídas; S7 e posteriores **NOT AUTHORIZED**.
+- V0.5: P0, S1, S2A–S2D e S3–S8 concluídas; S9+ **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S8 GREEN na sétima tentativa, exit code 0: 502 testes
+aprovados em 286,93 s, 86% de cobertura global, banco vazio, migrations,
+formatação, Ruff, mypy, cobertura de domínio, detect-secrets e pip-audit
+aprovados; duração observada 335,9 s. Matriz PostgreSQL 18.6 PASS em banco
+dedicado e descartável, A8 deep APPROVED, Blocker 0/Major 0,
+`gate_first_pass=false`. Tentativas RED e ressalvas estão na evidence S8.
+Sem commit, push, tag, release ou início de S9+.
 
 Gate final V0.5-S6 GREEN na terceira tentativa, exit code 0: 487 testes
 aprovados em 213,29 s, 87% de cobertura global, banco vazio, migrations,
@@ -376,6 +390,10 @@ baseline V0.3, Architecture v1.0 ou gate.
 - `tasks/completed/v05-s4-domain-heuristic.md`: contrato e evidência de
   encerramento S4;
 - `quality/v05-p0-planning-result.md`: review A8 e gate de V0.5-P0;
+- `tasks/plans/v05-s8-integrity-compatibility-plan.md`,
+  `quality/v05-s8-integrity-compatibility-result.md` e
+  `tasks/completed/v05-s8-integrity-compatibility.md`: A4, A8 deep, PostgreSQL
+  crítico, upgrade/recovery e encerramento S8;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -385,5 +403,5 @@ estado operacional corrente.
 ## Próximo passo possível
 
 Nenhuma próxima tarefa está autorizada. Uma autorização futura deve ser
-registrada separadamente em `tasks/current.md`; S5 e etapas posteriores não
-foram iniciadas. Nenhum commit, push, tag ou release foi autorizado.
+registrada separadamente em `tasks/current.md`; S9+ não foram iniciadas.
+Nenhum commit, push, tag ou release foi autorizado.
