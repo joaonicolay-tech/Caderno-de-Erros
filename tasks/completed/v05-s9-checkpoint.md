@@ -16,9 +16,9 @@ funcional, gate, BCR ou A8 foi executada neste microcheckpoint.
 
 ## Git checkpoint
 
-- Commit: $hash
-- Push: origin/main, $hash
+- Commit: 0e298b1911457671a1ad346802ff6d6640d48634
+- Push: origin/main, 0e298b1911457671a1ad346802ff6d6640d48634
 - Working tree: limpa após o checkpoint.
-- 	asks/current.md: NO_TASK_AUTHORIZED.
+- `tasks/current.md`: NO_TASK_AUTHORIZED.
 - S10: NOT AUTHORIZED.
 - Nenhuma tag, release ou promoção V0.5 criada.
