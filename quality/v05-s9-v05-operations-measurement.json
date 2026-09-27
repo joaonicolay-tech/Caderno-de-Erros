@@ -1,0 +1,218 @@
+{
+  "classification": "MEASUREMENT_ONLY",
+  "budget": "NONE_APPROVED",
+  "fixture": {
+    "seed": 20260909,
+    "question_count": 10000,
+    "attempt_count": 100000,
+    "review_count": 100000,
+    "taxonomy_per_level": 200,
+    "history_start": "2016-09-09",
+    "history_end": "2026-09-06",
+    "fingerprint": "bbcf0d7f:86f65f1c:f5685b47:4dadc580:1811fe37:c903e521:e1cd3577:86190d98"
+  },
+  "environment": {
+    "operating_system": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.15",
+    "django": "5.2.17",
+    "sqlite": "3.53.1",
+    "logical_cores": 8,
+    "profile": "development; CEI_DEVELOPMENT_DB points to disposable S9 scale SQLite"
+  },
+  "fixed_clock": "2026-09-09T15:00:00+00:00",
+  "method": "One official BCR-1 fixture; three independent sequential raw calls per operation after setup, no warmups or invented p95; no concurrent load. Checker once.",
+  "operations": {
+    "domain_batch_200": [
+      {
+        "run": 1,
+        "seconds": 0.444111300050281,
+        "queries": 8,
+        "question_count": 200
+      },
+      {
+        "run": 2,
+        "seconds": 0.3767148000188172,
+        "queries": 8,
+        "question_count": 200
+      },
+      {
+        "run": 3,
+        "seconds": 0.5051200999878347,
+        "queries": 8,
+        "question_count": 200
+      }
+    ],
+    "domain_hierarchy_discipline": [
+      {
+        "run": 1,
+        "seconds": 0.20164710003882647,
+        "queries": 11,
+        "question_count": 40,
+        "exclusion_count": 10
+      },
+      {
+        "run": 2,
+        "seconds": 0.21021149994339794,
+        "queries": 11,
+        "question_count": 40,
+        "exclusion_count": 10
+      },
+      {
+        "run": 3,
+        "seconds": 0.1777063999325037,
+        "queries": 11,
+        "question_count": 40,
+        "exclusion_count": 10
+      }
+    ],
+    "priority_page": [
+      {
+        "run": 1,
+        "seconds": 15.834868900012225,
+        "queries": 15,
+        "status_code": 200,
+        "active_question_count": 8000,
+        "subject_count": 200
+      },
+      {
+        "run": 2,
+        "seconds": 16.189921399927698,
+        "queries": 15,
+        "status_code": 200,
+        "active_question_count": 8000,
+        "subject_count": 200
+      },
+      {
+        "run": 3,
+        "seconds": 15.786471399944276,
+        "queries": 15,
+        "status_code": 200,
+        "active_question_count": 8000,
+        "subject_count": 200
+      }
+    ],
+    "cei_export": [
+      {
+        "run": 1,
+        "seconds": 28.442672799923457,
+        "queries": null,
+        "bytes": 32240295,
+        "manifest_files": 22
+      },
+      {
+        "run": 2,
+        "seconds": 30.637458399985917,
+        "queries": null,
+        "bytes": 32240295,
+        "manifest_files": 22
+      },
+      {
+        "run": 3,
+        "seconds": 27.488308899919502,
+        "queries": null,
+        "bytes": 32240295,
+        "manifest_files": 22
+      }
+    ],
+    "cei_validation": [
+      {
+        "run": 1,
+        "seconds": 15.61584799992852,
+        "queries": null,
+        "bytes": 32240295,
+        "question_count": 10000,
+        "set_count": 21
+      },
+      {
+        "run": 2,
+        "seconds": 17.417173099936917,
+        "queries": null,
+        "bytes": 32240295,
+        "question_count": 10000,
+        "set_count": 21
+      },
+      {
+        "run": 3,
+        "seconds": 15.371252600103617,
+        "queries": null,
+        "bytes": 32240295,
+        "question_count": 10000,
+        "set_count": 21
+      }
+    ],
+    "backup_create": [
+      {
+        "run": 1,
+        "seconds": 32.68782370002009,
+        "queries": null,
+        "bytes": 210386944
+      },
+      {
+        "run": 2,
+        "seconds": 35.630152500001714,
+        "queries": null,
+        "bytes": 210386944
+      },
+      {
+        "run": 3,
+        "seconds": 35.102346499916166,
+        "queries": null,
+        "bytes": 210386944
+      }
+    ],
+    "backup_validation": [
+      {
+        "run": 1,
+        "seconds": 16.8955835000379,
+        "queries": null,
+        "bytes": 210386944
+      },
+      {
+        "run": 2,
+        "seconds": 15.490098000038415,
+        "queries": null,
+        "bytes": 210386944
+      },
+      {
+        "run": 3,
+        "seconds": 15.717143899993971,
+        "queries": null,
+        "bytes": 210386944
+      }
+    ],
+    "restore_preview": [
+      {
+        "run": 1,
+        "seconds": 93.33623719995376,
+        "queries": null,
+        "bytes": 210386944,
+        "question_count": 10000
+      },
+      {
+        "run": 2,
+        "seconds": 99.66297369997483,
+        "queries": null,
+        "bytes": 210386944,
+        "question_count": 10000
+      },
+      {
+        "run": 3,
+        "seconds": 96.3516118999105,
+        "queries": null,
+        "bytes": 210386944,
+        "question_count": 10000
+      }
+    ],
+    "checker": [
+      {
+        "run": 1,
+        "seconds": 28.77088540000841,
+        "queries": 26,
+        "checks_executed": 25,
+        "findings": 0,
+        "active_database_unchanged": true
+      }
+    ]
+  },
+  "preview_active_database_unchanged": true
+}

@@ -13,8 +13,18 @@ reconciliáveis, checker de invariantes, backup/recuperação comprovados e
 operação Windows documentada.
 
 O gate final da V0.4 está GREEN, sem P0/P1, Blocker ou Major aberto. A tag
-`v0.4.0` ainda não foi criada e V0.5 permanece não autorizada. A documentação
-oficial está em [`docs/`](docs/).
+histórica `v0.4.0` existe. A V0.5 tem S1–S9 concluídas; ainda não foi
+promovida nem liberada. O estado executável da tarefa está em
+[`tasks/current.md`](tasks/current.md), e a evidência S9 em
+[`quality/v05-s9-beta-hardening-result.md`](quality/v05-s9-beta-hardening-result.md).
+
+As funções V0.5 incluem gestão de taxonomia e categorias, filtros salvos,
+recomendações de prioridade e a página `/dados/` para exportação funcional,
+backup e preparação de restore. Os contratos e procedimentos correspondentes
+estão em [`docs/V0.5_S7_Portabilidade_e_Restore.md`](docs/V0.5_S7_Portabilidade_e_Restore.md)
+e [`docs/CEI_EXPORT_1_0.md`](docs/CEI_EXPORT_1_0.md). A operação local Windows
+continua descrita em [`docs/V0.4_S7_Operacao_Windows.md`](docs/V0.4_S7_Operacao_Windows.md).
+A documentação oficial está em [`docs/`](docs/).
 
 ## 1. Pré-requisitos
 

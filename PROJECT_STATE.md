@@ -94,12 +94,30 @@
   PostgreSQL 18.6 real passou em banco descartável, removido após a prova.
   Sem migration S8; A8 deep APPROVED, Blocker 0/Major 0, gate final GREEN
   (502 testes) em `quality/v05-s8-integrity-compatibility-result.md`.
+- V0.5-S9: concluída — hardening beta medido, correção textual na lista de
+  questões, documentação de uso/Windows e evidência manual de acessibilidade
+  e restore em base sintética. BCR oficial inicial FAIL de leitura no run 3,
+  reprodução controlada posterior PASS; episódio `TRANSIENT_NOT_REPRODUCED`,
+  sem causa ambiental ou regressão de produto confirmada. FTS não justificada,
+  sem migration. A8 deep APPROVED, Blocker 0/Major 0 e gate final GREEN em
+  `quality/v05-s9-beta-hardening-result.md`; V0.5 não foi promovida.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: P0, S1, S2A–S2D e S3–S8 concluídas; S9+ **NOT AUTHORIZED**.
+- V0.5: P0, S1, S2A–S2D e S3–S9 concluídas; S10+ **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S9 GREEN na terceira tentativa da etapa, exit code 0: 502
+testes aprovados em 284,65 s, 86% de cobertura global, perfis, banco vazio,
+migrations, formatação, Ruff, mypy, cobertura de domínio, detect-secrets e
+pip-audit aprovados; duração observada 363,2 s. A primeira tentativa da fase
+de implementação foi GREEN; a segunda, após novas evidências, falhou por
+bloqueio ambiental de rede/cache no pip-audit, e a terceira passou com acesso
+de rede. A8 deep APPROVED, Blocker 0/Major 0/Minor 1. Dois `ResourceWarning`
+de conexões SQLite no teste S2D não derrubaram o gate. O primeiro BCR S9
+FAIL e a reprodução posterior PASS permanecem preservados. Sem commit, push,
+tag, release, promoção V0.5 ou início de S10.
 
 Gate final V0.5-S8 GREEN na sétima tentativa, exit code 0: 502 testes
 aprovados em 286,93 s, 86% de cobertura global, banco vazio, migrations,
@@ -394,6 +412,11 @@ baseline V0.3, Architecture v1.0 ou gate.
   `quality/v05-s8-integrity-compatibility-result.md` e
   `tasks/completed/v05-s8-integrity-compatibility.md`: A4, A8 deep, PostgreSQL
   crítico, upgrade/recovery e encerramento S8;
+- `tasks/plans/v05-s9-beta-hardening-plan.md`,
+  `quality/v05-s9-beta-hardening-result.md`, os JSONs BCR original/reprodução,
+  `quality/v05-s9-v05-operations-measurement.json` e
+  `tasks/completed/v05-s9-beta-hardening.md`: A4, medições, evidence manual,
+  A8 deep, gate e encerramento S9;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -403,5 +426,5 @@ estado operacional corrente.
 ## Próximo passo possível
 
 Nenhuma próxima tarefa está autorizada. Uma autorização futura deve ser
-registrada separadamente em `tasks/current.md`; S9+ não foram iniciadas.
+registrada separadamente em `tasks/current.md`; S10+ não foram iniciadas.
 Nenhum commit, push, tag ou release foi autorizado.

@@ -83,7 +83,7 @@
   {% endif %}
 
   {% if result %}
-    <p class="result-count" role="status">Total: {{ result.total }} questão{% if result.total != 1 %}es{% endif %} encontrada{% if result.total != 1 %}s{% endif %}.</p>
+    <p class="result-count" role="status">Total: {{ result.total }} {% if result.total == 1 %}questão encontrada{% else %}questões encontradas{% endif %}.</p>
     {% if result.page.object_list %}
       <ol class="question-list" start="{{ result.page.start_index }}">
         {% for item in result.page.object_list %}

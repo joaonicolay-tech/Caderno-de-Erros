@@ -177,6 +177,7 @@ def test_ct085_list_view_has_visible_filters_hierarchical_validation_and_empty_s
     assert invalid.status_code == 200
     assert "subject" in invalid.context["form"].errors
     assert "Nenhuma questão encontrada" in empty.content.decode("utf-8")
+    assert "Total: 0 questões encontradas." in empty.content.decode("utf-8")
 
 
 @pytest.mark.django_db
