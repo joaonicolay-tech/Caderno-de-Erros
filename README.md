@@ -6,25 +6,29 @@ O projeto também é utilizado como exercício prático de engenharia de softwar
 
 ## Estado atual
 
-A V0.4 está formalmente promovida como primeiro MVP local utilizável. Ela
-preserva a fundação, o catálogo e o ciclo de aprendizagem V0.3 e acrescenta
-dashboard explicável, consulta e histórico navegáveis, analytics
-reconciliáveis, checker de invariantes, backup/recuperação comprovados e
-operação Windows documentada.
+A V0.5 é a versão beta atual e está `PROMOTION_APPROVED`. A tag anotada
+[`v0.5.0`](https://github.com/joaonicolay-tech/Caderno-de-Erros/releases/tag/v0.5.0)
+e o GitHub Pre-release **Caderno de Erros v0.5.0 — Beta** foram publicados.
+O gate final ficou GREEN, com A8 deep `APPROVED`, 505 testes e 86% de
+cobertura; não há Blocker, Major ou P0/P1 aplicável aberto. O piloto técnico
+P01–P18 foi concluído em base sintética. A evidência está em
+[`quality/v05-s10-controlled-pilot-result.md`](quality/v05-s10-controlled-pilot-result.md).
+V1 não foi iniciada e permanece `NOT AUTHORIZED`.
 
-O gate final da V0.4 está GREEN, sem P0/P1, Blocker ou Major aberto. A tag
-histórica `v0.4.0` existe. A V0.5 tem S1–S9 concluídas; ainda não foi
-promovida nem liberada. O estado executável da tarefa está em
-[`tasks/current.md`](tasks/current.md), e a evidência S9 em
-[`quality/v05-s9-beta-hardening-result.md`](quality/v05-s9-beta-hardening-result.md).
-
-As funções V0.5 incluem gestão de taxonomia e categorias, filtros salvos,
-recomendações de prioridade e a página `/dados/` para exportação funcional,
-backup e preparação de restore. Os contratos e procedimentos correspondentes
-estão em [`docs/V0.5_S7_Portabilidade_e_Restore.md`](docs/V0.5_S7_Portabilidade_e_Restore.md)
-e [`docs/CEI_EXPORT_1_0.md`](docs/CEI_EXPORT_1_0.md). A operação local Windows
-continua descrita em [`docs/V0.4_S7_Operacao_Windows.md`](docs/V0.4_S7_Operacao_Windows.md).
-A documentação oficial está em [`docs/`](docs/).
+A V0.5 reúne gestão de taxonomia e categorias pessoais, consolidação/merge,
+filtros salvos e reagendamento, inclusão manual em revisão, correção de
+Attempts por void/replacement, correção prospectiva de gabarito e exclusão
+permanente controlada. Domain `DOM-HEUR-1.0` oferece avaliação e reabertura
+automática ou manual; Priority `PRI-HEUR-1.0` recomenda assuntos e identifica
+`COLLECT_MORE_EVIDENCE` quando falta evidência. A página `/dados/` oferece
+exportação/importação CEI, backup, validação, preview/restore e recovery; o
+checker de integridade é read-only. Os contratos estão em
+[`docs/V0.5_S7_Portabilidade_e_Restore.md`](docs/V0.5_S7_Portabilidade_e_Restore.md)
+e [`docs/CEI_EXPORT_1_0.md`](docs/CEI_EXPORT_1_0.md). Para a operação local
+Windows, use [`scripts/start-local.ps1`](scripts/start-local.ps1) e o guia
+[`docs/V0.4_S7_Operacao_Windows.md`](docs/V0.4_S7_Operacao_Windows.md).
+A tag histórica `v0.4.0` permanece preservada. O estado de tarefa está em
+[`tasks/current.md`](tasks/current.md); a documentação oficial em [`docs/`](docs/).
 
 ## 1. Pré-requisitos
 
@@ -123,7 +127,7 @@ O resultado esperado após o primeiro bootstrap com o exemplo é:
 
 ## 6. Executar a aplicação
 
-Para a operação Windows da V0.4, prefira o entry point
+Para a operação local Windows, prefira o entry point
 [`scripts/start-local.ps1`](scripts/start-local.ps1), inclusive se o PowerShell
 foi aberto fora da raiz do projeto. O guia completo, incluindo atalho Explorer,
 backup, checker e atualização segura, está em
@@ -219,14 +223,17 @@ O manifesto `backups\cei-v01.sqlite3.manifest.json` registra formato
 `CEI-SQLITE-BACKUP` 1.0, instante UTC, tamanho e SHA-256. Mantenha ambos juntos e
 proteja-os como o banco original.
 
-Na V0.2, restaure sempre em um arquivo novo e isolado:
+Para validar e inspecionar uma cópia recuperada sem substituir o banco em uso,
+restaure em um arquivo novo e isolado:
 
 ```powershell
 New-Item -ItemType Directory -Force recovery
 uv run --locked python manage.py restore_backup --backup backups\cei-v01.sqlite3 --destination recovery\validated.sqlite3
 ```
 
-Valide a inicialização sobre a cópia sem trocar o banco normal:
+Valide a inicialização sobre a cópia sem trocar o banco normal. Essa restauração
+isolada serve para recuperação e conferência; ela não adota a cópia como banco
+ativo:
 
 ```powershell
 $env:CEI_DEVELOPMENT_DB = (Resolve-Path recovery\validated.sqlite3).Path
@@ -238,6 +245,15 @@ Remove-Item -LiteralPath Env:CEI_DEVELOPMENT_DB
 Checksum inválido, versão desconhecida, migração divergente ou reconciliação
 incompleta — incluindo taxonomia, origem, questões, revisões, alternativas, gabarito e
 referências do catálogo — falham antes da publicação do destino.
+
+Na V0.5, a adoção de um backup no banco de uma instalação existente segue o
+fluxo **Dados e backup** em `/dados/`: validação e preview em staging, nova
+confirmação, pré-backup validado e aplicação offline com o servidor parado.
+O fluxo reconcilia estado e protege contra adoção parcial; consulte o
+[procedimento operacional V0.5](docs/V0.5_S7_Portabilidade_e_Restore.md).
+Backup SQLite e exportação funcional `CEI-EXPORT-1.0` são formatos e propósitos
+distintos. Mantenha juntos e protegidos o banco de backup e seu manifesto; o
+manifesto inclui SHA-256, que detecta alteração, mas não autentica o autor.
 
 ## 11. Fixture sintética V0.2
 
@@ -274,14 +290,17 @@ o perfil de teste em ambiente isolado e descarte o banco ao encerrar.
 - **Teste temporário bloqueado pelo Windows:** encerre processos Python que ainda
   mantenham arquivos abertos e execute novamente; não redirecione testes para banco real.
 
-## 13. Limitações conhecidas da V0.4
+## 13. Limitações conhecidas da V0.5
 
-- Não há categorias pessoais, autenticação remota, API, notificações ou PWA.
-- O servidor é exclusivamente local; hospedagem e PostgreSQL pertencem a marcos futuros.
-- Backup/restauração são comandos técnicos; não há interface, agenda, rotação ou nuvem.
-  RPO/RTO são objetivos operacionais documentados, não SLA automático.
+- A operação suportada é local; não há autenticação remota, API pública,
+  notificações, PWA nem implantação remota oficial.
+- Backup/restauração têm interface local, mas não há agenda, rotação automática
+  ou armazenamento em nuvem. RPO/RTO são objetivos operacionais documentados,
+  não SLA automático.
 - A evidência de acessibilidade é assistida e explicitamente limitada; não constitui
-  declaração de conformidade WCAG integral nem teste com leitor de tela.
+  declaração de conformidade WCAG integral nem evidência observada de teste com
+  leitor de tela. A evidência manual da V0.5 também registra limitações de
+  precisão sobre navegador e detalhes por página.
 - O HTMX está versionado, mas não é carregado até existir interação que o justifique.
 - O workflow de CI de um provedor será definido somente após escolha formal; o gate
   Windows local é a fonte única atual.

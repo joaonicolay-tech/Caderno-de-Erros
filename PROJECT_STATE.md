@@ -2,6 +2,11 @@
 
 ## Estado atual
 
+- Pós-release V0.5.0: V0.5 permanece `PROMOTION_APPROVED` e S10
+  `COMPLETED`. A tag anotada publicada `v0.5.0` aponta para
+  `d24cde1d3c25f7ff0e23306ce7e15e7ea85fd228`; o GitHub Pre-release
+  `Caderno de Erros v0.5.0 — Beta` foi publicado como beta e associado à tag.
+- V1 permanece **NOT AUTHORIZED**.
 - Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag histórica
   `v0.4.0` permanece inalterada.
 - V0.4.1-HF1: concluído — fluxo de alternativas corrigido após V0.4.0, sem
@@ -108,13 +113,15 @@
   A8 deep APPROVED, Blocker 0/Major 0/Minor novo 0 e nenhum P0/P1 aplicável
   aberto. Gate final GREEN, exit 0, 505 testes e 86% de cobertura na terceira
   tentativa da revisão. Decisão documental `PROMOTION_APPROVED`: V0.5 beta
-  aprovada no gate, sem tag, release ou publicação. Evidência em
-  `quality/v05-s10-controlled-pilot-result.md`.
+  aprovada no gate; no fechamento S10 ainda não havia tag, release ou
+  publicação. A publicação externa posterior está registrada no estado atual
+  acima. Evidência em `quality/v05-s10-controlled-pilot-result.md`.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
 - V0.5: P0, S1, S2A–S2D e S3–S10 concluídas; beta aprovada
-  documentalmente. V1 **NOT AUTHORIZED**.
+  documentalmente e publicada como pre-release `v0.5.0`. V1
+  **NOT AUTHORIZED**.
 
 ## Última validação
 
