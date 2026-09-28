@@ -1,8 +1,13 @@
 """S5 application: prospective transitions, manual reopening and batched reads."""
 
+import hashlib
+import json
+import shutil
+import sqlite3
 import uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from time import perf_counter
@@ -15,6 +20,13 @@ from django.test.utils import CaptureQueriesContext
 from modules.accounts.models import User, Workspace
 from modules.attempts.corrections import AttemptCorrectionService
 from modules.attempts.models import Attempt, AttemptType
+from modules.data_management.exceptions import BackupValidationError, RestoreError
+from modules.data_management.services import (
+    create_sqlite_backup,
+    manifest_path_for,
+    restore_sqlite_backup,
+    validate_sqlite_backup,
+)
 from modules.domain.models import MasteryEventType, MasteryStateEvent
 from modules.domain.policy import MasteryState, aggregate_hierarchy
 from modules.domain.services import (
@@ -38,6 +50,7 @@ from modules.reviews.models import (
     ReviewStageCode,
     ReviewState,
 )
+from modules.reviews.services import ManualReviewInclusionService
 from modules.taxonomy.services import create_discipline, create_subject, create_subsubject
 from shared.application.bootstrap import bootstrap_local_workspace
 from shared.domain.time import Clock, FixedClock, Instant
@@ -205,6 +218,112 @@ def test_legacy_recognition_and_manual_reopen_are_prospective_atomic_and_idempot
         ).count()
         == 1
     )
+
+
+@pytest.mark.django_db(transaction=True)
+def test_checker_distinguishes_manual_inclusion_and_mastery_reopen_without_writing() -> None:
+    workspace, discipline_id, subject_id = _workspace()
+    inclusion_question = _dominated(workspace, discipline_id, subject_id)
+    reopen_question = _dominated(workspace, discipline_id, subject_id)
+    inclusion = ManualReviewInclusionService(workspace_id=workspace.id, clock=CLOCK).include(
+        question_id=inclusion_question.id
+    )
+    inclusion_d1 = inclusion.reviews.get()
+    service = DomainLifecycleService(workspace_id=workspace.id, clock=CLOCK)
+    service.manual_reopen(question_id=reopen_question.id, reason_code="REVISIT_TOPIC")
+    reopen = ReviewCycle.objects.get(
+        question=reopen_question, manual_purpose=ManualCyclePurpose.MASTERY_REOPEN
+    )
+    reopen_d1 = reopen.reviews.get()
+    reopen_anchor = reopen.origin_attempt
+    assert reopen_anchor is not None
+    inclusion_anchor = inclusion.origin_attempt
+    assert inclusion_anchor is not None
+    inclusion_origin_id = inclusion.origin_attempt_id
+    assert inclusion_origin_id is not None
+    assert inclusion_anchor.attempt_type == AttemptType.INITIAL
+    assert reopen_anchor.attempt_type == AttemptType.REVIEW
+    assert reopen_anchor.status == "VALID"
+    assert reopen_d1.scheduled_from_attempt_id == reopen.origin_attempt_id
+    assert reopen_d1.transition_code == "MANUAL_REOPEN_D1"
+    assert reopen_d1.first_due_date == (NOW + timedelta(days=1)).date()
+    assert MasteryStateEvent.objects.filter(question=reopen_question).count() == 2
+
+    database_file = str(connection.settings_dict["NAME"])
+    paths = [Path(database_file + suffix) for suffix in ("", "-wal")]
+
+    def facts() -> dict[str, object]:
+        return {
+            "Question": list(Question.objects.order_by("pk").values()),
+            "Attempt": list(Attempt.objects.order_by("pk").values()),
+            "ReviewCycle": list(ReviewCycle.objects.order_by("pk").values()),
+            "Review": list(Review.objects.order_by("pk").values()),
+            "MasteryStateEvent": list(MasteryStateEvent.objects.order_by("pk").values()),
+        }
+
+    def checked() -> set[tuple[str, str]]:
+        facts_before = facts()
+        before = {str(path): path.read_bytes() if path.exists() else None for path in paths}
+        result = run_integrity_check()
+        assert result.checks_executed == 25
+        assert {str(path): path.read_bytes() if path.exists() else None for path in paths} == before
+        assert facts() == facts_before
+        return {(finding.invariant_id, finding.technical_id) for finding in result.findings}
+
+    assert checked() == set()
+
+    # A valid REVIEW context must not be accepted for the distinct INCLUSION purpose.
+    final_attempt = inclusion_question.attempts.order_by("-occurred_at").first()
+    assert final_attempt is not None and final_attempt.attempt_type == AttemptType.REVIEW
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE reviews_reviewcycle SET origin_attempt_id = %s WHERE id = %s",
+            [final_attempt.id.hex, inclusion.id.hex],
+        )
+        cursor.execute(
+            "UPDATE reviews_review SET scheduled_from_attempt_id = %s WHERE id = %s",
+            [final_attempt.id.hex, inclusion_d1.id.hex],
+        )
+    inclusion_findings = checked()
+    assert {("REV-001", inclusion.id.hex), ("REV-002", inclusion_d1.id.hex)}.issubset(
+        inclusion_findings
+    ), inclusion_findings
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE reviews_reviewcycle SET origin_attempt_id = %s WHERE id = %s",
+            [inclusion_origin_id.hex, inclusion.id.hex],
+        )
+        cursor.execute(
+            "UPDATE reviews_review SET scheduled_from_attempt_id = %s WHERE id = %s",
+            [inclusion_origin_id.hex, inclusion_d1.id.hex],
+        )
+
+    # The reopen D1 must still use its own origin and transition.
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE reviews_review SET transition_code = 'MANUAL_INCLUSION_D1' WHERE id = %s",
+            [reopen_d1.id.hex],
+        )
+    assert ("REV-002", reopen_d1.id.hex) in checked()
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE reviews_review SET transition_code = 'MANUAL_REOPEN_D1' WHERE id = %s",
+            [reopen_d1.id.hex],
+        )
+
+    foreign, _, _ = _workspace()
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE reviews_reviewcycle SET workspace_id = %s WHERE id = %s",
+            [foreign.id.hex, reopen.id.hex],
+        )
+    assert ("REV-001", reopen.id.hex) in checked()
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE reviews_reviewcycle SET workspace_id = %s WHERE id = %s",
+            [workspace.id.hex, reopen.id.hex],
+        )
+    assert checked() == set()
 
 
 @pytest.mark.django_db(transaction=True)
@@ -618,6 +737,141 @@ def test_permanent_delete_removes_mastery_history_with_isolated_recovery(tmp_pat
     assert not MasteryStateEvent.objects.filter(question_id=question.id).exists()
     assert not Question.objects.filter(pk=question.id).exists()
     assert not current_domains(workspace_id=workspace.id, question_ids=(question.id,), clock=CLOCK)
+
+
+@pytest.mark.django_db(transaction=True)
+def test_manual_reopen_backup_restores_with_inclusion_and_unchanged_source(tmp_path: Path) -> None:
+    workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
+    discipline_id = create_discipline(workspace_id=workspace.id, name="Recovery manual").id
+    subject_id = create_subject(
+        workspace_id=workspace.id, discipline_id=discipline_id, name="Recovery manual"
+    ).id
+    inclusion_question = _dominated(workspace, discipline_id, subject_id)
+    reopen_question = _dominated(workspace, discipline_id, subject_id)
+    inclusion = ManualReviewInclusionService(workspace_id=workspace.id, clock=CLOCK).include(
+        question_id=inclusion_question.id
+    )
+    DomainLifecycleService(workspace_id=workspace.id, clock=CLOCK).manual_reopen(
+        question_id=reopen_question.id, reason_code="REVISIT_TOPIC"
+    )
+    reopen = ReviewCycle.objects.get(
+        question=reopen_question, manual_purpose=ManualCyclePurpose.MASTERY_REOPEN
+    )
+    assert inclusion.manual_purpose == ManualCyclePurpose.INCLUSION
+    reopen_anchor = reopen.origin_attempt
+    assert reopen_anchor is not None
+    assert reopen_anchor.attempt_type == AttemptType.REVIEW
+    assert run_integrity_check().total_findings == 0
+    source = Path(connection.settings_dict["NAME"])
+    source_before = hashlib.sha256(source.read_bytes()).hexdigest()
+    backup = tmp_path / "manual-cycle-backup.sqlite3"
+    created = create_sqlite_backup(backup)
+    assert validate_sqlite_backup(backup).manifest == created.manifest
+    restored = tmp_path / "manual-cycle-restored.sqlite3"
+
+    result = restore_sqlite_backup(backup, restored)
+
+    assert result.integrity.checks_executed == 25
+    assert result.integrity.total_findings == 0
+    assert result.reconciliation.review_cycle_count == ReviewCycle.objects.count()
+    assert result.reconciliation.review_count == Review.objects.count()
+    assert restored.is_file()
+    assert hashlib.sha256(source.read_bytes()).hexdigest() == source_before
+
+
+@pytest.mark.django_db(transaction=True)
+def test_manual_cycle_restore_rejects_invalid_context_purpose_workspace_and_artifacts(
+    tmp_path: Path,
+) -> None:
+    workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
+    discipline_id = create_discipline(workspace_id=workspace.id, name="Recovery guards").id
+    subject_id = create_subject(
+        workspace_id=workspace.id, discipline_id=discipline_id, name="Recovery guards"
+    ).id
+    inclusion_question = _dominated(workspace, discipline_id, subject_id)
+    reopen_question = _dominated(workspace, discipline_id, subject_id)
+    inclusion = ManualReviewInclusionService(workspace_id=workspace.id, clock=CLOCK).include(
+        question_id=inclusion_question.id
+    )
+    DomainLifecycleService(workspace_id=workspace.id, clock=CLOCK).manual_reopen(
+        question_id=reopen_question.id, reason_code="REVISIT_TOPIC"
+    )
+    reopen = ReviewCycle.objects.get(
+        question=reopen_question, manual_purpose=ManualCyclePurpose.MASTERY_REOPEN
+    )
+    unrelated_review_attempt = Attempt.objects.get(
+        question=inclusion_question, review__stage_code=ReviewStageCode.D30
+    )
+    source = Path(connection.settings_dict["NAME"])
+    source_before = hashlib.sha256(source.read_bytes()).hexdigest()
+    backup = tmp_path / "valid.sqlite3"
+    create_sqlite_backup(backup)
+    assert (
+        validate_sqlite_backup(backup).manifest.sha256
+        == hashlib.sha256(backup.read_bytes()).hexdigest()
+    )
+
+    for case in (
+        "inclusion_review_origin",
+        "reopen_other_question_origin",
+        "invalid_purpose",
+        "foreign_workspace",
+        "missing_migration",
+        "bad_checksum",
+    ):
+        altered = tmp_path / f"{case}.sqlite3"
+        shutil.copyfile(backup, altered)
+        altered_manifest = manifest_path_for(altered)
+        shutil.copyfile(manifest_path_for(backup), altered_manifest)
+        if case != "bad_checksum":
+            with closing(sqlite3.connect(altered)) as database:
+                if case == "inclusion_review_origin":
+                    database.execute(
+                        "UPDATE reviews_reviewcycle SET origin_attempt_id = ? WHERE id = ?",
+                        (unrelated_review_attempt.id.hex, inclusion.id.hex),
+                    )
+                elif case == "reopen_other_question_origin":
+                    database.execute(
+                        "UPDATE reviews_reviewcycle SET origin_attempt_id = ? WHERE id = ?",
+                        (unrelated_review_attempt.id.hex, reopen.id.hex),
+                    )
+                elif case == "invalid_purpose":
+                    database.execute("PRAGMA ignore_check_constraints = ON")
+                    database.execute(
+                        "UPDATE reviews_reviewcycle SET manual_purpose = 'INVALID' WHERE id = ?",
+                        (reopen.id.hex,),
+                    )
+                elif case == "foreign_workspace":
+                    database.execute(
+                        "UPDATE reviews_reviewcycle SET workspace_id = ? WHERE id = ?",
+                        (uuid.uuid4().hex, reopen.id.hex),
+                    )
+                elif case == "missing_migration":
+                    database.execute(
+                        "DELETE FROM django_migrations WHERE id = "
+                        "(SELECT id FROM django_migrations ORDER BY id LIMIT 1)"
+                    )
+                database.commit()
+            document = json.loads(altered_manifest.read_text(encoding="utf-8"))
+            document["size_bytes"] = altered.stat().st_size
+            document["sha256"] = hashlib.sha256(altered.read_bytes()).hexdigest()
+            altered_manifest.write_text(json.dumps(document), encoding="utf-8")
+        else:
+            document = json.loads(altered_manifest.read_text(encoding="utf-8"))
+            document["sha256"] = "0" * 64
+            altered_manifest.write_text(json.dumps(document), encoding="utf-8")
+
+        if case in {"inclusion_review_origin", "reopen_other_question_origin", "missing_migration"}:
+            assert (
+                validate_sqlite_backup(altered).manifest.sha256
+                == hashlib.sha256(altered.read_bytes()).hexdigest()
+            )
+        destination = tmp_path / f"{case}-restored.sqlite3"
+        with pytest.raises((BackupValidationError, RestoreError)):
+            restore_sqlite_backup(altered, destination)
+        assert not destination.exists()
+
+    assert hashlib.sha256(source.read_bytes()).hexdigest() == source_before
 
 
 @pytest.mark.django_db(transaction=True)

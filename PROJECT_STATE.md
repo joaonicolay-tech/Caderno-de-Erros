@@ -100,13 +100,35 @@
   reprodução controlada posterior PASS; episódio `TRANSIENT_NOT_REPRODUCED`,
   sem causa ambiental ou regressão de produto confirmada. FTS não justificada,
   sem migration. A8 deep APPROVED, Blocker 0/Major 0 e gate final GREEN em
-  `quality/v05-s9-beta-hardening-result.md`; V0.5 não foi promovida.
+  `quality/v05-s9-beta-hardening-result.md`.
+- V0.5-S10: concluída — piloto P01–P18 em base sintética integrada aprovada por
+  D1, com original intacto, checker, CEI, backup/restore/recovery e cleanup
+  comprovados. F01 (seed), F02 (checker) e F03 (reconciliação de restore)
+  permanecem no histórico com FAIL original e reteste PASS. Sem migration.
+  A8 deep APPROVED, Blocker 0/Major 0/Minor novo 0 e nenhum P0/P1 aplicável
+  aberto. Gate final GREEN, exit 0, 505 testes e 86% de cobertura na terceira
+  tentativa da revisão. Decisão documental `PROMOTION_APPROVED`: V0.5 beta
+  aprovada no gate, sem tag, release ou publicação. Evidência em
+  `quality/v05-s10-controlled-pilot-result.md`.
 - Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
-- V0.5: P0, S1, S2A–S2D e S3–S9 concluídas; S10+ **NOT AUTHORIZED**.
+- V0.5: P0, S1, S2A–S2D e S3–S10 concluídas; beta aprovada
+  documentalmente. V1 **NOT AUTHORIZED**.
 
 ## Última validação
+
+Gate final V0.5-S10 GREEN na terceira tentativa da revisão, exit code 0:
+505 testes em 242,06 s, 86% de cobertura global; lock/sync, runtime,
+rastreabilidade, três perfis, banco vazio, migrations, formatação, Ruff, mypy,
+cobertura de domínio, detect-secrets e pip-audit aprovados. Duração total
+observada 324,4 s; `No known vulnerabilities found`. A primeira tentativa
+foi RED no mypy por tipagem do teste S10, corrigida sem mudança funcional; a
+segunda passou em 505 testes, mas foi RED no pip-audit por bloqueio HTTPS
+`WinError 10013`; ambas preservadas na evidência. Dois `ResourceWarning`
+SQLite conhecidos não derrubaram o gate. A8 deep APPROVED e checklist beta
+PASS em `quality/v05-s10-controlled-pilot-result.md`. Sem commit, push, tag,
+release ou V1.
 
 Gate final V0.5-S9 GREEN na terceira tentativa da etapa, exit code 0: 502
 testes aprovados em 284,65 s, 86% de cobertura global, perfis, banco vazio,
@@ -417,6 +439,10 @@ baseline V0.3, Architecture v1.0 ou gate.
   `quality/v05-s9-v05-operations-measurement.json` e
   `tasks/completed/v05-s9-beta-hardening.md`: A4, medições, evidence manual,
   A8 deep, gate e encerramento S9;
+- `tasks/plans/v05-s10-controlled-pilot-plan.md`,
+  `quality/v05-s10-controlled-pilot-result.md` e
+  `tasks/completed/v05-s10-controlled-pilot.md`: D1, piloto P01–P18, findings,
+  A8 deep, gate beta, decisão documental e encerramento S10;
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -426,5 +452,5 @@ estado operacional corrente.
 ## Próximo passo possível
 
 Nenhuma próxima tarefa está autorizada. Uma autorização futura deve ser
-registrada separadamente em `tasks/current.md`; S10+ não foram iniciadas.
-Nenhum commit, push, tag ou release foi autorizado.
+registrada separadamente em `tasks/current.md`; V1 não foi iniciada.
+Nenhum commit, push, tag ou release foi autorizado nesta decisão.

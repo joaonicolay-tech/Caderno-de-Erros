@@ -763,7 +763,8 @@ _SQL_RULES: Final[dict[str, str]] = {
                (a.id IS NULL OR a.workspace_id != c.workspace_id
                 OR a.question_id != c.question_id
                 OR a.question_revision_id != c.origin_question_revision_id
-                OR a.attempt_type != 'INITIAL' OR a.is_correct != 1
+                OR (c.manual_purpose = 'INCLUSION'
+                    AND (a.attempt_type != 'INITIAL' OR a.is_correct != 1))
                 OR (c.state != 'SUPERSEDED' AND a.status != 'VALID')))
            OR (c.origin_kind = 'ATTEMPT_CORRECTION' AND
                ((a.id IS NOT NULL AND
@@ -795,8 +796,11 @@ _SQL_RULES: Final[dict[str, str]] = {
                      AND anchor.attempt_type = 'INITIAL' AND anchor.is_correct = 0
                      AND r.transition_code = 'INITIAL_ERROR_TO_D1')
                     OR (c.origin_kind = 'MANUAL' AND anchor.id = c.origin_attempt_id
-                        AND anchor.attempt_type = 'INITIAL' AND anchor.is_correct = 1
-                        AND r.transition_code = 'MANUAL_INCLUSION_D1')
+                        AND ((c.manual_purpose = 'INCLUSION'
+                              AND anchor.attempt_type = 'INITIAL' AND anchor.is_correct = 1
+                              AND r.transition_code = 'MANUAL_INCLUSION_D1')
+                             OR (c.manual_purpose = 'MASTERY_REOPEN'
+                                 AND r.transition_code = 'MANUAL_REOPEN_D1')))
                     OR c.origin_kind = 'ATTEMPT_CORRECTION'))
                 OR (r.sequence_number > 1 AND c.origin_kind != 'ATTEMPT_CORRECTION' AND
                     (anchor.attempt_type != 'REVIEW' OR NOT EXISTS (
