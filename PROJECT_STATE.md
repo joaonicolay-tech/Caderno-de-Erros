@@ -10,8 +10,13 @@
   em `tasks/plans/v10-release-execution-plan.md`; evidência em
   `quality/v10-p0-planning-result.md`; contrato arquivado em
   `tasks/completed/v10-p0-release-planning.md`. V10-D1/V10-D2 e `RD-ABR-010`
-  permanecem resolvidas. S1 não foi iniciado; V1.0 não foi implementada nem
-  promovida; nenhuma tag ou release V1 existe. S1+ **NOT AUTHORIZED**.
+  permanecem resolvidas.
+- V1.0-S1: **COMPLETED — `CONTRACTS_FROZEN_FOR_V1`** em 28 de setembro de
+  2026. Contratos, identidade e matriz de suporte documentados em
+  `docs/V1.0_S1_Contratos_e_Compatibilidade.md`; evidência em
+  `quality/v10-s1-contracts-compatibility-result.md`; contrato arquivado em
+  `tasks/completed/v10-s1-contracts-compatibility.md`. V1.0 não foi implementada
+  nem promovida; nenhuma tag ou release V1 existe. S2+ **NOT AUTHORIZED**.
 - Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag histórica
   `v0.4.0` permanece inalterada.
 - V0.4.1-HF1: concluído — fluxo de alternativas corrigido após V0.4.0, sem
@@ -460,6 +465,10 @@ baseline V0.3, Architecture v1.0 ou gate.
 - `tasks/plans/v10-release-execution-plan.md`: plano V1.0 aprovado e concluído.
 - `quality/v10-p0-planning-result.md`: decisão humana, gate e encerramento P0.
 - `tasks/completed/v10-p0-release-planning.md`: contrato P0 arquivado.
+- `docs/V1.0_S1_Contratos_e_Compatibilidade.md`,
+  `quality/v10-s1-contracts-compatibility-result.md` e
+  `tasks/completed/v10-s1-contracts-compatibility.md`: contratos, evidência e
+  encerramento S1.
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -469,6 +478,6 @@ estado operacional corrente.
 ## Próximo passo possível
 
 Próximo passo possível: autorização explícita e independente futura para
-`V1.0-S1`. Nenhum estágio de implementação V1.0 está autorizado neste momento;
+`V1.0-S2`. Nenhum estágio de implementação V1.0 está autorizado neste momento;
 cada estágio exige contrato próprio `AUTHORIZED` em `tasks/current.md`.
 Nenhum commit, push, tag ou release foi autorizado nesta decisão.
