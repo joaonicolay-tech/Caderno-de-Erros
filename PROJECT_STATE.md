@@ -6,7 +6,12 @@
   `COMPLETED`. A tag anotada publicada `v0.5.0` aponta para
   `d24cde1d3c25f7ff0e23306ce7e15e7ea85fd228`; o GitHub Pre-release
   `Caderno de Erros v0.5.0 — Beta` foi publicado como beta e associado à tag.
-- V1 permanece **NOT AUTHORIZED**.
+- V1.0-P0: **COMPLETED / APPROVED** — plano aprovado em 28 de setembro de 2026
+  em `tasks/plans/v10-release-execution-plan.md`; evidência em
+  `quality/v10-p0-planning-result.md`; contrato arquivado em
+  `tasks/completed/v10-p0-release-planning.md`. V10-D1/V10-D2 e `RD-ABR-010`
+  permanecem resolvidas. S1 não foi iniciado; V1.0 não foi implementada nem
+  promovida; nenhuma tag ou release V1 existe. S1+ **NOT AUTHORIZED**.
 - Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag histórica
   `v0.4.0` permanece inalterada.
 - V0.4.1-HF1: concluído — fluxo de alternativas corrigido após V0.4.0, sem
@@ -116,12 +121,14 @@
   aprovada no gate; no fechamento S10 ainda não havia tag, release ou
   publicação. A publicação externa posterior está registrada no estado atual
   acima. Evidência em `quality/v05-s10-controlled-pilot-result.md`.
-- Etapa de implementação atual: nenhuma; `NO_TASK_AUTHORIZED`.
+- Etapa de implementação atual: nenhuma; `tasks/current.md` está em
+  `NO_TASK_AUTHORIZED`.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
 - V0.5: P0, S1, S2A–S2D e S3–S10 concluídas; beta aprovada
-  documentalmente e publicada como pre-release `v0.5.0`. V1
-  **NOT AUTHORIZED**.
+  documentalmente e publicada como pre-release `v0.5.0`. Na ocasião do
+  encerramento S10, V1.0-P0 estava aberto para planejamento e implementação V1
+  não estava autorizada; o encerramento posterior do P0 está registrado acima.
 
 ## Última validação
 
@@ -450,6 +457,9 @@ baseline V0.3, Architecture v1.0 ou gate.
   `quality/v05-s10-controlled-pilot-result.md` e
   `tasks/completed/v05-s10-controlled-pilot.md`: D1, piloto P01–P18, findings,
   A8 deep, gate beta, decisão documental e encerramento S10;
+- `tasks/plans/v10-release-execution-plan.md`: plano V1.0 aprovado e concluído.
+- `quality/v10-p0-planning-result.md`: decisão humana, gate e encerramento P0.
+- `tasks/completed/v10-p0-release-planning.md`: contrato P0 arquivado.
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -458,6 +468,7 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Nenhuma próxima tarefa está autorizada. Uma autorização futura deve ser
-registrada separadamente em `tasks/current.md`; V1 não foi iniciada.
+Próximo passo possível: autorização explícita e independente futura para
+`V1.0-S1`. Nenhum estágio de implementação V1.0 está autorizado neste momento;
+cada estágio exige contrato próprio `AUTHORIZED` em `tasks/current.md`.
 Nenhum commit, push, tag ou release foi autorizado nesta decisão.
