@@ -15,8 +15,15 @@
   2026. Contratos, identidade e matriz de suporte documentados em
   `docs/V1.0_S1_Contratos_e_Compatibilidade.md`; evidência em
   `quality/v10-s1-contracts-compatibility-result.md`; contrato arquivado em
-  `tasks/completed/v10-s1-contracts-compatibility.md`. V1.0 não foi implementada
-  nem promovida; nenhuma tag ou release V1 existe. S2+ **NOT AUTHORIZED**.
+  `tasks/completed/v10-s1-contracts-compatibility.md`. Ao fechar S1, V1.0 não
+  estava implementada nem promovida, nenhuma tag ou release V1 existia, e S2+
+  não estava autorizada.
+- V1.0-S2: **COMPLETED — `V1 candidate stabilized for S3`** em 28 de setembro
+  de 2026. Identidade do pacote/runtime e produtor CEI reconciliados sob os
+  contratos S1, sem migration; evidência em
+  `quality/v10-s2-stabilization-result.md`; contrato arquivado em
+  `tasks/completed/v10-s2-stabilization.md`. Não houve promoção, tag ou release
+  V1. S3+ **NOT AUTHORIZED**.
 - Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag histórica
   `v0.4.0` permanece inalterada.
 - V0.4.1-HF1: concluído — fluxo de alternativas corrigido após V0.4.0, sem
@@ -136,6 +143,14 @@
   não estava autorizada; o encerramento posterior do P0 está registrado acima.
 
 ## Última validação
+
+V1.0-S2: gate final GREEN, exit code 0, 510 testes e 86% de cobertura global;
+lock/sync, runtime, rastreabilidade, perfis, migrations, banco vazio,
+formatação, Ruff, mypy, cobertura de domínio, detect-secrets e pip-audit
+aprovados em 316,3 s; suíte em 256,86 s. A8 deep APPROVED, Blocker 0/Major
+0/Minor novo 0. Dois ResourceWarning SQLite históricos permaneceram como
+observação para S3. Sem migration, commit, push, tag ou release. Evidência em
+`quality/v10-s2-stabilization-result.md`.
 
 Gate final V0.5-S10 GREEN na terceira tentativa da revisão, exit code 0:
 505 testes em 242,06 s, 86% de cobertura global; lock/sync, runtime,
@@ -469,6 +484,9 @@ baseline V0.3, Architecture v1.0 ou gate.
   `quality/v10-s1-contracts-compatibility-result.md` e
   `tasks/completed/v10-s1-contracts-compatibility.md`: contratos, evidência e
   encerramento S1.
+- `quality/v10-s2-stabilization-result.md` e
+  `tasks/completed/v10-s2-stabilization.md`: achados, identidade, política CEI,
+  testes, gate e encerramento S2.
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -478,6 +496,6 @@ estado operacional corrente.
 ## Próximo passo possível
 
 Próximo passo possível: autorização explícita e independente futura para
-`V1.0-S2`. Nenhum estágio de implementação V1.0 está autorizado neste momento;
-cada estágio exige contrato próprio `AUTHORIZED` em `tasks/current.md`.
-Nenhum commit, push, tag ou release foi autorizado nesta decisão.
+`V1.0-S3`. Nenhum estágio está autorizado neste momento; cada estágio exige
+contrato próprio `AUTHORIZED` em `tasks/current.md`. Nenhum commit, push, tag
+ou release foi autorizado nesta decisão.

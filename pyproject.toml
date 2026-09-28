@@ -1,6 +1,6 @@
 [project]
 name = "caderno-de-erros-inteligente"
-version = "0.1.0"
+version = "1.0.0"
 description = "Fundação local do Caderno de Erros Inteligente"
 readme = "README.md"
 requires-python = "==3.13.15"

@@ -18,6 +18,8 @@ class OperationsConfig(AppConfig):
 
         from django.conf import settings
 
+        from shared.application.version import PRODUCT_VERSION
+
         from .correlation import correlation_scope
         from .events import EventCode, EventOutcome
         from .structured_logging import emit_event
@@ -27,6 +29,6 @@ class OperationsConfig(AppConfig):
                 EventCode.APPLICATION_INITIALIZED,
                 operation="application.initialize",
                 outcome=EventOutcome.SUCCEEDED,
-                context={"profile": settings.CEI_PROFILE, "version": "0.1.0"},
+                context={"profile": settings.CEI_PROFILE, "product_version": PRODUCT_VERSION},
             )
         self._initialization_logged = True

@@ -29,10 +29,12 @@ from modules.search.saved_filter_services import (
     QUESTIONS_LIST_FIELDS,
     QUESTIONS_LIST_SCHEMA_VERSION,
 )
+from shared.application.version import PRODUCT_VERSION
 
 FORMAT = "CEI-EXPORT"
 VERSION = "1.0"
-APPLICATION_VERSION = "V0.5"
+APPLICATION_VERSION = PRODUCT_VERSION
+SUPPORTED_APPLICATION_VERSIONS = frozenset({"V0.5", APPLICATION_VERSION})
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 
 
@@ -415,7 +417,8 @@ def validate_export(source: BinaryIO) -> ValidatedExport:
                 raise ExportValidationError("Versão ou formato CEI incompatível.")
             if (
                 not _valid_instant(manifest["generated_at"])
-                or manifest["application_version"] != APPLICATION_VERSION
+                or not isinstance(manifest["application_version"], str)
+                or manifest["application_version"] not in SUPPORTED_APPLICATION_VERSIONS
                 or manifest["schema_migrations"] != _schema_migrations()
                 or not isinstance(manifest["workspace_timezone"], str)
                 or manifest["policies"]

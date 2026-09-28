@@ -548,7 +548,7 @@ INVARIANT_CATALOG: Final[tuple[InvariantSpec, ...]] = (
         "As FKs simples não verificam tenant, schema ou referências no JSON.",
         "Um filtro incompatível pode selecionar dados incorretos ou falhar na leitura.",
         "Validar shape, escolhas e referências sem interpretar schema desconhecido.",
-        "Filtros de versão futura são incompatíveis com o leitor V0.5.",
+        "Filtros de versão futura são incompatíveis com o leitor atual.",
         "V0.5-S3 saved_filter_services.validate_questions_list_payload",
         "O filtro salvo é incompatível com o Workspace ou schema atual.",
         _SAFE_ACTION,

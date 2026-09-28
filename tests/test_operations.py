@@ -165,7 +165,7 @@ def test_application_initialization_emits_minimal_structured_event() -> None:
     event = parsed_events(stream)[0]
     assert event["event_code"] == "APPLICATION_INITIALIZED"
     assert event["operation"] == "application.initialize"
-    assert event["context"] == {"profile": "test", "version": "0.1.0"}
+    assert event["context"] == {"profile": "test", "product_version": "V1.0"}
 
 
 @pytest.mark.django_db

@@ -57,6 +57,7 @@ def _independent_reader(data: bytes) -> dict[str, object]:
         manifest = json.loads(archive.read("manifest.json").decode("utf-8"))
         assert manifest["format"] == "CEI-EXPORT"
         assert manifest["format_version"] == "1.0"
+        assert manifest["application_version"] == "V1.0"
         for entry in manifest["files"]:
             payload = archive.read(entry["name"])
             assert len(payload) == entry["size_bytes"]
@@ -93,6 +94,38 @@ def test_ct120_future_version_rejected_without_mutation(package: bytes) -> None:
         for name, data in entries.items():
             archive.writestr(name, data)
     with pytest.raises(ExportValidationError, match="incompatível"):
+        validate_export(io.BytesIO(changed.getvalue()))
+
+
+def test_v05_producer_is_accepted_when_metadata_is_compatible(package: bytes) -> None:
+    with zipfile.ZipFile(io.BytesIO(package)) as archive:
+        entries = {name: archive.read(name) for name in archive.namelist()}
+    manifest = json.loads(entries["manifest.json"])
+    manifest["application_version"] = "V0.5"
+    entries["manifest.json"] = json.dumps(manifest).encode("utf-8")
+    changed = io.BytesIO()
+    with zipfile.ZipFile(changed, "w") as archive:
+        for name, data in entries.items():
+            archive.writestr(name, data)
+
+    validated = validate_export(io.BytesIO(changed.getvalue()))
+
+    assert validated.manifest["application_version"] == "V0.5"
+
+
+@pytest.mark.parametrize("producer", ["V0.6", "unknown", None, ["V1.0"]])
+def test_unsupported_producer_is_rejected_before_import(package: bytes, producer: object) -> None:
+    with zipfile.ZipFile(io.BytesIO(package)) as archive:
+        entries = {name: archive.read(name) for name in archive.namelist()}
+    manifest = json.loads(entries["manifest.json"])
+    manifest["application_version"] = producer
+    entries["manifest.json"] = json.dumps(manifest).encode("utf-8")
+    changed = io.BytesIO()
+    with zipfile.ZipFile(changed, "w") as archive:
+        for name, data in entries.items():
+            archive.writestr(name, data)
+
+    with pytest.raises(ExportValidationError, match="metadata incompatível"):
         validate_export(io.BytesIO(changed.getvalue()))
 
 

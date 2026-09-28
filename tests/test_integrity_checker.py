@@ -261,6 +261,11 @@ def test_catalog_has_stable_complete_entries() -> None:
             )
         )
         assert spec.severity in {InvariantSeverity.CRITICAL, InvariantSeverity.ERROR}
+    saved_filter = next(spec for spec in INVARIANT_CATALOG if spec.invariant_id == "SAV-001")
+    assert (
+        saved_filter.false_positive_risk
+        == "Filtros de versão futura são incompatíveis com o leitor atual."
+    )
 
 
 @pytest.mark.django_db(transaction=True)
