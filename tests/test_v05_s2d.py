@@ -3,6 +3,7 @@
 import sqlite3
 import uuid
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from threading import Barrier, Event
@@ -568,7 +569,7 @@ def test_historical_question_requires_retention_and_real_s6_restore(tmp_path: Pa
     assert AnalyticsService(workspace_id=workspace.id).registered_questions().count() == 0
     assert AnalyticsService(workspace_id=workspace.id).performed_questions().count() == 0
     assert Question.objects.filter(pk=question.id).count() == 0
-    with sqlite3.connect(restored) as database:
+    with closing(sqlite3.connect(restored)) as database:
         assert database.execute(
             "SELECT count(*) FROM questions_question WHERE id = ?", (question.id.hex,)
         ).fetchone() == (1,)
@@ -577,7 +578,7 @@ def test_historical_question_requires_retention_and_real_s6_restore(tmp_path: Pa
     post_restored = tmp_path / "post-restored.sqlite3"
     create_sqlite_backup(post)
     assert not restore_sqlite_backup(post, post_restored).integrity.has_blocking_findings
-    with sqlite3.connect(post_restored) as database:
+    with closing(sqlite3.connect(post_restored)) as database:
         assert database.execute(
             "SELECT count(*) FROM questions_question WHERE id = ?", (question.id.hex,)
         ).fetchone() == (0,)

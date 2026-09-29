@@ -6,6 +6,8 @@ import uuid
 from datetime import UTC, datetime
 
 import pytest
+from django.test import Client
+from django.urls import reverse
 
 from modules.attempts.context import ContextStore
 from modules.attempts.models import Attempt
@@ -71,7 +73,7 @@ def _complete_review(service: CompleteReviewService, review: Review, *, correct:
 
 @pytest.mark.django_db
 def test_e5_integrated_synthetic_flow_completes_cycle_and_resets_review_error() -> None:
-    """CT-123: executa o fluxo presente em V0.3 em uma única base descartável."""
+    """CT-121/123: jornada crítica e capacidades presentes em base descartável."""
     workspace = bootstrap_local_workspace(timezone_id="America/Sao_Paulo").workspace
     clock = FixedClock(Instant(datetime(2026, 9, 8, 15, tzinfo=UTC)))
     store = ContextStore()
@@ -118,6 +120,22 @@ def test_e5_integrated_synthetic_flow_completes_cycle_and_resets_review_error() 
     timeline = get_learning_timeline(workspace_id=workspace.id, question_id=complete_question.id)
     assert [event.kind for event in timeline].count("attempt_initial") == 1
     assert [event.kind for event in timeline].count("attempt_review") == 4
+
+    dashboard = Client().get(reverse("accounts:home"))
+    assert dashboard.status_code == 200
+    assert dashboard.context is not None
+    activity = dashboard.context["activity"]
+    assert (
+        activity.registered_questions,
+        activity.performed_questions,
+        activity.attempts,
+        activity.initial_attempts,
+        activity.review_attempts,
+        activity.correct_answers,
+        activity.incorrect_answers,
+        activity.accuracy.numerator,
+        activity.accuracy.denominator,
+    ) == (1, 1, 5, 1, 4, 4, 1, 4, 5)
 
     restart_question = _question(workspace.id, "restart", clock)
     token = _evaluate_initial(attempts, restart_question, correct=False)

@@ -24,6 +24,14 @@
   `quality/v10-s2-stabilization-result.md`; contrato arquivado em
   `tasks/completed/v10-s2-stabilization.md`. Não houve promoção, tag ou release
   V1. S3+ **NOT AUTHORIZED**.
+- V1.0-S3: **COMPLETED — `S3_COMPLETED`** em 28 de setembro de 2026.
+  Regressão crítica, integridade SQLite, isolamento, segurança, privacidade,
+  logging e dependências aprovados no recorte aplicável; duas conexões abertas
+  por teste foram fechadas e a jornada agora reconcilia D1/D7/D14/D30 com a
+  dashboard real. Sem migration ou feature. Evidência em
+  `quality/v10-s3-regression-security-result.md`; contrato arquivado em
+  `tasks/completed/v10-s3-regression-security.md`. S4/S5/S6 **NOT AUTHORIZED**;
+  nenhuma promoção, tag ou release V1.
 - Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag histórica
   `v0.4.0` permanece inalterada.
 - V0.4.1-HF1: concluído — fluxo de alternativas corrigido após V0.4.0, sem
@@ -143,6 +151,15 @@
   não estava autorizada; o encerramento posterior do P0 está registrado acima.
 
 ## Última validação
+
+V1.0-S3: gate final pós-arquivamento GREEN, exit code 0, 510 testes em 218,07 s,
+86% cobertura global e cobertura mínima de domínio aprovada; lock/sync, runtime,
+rastreabilidade, três perfis, migrations, banco vazio, formatação, Ruff, mypy
+(194 fontes), detect-secrets e pip-audit aprovados em 272,3 s. `No known
+vulnerabilities found`. A evidência registra também a revalidação final pós-
+fechamento. A8 deep APPROVED; Blocker 0, Major 0, Minor novo 0. Sem migration,
+dependência nova, commit, push, tag ou release. Evidência em
+`quality/v10-s3-regression-security-result.md`.
 
 V1.0-S2: gate final GREEN, exit code 0, 510 testes e 86% de cobertura global;
 lock/sync, runtime, rastreabilidade, perfis, migrations, banco vazio,
@@ -487,6 +504,9 @@ baseline V0.3, Architecture v1.0 ou gate.
 - `quality/v10-s2-stabilization-result.md` e
   `tasks/completed/v10-s2-stabilization.md`: achados, identidade, política CEI,
   testes, gate e encerramento S2.
+- `quality/v10-s3-regression-security-result.md` e
+  `tasks/completed/v10-s3-regression-security.md`: matriz S3, ResourceWarnings,
+  segurança, integridade, gate e encerramento S3.
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -495,7 +515,7 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Próximo passo possível: autorização explícita e independente futura para
-`V1.0-S3`. Nenhum estágio está autorizado neste momento; cada estágio exige
+Próximo passo possível: autorização explícita e independente futura para S4,
+S5 ou S6. Nenhuma dessas etapas está iniciada ou autorizada; cada uma exige
 contrato próprio `AUTHORIZED` em `tasks/current.md`. Nenhum commit, push, tag
 ou release foi autorizado nesta decisão.
