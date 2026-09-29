@@ -32,6 +32,21 @@
   `quality/v10-s3-regression-security-result.md`; contrato arquivado em
   `tasks/completed/v10-s3-regression-security.md`. S4/S5/S6 **NOT AUTHORIZED**;
   nenhuma promoção, tag ou release V1.
+- Estado V1 atual: S1–S4 concluídas; V1.0-S4 encerrou como
+  **`S4_COMPLETED`** em 29 de setembro de 2026. A evidência manual anterior
+  cobre dez jornadas, teclado/foco/forms/labels/erros/zoom/Narrator e os quatro
+  viewports responsivos. O responsável complementou a sessão Brave 1.96.59
+  oficial, 64 bits, Windows 11, com smoke final sem extensões em seis jornadas,
+  removendo o blocker de perfil. Brave é o browser oficialmente validado para
+  V1 por `HUMAN_MANUAL_EVIDENCE`; Chrome permanece não validado, Edge/Firefox
+  são `NOT_EXECUTED / OPTIONAL` e Safari é `N/A`. A8 standard APPROVED;
+  Blocker 0/Major 0/Minor 0; gate final GREEN, exit code 0. Evidência em
+  `quality/v10-s4-accessibility-browser-usability-result.md`, política em
+  `docs/V1.0_Adendo_V10-D2_Matriz_de_Browsers_S4.md` e contrato em
+  `tasks/completed/v10-s4-accessibility-browser-usability.md`. Nenhuma
+  migration, mudança funcional, feature ou redesign; S5/S6 seguem
+  **NOT AUTHORIZED**.
+  O registro acima preserva o estado histórico existente no fechamento da S3.
 - Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag histórica
   `v0.4.0` permanece inalterada.
 - V0.4.1-HF1: concluído — fluxo de alternativas corrigido após V0.4.0, sem
@@ -141,8 +156,9 @@
   aprovada no gate; no fechamento S10 ainda não havia tag, release ou
   publicação. A publicação externa posterior está registrada no estado atual
   acima. Evidência em `quality/v05-s10-controlled-pilot-result.md`.
-- Etapa de implementação atual: nenhuma; `tasks/current.md` está em
-  `NO_TASK_AUTHORIZED`.
+- Etapa de implementação atual: nenhuma tarefa autorizada;
+  `tasks/current.md` está em `NO_TASK_AUTHORIZED`. S5/S6 permanecem
+  **NOT AUTHORIZED**.
 - P0/P1 aplicável aberto: nenhum.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
 - V0.5: P0, S1, S2A–S2D e S3–S10 concluídas; beta aprovada
@@ -151,6 +167,24 @@
   não estava autorizada; o encerramento posterior do P0 está registrado acima.
 
 ## Última validação
+
+V1.0-S4: concluída em 29 de setembro de 2026. A HME do responsável preserva
+dez jornadas, teclado/foco/forms/labels/erros/zoom 200%/estados/Narrator e
+viewports 360 x 800, 768 x 900, 1366 x 768 e 1920 x 1080; novo smoke humano em
+Brave 1.96.59 oficial, Windows 11 x64, com todas as extensões desabilitadas,
+passou em dashboard, cadastro, tentativa, revisão, lista/consulta e dados.
+Brave é o browser oficialmente validado para V1; Chrome não validado,
+Edge/Firefox `NOT_EXECUTED / OPTIONAL`, Safari `N/A`. CUA falhou anteriormente
+com `helper_unknown_error: apply deny-read ACLs`; o responsável relatou crash
+Chrome em automação. O erro local `category_kind` foi resolvido pelo
+responsável aplicando migration existente após backup; S4 não criou migration.
+A8 standard APPROVED, Blocker 0/Major 0/Minor 0. Gate GREEN, exit 0: 510 testes
+em 227,29 s, 86% cobertura, gate total 285,8 s; cobertura de domínio,
+migrations inesperadas, format, Ruff, mypy, detect-secrets e pip-audit
+aprovados. Sem alteração funcional, feature, redesign ou migration nova.
+Evidência em `quality/v10-s4-accessibility-browser-usability-result.md` e
+`docs/V1.0_Adendo_V10-D2_Matriz_de_Browsers_S4.md`; contrato em
+`tasks/completed/v10-s4-accessibility-browser-usability.md`.
 
 V1.0-S3: gate final pós-arquivamento GREEN, exit code 0, 510 testes em 218,07 s,
 86% cobertura global e cobertura mínima de domínio aprovada; lock/sync, runtime,
@@ -507,6 +541,10 @@ baseline V0.3, Architecture v1.0 ou gate.
 - `quality/v10-s3-regression-security-result.md` e
   `tasks/completed/v10-s3-regression-security.md`: matriz S3, ResourceWarnings,
   segurança, integridade, gate e encerramento S3.
+- `quality/v10-s4-accessibility-browser-usability-result.md`,
+  `docs/V1.0_Adendo_V10-D2_Matriz_de_Browsers_S4.md` e
+  `tasks/completed/v10-s4-accessibility-browser-usability.md`: evidência manual,
+  browser V1 validado, A8 standard, gate e encerramento S4.
 - `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
@@ -515,7 +553,6 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Próximo passo possível: autorização explícita e independente futura para S4,
-S5 ou S6. Nenhuma dessas etapas está iniciada ou autorizada; cada uma exige
-contrato próprio `AUTHORIZED` em `tasks/current.md`. Nenhum commit, push, tag
-ou release foi autorizado nesta decisão.
+Próximo passo possível: nenhum está autorizado. S5/S6 requerem decisão e
+contrato `AUTHORIZED` próprios em `tasks/current.md`; não foram iniciadas nesta
+retomada. Nenhum commit, push, tag ou release foi autorizado.
