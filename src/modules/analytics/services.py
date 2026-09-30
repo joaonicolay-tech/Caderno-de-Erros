@@ -127,32 +127,30 @@ class AnalyticsService:
                 attempt_type__in=(AttemptType.INITIAL, AttemptType.REVIEW),
             )
             .order_by()
-            .values("question_id")
+            .values("question__discipline_id", "question__subject_id")
             .annotate(
                 analytics_attempts=Count("id"),
                 analytics_correct=Count("id", filter=Q(is_correct=True)),
             )
         )
-        facts = {
-            row["question_id"]: (int(row["analytics_attempts"]), int(row["analytics_correct"]))
-            for row in attempts
-        }
         discipline_counts: dict[uuid.UUID, list[int]] = {}
         subject_counts: dict[uuid.UUID, list[int]] = {}
         discipline_residue = 0
         subject_residue = 0
-        for question in local_questions.only("id", "discipline_id", "subject_id"):
-            total, correct = facts.get(question.id, (0, 0))
-            if question.discipline_id is None:
+        for row in attempts:
+            total, correct = int(row["analytics_attempts"]), int(row["analytics_correct"])
+            discipline_id = row["question__discipline_id"]
+            subject_id = row["question__subject_id"]
+            if discipline_id is None:
                 discipline_residue += total
             else:
-                aggregate = discipline_counts.setdefault(question.discipline_id, [0, 0])
+                aggregate = discipline_counts.setdefault(discipline_id, [0, 0])
                 aggregate[0] += total
                 aggregate[1] += correct
-            if question.subject_id is None:
+            if subject_id is None:
                 subject_residue += total
             else:
-                aggregate = subject_counts.setdefault(question.subject_id, [0, 0])
+                aggregate = subject_counts.setdefault(subject_id, [0, 0])
                 aggregate[0] += total
                 aggregate[1] += correct
 
@@ -373,18 +371,24 @@ class AnalyticsService:
         eligible_attempts = valid_attempts(workspace_id=self.workspace_id, filters=filters).filter(
             is_correct=False
         )
-        grouped_counts: dict[uuid.UUID | None, int] = {
-            row["error_classification__category_id"]: int(row["analytics_errors"])
-            for row in eligible_attempts.filter(
-                Q(error_classification__isnull=True)
-                | Q(
-                    error_classification__workspace_id=self.workspace_id,
-                    error_classification__category__workspace_id=self.workspace_id,
-                )
+        unclassified_counts = (
+            eligible_attempts.filter(error_classification__isnull=True)
+            .order_by()
+            .values("error_classification__category_id")
+            .annotate(analytics_errors=Count("id"))
+        )
+        classified_counts = (
+            eligible_attempts.filter(
+                error_classification__workspace_id=self.workspace_id,
+                error_classification__category__workspace_id=self.workspace_id,
             )
             .order_by()
             .values("error_classification__category_id")
             .annotate(analytics_errors=Count("id"))
+        )
+        grouped_counts: dict[uuid.UUID | None, int] = {
+            row["error_classification__category_id"]: int(row["analytics_errors"])
+            for row in unclassified_counts.union(classified_counts, all=True)
         }
         unclassified = grouped_counts.pop(None, 0)
         source_counts = {

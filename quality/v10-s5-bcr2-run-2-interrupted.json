@@ -1,0 +1,16 @@
+{
+  "benchmark": "BCR-2",
+  "run_number": 2,
+  "status": "INTERRUPTED / NON-CANDIDATE EVIDENCE",
+  "reason": "Human pause before dashboard_update completion, checker and final JSON; timing samples existed only in terminated process memory. Continuous equivalent resumption cannot be demonstrated.",
+  "preserved_database": ".tools\\quality\\v10-s5-paused\\run-2-interrupted.sqlite3",
+  "local_counts_at_resume": {
+    "questions_question": 20447,
+    "attempts_attempt": 200360,
+    "reviews_review": 200567
+  },
+  "measured_samples_recoverable": false,
+  "final_integrity_result": null,
+  "candidate": false,
+  "disposition": "Retain interrupted copy as evidence; remove only verified original disposable target. Repeat run 2 entirely on a new isolated database."
+}

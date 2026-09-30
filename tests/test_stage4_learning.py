@@ -2,6 +2,7 @@
 
 import uuid
 from datetime import UTC, date, datetime
+from unittest.mock import patch
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -384,3 +385,37 @@ def test_queue_context_loading_does_not_grow_with_item_count() -> None:
         list_review_queue(workspace_id=workspace.id, clock=clock)
 
     assert len(many_item_queries) == len(one_item_queries)
+
+
+@pytest.mark.django_db
+def test_queue_loads_only_requested_pages_and_preserves_section_totals() -> None:
+    workspace = _workspace("queue-bounded@example.test")
+    clock = FixedClock(Instant(datetime(2026, 9, 10, 2, tzinfo=UTC)))
+    groups = []
+    for section, due in enumerate((date(2026, 9, 8), date(2026, 9, 9), date(2026, 9, 10))):
+        entries = [
+            _learning(workspace, _question(workspace, f"bounded-{section}-{index}"), due)[2]
+            for index in range(4)
+        ]
+        groups.append(
+            sorted(entries, key=lambda item: (item.current_due_date, item.created_at, item.id))
+        )
+    with patch.object(Review, "from_db", wraps=Review.from_db) as loaded:
+        queue = list_review_queue(
+            workspace_id=workspace.id,
+            clock=clock,
+            page_size=2,
+            overdue_page=999,
+            due_page=2,
+            future_page=0,
+        )
+    assert loaded.call_count <= sum(
+        len(section.entries) for section in (queue.overdue, queue.due, queue.future)
+    )
+    assert [item.id for item in queue.overdue.entries] == [item.id for item in groups[0][2:]]
+    assert [item.id for item in queue.due.entries] == [item.id for item in groups[1][2:]]
+    assert [item.id for item in queue.future.entries] == [item.id for item in groups[2][:2]]
+    assert queue.overdue.page == queue.due.page == 2
+    assert queue.future.page == 1
+    assert queue.overdue.total == queue.due.total == queue.future.total == 4
+    assert queue.overdue.page_count == queue.due.page_count == queue.future.page_count == 2

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from modules.accounts.services import LOCAL_WORKSPACE_ID
 from modules.attempts.models import Attempt
 from modules.operations.integrity import run_integrity_check
 from modules.questions.models import Question
@@ -179,3 +180,7 @@ def test_reduced_run_uses_the_three_real_persistent_operations() -> None:
     assert result.read_benchmark is not None
     assert result.read_benchmark["status"] == "PASS"
     assert result.read_benchmark["pagination"]["status"] == "PASS"
+    assert Question.objects.filter(workspace_id=LOCAL_WORKSPACE_ID).count() == 15
+    assert Attempt.objects.filter(workspace_id=LOCAL_WORKSPACE_ID).count() == 103
+    assert Review.objects.filter(workspace_id=LOCAL_WORKSPACE_ID).count() == 106
+    assert run_integrity_check().total_findings == 0

@@ -1,0 +1,641 @@
+{
+  "kind": "DIAGNOSTIC RUN / CT-110 attempt",
+  "official_candidate": false,
+  "dataset": {
+    "seed": 20260909,
+    "question_count": 10000,
+    "attempt_count": 100000,
+    "review_count": 100000,
+    "taxonomy_per_level": 200,
+    "history_start": "2016-09-09",
+    "history_end": "2026-09-06",
+    "fingerprint": "bbcf0d7f:86f65f1c:f5685b47:4dadc580:1811fe37:c903e521:e1cd3577:86190d98"
+  },
+  "measurements": [
+    {
+      "sample": 1,
+      "wall_seconds_instrumented": 0.08224930008873343,
+      "cpu_seconds": 0.078125,
+      "query_count": 16,
+      "sql_execute_seconds": 0.005991900572553277,
+      "sql": [
+        {
+          "sql": "SELECT \"accounts_workspace\".\"id\", \"accounts_workspace\".\"owner_user_id\", \"accounts_workspace\".\"name\", \"accounts_workspace\".\"timezone_name\", \"accounts_workspace\".\"locale\", \"accounts_workspace\".\"lock_version\", \"accounts_workspace\".\"created_at\", \"accounts_workspace\".\"updated_at\" FROM \"accounts_workspace\" INNER JOIN \"accounts_user\" ON (\"accounts_workspace\".\"owner_user_id\" = \"accounts_user\".\"id\") WHERE (\"accounts_user\".\"status\" = %s AND \"accounts_workspace\".\"owner_user_id\" = %s AND \"accounts_workspace\".\"id\" = %s) ORDER BY \"accounts_workspace\".\"id\" ASC LIMIT 1",
+          "seconds": 0.00033909990452229977,
+          "parameters": 3,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "BEGIN",
+          "seconds": 4.2499974370002747e-05,
+          "parameters": 0,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "SELECT \"attempts_operationreceipt\".\"id\", \"attempts_operationreceipt\".\"workspace_id\", \"attempts_operationreceipt\".\"operation_kind\", \"attempts_operationreceipt\".\"idempotency_key\", \"attempts_operationreceipt\".\"request_hash\", \"attempts_operationreceipt\".\"result_entity_type\", \"attempts_operationreceipt\".\"result_entity_id\", \"attempts_operationreceipt\".\"created_at\" FROM \"attempts_operationreceipt\" WHERE (\"attempts_operationreceipt\".\"idempotency_key\" = %s AND \"attempts_operationreceipt\".\"operation_kind\" = %s AND \"attempts_operationreceipt\".\"workspace_id\" = %s) ORDER BY \"attempts_operationreceipt\".\"id\" ASC LIMIT 1",
+          "seconds": 0.0004430001135915518,
+          "parameters": 3,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "SELECT \"accounts_workspace\".\"id\", \"accounts_workspace\".\"owner_user_id\", \"accounts_workspace\".\"name\", \"accounts_workspace\".\"timezone_name\", \"accounts_workspace\".\"locale\", \"accounts_workspace\".\"lock_version\", \"accounts_workspace\".\"created_at\", \"accounts_workspace\".\"updated_at\" FROM \"accounts_workspace\" INNER JOIN \"accounts_user\" ON (\"accounts_workspace\".\"owner_user_id\" = \"accounts_user\".\"id\") WHERE (\"accounts_user\".\"status\" = %s AND \"accounts_workspace\".\"owner_user_id\" = %s AND \"accounts_workspace\".\"id\" = %s) ORDER BY \"accounts_workspace\".\"id\" ASC LIMIT 1",
+          "seconds": 9.290012530982494e-05,
+          "parameters": 3,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "SELECT \"questions_question\".\"id\", \"questions_question\".\"workspace_id\", \"questions_question\".\"discipline_id\", \"questions_question\".\"subject_id\", \"questions_question\".\"subsubject_id\", \"questions_question\".\"question_type\", \"questions_question\".\"status\", \"questions_question\".\"difficulty\", \"questions_question\".\"draft_title\", \"questions_question\".\"activated_at\", \"questions_question\".\"archived_at\", \"questions_question\".\"lock_version\", \"questions_question\".\"created_at\", \"questions_question\".\"updated_at\" FROM \"questions_question\" WHERE (\"questions_question\".\"id\" = %s AND \"questions_question\".\"status\" = %s AND \"questions_question\".\"workspace_id\" = %s) ORDER BY \"questions_question\".\"id\" ASC LIMIT 1",
+          "seconds": 0.0002405999694019556,
+          "parameters": 3,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT \"questions_questionrevision\".\"id\", \"questions_questionrevision\".\"workspace_id\", \"questions_questionrevision\".\"question_id\", \"questions_questionrevision\".\"version_number\", \"questions_questionrevision\".\"is_current\", \"questions_questionrevision\".\"stem\", \"questions_questionrevision\".\"explanation\", \"questions_questionrevision\".\"trap_note\", \"questions_questionrevision\".\"notes\", \"questions_questionrevision\".\"correct_alternative_id\", \"questions_questionrevision\".\"change_kind\", \"questions_questionrevision\".\"change_reason\", \"questions_questionrevision\".\"created_at\" FROM \"questions_questionrevision\" WHERE (\"questions_questionrevision\".\"is_current\" AND \"questions_questionrevision\".\"question_id\" = %s AND \"questions_questionrevision\".\"workspace_id\" = %s) ORDER BY \"questions_questionrevision\".\"id\" ASC LIMIT 1",
+          "seconds": 0.00036479998379945755,
+          "parameters": 2,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT %s AS \"a\" FROM \"attempts_attempt\" WHERE (\"attempts_attempt\".\"attempt_type\" = %s AND \"attempts_attempt\".\"question_id\" = %s AND \"attempts_attempt\".\"status\" = %s AND \"attempts_attempt\".\"workspace_id\" = %s) LIMIT 1",
+          "seconds": 0.00017650006338953972,
+          "parameters": 5,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "UPDATE \"questions_question\" SET \"lock_version\" = (\"questions_question\".\"lock_version\" + %s) WHERE (\"questions_question\".\"lock_version\" = %s AND \"questions_question\".\"id\" = %s AND \"questions_question\".\"status\" = %s AND \"questions_question\".\"workspace_id\" = %s)",
+          "seconds": 0.0023099000100046396,
+          "parameters": 5,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT %s AS \"a\" FROM \"attempts_attempt\" WHERE (\"attempts_attempt\".\"attempt_type\" = %s AND \"attempts_attempt\".\"question_id\" = %s AND \"attempts_attempt\".\"status\" = %s AND \"attempts_attempt\".\"workspace_id\" = %s) LIMIT 1",
+          "seconds": 0.0001533001195639372,
+          "parameters": 5,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT \"questions_question\".\"id\", \"questions_question\".\"workspace_id\" FROM \"questions_question\" WHERE \"questions_question\".\"id\" = %s ORDER BY \"questions_question\".\"id\" ASC LIMIT 1",
+          "seconds": 6.050011143088341e-05,
+          "parameters": 1,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT \"questions_questionrevision\".\"id\", \"questions_questionrevision\".\"workspace_id\", \"questions_questionrevision\".\"question_id\", \"questions_questionrevision\".\"correct_alternative_id\" FROM \"questions_questionrevision\" WHERE \"questions_questionrevision\".\"id\" = %s ORDER BY \"questions_questionrevision\".\"id\" ASC LIMIT 1",
+          "seconds": 0.00021500000730156898,
+          "parameters": 1,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "SELECT \"questions_alternative\".\"id\", \"questions_alternative\".\"workspace_id\", \"questions_alternative\".\"question_revision_id\" FROM \"questions_alternative\" WHERE \"questions_alternative\".\"id\" = %s ORDER BY \"questions_alternative\".\"id\" ASC LIMIT 1",
+          "seconds": 0.0002616001293063164,
+          "parameters": 1,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "INSERT INTO \"attempts_attempt\" (\"id\", \"workspace_id\", \"question_id\", \"question_revision_id\", \"review_id\", \"attempt_type\", \"selected_alternative_id\", \"is_correct\", \"perceived_ease\", \"occurred_at\", \"timezone_name\", \"local_date\", \"status\", \"replaces_attempt_id\", \"voided_at\", \"void_reason\", \"idempotency_key\", \"created_at\") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+          "seconds": 0.000893699936568737,
+          "parameters": 18,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT \"attempts_attempt\".\"id\", \"attempts_attempt\".\"workspace_id\" FROM \"attempts_attempt\" WHERE \"attempts_attempt\".\"id\" = %s ORDER BY \"attempts_attempt\".\"id\" ASC LIMIT 1",
+          "seconds": 0.00013440009206533432,
+          "parameters": 1,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "INSERT INTO \"attempts_operationreceipt\" (\"id\", \"workspace_id\", \"operation_kind\", \"idempotency_key\", \"request_hash\", \"result_entity_type\", \"result_entity_id\", \"created_at\") VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+          "seconds": 0.000264100031927228,
+          "parameters": 8,
+          "target_question_in_parameters": false
+        }
+      ],
+      "memory_peak_bytes_instrumented": 219051,
+      "gc_collections": [
+        2,
+        0,
+        0
+      ],
+      "profile_cumulative": [
+        {
+          "file": "C:\\src\\Projeto\\src\\shared\\application\\bcr1.py",
+          "line": 621,
+          "function": "<lambda>",
+          "calls": 1,
+          "own_seconds": 1.5300000000000003e-05,
+          "cumulative_seconds": 0.0817939
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 163,
+          "function": "confirm",
+          "calls": 1,
+          "own_seconds": 7.65e-05,
+          "cumulative_seconds": 0.0817786
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 209,
+          "function": "_persist",
+          "calls": 1,
+          "own_seconds": 1.81e-05,
+          "cumulative_seconds": 0.0731977
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\persistence.py",
+          "line": 35,
+          "function": "run_sqlite_critical_write",
+          "calls": 1,
+          "own_seconds": 5.3e-06,
+          "cumulative_seconds": 0.0722055
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 186,
+          "function": "<lambda>",
+          "calls": 1,
+          "own_seconds": 1.72e-05,
+          "cumulative_seconds": 0.0722002
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 279,
+          "function": "_correct",
+          "calls": 1,
+          "own_seconds": 5.3500000000000006e-05,
+          "cumulative_seconds": 0.07218300000000001
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1099,
+          "function": "first",
+          "calls": 9,
+          "own_seconds": 0.0001308,
+          "cumulative_seconds": 0.0371755
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\compiler.py",
+          "line": 1593,
+          "function": "execute_sql",
+          "calls": 12,
+          "own_seconds": 0.0004269,
+          "cumulative_seconds": 0.0369159
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 371,
+          "function": "__iter__",
+          "calls": 9,
+          "own_seconds": 2.05e-05,
+          "cumulative_seconds": 0.0348969
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1952,
+          "function": "_fetch_all",
+          "calls": 9,
+          "own_seconds": 0.0002456,
+          "cumulative_seconds": 0.0348638
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 87,
+          "function": "__iter__",
+          "calls": 17,
+          "own_seconds": 0.0005674,
+          "cumulative_seconds": 0.0346155
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\manager.py",
+          "line": 85,
+          "function": "manager_method",
+          "calls": 16,
+          "own_seconds": 0.0001408,
+          "cumulative_seconds": 0.0345233
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 234,
+          "function": "_lock",
+          "calls": 1,
+          "own_seconds": 7.52e-05,
+          "cumulative_seconds": 0.033693100000000004
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 126,
+          "function": "context",
+          "calls": 2,
+          "own_seconds": 6.86e-05,
+          "cumulative_seconds": 0.030633800000000003
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\compiler.py",
+          "line": 755,
+          "function": "as_sql",
+          "calls": 11,
+          "own_seconds": 0.0029502,
+          "cumulative_seconds": 0.0270191
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 649,
+          "function": "create",
+          "calls": 2,
+          "own_seconds": 4.49e-05,
+          "cumulative_seconds": 0.021002700000000003
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\compiler.py",
+          "line": 79,
+          "function": "pre_sql_setup",
+          "calls": 11,
+          "own_seconds": 0.00021820000000000002,
+          "cumulative_seconds": 0.017004000000000002
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 251,
+          "function": "_create_attempt",
+          "calls": 1,
+          "own_seconds": 3.55e-05,
+          "cumulative_seconds": 0.0156499
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1489,
+          "function": "filter",
+          "calls": 12,
+          "own_seconds": 3.4e-05,
+          "cumulative_seconds": 0.015425500000000002
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1505,
+          "function": "_filter_or_exclude",
+          "calls": 12,
+          "own_seconds": 5.81e-05,
+          "cumulative_seconds": 0.015369200000000001
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\models.py",
+          "line": 209,
+          "function": "save",
+          "calls": 1,
+          "own_seconds": 2.72e-05,
+          "cumulative_seconds": 0.0147039
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1516,
+          "function": "_filter_or_exclude_inplace",
+          "calls": 12,
+          "own_seconds": 0.0001832,
+          "cumulative_seconds": 0.014020300000000001
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\query.py",
+          "line": 1630,
+          "function": "add_q",
+          "calls": 12,
+          "own_seconds": 0.0001106,
+          "cumulative_seconds": 0.013591
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 67,
+          "function": "_current",
+          "calls": 1,
+          "own_seconds": 6e-05,
+          "cumulative_seconds": 0.013548300000000001
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\query.py",
+          "line": 1659,
+          "function": "_add_q",
+          "calls": 12,
+          "own_seconds": 0.0003947,
+          "cumulative_seconds": 0.0133845
+        }
+      ],
+      "persisted_attempts_for_target": 1
+    },
+    {
+      "sample": 2,
+      "wall_seconds_instrumented": 0.0741113000549376,
+      "cpu_seconds": 0.078125,
+      "query_count": 16,
+      "sql_execute_seconds": 0.004591599805280566,
+      "sql": [
+        {
+          "sql": "SELECT \"accounts_workspace\".\"id\", \"accounts_workspace\".\"owner_user_id\", \"accounts_workspace\".\"name\", \"accounts_workspace\".\"timezone_name\", \"accounts_workspace\".\"locale\", \"accounts_workspace\".\"lock_version\", \"accounts_workspace\".\"created_at\", \"accounts_workspace\".\"updated_at\" FROM \"accounts_workspace\" INNER JOIN \"accounts_user\" ON (\"accounts_workspace\".\"owner_user_id\" = \"accounts_user\".\"id\") WHERE (\"accounts_user\".\"status\" = %s AND \"accounts_workspace\".\"owner_user_id\" = %s AND \"accounts_workspace\".\"id\" = %s) ORDER BY \"accounts_workspace\".\"id\" ASC LIMIT 1",
+          "seconds": 0.0003670998848974705,
+          "parameters": 3,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "BEGIN",
+          "seconds": 1.619989052414894e-05,
+          "parameters": 0,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "SELECT \"attempts_operationreceipt\".\"id\", \"attempts_operationreceipt\".\"workspace_id\", \"attempts_operationreceipt\".\"operation_kind\", \"attempts_operationreceipt\".\"idempotency_key\", \"attempts_operationreceipt\".\"request_hash\", \"attempts_operationreceipt\".\"result_entity_type\", \"attempts_operationreceipt\".\"result_entity_id\", \"attempts_operationreceipt\".\"created_at\" FROM \"attempts_operationreceipt\" WHERE (\"attempts_operationreceipt\".\"idempotency_key\" = %s AND \"attempts_operationreceipt\".\"operation_kind\" = %s AND \"attempts_operationreceipt\".\"workspace_id\" = %s) ORDER BY \"attempts_operationreceipt\".\"id\" ASC LIMIT 1",
+          "seconds": 0.0004914000164717436,
+          "parameters": 3,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "SELECT \"accounts_workspace\".\"id\", \"accounts_workspace\".\"owner_user_id\", \"accounts_workspace\".\"name\", \"accounts_workspace\".\"timezone_name\", \"accounts_workspace\".\"locale\", \"accounts_workspace\".\"lock_version\", \"accounts_workspace\".\"created_at\", \"accounts_workspace\".\"updated_at\" FROM \"accounts_workspace\" INNER JOIN \"accounts_user\" ON (\"accounts_workspace\".\"owner_user_id\" = \"accounts_user\".\"id\") WHERE (\"accounts_user\".\"status\" = %s AND \"accounts_workspace\".\"owner_user_id\" = %s AND \"accounts_workspace\".\"id\" = %s) ORDER BY \"accounts_workspace\".\"id\" ASC LIMIT 1",
+          "seconds": 0.00014150002971291542,
+          "parameters": 3,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "SELECT \"questions_question\".\"id\", \"questions_question\".\"workspace_id\", \"questions_question\".\"discipline_id\", \"questions_question\".\"subject_id\", \"questions_question\".\"subsubject_id\", \"questions_question\".\"question_type\", \"questions_question\".\"status\", \"questions_question\".\"difficulty\", \"questions_question\".\"draft_title\", \"questions_question\".\"activated_at\", \"questions_question\".\"archived_at\", \"questions_question\".\"lock_version\", \"questions_question\".\"created_at\", \"questions_question\".\"updated_at\" FROM \"questions_question\" WHERE (\"questions_question\".\"id\" = %s AND \"questions_question\".\"status\" = %s AND \"questions_question\".\"workspace_id\" = %s) ORDER BY \"questions_question\".\"id\" ASC LIMIT 1",
+          "seconds": 0.0001691998913884163,
+          "parameters": 3,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT \"questions_questionrevision\".\"id\", \"questions_questionrevision\".\"workspace_id\", \"questions_questionrevision\".\"question_id\", \"questions_questionrevision\".\"version_number\", \"questions_questionrevision\".\"is_current\", \"questions_questionrevision\".\"stem\", \"questions_questionrevision\".\"explanation\", \"questions_questionrevision\".\"trap_note\", \"questions_questionrevision\".\"notes\", \"questions_questionrevision\".\"correct_alternative_id\", \"questions_questionrevision\".\"change_kind\", \"questions_questionrevision\".\"change_reason\", \"questions_questionrevision\".\"created_at\" FROM \"questions_questionrevision\" WHERE (\"questions_questionrevision\".\"is_current\" AND \"questions_questionrevision\".\"question_id\" = %s AND \"questions_questionrevision\".\"workspace_id\" = %s) ORDER BY \"questions_questionrevision\".\"id\" ASC LIMIT 1",
+          "seconds": 0.00033469987101852894,
+          "parameters": 2,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT %s AS \"a\" FROM \"attempts_attempt\" WHERE (\"attempts_attempt\".\"attempt_type\" = %s AND \"attempts_attempt\".\"question_id\" = %s AND \"attempts_attempt\".\"status\" = %s AND \"attempts_attempt\".\"workspace_id\" = %s) LIMIT 1",
+          "seconds": 0.00019820011220872402,
+          "parameters": 5,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "UPDATE \"questions_question\" SET \"lock_version\" = (\"questions_question\".\"lock_version\" + %s) WHERE (\"questions_question\".\"lock_version\" = %s AND \"questions_question\".\"id\" = %s AND \"questions_question\".\"status\" = %s AND \"questions_question\".\"workspace_id\" = %s)",
+          "seconds": 0.000969200162217021,
+          "parameters": 5,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT %s AS \"a\" FROM \"attempts_attempt\" WHERE (\"attempts_attempt\".\"attempt_type\" = %s AND \"attempts_attempt\".\"question_id\" = %s AND \"attempts_attempt\".\"status\" = %s AND \"attempts_attempt\".\"workspace_id\" = %s) LIMIT 1",
+          "seconds": 0.00019739987328648567,
+          "parameters": 5,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT \"questions_question\".\"id\", \"questions_question\".\"workspace_id\" FROM \"questions_question\" WHERE \"questions_question\".\"id\" = %s ORDER BY \"questions_question\".\"id\" ASC LIMIT 1",
+          "seconds": 9.150011464953423e-05,
+          "parameters": 1,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT \"questions_questionrevision\".\"id\", \"questions_questionrevision\".\"workspace_id\", \"questions_questionrevision\".\"question_id\", \"questions_questionrevision\".\"correct_alternative_id\" FROM \"questions_questionrevision\" WHERE \"questions_questionrevision\".\"id\" = %s ORDER BY \"questions_questionrevision\".\"id\" ASC LIMIT 1",
+          "seconds": 0.00016449997201561928,
+          "parameters": 1,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "SELECT \"questions_alternative\".\"id\", \"questions_alternative\".\"workspace_id\", \"questions_alternative\".\"question_revision_id\" FROM \"questions_alternative\" WHERE \"questions_alternative\".\"id\" = %s ORDER BY \"questions_alternative\".\"id\" ASC LIMIT 1",
+          "seconds": 0.00010439986363053322,
+          "parameters": 1,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "INSERT INTO \"attempts_attempt\" (\"id\", \"workspace_id\", \"question_id\", \"question_revision_id\", \"review_id\", \"attempt_type\", \"selected_alternative_id\", \"is_correct\", \"perceived_ease\", \"occurred_at\", \"timezone_name\", \"local_date\", \"status\", \"replaces_attempt_id\", \"voided_at\", \"void_reason\", \"idempotency_key\", \"created_at\") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+          "seconds": 0.0009818999096751213,
+          "parameters": 18,
+          "target_question_in_parameters": true
+        },
+        {
+          "sql": "SELECT \"attempts_attempt\".\"id\", \"attempts_attempt\".\"workspace_id\" FROM \"attempts_attempt\" WHERE \"attempts_attempt\".\"id\" = %s ORDER BY \"attempts_attempt\".\"id\" ASC LIMIT 1",
+          "seconds": 0.00010380009189248085,
+          "parameters": 1,
+          "target_question_in_parameters": false
+        },
+        {
+          "sql": "INSERT INTO \"attempts_operationreceipt\" (\"id\", \"workspace_id\", \"operation_kind\", \"idempotency_key\", \"request_hash\", \"result_entity_type\", \"result_entity_id\", \"created_at\") VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+          "seconds": 0.000260600121691823,
+          "parameters": 8,
+          "target_question_in_parameters": false
+        }
+      ],
+      "memory_peak_bytes_instrumented": 155741,
+      "gc_collections": [
+        1,
+        0,
+        0
+      ],
+      "profile_cumulative": [
+        {
+          "file": "C:\\src\\Projeto\\src\\shared\\application\\bcr1.py",
+          "line": 621,
+          "function": "<lambda>",
+          "calls": 1,
+          "own_seconds": 8.900000000000001e-06,
+          "cumulative_seconds": 0.0739467
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 163,
+          "function": "confirm",
+          "calls": 1,
+          "own_seconds": 2.65e-05,
+          "cumulative_seconds": 0.0739378
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 209,
+          "function": "_persist",
+          "calls": 1,
+          "own_seconds": 1.2400000000000002e-05,
+          "cumulative_seconds": 0.067429
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\persistence.py",
+          "line": 35,
+          "function": "run_sqlite_critical_write",
+          "calls": 1,
+          "own_seconds": 2.2e-06,
+          "cumulative_seconds": 0.0664299
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 186,
+          "function": "<lambda>",
+          "calls": 1,
+          "own_seconds": 1.08e-05,
+          "cumulative_seconds": 0.0664277
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 279,
+          "function": "_correct",
+          "calls": 1,
+          "own_seconds": 3.77e-05,
+          "cumulative_seconds": 0.0664169
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1099,
+          "function": "first",
+          "calls": 9,
+          "own_seconds": 0.00010910000000000001,
+          "cumulative_seconds": 0.0368193
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\compiler.py",
+          "line": 1593,
+          "function": "execute_sql",
+          "calls": 12,
+          "own_seconds": 0.0003287,
+          "cumulative_seconds": 0.036099
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 234,
+          "function": "_lock",
+          "calls": 1,
+          "own_seconds": 8.290000000000001e-05,
+          "cumulative_seconds": 0.034443800000000004
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 371,
+          "function": "__iter__",
+          "calls": 9,
+          "own_seconds": 1.7e-05,
+          "cumulative_seconds": 0.0343673
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1952,
+          "function": "_fetch_all",
+          "calls": 9,
+          "own_seconds": 0.0001817,
+          "cumulative_seconds": 0.0343411
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 87,
+          "function": "__iter__",
+          "calls": 17,
+          "own_seconds": 0.00048770000000000004,
+          "cumulative_seconds": 0.0341575
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\manager.py",
+          "line": 85,
+          "function": "manager_method",
+          "calls": 16,
+          "own_seconds": 0.00015670000000000001,
+          "cumulative_seconds": 0.0334264
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 126,
+          "function": "context",
+          "calls": 2,
+          "own_seconds": 3.8100000000000005e-05,
+          "cumulative_seconds": 0.031125600000000003
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\compiler.py",
+          "line": 755,
+          "function": "as_sql",
+          "calls": 11,
+          "own_seconds": 0.0030728,
+          "cumulative_seconds": 0.028321100000000002
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 649,
+          "function": "create",
+          "calls": 2,
+          "own_seconds": 6.65e-05,
+          "cumulative_seconds": 0.0198065
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\compiler.py",
+          "line": 79,
+          "function": "pre_sql_setup",
+          "calls": 11,
+          "own_seconds": 0.00021600000000000002,
+          "cumulative_seconds": 0.0177603
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1489,
+          "function": "filter",
+          "calls": 12,
+          "own_seconds": 3.19e-05,
+          "cumulative_seconds": 0.0155393
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1505,
+          "function": "_filter_or_exclude",
+          "calls": 12,
+          "own_seconds": 4.9600000000000006e-05,
+          "cumulative_seconds": 0.0154865
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 251,
+          "function": "_create_attempt",
+          "calls": 1,
+          "own_seconds": 4.58e-05,
+          "cumulative_seconds": 0.0145701
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\services.py",
+          "line": 67,
+          "function": "_current",
+          "calls": 1,
+          "own_seconds": 4.53e-05,
+          "cumulative_seconds": 0.0143896
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\query.py",
+          "line": 1516,
+          "function": "_filter_or_exclude_inplace",
+          "calls": 12,
+          "own_seconds": 0.0001678,
+          "cumulative_seconds": 0.0142815
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\query.py",
+          "line": 1630,
+          "function": "add_q",
+          "calls": 12,
+          "own_seconds": 0.00011430000000000001,
+          "cumulative_seconds": 0.0138954
+        },
+        {
+          "file": "C:\\src\\Projeto\\.venv\\Lib\\site-packages\\django\\db\\models\\sql\\query.py",
+          "line": 1659,
+          "function": "_add_q",
+          "calls": 12,
+          "own_seconds": 0.00040570000000000005,
+          "cumulative_seconds": 0.0136889
+        },
+        {
+          "file": "C:\\src\\Projeto\\src\\modules\\attempts\\models.py",
+          "line": 209,
+          "function": "save",
+          "calls": 1,
+          "own_seconds": 2.43e-05,
+          "cumulative_seconds": 0.013686
+        }
+      ],
+      "persisted_attempts_for_target": 1
+    }
+  ],
+  "counts": {
+    "primary_questions": 10002,
+    "primary_attempts": 100002
+  },
+  "notes": [
+    "Fixture and preparation excluded.",
+    "Profiling/tracemalloc overhead is included; these timings are not CT-107 percentile evidence.",
+    "Question-specific SQL parameters are flagged, with complete statements retained for scope inspection."
+  ]
+}

@@ -7,17 +7,17 @@ from dataclasses import dataclass
 from datetime import datetime
 from math import ceil
 
-from django.db.models import Prefetch, QuerySet
+from django.db.models import Count, Prefetch, Q, QuerySet
 
 from modules.accounts.models import Workspace
 from modules.attempts.models import Attempt
 from modules.errors.models import ErrorClassification, ErrorClassificationRevision
 from modules.operations.models import AuditEvent, AuditEventCode
 from modules.questions.models import Question, QuestionRevision, QuestionStatus
-from shared.domain.time import Calendar, Clock, LocalDate, SystemClock, TimeZoneId
+from shared.domain.time import Calendar, Clock, SystemClock, TimeZoneId
 
 from .models import Review, ReviewCycle, ReviewCycleState, ReviewState
-from .policies import ReviewStatusPolicy, ReviewStructuralState, ReviewTemporalStatus
+from .policies import ReviewStatusPolicy
 
 
 @dataclass(frozen=True, slots=True)
@@ -52,13 +52,15 @@ class TimelineEvent:
     correction_available: bool = False
 
 
-def _section(entries: list[Review], page: int, page_size: int) -> ReviewQueueSection:
+def _section(
+    entries: QuerySet[Review], *, total: int, page: int, page_size: int
+) -> ReviewQueueSection:
     valid_page = max(1, page)
-    pages = max(1, ceil(len(entries) / page_size))
+    pages = max(1, ceil(total / page_size))
     valid_page = min(valid_page, pages)
     start = (valid_page - 1) * page_size
     return ReviewQueueSection(
-        tuple(entries[start : start + page_size]), valid_page, pages, len(entries)
+        tuple(entries[start : start + page_size]) if total else (), valid_page, pages, total
     )
 
 
@@ -75,13 +77,9 @@ def list_review_queue(
     if page_size < 1:
         raise ValueError("page_size deve ser positivo.")
     workspace = Workspace.objects.get(pk=workspace_id)
-    policy = ReviewStatusPolicy(
-        clock=clock or SystemClock(), calendar=Calendar(clock or SystemClock())
-    )
-    # A policy usa o Clock somente para tempo civil; mantenha uma fonte única por consulta.
-    if clock is None:
-        source = SystemClock()
-        policy = ReviewStatusPolicy(clock=source, calendar=Calendar(source))
+    source = clock or SystemClock()
+    policy = ReviewStatusPolicy(clock=source, calendar=Calendar(source))
+    today = policy.reference_date(TimeZoneId(workspace.timezone_name)).value
     reviews: QuerySet[Review] = (
         Review.objects.filter(
             workspace_id=workspace_id,
@@ -106,24 +104,33 @@ def list_review_queue(
         )
         .order_by("current_due_date", "created_at", "id")
     )
-    groups: dict[ReviewTemporalStatus, list[Review]] = {
-        ReviewTemporalStatus.OVERDUE: [],
-        ReviewTemporalStatus.DUE: [],
-        ReviewTemporalStatus.FUTURE: [],
+    conditions = {
+        "overdue": Q(current_due_date__lt=today),
+        "due": Q(current_due_date=today),
+        "future": Q(current_due_date__gt=today),
     }
-    zone = TimeZoneId(workspace.timezone_name)
-    for review in reviews:
-        status = policy.evaluate(
-            structural_state=ReviewStructuralState(review.state),
-            current_due_date=LocalDate(review.current_due_date),
-            time_zone_id=zone,
-        )
-        if status in groups:
-            groups[status].append(review)
+    totals = reviews.aggregate(
+        **{name: Count("id", filter=condition) for name, condition in conditions.items()}
+    )
     return ReviewQueue(
-        overdue=_section(groups[ReviewTemporalStatus.OVERDUE], overdue_page, page_size),
-        due=_section(groups[ReviewTemporalStatus.DUE], due_page, page_size),
-        future=_section(groups[ReviewTemporalStatus.FUTURE], future_page, page_size),
+        overdue=_section(
+            reviews.filter(conditions["overdue"]),
+            total=totals["overdue"],
+            page=overdue_page,
+            page_size=page_size,
+        ),
+        due=_section(
+            reviews.filter(conditions["due"]),
+            total=totals["due"],
+            page=due_page,
+            page_size=page_size,
+        ),
+        future=_section(
+            reviews.filter(conditions["future"]),
+            total=totals["future"],
+            page=future_page,
+            page_size=page_size,
+        ),
     )
 
 

@@ -2,6 +2,14 @@
 
 ## Estado atual
 
+- Estado V1 após o fechamento de `V1.0-S5` (30/09/2026): S1–S5 concluídas.
+  S5 `S5_COMPLETED`: BCR-1 final PASS nos três runs (FAIL inicial preservado),
+  BCR-2 PASS nos três runs válidos, CT-105–112 PASS e integridade aprovada;
+  S5-F02 resolvido por S2R1 (urllib3 2.8.0, auditoria limpa). Gate final elegível
+  GREEN, exit 0 (512 testes, 86.4013%, sem migration); A8 standard APPROVED;
+  Blocker 0 / Major 0 / Minor 0. `tasks/current.md` = `NO_TASK_AUTHORIZED`;
+  contrato arquivado em `tasks/completed/v10-s5-performance-bcr.md`.
+  S6–S10 `NOT AUTHORIZED`; migration `NO`.
 - Pós-release V0.5.0: V0.5 permanece `PROMOTION_APPROVED` e S10
   `COMPLETED`. A tag anotada publicada `v0.5.0` aponta para
   `d24cde1d3c25f7ff0e23306ce7e15e7ea85fd228`; o GitHub Pre-release
@@ -32,7 +40,7 @@
   `quality/v10-s3-regression-security-result.md`; contrato arquivado em
   `tasks/completed/v10-s3-regression-security.md`. S4/S5/S6 **NOT AUTHORIZED**;
   nenhuma promoção, tag ou release V1.
-- Estado V1 atual: S1–S4 concluídas; V1.0-S4 encerrou como
+- Registro de fechamento S4 e checkpoint S5 anterior à S2R1: S1–S4 concluídas; V1.0-S4 encerrou como
   **`S4_COMPLETED`** em 29 de setembro de 2026. A evidência manual anterior
   cobre dez jornadas, teclado/foco/forms/labels/erros/zoom/Narrator e os quatro
   viewports responsivos. O responsável complementou a sessão Brave 1.96.59
@@ -44,8 +52,29 @@
   `quality/v10-s4-accessibility-browser-usability-result.md`, política em
   `docs/V1.0_Adendo_V10-D2_Matriz_de_Browsers_S4.md` e contrato em
   `tasks/completed/v10-s4-accessibility-browser-usability.md`. Nenhuma
-  migration, mudança funcional, feature ou redesign; S5/S6 seguem
-  **NOT AUTHORIZED**.
+  migration, mudança funcional, feature ou redesign foi feita na S4. O contrato
+  ativo `V1.0-S5` em `tasks/current.md` está **AUTHORIZED / IN EXECUTION / AWAITING FORMAL CLOSURE** após S2R1; S5-F02 está resolvido. A retomada humana de 30/09/2026 e a pausa anterior permanecem no histórico.
+  O BCR-1 oficial terminou `FAIL` (exit 1): dashboard p95 excedeu 3 s nos
+  runs 1 e 3; CT-107 passou nos três. Escalonamento requerido:
+  `MODEL_ESCALATION_REQUIRED: GPT-6.1 Sol Medium` no checkpoint inicial.
+  A retomada autorizada já usa esse modelo; profiling e correções locais de
+  analytics/fila foram feitos, com 79 testes focados PASS. BCR-1 final PASS nos três runs, exit 0;
+  CT-110 perfilado; BCR-2 run 1 completa/PASS (25 checks/zero findings). Run 2
+  interrompida sem JSON final: conclusão alegada no pedido não verificável.
+  Retomada parcial não válida: amostras apenas em memória. Run 2 refeita
+  completa/PASS em banco novo, exit 0, contagens exatas/checker 25/0; Run 3
+  completa/PASS. BCR-2 três runs válidas, CT-105–112 PASS; gate RED (pip-audit urllib3), A8 CHANGES REQUIRED; fechamento bloqueado. Nenhuma migration foi criada.
+  Evidências: `quality/v10-s5-bcr1-result.json` e
+  `quality/v10-s5-performance-bcr-result.md`. S6, S7, S8, S9 e S10 permanecem
+  **NOT AUTHORIZED**. Gate final RED, exit 1: 512 testes PASS, cobertura
+  86,4013%; pip-audit detectou três vulnerabilidades em urllib3 2.7.0.
+  A8 standard CHANGES REQUIRED; Blocker 0/Major 1/Minor 0, finding S5-F02
+  aberto (auditoria de dependência dev preexistente). Nenhum lock/dependência
+  foi alterado; tarefa não arquivada. Baseline S5: `e3357d26e9c0165617bed221732fabe2db042995`.
+  Exceção administrativa pré-execução: working tree permitida somente com as
+  alterações intencionais em `tasks/current.md` e `PROJECT_STATE.md`; qualquer
+  terceiro arquivo modificado bloqueia os benchmarks. HEAD deve ser igual a
+  `origin/main` e ao baseline acima.
   O registro acima preserva o estado histórico existente no fechamento da S3.
 - Produto: V0.4 **PROMOTED** em 19 de setembro de 2026; a tag histórica
   `v0.4.0` permanece inalterada.
@@ -156,10 +185,27 @@
   aprovada no gate; no fechamento S10 ainda não havia tag, release ou
   publicação. A publicação externa posterior está registrada no estado atual
   acima. Evidência em `quality/v05-s10-controlled-pilot-result.md`.
-- Etapa de implementação atual: nenhuma tarefa autorizada;
-  `tasks/current.md` está em `NO_TASK_AUTHORIZED`. S5/S6 permanecem
+- Checkpoint histórico imediatamente anterior à remediação: `V1.0-S5` estava **AUTHORIZED / BLOCKED / RETOMÁVEL**
+  no contrato S5 preservado em `tasks/paused/v10-s5-performance-bcr.md`, com baseline
+  `e3357d26e9c0165617bed221732fabe2db042995`. O BCR-1 oficial terminou FAIL;
+  a execução foi interrompida antes de BCR-2, testes S5, gate, A8 e qualquer
+  alteração de código na primeira execução. A retomada humana usa
+  `GPT-6.1 Sol Medium` para profiling do FAIL preservado; gargalos medidos,
+  correções locais em analytics/fila e 79 testes focados aprovados. BCR-1
+  final PASS nos três runs, exit 0; CT-110 perfilado. No checkpoint da pausa,
+  BCR-2 tinha run 1 PASS (25/0), run 2 interrompida e run 3 não iniciada;
+  essa condição histórica foi superada pela retomada registrada abaixo.
+  Na pausa, processos foram parados e guard temporário liberado; não há órfãos.
+  Retomada humana: Run 2 refeita completa/PASS (exit 0, checker 25/0); parcial
+  não candidata preservada em `quality/v10-s5-bcr2-run-2-interrupted.json`.
+  Run 3 completa/PASS; BCR-2 três runs válidas, CT-105–112 PASS; gate RED (pip-audit urllib3), A8 CHANGES REQUIRED; fechamento bloqueado.
+  Run 1 preservada em `quality/v10-s5-bcr2-run-1-result.json`; banco sintético
+  interrompido retido em `.tools/quality/v10-s5-paused/run-2-interrupted.sqlite3`.
+  Nenhuma migration foi criada. S6, S7, S8, S9 e S10 permanecem
   **NOT AUTHORIZED**.
-- P0/P1 aplicável aberto: nenhum.
+- P0/P1 aplicável: S5-F01 histórico resolvido por BCR-1 final PASS; S5-F02
+  resolvido em S2R1 pelo lock urllib3 2.8.0 e auditoria limpa. Gate integral e
+  A8 standard de S2R1 GREEN/APPROVED; S5 ainda aguarda fechamento formal.
 - V0.4: S1–S9 concluídas e promoção documental registrada.
 - V0.5: P0, S1, S2A–S2D e S3–S10 concluídas; beta aprovada
   documentalmente e publicada como pre-release `v0.5.0`. Na ocasião do
@@ -167,6 +213,20 @@
   não estava autorizada; o encerramento posterior do P0 está registrado acima.
 
 ## Última validação
+
+Checkpoint V1.0-S5 anterior à S2R1 (30/09/2026): BCR-1 final PASS preservado; BCR-2 três runs válidas
+PASS, dataset 2×, contagens exatas e checker 25/0 em cada run. CT-105–112 PASS.
+Gate integral final RED, exit 1: 512 testes PASS em 222,71 s, cobertura 86,4013%,
+controles/migrations PASS; pip-audit encontrou três vulnerabilidades em urllib3
+2.7.0. A8 standard CHANGES REQUIRED; S5-F02 Major aberto. S5 permanece
+AUTHORIZED / BLOCKED / RETOMÁVEL, sem arquivar. Evidência em
+`quality/v10-s5-performance-bcr-result.md` e `quality/v10-s5-pip-audit-result.json`.
+Nenhuma alteração de dependência, código ou migration nesta retomada.
+
+V1.0-S2R1 concluída: somente uv.lock mudou para urllib3 2.8.0; sync e
+pip-audit limpos; gate GREEN/exit 0, 512 testes, cobertura 86.4013%, migrations
+sem mudanças; A8 standard APPROVED, Blocker/Major/Minor 0. BCRs não foram
+repetidos. S5 foi restaurada para fechamento formal separado; S6+ NOT AUTHORIZED.
 
 V1.0-S4: concluída em 29 de setembro de 2026. A HME do responsável preserva
 dez jornadas, teclado/foco/forms/labels/erros/zoom 200%/estados/Narrator e
@@ -545,7 +605,11 @@ baseline V0.3, Architecture v1.0 ou gate.
   `docs/V1.0_Adendo_V10-D2_Matriz_de_Browsers_S4.md` e
   `tasks/completed/v10-s4-accessibility-browser-usability.md`: evidência manual,
   browser V1 validado, A8 standard, gate e encerramento S4.
-- `tasks/current.md`: autoridade corrente; `NO_TASK_AUTHORIZED`.
+- `tasks/current.md`: `NO_TASK_AUTHORIZED`. Contrato S5 concluído em
+  `tasks/completed/v10-s5-performance-bcr.md`; evidência final em
+  `quality/v10-s5-performance-bcr-result.md`. S2R1 permanece arquivada em
+  `tasks/completed/v10-s2r1-dependency-security-remediation.md`; cópia do
+  contrato S5 pré-remediação preservada em `tasks/paused/v10-s5-performance-bcr.md`.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
 `quality/` e contratos em `tasks/completed/`; este arquivo registra somente o
@@ -553,6 +617,8 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Próximo passo possível: nenhum está autorizado. S5/S6 requerem decisão e
-contrato `AUTHORIZED` próprios em `tasks/current.md`; não foram iniciadas nesta
-retomada. Nenhum commit, push, tag ou release foi autorizado.
+Nenhuma tarefa está autorizada: `tasks/current.md` = `NO_TASK_AUTHORIZED`.
+V1.0-S1–S5 estão concluídas; o contrato S5 e sua evidência estão arquivados.
+S6–S10 permanecem `NOT AUTHORIZED` e exigem autorização humana persistida em
+novo contrato antes de qualquer execução. Migration NO; sem commit, push, tag
+ou release.

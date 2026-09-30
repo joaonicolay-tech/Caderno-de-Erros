@@ -5,6 +5,7 @@ from collections.abc import Callable
 from contextlib import AbstractContextManager
 from datetime import UTC, date, datetime
 from decimal import Decimal
+from unittest.mock import patch
 
 import pytest
 
@@ -414,3 +415,25 @@ def test_cycle_status_is_exclusive_reconciled_and_workspace_scoped() -> None:
     assert list(service.cycle_status_drilldown(status=CycleStatus.CYCLE_COMPLETED)) == [completed]
     assert list(service.cycle_status_drilldown(status=CycleStatus.WITHOUT_CYCLE)) == [without_cycle]
     assert completed_review.state == ReviewState.COMPLETED
+
+
+@pytest.mark.django_db
+def test_performance_pair_work_does_not_grow_with_unperformed_questions() -> None:
+    workspace = _workspace("analytics-bounded@example.test")
+    discipline, subject = _taxonomy(workspace, "Populated")
+    _taxonomy(workspace, "Empty")
+    question = _question(workspace, discipline, subject, "performed")
+    _attempt(workspace, question, correct=True, local_date=date(2026, 9, 9))
+    service = AnalyticsService(workspace_id=workspace.id)
+    with patch.object(Question, "from_db", wraps=Question.from_db) as first_loaded:
+        expected = service.performance_pair()
+    for index in range(5):
+        _question(workspace, discipline, subject, str(index))
+    with patch.object(Question, "from_db", wraps=Question.from_db) as many_loaded:
+        actual = service.performance_pair()
+    assert actual == expected
+    assert actual == (
+        service.performance(level=PerformanceLevel.DISCIPLINE),
+        service.performance(level=PerformanceLevel.SUBJECT),
+    )
+    assert many_loaded.call_count == first_loaded.call_count
