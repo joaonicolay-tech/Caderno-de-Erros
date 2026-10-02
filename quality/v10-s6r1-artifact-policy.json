@@ -1,0 +1,11 @@
+{
+  "task": "V1.0-S6R1",
+  "registered_before_tests": true,
+  "procedure": "docs/operations/temporary-test-evidence.md",
+  "essential_CP01_F01_F04_valid_and_roundtrip": "DESIGNATED_FOR_RETENTION; fresh never-reused roots; raw SQLite/ZIP/results and local harness/scripts kept outside Git; hashes captured and protected copies before any cleanup",
+  "focused_pytest_scratch": "DISPOSABLE / NOT_REQUIRED_FOR_FINAL_EVIDENCE; fresh explicit never-reused basetemp; complete necessary log/XML/properties/receipt DESIGNATED_FOR_RETENTION",
+  "gate_pytest_scratch": "DISPOSABLE / NOT_REQUIRED_FOR_FINAL_EVIDENCE; unchanged official gate unique basetemp; complete logs/exit/timing/coverage/audit DESIGNATED_FOR_RETENTION",
+  "prior_existing_raw": "DESIGNATED_FOR_RETENTION; entry hashes verified and unchanged originals/protected copies retained",
+  "PRES01": "exact11 TEMP_ARTIFACT_MISSING / HUMAN_EXEMPTED; no unavailable bytes claimed preserved",
+  "no_cleanup_requested": true
+}

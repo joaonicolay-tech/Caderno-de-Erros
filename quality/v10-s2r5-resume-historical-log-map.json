@@ -1,0 +1,20 @@
+{
+  "task": "V1.0-S2R5",
+  "status": "PASS",
+  "all11_physical_hashes_and_full_records_match_existing_historical_XML": true,
+  "raw_historical_log_XML_retained": {
+    "work/s2r2-schema-focused-final.xml": {
+      "sha256": "SHA256:7f8caaaa12e3c5497b579231b6c671a4530c60add2f80d56172c1da68b5ec82c",
+      "protected_copy": "work/s2r5-resume-retained-historical-logs/s2r2-schema-focused-final.xml",
+      "retention": "DESIGNATED_FOR_RETENTION; historical log/XML copied without alteration"
+    },
+    "work/s2r2-schema-focused-final.log": {
+      "sha256": "SHA256:7f6b639e118590e172d68458cf579993643221cdfbb55e9f65bf6e7bbef9c4dd",
+      "protected_copy": "work/s2r5-resume-retained-historical-logs/s2r2-schema-focused-final.log",
+      "retention": "DESIGNATED_FOR_RETENTION; historical log/XML copied without alteration"
+    }
+  },
+  "historical_SQLite_bytes_still_missing": true,
+  "no_reconstruction": true,
+  "original_canonical_reports_unchanged": true
+}

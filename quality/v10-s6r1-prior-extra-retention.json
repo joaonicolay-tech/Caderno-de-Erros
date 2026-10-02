@@ -1,0 +1,10 @@
+{
+  "task": "V1.0-S6R1",
+  "status": "PASS",
+  "additional_prior_raw_files": 166,
+  "raw_manifest": "work/s6r1-prior-extra-raw-manifest.json",
+  "protected_copies_verified": true,
+  "scope": "Existing local CP01FAIL/original PRIV01 copies/S2R5rawtargets/results/logs/manifests and historical post-S6 S2R5 probe roots; no changes to original bytes",
+  "temporary_scratch": "Existing disposable pytest scratch/caches are not final proof and untouched; required prior focused results/logs/XML/destination copies already retained",
+  "no_cleanup": true
+}

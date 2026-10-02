@@ -1,0 +1,14 @@
+{
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\quality.ps1",
+  "started_at": "2026-10-01 11:36:02 -03:00",
+  "ended_at": "2026-10-01 11:48:23 -03:00",
+  "exit_code": 0,
+  "duration_seconds": 741.3813598,
+  "status": "GREEN",
+  "tests_passed": 569,
+  "pytest_duration_seconds": 648.39,
+  "coverage_percent": 86.62843619151647,
+  "steps": "lock/sync/runtime/documentary baseline/Django development,test,production/migration check/isolated migration/Ruff/mypy/tests/domain coverage/secrets/pip-audit PASS",
+  "vulnerabilities": 0,
+  "caveat": "Own S2R4 technical gate before final material audit finding; does not override A8 or authorize broader validation changes"
+}

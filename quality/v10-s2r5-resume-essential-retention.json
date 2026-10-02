@@ -1,0 +1,106 @@
+{
+  "task": "V1.0-S2R5",
+  "raw_files": {
+    "work/s2r5-resume-cp01-20261002/result.json": {
+      "sha256": "SHA256:fbb9f7d8e5d15cdfd9f9fea2a72ecd9b7aa95119aeca4542864ad0d29e1e8337",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s2r5-resume-cp01-20261002/target.sqlite3": {
+      "sha256": "SHA256:b3a4fd27dec005b68bcc6cdc9c0e91510f0a973ec33251fa00d1f9fb5a30553a",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s6-cei-prewrite-s2r5-resume-f01-20261002/result.json": {
+      "sha256": "SHA256:e39d9765d7724b52d498f7943a116250ff20c8e2136ce6c0f40baa1f5c37ab38",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s6-cei-prewrite-s2r5-resume-f01-20261002/source-v1.sqlite3": {
+      "sha256": "SHA256:8db1a7a2c35e1ab5b65d4cbced62f3f9c1562cfcc125a7b2131b7b7148dd5cb3",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s6-cei-prewrite-s2r5-resume-f01-20261002/target-v044-empty-N9.sqlite3": {
+      "sha256": "SHA256:f7ea20f8a23517d49c3af08bb53e738899a9935636ef2f9e2570ab2301b6e4b0",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s6-cei-prewrite-s2r5-resume-f01-20261002/valid-v1-export.zip": {
+      "sha256": "SHA256:b5e9689bb066f0f450d879273ccf574dacff34ee22afe0fc65b01241b89742a0",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s2r3-s2r5-resume-f02-20261002/result.json": {
+      "sha256": "SHA256:568454295601e56befc48c1b31e46166b4b616f43167afac62edfef97057830a",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s2r3-s2r5-resume-f02-20261002/target.sqlite3": {
+      "sha256": "SHA256:f05ae56d268c25d543dc5ddb9f2036bc878a0ec3cf9a3b935207ba1132c2fa8d",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s2r3-s2r5-resume-f03-20261002/result.json": {
+      "sha256": "SHA256:38ffae1b45dd6ee67487a80b157c85f5cd5c3553aaf3f2f0dac578a76dc69972",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s2r3-s2r5-resume-f03-20261002/target.sqlite3": {
+      "sha256": "SHA256:1720c40f63712e27ab3466a02a7f941087204fba837bf73c6c405f96fa66677f",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s2r3-s2r5-resume-f04-20261002/result.json": {
+      "sha256": "SHA256:c55a998b017406009ca84afb973cf69a0e9c0312af8084b28dc29efbc47b433d",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s2r3-s2r5-resume-f04-20261002/target.sqlite3": {
+      "sha256": "SHA256:44845fd061dacc31f901d0ecdd21d599751c326625a5fc67019fee34f4e65605",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s6-final-s2r5-resume-valid-20261002/result.json": {
+      "sha256": "SHA256:713072074500140ea9b2d2a95cb96ec1cc2de09afeea188e48a9f34987af950c",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s6-final-s2r5-resume-valid-20261002/v1-reexport.zip": {
+      "sha256": "SHA256:ab660b4dc5cde0c3e8e5b523657e6891145a2cd13c1d192930e960b64a27f090",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s6-final-s2r5-resume-valid-20261002/valid-v05-to-v1.sqlite3": {
+      "sha256": "SHA256:b6a4dbfae34bf581f4820d1cebb41c6f505a3b9e53a930358b23198a57782d90",
+      "retention": "DESIGNATED_FOR_RETENTION; copy verified before anycleanup"
+    },
+    "work/s2r5-resume-f01-proof.json": {
+      "sha256": "SHA256:76429c234c95bd0caa8fa18ed3c2f6a4e960cfeed45920b9c2fe69c382c671c7",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    "work/s2r5-resume-cp01.log": {
+      "sha256": "SHA256:ff62a4a12dc467d95fdda021978c580c33b3f7cab805cc6459bf84f8b4671724",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    "work/s2r5-resume-f01.log": {
+      "sha256": "SHA256:6148b697e850486323871d52caaf73d8b5a8b5cfd64b43be2de1e59a2440abd7",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    "work/s2r5-resume-f02.log": {
+      "sha256": "SHA256:266aa8c9a3716dff132f77834a021ea44ad06f375ed58ed9c7f03c92bb91390a",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    "work/s2r5-resume-f03.log": {
+      "sha256": "SHA256:0235f681b80e15743e3a806828d074fb361a50229838cc73bb597f0ab29cf9ef",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    "work/s2r5-resume-f04.log": {
+      "sha256": "SHA256:da1af5fb5826744e2e3f302596a06248cda2b736791a2be5a80af6d8dbff3544",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    "work/s2r5-resume-valid.log": {
+      "sha256": "SHA256:7fe191bda22f6a1f7f4c90c9ae9025771ec63d73e9b3f841cb9aa416f6af2a5e",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    }
+  },
+  "canonical_results": [
+    "quality/v10-s2r5-resume-cp01-retest.json",
+    "quality/v10-s2r5-resume-f01-retest.json",
+    "quality/v10-s2r5-resume-f02-retest.json",
+    "quality/v10-s2r5-resume-f03-retest.json",
+    "quality/v10-s2r5-resume-f04-retest.json",
+    "quality/v10-s2r5-resume-valid-retest.json"
+  ],
+  "all_essential_targets_new": true,
+  "copied_before_cleanup": true,
+  "no_historical_reconstruction": true,
+  "copy_area": "work/s2r5-resume-retained-essential",
+  "copy_name_rule": "sha256 hex digits without SHA256: prefix"
+}

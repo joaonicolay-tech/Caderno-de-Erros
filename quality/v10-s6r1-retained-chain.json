@@ -1,0 +1,15 @@
+{
+  "task": "V1.0-S6R1",
+  "status": "PASS",
+  "historical_artifacts_in_S6_map": 389,
+  "existing_byte_equal_and_copied": 389,
+  "absence_count": 0,
+  "all_absences_limited_to_PRES01": true,
+  "logical_absences": [],
+  "raw_manifest": "work/s6r1-retained-chain-raw-manifest.json",
+  "historical_reports": "Preserved current sanitized bytes by the129-path entry snapshot; original pre-PRIV01 unsanitized report hashes are historical, not reasserted against sanitized files",
+  "retained_upgrade_clean_install_backup_restore_recovery_RPO_RTO_second_roundtrip_isolation": "PASS retained; source/raw hashes equal historical map, no rerun",
+  "chain_review": "quality/v10-s6-after-s2r4-retained-chain-review.json",
+  "new_focused_roundtrip": "quality/v10-s6r1-roundtrip.json",
+  "no_reconstruction": true
+}

@@ -1,0 +1,84 @@
+{
+  "status": "PASS",
+  "scope": "Read-only search for material contradictions in whole retained S6 chain; no new fuzzing or repeated upgrade/recovery",
+  "A4": "Preserved byte-equal and scope/guards consistent with current authorization",
+  "upgrade": {
+    "status": "PASS retained",
+    "V044_checker": "17/0 in historical runtime, 24 applied migrations",
+    "V05_checker": "25/0,34 migrations",
+    "V1_checker": "25/0,34 migrations",
+    "additive_V044_to_V05": 10,
+    "new_V05_to_V1_migrations": 0,
+    "legacy_tables_all_fields_IDs_counts_fingerprints_preserved": 15,
+    "V05_V1_all_tables_snapshots_equal": true,
+    "existing_analytics_queue_equal": true,
+    "prebackup_unchanged": true
+  },
+  "clean_install": "Independent historical candidate V1 proof retained /smoke200 /SQLiteok/FKempty/checker25/0",
+  "backup_restore_recovery": {
+    "status": "PASS retained",
+    "corrupt_pair_rejected": true,
+    "occupied_destination_unchanged": true,
+    "recovered_full_snapshot_tables_and_derived_equal_chosen_source": true,
+    "injected_failure_automatic_return_equal_altered_active": true,
+    "adopted_physical_hash_equals_validated_backup": true,
+    "source_vs_backup_header_counter_difference": "Previously explained technical SQLite header counters; chosen backup/adopted/recovered physical identity is exact, source logical facts unchanged",
+    "RPO_seconds": 0.378565,
+    "RTO_seconds": 1.707174,
+    "scope": "Historical isolated exercise only; no production SLA inference"
+  },
+  "N1_N8": "8 exact negatives plus2 supplementary negatives retained /zero attempted-completed/native DML /counts/fingerprints equal; structural validators unchanged",
+  "second_roundtrip": "PASS retained; V0.5-runtime production→V1 import→V1 second round-trip,21 sets/UUID/history/policies/derived equal; OperationReceipt and regenerated local user credential excluded by existing CEI contract",
+  "historical_RED": [
+    {
+      "finding": "S6-F01",
+      "original_completed_INSERTs_before_rollback": 8,
+      "native_delta_before_rollback": 8,
+      "attempted_DML": "Not instrumented by original probe; no attempted count inferred",
+      "rollback_restored_logical_and_physical_fingerprints": true,
+      "history_not_reinterpreted": true,
+      "source": "quality/v10-s6-cei-result.json"
+    },
+    {
+      "finding": "S6-F02",
+      "original_committed_INSERTs": 24,
+      "original_codes": [
+        "ATT-001",
+        "ERR-001",
+        "REV-001",
+        "REV-002"
+      ],
+      "history_not_reinterpreted": true,
+      "source": "quality/v10-s6-resume-a8-invariant-result.json"
+    },
+    {
+      "finding": "S6-F03",
+      "original_committed_INSERTs": 24,
+      "original_codes": [
+        "QUE-003"
+      ],
+      "history_not_reinterpreted": true,
+      "source": "quality/v10-s6-final-a8-f03-result.json"
+    },
+    {
+      "finding": "S6-F04",
+      "original_committed_INSERTs": 24,
+      "original_codes": [
+        "REV-003"
+      ],
+      "history_not_reinterpreted": true,
+      "source": "quality/v10-s2r4-audit-f04-result.json"
+    }
+  ],
+  "matrix": {
+    "A": 14,
+    "B": 8,
+    "C": 1,
+    "D": 1,
+    "E": 1
+  },
+  "catalog_SQL_existing_helpers_AST_unchanged": true,
+  "new_reproducible_commit_findings": 0,
+  "no_material_contradiction_found_in_inspected_evidence": true,
+  "own_FINAL_S6_gate_and_A8_decision": "PENDING; this read-only review is supporting evidence, not stage acceptance"
+}

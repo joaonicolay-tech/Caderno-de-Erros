@@ -1,0 +1,441 @@
+{
+  "status": "PASS",
+  "tests": 43,
+  "pytest_elapsed_seconds": 118.54,
+  "junit_suite_seconds": 118.421,
+  "cases": [
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[ATT-001-reader]",
+      "duration_seconds": 7.626,
+      "zero_write": [
+        {
+          "case": "ATT-001",
+          "entry_point": "reader",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "ATT-001"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[ATT-001-direct_mutated_object]",
+      "duration_seconds": 5.312,
+      "zero_write": [
+        {
+          "case": "ATT-001",
+          "entry_point": "direct_mutated_object",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "ATT-001"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[ERR-001-reader]",
+      "duration_seconds": 3.624,
+      "zero_write": [
+        {
+          "case": "ERR-001",
+          "entry_point": "reader",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "ERR-001"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[ERR-001-direct_mutated_object]",
+      "duration_seconds": 4.91,
+      "zero_write": [
+        {
+          "case": "ERR-001",
+          "entry_point": "direct_mutated_object",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "ERR-001"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[REV-001-reader]",
+      "duration_seconds": 3.896,
+      "zero_write": [
+        {
+          "case": "REV-001",
+          "entry_point": "reader",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "REV-001"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[REV-001-direct_mutated_object]",
+      "duration_seconds": 4.563,
+      "zero_write": [
+        {
+          "case": "REV-001",
+          "entry_point": "direct_mutated_object",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "REV-001"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[REV-002-reader]",
+      "duration_seconds": 3.882,
+      "zero_write": [
+        {
+          "case": "REV-002",
+          "entry_point": "reader",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "REV-002"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[REV-002-direct_mutated_object]",
+      "duration_seconds": 4.261,
+      "zero_write": [
+        {
+          "case": "REV-002",
+          "entry_point": "direct_mutated_object",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "REV-002"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[combined-reader]",
+      "duration_seconds": 3.663,
+      "zero_write": [
+        {
+          "case": "combined",
+          "entry_point": "reader",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "ATT-001",
+            "ERR-001",
+            "REV-001",
+            "REV-002"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_semantic_rejection_precedes_first_destination_write[combined-direct_mutated_object]",
+      "duration_seconds": 4.35,
+      "zero_write": [
+        {
+          "case": "combined",
+          "entry_point": "direct_mutated_object",
+          "attempted": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "completed": {
+            "INSERT": 0,
+            "UPDATE": 0,
+            "DELETE": 0
+          },
+          "total_changes_delta": 0,
+          "counts_equal": true,
+          "semantic_schema_physical_equal": true,
+          "codes": [
+            "ATT-001",
+            "ERR-001",
+            "REV-001",
+            "REV-002"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test_valid_initial_error_history_all_sets_round_trip",
+      "duration_seconds": 4.698,
+      "zero_write": []
+    },
+    {
+      "name": "test_ct118_reader_is_independent_and_unicode",
+      "duration_seconds": 0.277,
+      "zero_write": []
+    },
+    {
+      "name": "test_ct120_future_version_rejected_without_mutation",
+      "duration_seconds": 0.282,
+      "zero_write": []
+    },
+    {
+      "name": "test_v05_producer_is_accepted_when_metadata_is_compatible",
+      "duration_seconds": 0.357,
+      "zero_write": []
+    },
+    {
+      "name": "test_unsupported_producer_is_rejected_before_import[V0.6]",
+      "duration_seconds": 0.261,
+      "zero_write": []
+    },
+    {
+      "name": "test_unsupported_producer_is_rejected_before_import[unknown]",
+      "duration_seconds": 0.305,
+      "zero_write": []
+    },
+    {
+      "name": "test_unsupported_producer_is_rejected_before_import[None]",
+      "duration_seconds": 0.313,
+      "zero_write": []
+    },
+    {
+      "name": "test_unsupported_producer_is_rejected_before_import[producer3]",
+      "duration_seconds": 0.261,
+      "zero_write": []
+    },
+    {
+      "name": "test_invalid_checksum_and_traversal_rejected",
+      "duration_seconds": 0.31,
+      "zero_write": []
+    },
+    {
+      "name": "test_saved_filter_payload_is_validated_before_import",
+      "duration_seconds": 0.339,
+      "zero_write": []
+    },
+    {
+      "name": "test_ct119_round_trip_to_empty_compatible_database",
+      "duration_seconds": 4.891,
+      "zero_write": []
+    },
+    {
+      "name": "test_s2b_s2c_history_and_saved_filter_survive_round_trip",
+      "duration_seconds": 4.872,
+      "zero_write": []
+    },
+    {
+      "name": "test_s2d_deleted_question_does_not_reappear_from_sanitized_audit",
+      "duration_seconds": 0.368,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[historical]",
+      "duration_seconds": 2.246,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[missing_migration]",
+      "duration_seconds": 3.904,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[extra_migration]",
+      "duration_seconds": 3.947,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[table]",
+      "duration_seconds": 4.741,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[column]",
+      "duration_seconds": 5.414,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[type]",
+      "duration_seconds": 4.55,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[null]",
+      "duration_seconds": 4.18,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[fk]",
+      "duration_seconds": 4.371,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[check]",
+      "duration_seconds": 4.228,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[unique]",
+      "duration_seconds": 4.266,
+      "zero_write": []
+    },
+    {
+      "name": "test_incompatible_destination_rejects_before_write_attempt[trigger]",
+      "duration_seconds": 4.218,
+      "zero_write": []
+    },
+    {
+      "name": "test_valid_import_keeps_preflight_and_writes_in_one_schema_snapshot",
+      "duration_seconds": 5.204,
+      "zero_write": []
+    },
+    {
+      "name": "test_occupied_workspace_is_rejected_without_write_attempt",
+      "duration_seconds": 0.947,
+      "zero_write": []
+    },
+    {
+      "name": "test_invalid_package_never_reaches_destination_write[manifest-Manifesto]",
+      "duration_seconds": 0.279,
+      "zero_write": []
+    },
+    {
+      "name": "test_invalid_package_never_reaches_destination_write[migrations-metadata incompat\\xedvel]",
+      "duration_seconds": 0.388,
+      "zero_write": []
+    },
+    {
+      "name": "test_invalid_package_never_reaches_destination_write[policies-metadata incompat\\xedvel]",
+      "duration_seconds": 0.267,
+      "zero_write": []
+    },
+    {
+      "name": "test_invalid_package_never_reaches_destination_write[uuid-tipo ou valor inv\\xe1lido]",
+      "duration_seconds": 0.318,
+      "zero_write": []
+    },
+    {
+      "name": "test_invalid_package_never_reaches_destination_write[reference-Refer\\xeancia funcional ausente]",
+      "duration_seconds": 0.341,
+      "zero_write": []
+    },
+    {
+      "name": "test_invalid_package_never_reaches_destination_write[duplicate-UUID duplicado]",
+      "duration_seconds": 0.339,
+      "zero_write": []
+    },
+    {
+      "name": "test_invalid_package_never_reaches_destination_write[workspace-cross-Workspace]",
+      "duration_seconds": 0.35,
+      "zero_write": []
+    }
+  ],
+  "valid_import": "VALID_IMPORT_PASS: historical INITIAL_ERROR with classification/anchor and draft revision, all 21 sets equality and independent post-commit checker 25 checks/0 findings; existing S2B/S2C valid correction/revision/filter/domain/audit/UUID/policy round-trip PASS",
+  "earlier_fixture_incident": "First focused attempt 39 PASS/4 FAIL in 128.49 s: current QUESTION_ACTIVATION fixture legitimately allowed absent anchors and did not reference initial attempts. Corrected fixture to supported legacy INITIAL_ERROR; no product rule/assertion weakened. Initial log/XML preserved."
+}

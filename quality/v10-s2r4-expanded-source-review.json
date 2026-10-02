@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "checker_existing_functions_catalog_SQL_AST_equal": true,
+  "new_adapter": "invariant_python_violations: calls unchanged three helpers; no algorithm copy",
+  "portability_changed_functions": [
+    "_validate_semantics"
+  ],
+  "other_portability_functions_constants_SETS_format_producers_policies_AST_equal": true,
+  "in_memory_private_connection": ":memory:",
+  "SQL_rules_count": 19,
+  "Python_helpers_count": 3,
+  "projected_sets": 21,
+  "local_owner_context": "Same existing LOCAL_USER_ID assignment for Workspace/SavedFilter",
+  "structural_N1_N8_unchanged": true,
+  "new_migrations": 0,
+  "model_schema_changes": 0,
+  "not_a_proof_of_all_DB_constraints": true
+}

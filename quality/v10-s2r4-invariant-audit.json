@@ -1,0 +1,462 @@
+{
+  "task": "V1.0-S2R4",
+  "audit": "All25 existing normative invariants inventoried; no new rule defined",
+  "items": [
+    {
+      "code": "DB-001",
+      "title": "Estrutura SQLite \u00edntegra",
+      "normative_assertion": "PRAGMA integrity_check retorna somente ok.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": false,
+      "coverage": "Physical/schema checks are not pure package predicates; FK existence checked structurally before write, SQLite/FK also post-write. Not a guarantee of zero attempts for every DB constraint",
+      "source_line": 188,
+      "required_tables": [],
+      "outside_current_projection": [],
+      "shared_sql": null,
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "DB-002",
+      "title": "Foreign keys v\u00e1lidas",
+      "normative_assertion": "PRAGMA foreign_key_check n\u00e3o retorna linhas.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": false,
+      "coverage": "Physical/schema checks are not pure package predicates; FK existence checked structurally before write, SQLite/FK also post-write. Not a guarantee of zero attempts for every DB constraint",
+      "source_line": 204,
+      "required_tables": [],
+      "outside_current_projection": [],
+      "shared_sql": null,
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "WS-001",
+      "title": "Hierarquia taxon\u00f4mica no mesmo Workspace",
+      "normative_assertion": "Cada rela\u00e7\u00e3o da hierarquia preserva Workspace e ancestral direto.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "All CEI row workspace fields forced to manifest Workspace; reference existence checked. Does not imply all composite ancestry checks elsewhere",
+      "source_line": 220,
+      "required_tables": [
+        "taxonomy_discipline",
+        "taxonomy_subject",
+        "taxonomy_subsubject"
+      ],
+      "outside_current_projection": [
+        "taxonomy_discipline",
+        "taxonomy_subject",
+        "taxonomy_subsubject"
+      ],
+      "shared_sql": "SHA256:27c6f30e41748d588307f593e1e0889bf5933cd1ec45f91f9adee03adeb4cb9a",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "WS-002",
+      "title": "Cat\u00e1logo de origem no mesmo Workspace",
+      "normative_assertion": "Banca, quest\u00e3o e refer\u00eancias de origem preservam o Workspace do v\u00ednculo.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "All CEI row workspace fields forced to manifest Workspace; reference existence checked. Does not imply all composite ancestry checks elsewhere",
+      "source_line": 236,
+      "required_tables": [
+        "questions_board",
+        "questions_exam",
+        "questions_question",
+        "questions_questionorigin",
+        "questions_source"
+      ],
+      "outside_current_projection": [
+        "questions_board",
+        "questions_exam",
+        "questions_questionorigin",
+        "questions_source"
+      ],
+      "shared_sql": "SHA256:110ce28269d7b04f2c5bbd431cfbc40fd9ba221308f755653ca7604d4bdce181",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "WS-003",
+      "title": "Timezone do Workspace v\u00e1lido",
+      "normative_assertion": "TimeZoneId aceita timezone_name sem normaliza\u00e7\u00e3o persistente.",
+      "severity": "ERROR",
+      "CEI_only_deterministic": true,
+      "coverage": "Timezone string identity checked, IANA membership not evaluated in current CEI preflight; existing TimeZoneId helper available",
+      "source_line": 252,
+      "required_tables": [],
+      "outside_current_projection": [],
+      "shared_sql": null,
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "QUE-001",
+      "title": "Taxonomia da Question coerente",
+      "normative_assertion": "Discipline -> Subject -> Subsubject coincide com os v\u00ednculos da Question.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 268,
+      "required_tables": [
+        "questions_question",
+        "taxonomy_discipline",
+        "taxonomy_subject",
+        "taxonomy_subsubject"
+      ],
+      "outside_current_projection": [
+        "taxonomy_discipline",
+        "taxonomy_subject",
+        "taxonomy_subsubject"
+      ],
+      "shared_sql": "SHA256:aad89769f30a4008179e172fd56e5e3a686fde16a688977e11fd2ea2dbb50977",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "QUE-002",
+      "title": "Conte\u00fado versionado pertence \u00e0 Question",
+      "normative_assertion": "Todo snapshot e alternativa pertence \u00e0 cadeia declarada.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Workspace and reference existence checked; correct_alternative must belong to its revision only in checker SQL, not current preflight",
+      "source_line": 284,
+      "required_tables": [
+        "questions_alternative",
+        "questions_question",
+        "questions_questionrevision"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:5d6ff79a57cc2be8f9f43083fc5efb6af360375c4505574cd47ccb7b81f81eeb",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "QUE-003",
+      "title": "Sequ\u00eancia e revis\u00e3o corrente coerentes",
+      "normative_assertion": "Vers\u00f5es come\u00e7am em 1; ACTIVE/ARCHIVED t\u00eam uma current; ACTIVE est\u00e1 completa.",
+      "severity": "ERROR",
+      "CEI_only_deterministic": true,
+      "coverage": "Full unchanged normative SQL executed before destination DML",
+      "source_line": 300,
+      "required_tables": [
+        "questions_alternative",
+        "questions_question",
+        "questions_questionrevision"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:3759a44af27a77f5fb4518cced9811e32ed7fd128b0c22474d62047512e1e195",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "ATT-001",
+      "title": "Contexto e resultado da Attempt coerentes",
+      "normative_assertion": "Todos os v\u00ednculos e is_correct correspondem ao snapshot apresentado.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Full unchanged normative SQL executed before destination DML",
+      "source_line": 316,
+      "required_tables": [
+        "attempts_attempt",
+        "questions_alternative",
+        "questions_question",
+        "questions_questionrevision",
+        "reviews_review"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:cee928ee36fc329ba9c908c29820e87212e4c09d1cc0ac66918e19b8ea6b2053",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "ATT-002",
+      "title": "Data civil hist\u00f3rica da Attempt coerente",
+      "normative_assertion": "A convers\u00e3o IANA do instante produz exatamente local_date.",
+      "severity": "ERROR",
+      "CEI_only_deterministic": true,
+      "coverage": "Datetime/date lexical validity checked; correspondence to persisted historical timezone/local_date not evaluated before destination DML",
+      "source_line": 332,
+      "required_tables": [],
+      "outside_current_projection": [],
+      "shared_sql": null,
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "ATT-003",
+      "title": "Lifecycle e grafo de substitui\u00e7\u00e3o coerentes",
+      "normative_assertion": "Campos de void fecham; sucessora preserva contexto; n\u00e3o h\u00e1 ciclo nem VALID n\u00e3o terminal.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 348,
+      "required_tables": [
+        "attempts_attempt"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:26e206c34c287e19c1896d9309dcd7580530e38720528e28473b04c5b9e5996f",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "REV-001",
+      "title": "Origem do ReviewCycle coerente",
+      "normative_assertion": "Origem INITIAL_ERROR ou QUESTION_ACTIVATION satisfaz o contrato vigente.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Full unchanged normative SQL executed before destination DML",
+      "source_line": 364,
+      "required_tables": [
+        "attempts_attempt",
+        "questions_question",
+        "questions_questionrevision",
+        "reviews_reviewcycle"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:704f9a0aac84195f3c041217f210949dffc4077c24565833b80e6de72a9d379a",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "REV-002",
+      "title": "Review e \u00e2ncora coerentes",
+      "normative_assertion": "Somente D1 de ativa\u00e7\u00e3o omite \u00e2ncora; demais \u00e2ncoras mant\u00eam contexto.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Full unchanged normative SQL executed before destination DML",
+      "source_line": 380,
+      "required_tables": [
+        "attempts_attempt",
+        "questions_question",
+        "reviews_review",
+        "reviews_reviewcycle"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:4866a11f11d6d5ec5177551561e5c6e190f9dff019ee2567d280a7ad5fde7b2b",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "REV-003",
+      "title": "Estado do ciclo coerente com suas Reviews",
+      "normative_assertion": "Ciclo ativo tem uma pending; completo termina em D30 correta; suspenso tem suspensa.",
+      "severity": "ERROR",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 396,
+      "required_tables": [
+        "attempts_attempt",
+        "questions_question",
+        "reviews_review",
+        "reviews_reviewcycle"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:7d8027e6918f9ea0ac56972c66f5f5d0ae6dbf1571fba3eb86e667390d030b1d",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "REV-004",
+      "title": "Sequ\u00eancia e agenda da Review coerentes",
+      "normative_assertion": "Sequ\u00eancia cont\u00edgua, transi\u00e7\u00e3o conhecida e due date derivada da \u00e2ncora.",
+      "severity": "ERROR",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 412,
+      "required_tables": [
+        "attempts_attempt",
+        "reviews_review",
+        "reviews_reviewcycle"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:84fd5c25c987f085d25486ceb94965a71a02787d39036a49346e270d15e3e360",
+      "inaugural_temporal_addendum": true
+    },
+    {
+      "code": "ERR-001",
+      "title": "ErrorClassification coerente",
+      "normative_assertion": "Attempt \u00e9 VALID/incorreta e categoria/contexto pertencem ao Workspace.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Full unchanged normative SQL executed before destination DML",
+      "source_line": 428,
+      "required_tables": [
+        "attempts_attempt",
+        "errors_error_category",
+        "errors_errorclassification"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:1b42926b11b319535512f915ebdb14d8261629ad2c09c90ed24c5458edddaba1",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "ERR-002",
+      "title": "Hist\u00f3rico da classifica\u00e7\u00e3o coerente",
+      "normative_assertion": "r1..rN pertencem ao contexto e rN coincide com a proje\u00e7\u00e3o atual.",
+      "severity": "ERROR",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 444,
+      "required_tables": [
+        "errors_error_category",
+        "errors_errorclassification",
+        "errors_errorclassificationrevision"
+      ],
+      "outside_current_projection": [
+        "errors_errorclassificationrevision"
+      ],
+      "shared_sql": "SHA256:92501c90f66349190270b22bd5a06c9b016c4f3ca43069076ccc8c173ea7b951",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "OPS-001",
+      "title": "OperationReceipt aponta para resultado compat\u00edvel",
+      "normative_assertion": "Alvo existe, tenant/chave coincidem e tipo/resultado correspondem \u00e0 opera\u00e7\u00e3o.",
+      "severity": "ERROR",
+      "CEI_only_deterministic": false,
+      "coverage": "OperationReceipt deliberately excluded from CEI; no source receipt rows imported; not an applicable CEI-only predicate",
+      "source_line": 460,
+      "required_tables": [
+        "attempts_attempt",
+        "attempts_operationreceipt"
+      ],
+      "outside_current_projection": [
+        "attempts_operationreceipt"
+      ],
+      "shared_sql": "SHA256:b74696ea281b8b73ac09d5b28f5fa6a2433ddd082bab96e2b14b4761c4527394",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "CAT-001",
+      "title": "Lifecycle e consolida\u00e7\u00e3o de categoria coerentes",
+      "normative_assertion": "Kind/state/target respeitam V05-INV-001, V05-INV-011 e V05-INV-012.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 476,
+      "required_tables": [
+        "errors_error_category"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:71de59c206ddfb5dea42216a7548afa7dfd3cdfc1c7dbab81ed4fad17497beb3",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "REV-005",
+      "title": "Hist\u00f3rico de reagendamento coerente",
+      "normative_assertion": "Mudan\u00e7a, Review e AuditEvent coincidem em Workspace, correla\u00e7\u00e3o e datas.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 492,
+      "required_tables": [
+        "operations_auditevent",
+        "reviews_review",
+        "reviews_reviewschedulechange"
+      ],
+      "outside_current_projection": [
+        "operations_auditevent",
+        "reviews_reviewschedulechange"
+      ],
+      "shared_sql": "SHA256:6ab976350889fcb71ea58bb1cc212f23736092fa19d49ac1e142d1cf84d25d94",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "REV-006",
+      "title": "Proje\u00e7\u00e3o reconstru\u00edda de Review coerente",
+      "normative_assertion": "SUPERSEDED preserva fatos sem fila; ATTEMPT_CORRECTION corrente \u00e9 determin\u00edstica.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 508,
+      "required_tables": [
+        "attempts_attempt",
+        "reviews_review",
+        "reviews_reviewcycle"
+      ],
+      "outside_current_projection": [],
+      "shared_sql": "SHA256:abe9d642faae32dfd53cc2218f8af75a6fc3b182ef9835a725c4ec0be508a1e8",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "AUD-001",
+      "title": "Auditoria funcional m\u00ednima e isolada",
+      "normative_assertion": "Evento, entidade, rela\u00e7\u00e3o, correla\u00e7\u00e3o e raz\u00e3o codificada respeitam V05-INV-014.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 524,
+      "required_tables": [
+        "attempts_attempt",
+        "errors_error_category",
+        "operations_auditevent",
+        "questions_question",
+        "questions_questionrevision",
+        "reviews_review",
+        "reviews_reviewcycle"
+      ],
+      "outside_current_projection": [
+        "operations_auditevent"
+      ],
+      "shared_sql": "SHA256:f4c759b2a73f30f2fbce629d0be64d1e12977b3cadd7513b0222d3ffc6c5eb61",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "SAV-001",
+      "title": "Filtro salvo compat\u00edvel com Workspace e schema",
+      "normative_assertion": "Owner local, schema 1 e valores/refer\u00eancias aceitos pela lista de quest\u00f5es.",
+      "severity": "ERROR",
+      "CEI_only_deterministic": true,
+      "coverage": "Schema/payload keys/types/UUID syntax checked; owner_user restored to LOCAL_USER_ID. Other context/filter relationships and values not full-equivalent to SQL",
+      "source_line": 540,
+      "required_tables": [
+        "accounts_workspace",
+        "errors_error_category",
+        "search_savedfilter",
+        "taxonomy_discipline",
+        "taxonomy_subject",
+        "taxonomy_subsubject"
+      ],
+      "outside_current_projection": [
+        "accounts_workspace",
+        "search_savedfilter",
+        "taxonomy_discipline",
+        "taxonomy_subject",
+        "taxonomy_subsubject"
+      ],
+      "shared_sql": "SHA256:4327ea839e518e9ce91461465e4a5322e32285cb517d131f50989b277ba9659f",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "DOM-001",
+      "title": "Hist\u00f3rico de dom\u00ednio com refer\u00eancias locais",
+      "normative_assertion": "Sequ\u00eancia cont\u00edgua, Question, trigger e ciclo local coerentes.",
+      "severity": "CRITICAL",
+      "CEI_only_deterministic": true,
+      "coverage": "Deterministic existing CEI-only SQL is not selected by the current semantic preflight; destination post-checker connection still cannot see uncommitted imported facts",
+      "source_line": 556,
+      "required_tables": [
+        "attempts_attempt",
+        "domain_masterystateevent",
+        "questions_question",
+        "reviews_reviewcycle"
+      ],
+      "outside_current_projection": [
+        "domain_masterystateevent"
+      ],
+      "shared_sql": "SHA256:15b07427ae15b9a0f86c9c4804a86af2785003a61d7ef979c93d8934dcfdb6ca",
+      "inaugural_temporal_addendum": false
+    },
+    {
+      "code": "AUD-002",
+      "title": "Reten\u00e7\u00e3o da auditoria sanitizada S2D",
+      "normative_assertion": "Nenhum evento QUESTION_PERMANENTLY_DELETED permanece ap\u00f3s 90 dias UTC.",
+      "severity": "ERROR",
+      "CEI_only_deterministic": false,
+      "coverage": "Retention warning depends on execution now (90 days), not exclusively CEI content; not a deterministic impossible-state predicate",
+      "source_line": 572,
+      "required_tables": [],
+      "outside_current_projection": [],
+      "shared_sql": null,
+      "inaugural_temporal_addendum": false
+    }
+  ],
+  "scope": "S2R4 implemented only complete QUE-003 using same projection. S2R3 four protections retained. Five rules are not equivalent to all25 checker invariants",
+  "AST_changed_functions": [
+    "_validate_semantics"
+  ],
+  "all_other_functions_and_constants_unchanged": true,
+  "N1_N8": "All structural validator ASTs and their placement unchanged; previous direct proofs preserved; destination/portability regressions executed",
+  "audit_candidates": "Unselected deterministic rules include lifecycle/graph, taxonomy/revision membership, error revision/category chain, review dates/lifecycle/scheduling/audit, saved filters and mastery history. Do not silently expand S2R4 to all of these",
+  "architecture_assessment": "QUE-003 fix required no expansion. Full CEI semantic equivalence would require selecting additional rules, projecting further CEI sets, supplying target owner context for omitted owner fields, and extracting/reusing Python IANA/inaugural-date checks with explicit handling of non-CEI receipts and runtime retention. This is a broader validation architecture decision, not another QUE-003 UUID patch",
+  "material_equivalent_gap": "Independently confirmed S6-F04 / REV-003: exact-source synthetic variant accepted,24 attempted/completed committed INSERTs,total_changes+24,post-commit checker25/one REV-003 ERROR. Broader architecture assessment requires human scope decision under authorization section8; no further product fix",
+  "no_other_product_fix": true
+}

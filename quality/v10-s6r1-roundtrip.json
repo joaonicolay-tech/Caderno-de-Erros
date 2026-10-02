@@ -1,0 +1,564 @@
+{
+  "task": "V1.0-S6R1",
+  "status": "ROUNDTRIP_PASS",
+  "decision": "Affected import passes S2R5 manifest/rows validation; focused CEI proof required and executed, no standalone upgrade/recovery campaign",
+  "source": "work/s6-final-s6r1-valid-20261002/v1-reexport.zip",
+  "target": "work/s6r1-roundtrip-20261002/v1-roundtrip.sqlite3",
+  "source_sha256": "SHA256:d1333a1c43e08c28a046d5f06220c0a777b76fa9eebff36060e013aa378d2373",
+  "source_unchanged": true,
+  "all_21_record_sets_equal": true,
+  "UUID_references_history_revisions_attempts_reviews_equal": true,
+  "counts": {
+    "workspace": 1,
+    "disciplines": 1,
+    "subjects": 1,
+    "subsubjects": 0,
+    "boards": 0,
+    "exams": 0,
+    "sources": 1,
+    "questions": 1,
+    "question_revisions": 1,
+    "alternatives": 2,
+    "question_origins": 1,
+    "attempts": 1,
+    "error_categories": 10,
+    "error_classifications": 1,
+    "error_classification_revisions": 0,
+    "review_cycles": 1,
+    "reviews": 1,
+    "review_schedule_changes": 0,
+    "saved_filters": 0,
+    "mastery_events": 0,
+    "audit_events": 0
+  },
+  "policies_equal": true,
+  "schema_migrations_equal": true,
+  "derived_equal": true,
+  "derived": {
+    "activity": {
+      "registered_questions": 1,
+      "performed_questions": 1,
+      "attempts": 1,
+      "initial_attempts": 1,
+      "review_attempts": 0,
+      "correct_answers": 0,
+      "incorrect_answers": 1,
+      "accuracy": {
+        "numerator": 0,
+        "denominator": 1,
+        "percent": "0"
+      }
+    },
+    "errors": {
+      "rows": [
+        {
+          "category_id": "0e4e8d4c-4b44-45af-b2ab-7c5314a775a3",
+          "code": "ATTENTION",
+          "display_name": "Atenção",
+          "errors": 1,
+          "share_of_classified": {
+            "numerator": 1,
+            "denominator": 1,
+            "percent": "100"
+          }
+        },
+        {
+          "category_id": "d79178ce-b34d-4547-9439-f871ac59694e",
+          "code": "CALCULATION",
+          "display_name": "Cálculo",
+          "errors": 0,
+          "share_of_classified": {
+            "numerator": 0,
+            "denominator": 1,
+            "percent": "0"
+          }
+        },
+        {
+          "category_id": "3f1d17d2-3c7f-4dea-89fb-b1abfa16a585",
+          "code": "CONCEPTUAL",
+          "display_name": "Conceitual",
+          "errors": 0,
+          "share_of_classified": {
+            "numerator": 0,
+            "denominator": 1,
+            "percent": "0"
+          }
+        },
+        {
+          "category_id": "846e094c-2799-46b3-985f-b2559bf79931",
+          "code": "FORMULA_RULE",
+          "display_name": "Fórmula/regra",
+          "errors": 0,
+          "share_of_classified": {
+            "numerator": 0,
+            "denominator": 1,
+            "percent": "0"
+          }
+        },
+        {
+          "category_id": "73e8a527-836c-48e5-b96f-026cf07203c3",
+          "code": "GUESS",
+          "display_name": "Chute",
+          "errors": 0,
+          "share_of_classified": {
+            "numerator": 0,
+            "denominator": 1,
+            "percent": "0"
+          }
+        },
+        {
+          "category_id": "e7e9cbbc-aeac-417b-8f7e-2396fef25431",
+          "code": "INTERPRETATION",
+          "display_name": "Interpretação",
+          "errors": 0,
+          "share_of_classified": {
+            "numerator": 0,
+            "denominator": 1,
+            "percent": "0"
+          }
+        },
+        {
+          "category_id": "c8224977-ee16-4794-b219-984efb128d5d",
+          "code": "OTHER",
+          "display_name": "Outra",
+          "errors": 0,
+          "share_of_classified": {
+            "numerator": 0,
+            "denominator": 1,
+            "percent": "0"
+          }
+        },
+        {
+          "category_id": "3e0a8ad8-a992-4791-b324-286f131db05d",
+          "code": "PROCEDURE",
+          "display_name": "Procedimento",
+          "errors": 0,
+          "share_of_classified": {
+            "numerator": 0,
+            "denominator": 1,
+            "percent": "0"
+          }
+        },
+        {
+          "category_id": "15b1f39e-d3a7-4057-bc07-21fef56afd30",
+          "code": "TIME_SHORTAGE",
+          "display_name": "Falta de tempo",
+          "errors": 0,
+          "share_of_classified": {
+            "numerator": 0,
+            "denominator": 1,
+            "percent": "0"
+          }
+        },
+        {
+          "category_id": "1338a687-aa1a-4644-bbe9-a702b651cfd3",
+          "code": "TRAP",
+          "display_name": "Pegadinha",
+          "errors": 0,
+          "share_of_classified": {
+            "numerator": 0,
+            "denominator": 1,
+            "percent": "0"
+          }
+        }
+      ],
+      "classified_errors": 1,
+      "unclassified_errors": 0,
+      "eligible_errors": 1
+    },
+    "reviews": {
+      "reference_date": "2026-09-20",
+      "completed_today": 0,
+      "overdue": 0,
+      "due": 0,
+      "future": 1
+    },
+    "queue": {
+      "overdue": {
+        "entries": [],
+        "page": 1,
+        "page_count": 1,
+        "total": 0
+      },
+      "due": {
+        "entries": [],
+        "page": 1,
+        "page_count": 1,
+        "total": 0
+      },
+      "future": {
+        "entries": [
+          "a8c3f429-9723-4d6d-8499-d031fddebe40 #1 D1"
+        ],
+        "page": 1,
+        "page_count": 1,
+        "total": 1
+      }
+    },
+    "domain": [
+      {
+        "result": {
+          "question_id": "5f336ede-44f3-4ffe-8502-60f997f3302f",
+          "policy_version": "DOM-HEUR-1.0",
+          "domain_index": "16.25",
+          "domain_band": "FRAGILE",
+          "confidence": "20.00",
+          "confidence_base": "20",
+          "confidence_age_factor": "1.00",
+          "sufficiency": "INSUFFICIENT",
+          "maturity": "PROVISIONAL",
+          "mastery": "NOT_DOMINATED",
+          "mastery_criteria": [
+            {
+              "code": "RN079_CORRECT_D30_AFTER_LAST_ERROR",
+              "satisfied": false,
+              "evidence_ids": []
+            },
+            {
+              "code": "RN079_DOMAIN_INDEX_AT_LEAST_85",
+              "satisfied": false,
+              "evidence_ids": []
+            },
+            {
+              "code": "RN079_CONFIDENCE_AT_LEAST_80",
+              "satisfied": false,
+              "evidence_ids": []
+            },
+            {
+              "code": "RN079_LAST_TWO_REVIEWS_CORRECT",
+              "satisfied": false,
+              "evidence_ids": []
+            },
+            {
+              "code": "RN079_NO_ACTIVE_OVERDUE_REVIEW",
+              "satisfied": true,
+              "evidence_ids": []
+            }
+          ],
+          "vector": {
+            "policy_version": "DOM-HEUR-1.0",
+            "valid_attempt_count": 1,
+            "aq": {
+              "value": "0",
+              "evidence_ids": [
+                "f35fea72-af48-4b56-ada9-673710188f77"
+              ],
+              "reason_code": "WEIGHTED_RECENT_ACCURACY",
+              "exact_value": "0"
+            },
+            "pq": {
+              "value": "0",
+              "evidence_ids": [],
+              "reason_code": "NO_CORRECT_SPACED_RECOVERY",
+              "exact_value": "0"
+            },
+            "fq": {
+              "value": "75",
+              "evidence_ids": [],
+              "reason_code": "NEUTRAL_EASE_WHEN_UNRECORDED",
+              "exact_value": "75"
+            },
+            "eq": {
+              "value": "50",
+              "evidence_ids": [
+                "f35fea72-af48-4b56-ada9-673710188f77"
+              ],
+              "reason_code": "FEWER_THAN_TWO_VALID_ATTEMPTS",
+              "exact_value": "50"
+            },
+            "recovery_cap": "40",
+            "domain_index": "16.25",
+            "confidence_base": "20",
+            "confidence_age_factor": "1.00",
+            "confidence": "20.00",
+            "sufficiency_code": "INSUFFICIENT",
+            "limitation_codes": [
+              "INSUFFICIENT_EVIDENCE"
+            ],
+            "domain_index_exact": "65/4"
+          },
+          "included_attempt_ids": [
+            "f35fea72-af48-4b56-ada9-673710188f77"
+          ],
+          "excluded_evidence": [
+            {
+              "evidence_id": "362c67cf-e2a4-4b50-966a-a46ca322f2ca",
+              "reason_code": "PENDING_REVIEW_IS_NOT_ATTEMPT"
+            }
+          ],
+          "explanations": [
+            {
+              "code": "A_Q",
+              "evidence_ids": [
+                "f35fea72-af48-4b56-ada9-673710188f77"
+              ]
+            },
+            {
+              "code": "P_Q",
+              "evidence_ids": []
+            },
+            {
+              "code": "F_Q",
+              "evidence_ids": []
+            },
+            {
+              "code": "E_Q",
+              "evidence_ids": [
+                "f35fea72-af48-4b56-ada9-673710188f77"
+              ]
+            },
+            {
+              "code": "INITIAL_OR_LATER_VALID_REVIEW_MISSING",
+              "evidence_ids": []
+            },
+            {
+              "code": "EFFECTIVE_CYCLE_SELECTED",
+              "evidence_ids": []
+            },
+            {
+              "code": "CONFIDENCE_BASE_AND_AGE_FACTOR",
+              "evidence_ids": [
+                "f35fea72-af48-4b56-ada9-673710188f77"
+              ]
+            }
+          ],
+          "limitation_codes": [
+            "INSUFFICIENT_EVIDENCE"
+          ]
+        },
+        "evaluated_on": "2026-09-20",
+        "current_mastery": "NOT_DOMINATED",
+        "reason_codes": [
+          "RN079_UNSATISFIED"
+        ],
+        "last_event_id": null,
+        "mastery_criteria": [
+          {
+            "code": "RN079_CORRECT_D30_AFTER_LAST_ERROR",
+            "satisfied": false,
+            "evidence_ids": []
+          },
+          {
+            "code": "RN079_DOMAIN_INDEX_AT_LEAST_85",
+            "satisfied": false,
+            "evidence_ids": []
+          },
+          {
+            "code": "RN079_CONFIDENCE_AT_LEAST_80",
+            "satisfied": false,
+            "evidence_ids": []
+          },
+          {
+            "code": "RN079_LAST_TWO_REVIEWS_CORRECT",
+            "satisfied": false,
+            "evidence_ids": []
+          },
+          {
+            "code": "RN079_NO_ACTIVE_OVERDUE_REVIEW",
+            "satisfied": true,
+            "evidence_ids": []
+          },
+          {
+            "code": "RN079_QUESTION_ACTIVE",
+            "satisfied": true,
+            "evidence_ids": []
+          }
+        ]
+      }
+    ],
+    "priority": {
+      "ranked": [],
+      "collect_more_evidence": [
+        {
+          "subject": "Álgebra",
+          "result": {
+            "subject_id": "dc0c0ee0-5a78-4b10-b752-a8c402a9333f",
+            "evaluated_on": "2026-09-20",
+            "policy_version": "PRI-HEUR-1.0",
+            "state": "COLLECT_MORE_EVIDENCE",
+            "confidence": "20.0000",
+            "active_question_count": 1,
+            "overdue_question_count": 0,
+            "recurrence_eligible_count": 0,
+            "recurring_question_count": 0,
+            "comparable_question_count": 0,
+            "w": "335/4",
+            "o": "0",
+            "r": null,
+            "d": null,
+            "score": null,
+            "reason_codes": [
+              "LOW_CONFIDENCE",
+              "MISSING_RECURRENCE_EVIDENCE",
+              "MISSING_RECENT_DECLINE_BASELINE"
+            ],
+            "explanation_codes": []
+          }
+        }
+      ],
+      "evaluated_on": "2026-09-20"
+    }
+  },
+  "checker": {
+    "checks": 25,
+    "findings": 0
+  },
+  "before": {
+    "semantic_sha256": "SHA256:c6360f3ea3ceec5dbd182262107149ef38ca95d2f6822f81b25cf37c859e1a96",
+    "schema_sha256": "SHA256:5faccaf07aa61ecec85bab63142b5c7acb92778129250b983a396efa84095c5e",
+    "counts": {
+      "accounts_user": 0,
+      "accounts_workspace": 0,
+      "attempts_attempt": 0,
+      "attempts_operationreceipt": 0,
+      "auth_group": 0,
+      "auth_group_permissions": 0,
+      "auth_permission": 0,
+      "django_content_type": 0,
+      "django_migrations": 34,
+      "domain_masterystateevent": 0,
+      "errors_error_category": 0,
+      "errors_errorclassification": 0,
+      "errors_errorclassificationrevision": 0,
+      "operations_auditevent": 0,
+      "questions_alternative": 0,
+      "questions_board": 0,
+      "questions_exam": 0,
+      "questions_question": 0,
+      "questions_questionorigin": 0,
+      "questions_questionrevision": 0,
+      "questions_source": 0,
+      "reviews_review": 0,
+      "reviews_reviewcycle": 0,
+      "reviews_reviewschedulechange": 0,
+      "search_savedfilter": 0,
+      "sqlite_sequence": 4,
+      "taxonomy_discipline": 0,
+      "taxonomy_subject": 0,
+      "taxonomy_subsubject": 0
+    },
+    "migrations": [
+      "accounts.0001_initial",
+      "attempts.0001_learning_foundation",
+      "attempts.0002_review_receipt_constraints",
+      "auth.0001_initial",
+      "auth.0002_alter_permission_name_max_length",
+      "auth.0003_alter_user_email_max_length",
+      "auth.0004_alter_user_username_opts",
+      "auth.0005_alter_user_last_login_null",
+      "auth.0006_require_contenttypes_0002",
+      "auth.0007_alter_validators_add_error_messages",
+      "auth.0008_alter_user_username_max_length",
+      "auth.0009_alter_user_last_name_max_length",
+      "auth.0010_alter_group_name_max_length",
+      "auth.0011_update_proxy_permissions",
+      "auth.0012_alter_user_first_name_max_length",
+      "contenttypes.0001_initial",
+      "contenttypes.0002_remove_content_type_name",
+      "domain.0001_initial",
+      "errors.0001_initial",
+      "errors.0002_learning_classification",
+      "errors.0003_errorcategory_category_kind_and_more",
+      "operations.0001_initial",
+      "operations.0002_attempt_audit_events",
+      "operations.0003_answer_key_correction_audit",
+      "operations.0004_remove_auditevent_audit_event_code_valid_and_more",
+      "questions.0001_origin_catalog",
+      "questions.0002_question_catalog",
+      "reviews.0001_learning_foundation",
+      "reviews.0002_activation_review_cycle",
+      "reviews.0003_reviewschedulechange_and_more",
+      "reviews.0004_attempt_correction_projection",
+      "reviews.0005_reviewcycle_manual_purpose_and_more",
+      "search.0001_initial",
+      "taxonomy.0001_initial"
+    ],
+    "integrity_check": [
+      [
+        "ok"
+      ]
+    ],
+    "foreign_key_check": []
+  },
+  "after": {
+    "semantic_sha256": "SHA256:bc01e7e4aea9ce9f5343ee28804e8e8e1e288b558c78510dc2b7fcc654ea2b01",
+    "schema_sha256": "SHA256:5faccaf07aa61ecec85bab63142b5c7acb92778129250b983a396efa84095c5e",
+    "counts": {
+      "accounts_user": 1,
+      "accounts_workspace": 1,
+      "attempts_attempt": 1,
+      "attempts_operationreceipt": 0,
+      "auth_group": 0,
+      "auth_group_permissions": 0,
+      "auth_permission": 0,
+      "django_content_type": 0,
+      "django_migrations": 34,
+      "domain_masterystateevent": 0,
+      "errors_error_category": 10,
+      "errors_errorclassification": 1,
+      "errors_errorclassificationrevision": 0,
+      "operations_auditevent": 0,
+      "questions_alternative": 2,
+      "questions_board": 0,
+      "questions_exam": 0,
+      "questions_question": 1,
+      "questions_questionorigin": 1,
+      "questions_questionrevision": 1,
+      "questions_source": 1,
+      "reviews_review": 1,
+      "reviews_reviewcycle": 1,
+      "reviews_reviewschedulechange": 0,
+      "search_savedfilter": 0,
+      "sqlite_sequence": 4,
+      "taxonomy_discipline": 1,
+      "taxonomy_subject": 1,
+      "taxonomy_subsubject": 0
+    },
+    "migrations": [
+      "accounts.0001_initial",
+      "attempts.0001_learning_foundation",
+      "attempts.0002_review_receipt_constraints",
+      "auth.0001_initial",
+      "auth.0002_alter_permission_name_max_length",
+      "auth.0003_alter_user_email_max_length",
+      "auth.0004_alter_user_username_opts",
+      "auth.0005_alter_user_last_login_null",
+      "auth.0006_require_contenttypes_0002",
+      "auth.0007_alter_validators_add_error_messages",
+      "auth.0008_alter_user_username_max_length",
+      "auth.0009_alter_user_last_name_max_length",
+      "auth.0010_alter_group_name_max_length",
+      "auth.0011_update_proxy_permissions",
+      "auth.0012_alter_user_first_name_max_length",
+      "contenttypes.0001_initial",
+      "contenttypes.0002_remove_content_type_name",
+      "domain.0001_initial",
+      "errors.0001_initial",
+      "errors.0002_learning_classification",
+      "errors.0003_errorcategory_category_kind_and_more",
+      "operations.0001_initial",
+      "operations.0002_attempt_audit_events",
+      "operations.0003_answer_key_correction_audit",
+      "operations.0004_remove_auditevent_audit_event_code_valid_and_more",
+      "questions.0001_origin_catalog",
+      "questions.0002_question_catalog",
+      "reviews.0001_learning_foundation",
+      "reviews.0002_activation_review_cycle",
+      "reviews.0003_reviewschedulechange_and_more",
+      "reviews.0004_attempt_correction_projection",
+      "reviews.0005_reviewcycle_manual_purpose_and_more",
+      "search.0001_initial",
+      "taxonomy.0001_initial"
+    ],
+    "integrity_check": [
+      [
+        "ok"
+      ]
+    ],
+    "foreign_key_check": []
+  },
+  "physical_sha256": "SHA256:f03f55ef12bf86eff92fd93cb3239a8106b49723578b6e9f66bdf86fb7c5a8c4",
+  "reexport_sha256": "SHA256:400a724310db2f4e886550ff3a56d512a5512b900432c91bebf4ae6487d55bb7",
+  "duration_seconds": 5.260968499816954,
+  "historical_second_roundtrip": "Retained unchanged; this is a new focused proof of the currently affected CEI path"
+}

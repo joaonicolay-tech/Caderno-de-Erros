@@ -1,0 +1,28 @@
+{
+  "task": "V1.0-S2R4",
+  "depth": "deep",
+  "reviewer": "executing agent; no independent reviewer claimed",
+  "decision": "CHANGES_REQUIRED / HUMAN_DECISION_REQUIRED",
+  "Blocker": 0,
+  "Major": 1,
+  "Minor": 0,
+  "finding": "S6-F04 / material equivalent REV-003 gap found in explicitly requested invariant audit",
+  "F03_remediation": "FIX_VERIFIED / PASS / REJECTED_BEFORE_WRITE; normative full QUE-003 reused unchanged, all clauses tested; formal S2R4 acceptance withheld",
+  "checks": {
+    "root_cause": "QUE-003 omitted from original four-rule preflight; physical uniqueness only upper bound, not existence. Original24writes/red preserved",
+    "normative_rule": "All-state contiguous version sequence; ACTIVE/ARCHIVED exactly1current; ACTIVE current non-NULL stem/answer and >=2alternatives; DRAFT and ARCHIVED incompleteness exceptions preserved",
+    "reuse_duplication": "One tuple member plus explanatory docstring/formatting. Existing invariant_sql_rules returns same checker SQL. integrity.py byte-equal; no copied SQL/new normative semantics",
+    "order": "validate_export relations\u2192semantics; import deepcopies same rows then destination\u2192emptiness\u2192relations\u2192semantics before User.save/any INSERT. Direct mutated object also20negativeedgesPASS",
+    "zero_write": "Exact preserved F03 package on fresh target attempts/completed0/0/0,total_changes0,count/semantic/schema/physical equality,QUE-003 explicit; no rollback substitute",
+    "valid_import": "Actual V0.5 export import into freshV1 target, all21sets UUIDs/relationships/history/revisions/attempts/policies/derived equal; checker25/0,SQLiteok,FKempty",
+    "regression": "F01/N9 and exactF02 fresh zero-writePASS with allfourcodes unchanged. Other validator ASTs/constants unchanged; automated structural/destination/portability suite and fullgate PASS",
+    "edges": "20negative(reader/direct) and6positive import edges, all clauses including duplicates/gaps/incompletecurrent and legitimate DRAFT/nohistory/ARCHIVEDincomplete; positives checker25/0 after fixture correction",
+    "drift": "Same unchanged normative QUE-003 SQL drives checker and preflight. Broader checker/preflight coverage drift remains and now material REV-003 independently reproduced",
+    "audit": "All25catalogued/20SQL inventoried;20additionalchecks are not all CEI-only/deterministic. Receipt exclusion and runtime retention separate. Applicable unselected SQL and Python IANA/inaugural-date paths documented, not falsely classified as proved commit findings",
+    "architecture": "Current QUE-003 fix needed no expansion. Resolving broader family requires selection/projection/context/pure-helper strategy beyond QUE-003-only scope; no speculative implementation. Explicit section8 triggers human decision",
+    "migration_format": "0newmigration/model/schema/format/producer/policy/dependency changes; CEI1.0 unchanged; no merge/coercion/remapping/repair",
+    "gate": "Own S2R4 GREEN/exit0 observed; GREEN does not approve unchanged uncovered semantic paths. No repeated gate after new material finding",
+    "preservation": "46protected files and124historical artifacts unchanged plus latestS6blocked bytearchive; originalF03 RED and newprefixRED/log/targets retained; failedfixture run retained",
+    "scope": "S2R4 not declaredCOMPLETED/notarchived. CurrentAUTH/HUMAN_DECISION_REQUIRED; S6BLOCKED/PAUSED/RETOMABLE; futureS6 andS7\u2013S10 notexecuted; baseline/staging/Gitpublication unchanged"
+  }
+}

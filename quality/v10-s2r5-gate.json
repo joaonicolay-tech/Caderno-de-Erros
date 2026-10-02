@@ -1,0 +1,22 @@
+{
+  "task": "V1.0-S2R5",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\quality.ps1",
+  "status": "INTERRUPTED_NON_CANDIDATE",
+  "exit_code": -1,
+  "started_at": "2026-10-01T22:53:24.9225422-03:00",
+  "ended_at": "2026-10-01T23:14:40.5960372-03:00",
+  "duration_seconds": 1275.6755524,
+  "log": "work/s2r5-gate.log",
+  "stderr_log": "work/s2r5-gate-stderr.log",
+  "coverage_snapshot": "work/s2r5-gate-coverage.json",
+  "audit_snapshots": [],
+  "own_gate": true,
+  "earlier_interrupted_wrapper": "work/s2r5-gate-interrupted-attempt1.log; stdout-capture fault at lock; NON-CANDIDATE",
+  "interruption_reason": "Stopped after newly observed historical raw preservation failure PRES-01. Wrapper RED/exit-1 records deliberate interruption, not a completed product gate failure.",
+  "tests_collected": 679,
+  "final_tests_passed": null,
+  "coverage_result": "NOT OBSERVED FOR THIS RUN",
+  "pip_audit_result": "NOT REACHED",
+  "functional_hashes_equal_to_gate_start": true,
+  "official_hook_result": "NOT REACHED"
+}

@@ -1,0 +1,111 @@
+{
+  "task": "V1.0-S6R1",
+  "depth": "deep",
+  "decision": "APPROVED",
+  "review_started_at": "2026-10-02T16:56:11.120282+00:00",
+  "after_own_complete_gate": true,
+  "gate_completed_at": "2026-10-02T13:54:40.1218552-03:00",
+  "reviewer": "Executing Codex agent; own scoped review, not independent",
+  "policy": "docs/review/code-review.md",
+  "severity_counts": {
+    "Blocker": 0,
+    "Major": 0,
+    "Minor": 0
+  },
+  "findings": [],
+  "reviewed": {
+    "authority_scope": {
+      "result": "PASS",
+      "detail": "Exclusive S6R1 contract persisted before tests. This run adds evidence and administrative closure only;277functionalfiles match entry hashes. No product fix, no checkpoint audit, no future stage or Git mutation.",
+      "evidence": "tasks/current.md; quality/v10-s6r1-preservation.json"
+    },
+    "S6_original_chain": {
+      "result": "PASS retained",
+      "detail": "Historical S6 COMPLETE and original FAIL/PASS remain. All389rawentries in S6 historical map match hashes and protected copies. Upgrade,cleaninstall,physicalbackup/restore/recovery,RPO/RTO,isolation have no concrete impact from typed CEI snapshot change; no standalone rerun. Historical second round-trip retained; affected CEI import independently revalidated.",
+      "evidence": "quality/v10-s6-after-s2r4-result.md; quality/v10-s6-after-s2r4-retained-chain-review.json; quality/v10-s6r1-retained-chain.json"
+    },
+    "S2R2_F01_destination": {
+      "result": "PASS",
+      "detail": "Compatibility reads applied migrations and actual SQLite schema inside atomic transaction before first User.save/INSERT. Expected DDL is rendered without executing schema editor. Fresh N9 CLI observer proves attempts/completions0/native0/counts/schema/semantic/physical equal;11fresh permanent damage cases also PASS.",
+      "evidence": "portability.py::_validate_destination/import_into_empty; quality/v10-s6r1-f01-retest.json; quality/v10-s6r1-focused.json"
+    },
+    "S2R3_F02": {
+      "result": "PASS",
+      "detail": "Exact preserved checksum-valid invalid package rejects ATT-001,ERR-001,REV-001,REV-002 before DML on new target. Independent post-transaction checker25/0 does not substitute attempted-DML observer; original24committedINSERT FAIL retained.",
+      "evidence": "quality/v10-s6r1-f02-retest.json; quality/v10-s6-resume-a8-invariant-result.json"
+    },
+    "S2R4_F03_F04": {
+      "result": "PASS",
+      "detail": "Exact QUE-003 and REV-003 packages reject on separate new targets before DML, same counts/fingerprints; sources unchanged. Original24committedINSERT failures retained.",
+      "evidence": "quality/v10-s6r1-f03-retest.json; quality/v10-s6r1-f04-retest.json; quality/v10-s6-final-a8-f03-result.json; quality/v10-s2r4-audit-f04-result.json"
+    },
+    "S2R5_CP01": {
+      "result": "PASS",
+      "detail": "Fresh exact direct sort_order string17 rejects through shared normative decoder before destination DML; fresh checksum-valid ZIP with same invalid field also REJECTS. Original24committedINSERT/string17coercion FAIL and permanent RED preserved as historical/non-candidate. Checker was not defective.",
+      "evidence": "quality/v10-s6r1-cp01-retest.json; quality/v10-s2r5-cp01-red-historical.json"
+    },
+    "structure_types": {
+      "result": "PASS",
+      "detail": "Live inventory21SETS/242fields/14ORMkinds; closed dict/list/row/exactfield shape; native UUID,date,datetime,Decimal represented only for declared kinds then decoded. Actual datetime offsets retained; int/bool/string coercions blocked. Normative decoder/SETS AST equal published source.47permanent structural/type tests PASS;44negativeparitycases/88decisions plus2validall21native imports. Bounded required contract, no arbitrary-object or exhaustiveDBconstraint claim.",
+      "evidence": "portability.py::_decoded/_validated_rows; tests/test_cei_direct_structure.py; quality/v10-s6r1-impact-review.json; quality/v10-s6r1-focused.json"
+    },
+    "private_effective_snapshot": {
+      "result": "PASS",
+      "detail": "deepcopy(package) includes mutable manifest and nested rows; returned decoded private rows are exactly used by every INSERT and count. Caller-mutation test changes original rows/manifest during first destinationSELECT yet preserves exact copied rows/reexport; valid finite Decimal precision maintained.",
+      "evidence": "portability.py::import_into_empty; test_valid_private_snapshot_imports_all_sets_even_if_caller_mutates"
+    },
+    "semantics_and_matrix": {
+      "result": "PASS",
+      "detail": "Unchanged private RAMprojection21SETS/localowner invokes shared19normativeSQL plus3temporalhelpers; relationship validation separate and earlier. No destination alias/migration/repair in semantic projection. A14/B8/C1/D1/E1 classification coherent with25catalogrules.63matrix tests include48ZIP/directnegatives,14correspondingall21positives and1retentionexclusion; permanent question/semantic/destination/portability regressions cover prior B rules.",
+      "evidence": "portability.py::_validate_relations/_validate_semantics; integrity.py::invariant_sql_rules/invariant_python_violations; quality/v10-s2r4-expanded-matrix.json; quality/v10-s6r1-focused.json"
+    },
+    "semantic_boundaries": {
+      "result": "PASS",
+      "detail": "DB-001 is physical target integrity, AUD-002 depends on currentclock, OPS-001 is excluded OperationReceipt retention. No artificial semantic PASS for these; required physical/checker proofs remain separate.",
+      "evidence": "quality/v10-s2r4-expanded-matrix.json; tests/test_cei_semantic_matrix.py"
+    },
+    "zero_write": {
+      "result": "PASS",
+      "detail": "Observers count attempts before SQL and completions after execution; native total_changes measured before transaction rollback. All fresh CP/F proofs and matrix/parity negatives native0, exact counts/schema/semantic/physical equal. Rollback is not substituted for rejection before write.",
+      "evidence": "quality/v10-s6r1-cp01-retest.json; quality/v10-s6r1-f01-retest.json; quality/v10-s6r1-focused.json"
+    },
+    "valid_historical_import": {
+      "result": "PASS",
+      "detail": "Actual preserved historical-runtime V0.5 export accepted by currentV1 on new target. All21sets includingemptysets, UUIDs/refs/history/revisions/attempts/reviews/policies/derived match preserved source; SQLiteok/FKempty/checker25/0. All21nonempty native positives in permanent suite complement sparse historical fixture; no stricter-validation falsepositive observed.",
+      "evidence": "quality/v10-s6r1-valid-import.json; quality/v10-s6r1-focused.json"
+    },
+    "affected_roundtrip": {
+      "result": "PASS",
+      "detail": "Required because import passes changed functions. Fresh historicalV0.5→currentV1reexport→secondfreshV1import→reexport preserves21rows/UUID/refs/history/policies/schema_migrations/derived, SQLiteok/FKempty/checker25/0. Historical chain not repeated. Existing exclusions localcredentials/OperationReceipt respected.",
+      "evidence": "quality/v10-s6r1-roundtrip.json; quality/v10-s6r1-valid-import.json"
+    },
+    "migrations_format_policies": {
+      "result": "PASS",
+      "detail": "No functional/models/schema/migrations/dependencies/policies modified in S6R1;277files match entry/gate hashes, no newmigrationpath, official makemigrations reports No changes detected. CEI-EXPORT-1.0/version1.0/21SETS/V0.5-V1.0 allowlist unchanged; no conversion,merge,remapping,repair,silentcoercion.",
+      "evidence": "quality/v10-s6r1-impact-review.json; quality/v10-s6r1-gate.json; quality/v10-s6r1-preservation.json"
+    },
+    "temporary_policy_PRES01": {
+      "result": "PASS under existing limited exception",
+      "detail": "Exactly11missing synthetic temporary originals remain HUMAN_EXEMPTED, unavailable bytes never reconstructed or claimed preserved. Originalblockedreports and canonicalpercasehash/counts/log/XML remain; fresh11S2R5copies retained and S6R1 destinationregressions PASS. Policy remains coherent; before-testmanifest designates essentialproofs/log/XML/gate reports retained and freshpytestscratch disposable. Newrequiredcopies hashverified, no cleanup or new loss.",
+      "evidence": "docs/operations/temporary-test-evidence.md; quality/v10-s2r5-resume-pres01-exception.json; quality/v10-s6r1-artifact-policy.json; quality/v10-s6r1-essential-retention.json"
+    },
+    "PRIV01_history": {
+      "result": "PASS",
+      "detail": "33sanitizedreports and127protectedpriorpaths unchanged; newcanonicalreports have no localusername/privatehome/Codexworkspace/personaltempprefix. Oldoriginals/rawbytes stay outside Git and are protected. AllFAIL/PASS remainchronological; neither missingbytes nor currentgate retroactively change historical FAIL.",
+      "evidence": "quality/v10-s6r1-preservation.json; quality/v10-s6r1-prior-extra-retention.json"
+    },
+    "own_current_gate": {
+      "result": "GREEN/exit0",
+      "detail": "Own new complete quality.ps1: 679PASS, 87.15073695632516%coverage, pip-audit0vulnerabilities/0skips. Ruff,mypy,Django,migrations,coverage/domains,officialsecretshook complete. Rawlog/exit/timing/coverage/auditcopied; oldgates remainhistorical and not reused.",
+      "evidence": "quality/v10-s6r1-gate.json"
+    },
+    "handoff": {
+      "result": "Ready for documented closure",
+      "detail": "S6_REVALIDATED_AFTER_S2R5 with own currentgate/A8; historicalS6/S2R1-S2R5 COMPLETE andCP/F/PRIV resolved preserved. ArchiveS6R1/currentNO_TASK_AUTHORIZED; checkpointBLOCKED/READY_FOR_AUDIT awaits separatelyauthorizedGit audit; S7-S10 NOT AUTHORIZED. No newstaging/commit/push/tag/release.",
+      "evidence": "S6R1contract acceptance criteria"
+    }
+  },
+  "limits": "S6R1 affected CEI revalidation only. No complete Git checkpoint audit, no original-byte claim for11missingtemporaries, no independent-review or production/browser/newstage certification.",
+  "acceptance": "S6_REVALIDATED; closure requires final state/archive/current/metrics and finalscope/privacy/preservationverification",
+  "metadata_review": "Supplementary official hook PASS after renaming descriptive JSON key to official_hook; original draft and diagnostic retained outside Git. No functional/baseline/detector/filter change; current approval unchanged."
+}

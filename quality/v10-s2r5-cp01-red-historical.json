@@ -1,0 +1,71 @@
+{
+  "status": "FAIL_HISTORICAL_NON_CANDIDATE",
+  "preserved_original": true,
+  "original": {
+    "original_sort_order": null,
+    "mutated_input": "17",
+    "mutated_input_type": "str",
+    "reader_error": {
+      "type": "ExportValidationError",
+      "message": "Campo funcional possui tipo ou valor inválido."
+    },
+    "direct_import_error": null,
+    "direct_import_counts": {
+      "workspace": 1,
+      "disciplines": 1,
+      "subjects": 1,
+      "subsubjects": 0,
+      "boards": 0,
+      "exams": 0,
+      "sources": 1,
+      "questions": 1,
+      "question_revisions": 1,
+      "alternatives": 2,
+      "question_origins": 1,
+      "attempts": 1,
+      "error_categories": 10,
+      "error_classifications": 1,
+      "error_classification_revisions": 0,
+      "review_cycles": 1,
+      "reviews": 1,
+      "review_schedule_changes": 0,
+      "saved_filters": 0,
+      "mastery_events": 0,
+      "audit_events": 0
+    },
+    "attempted": {
+      "INSERT": 24,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "completed": {
+      "INSERT": 24,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "native_total_changes_delta": 24,
+    "persisted_sort_order": [
+      17,
+      "integer"
+    ],
+    "checker": {
+      "checks": 25,
+      "findings": 0
+    },
+    "physical_before": "SHA256:cd1250d9bd06c5fe142736364eb20dde5b42d17807fc6ffe1102338c88794577",
+    "physical_after": "SHA256:8ddd29c11b8a41e062948892b0a0c16f44becc88c7d22bd5041a379e614a38e4",
+    "source_zip_unchanged": true,
+    "target": "work/checkpoint-direct-structure-run2/target.sqlite3",
+    "candidate": false,
+    "source_product_files_unmodified": true
+  },
+  "permanent_regression_RED": {
+    "tests": 1,
+    "failed": 1,
+    "duration_seconds": 10.57,
+    "result": "DID NOT RAISE ExportValidationError",
+    "log": "work/s2r5-cp01-red.log",
+    "XML": "work/s2r5-cp01-red.xml",
+    "warning": "record_property incompatible with default xunit2; subsequent evidence uses xunit1; assertion was not weakened"
+  }
+}

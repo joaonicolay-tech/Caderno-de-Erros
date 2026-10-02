@@ -1,6 +1,201 @@
+# Current checkpoint — S6_REVALIDATED_AFTER_S2R5 (2026-10-02 13:59:24 -03:00)
+
+S6_REVALIDATED_AFTER_S2R5; CP-01/F01-F04 RESOLVED, fresh negatives reject before attempted/completed INSERT/UPDATE/DELETE0/0/0, native delta0 and equal fingerprints. 179 focusedPASS/780.2s;88ZIP/directnegative decisions;matrixA14/B8/C1/D1/E1 regressionsPASS; historicalV0.5validimport and focusedaffectedCEIroundtripPASS/all21sets/UUID/references/history/policies/derived/SQLiteok/FKempty/checker25/0. Own new integralS6R1gateGREEN/exit0/679PASS/87.15073695632516%coverage/pip-audit0; AFTER-gateownA8deepAPPROVED/0Blocker/0Major/0Minor. No newmaterialfindings.
+
+Historical S1-S6 and S2R1-S2R5 COMPLETED preserved; CP-01/F01-F04/PRIV-01 RESOLVED. PRES-01 exactly11 TEMP_ARTIFACT_MISSING / HUMAN_EXEMPTED; unavailable originalbytes not byte-preserved or reconstructed. All existing designated evidence/historicalFAIL-PASS retained with verified hashes/protectedcopies; newtemporaryclasses registered beforetests. No functional/models/schema/migration/format/SETS/allowlist/policy/dependency change in S6R1. CHECKPOINT_BLOCKED / READY_FOR_AUDIT: blocked only awaiting a separately authorized fullGitcheckpointaudit; none performed here. S7-S10 NOT AUTHORIZED. No newstaging/commit/push/tag/release/branch; inherited .secrets.baseline workingbytes/stagedblob preserved.
+
+Historical S6 COMPLETED remains a historical fact; S6R1 provides the new certification after the S2R5 functional change. Unaffected upgrade/cleaninstall/physicalbackup/restore/recovery/RPO-RTO/isolation/secondroundtrip proofs retained, no standalone rerun. The affected current CEI import/roundtrip was freshly revalidated.277functionalfilehashes unchanged;127priorpaths protected;389historicalS6rawentries equal and copied;33sanitizedreports unchanged.
+
+tasks/current.md = NO_TASK_AUTHORIZED; archive tasks/completed/v10-s6r1-revalidation-after-s2r5.md. START_TIME 2026-10-02 13:05:32 -03:00; END_TIME 2026-10-02 13:59:24 -03:00; duration 0:53:52.41-field report quality/v10-s6r1-result.md; quality/v10-s6r1-gate.json and quality/v10-s6r1-a8-deep.json supply own current gate/review. Published HEAD/local origin/main SHA1:5eb6930aba35a0d1083c92816a83c7c4c2451830 unchanged. STOP.
+
+## Historical checkpoints retained below
+
+# Current checkpoint — S2R5_COMPLETED / S6_REVALIDATION_REQUIRED (2026-10-02 12:20:16 -03:00)
+
+V1.0-S2R5 COMPLETED; CP-01RESOLVED prospectively. Fresh exact CP01 and F01-F04 reject before attempted/completedINSERT/UPDATE/DELETE, native delta0, counts and semantic/schema/physical fingerprints equal.179focusedPASS/727.92s;47newpermanenttests;44ZIP/directinvalidcases/88rejectiondecisions;11incompatibledestinationcases freshly reproduced and copied separately; validnativeall21/callermutability positivesPASS. Fresh historical realV0.5validimportPASS,21sets/UUID/relationships/history/revisions/attempts/reviews/policies/derived equal, SQLiteok/FKempty/checker25/0.
+
+Own new fullS2R5gateGREEN/exit0/679PASS/1454.967571s/87.15073695632516%coverage/pip-audit0; A8deepAPPROVED/0Blocker/0Major/0Minor. Absence of11temporaryoriginals does not invalidate necessaryS2R5technicalconclusions: preserved canonical per-case counts/fingerprints/hashes/results/harness and freshreproducibility supply required evidence. Exact11 remain TEMP_ARTIFACT_MISSING / HUMAN_EXEMPTED under explicit2026-10-02decision, originals notbytepreserved/reconstructed. HistoricalPRES01block/CP01FAIL/interruptedgate retained.162remainingraw/protectedcopies/33sanitizedreports/108protectedpriorpaths unchanged. No new migration/model/schema/CEIformat/SETS/producers/policy/dependency change; functionalcode/tests unchanged during thisresumption; newtemporaryretentionprocedure.
+
+HistoricalS6COMPLETED/S2R2-S2R4COMPLETED/F01-F04RESOLVED/PRIV01RESOLVED preserved. S6_REVALIDATION_REQUIRED due functionalportabilitychange after historicalFINALgate/A8S6. No S6revalidation here. CHECKPOINT_BLOCKED / AWAITING S6 REVALIDATION + CHECKPOINT AUDIT. tasks/current.mdNO_TASK_AUTHORIZED; archivedtasks/completed/v10-s2r5-cei-direct-input.md; S7-S10NOTAUTHORIZED. No newstaging/commit/push/tag/release/branch; inherited.secrets.baselinebytes/index intact; publishedHEAD/origin/mainSHA1:5eb6930aba35a0d1083c92816a83c7c4c2451830 unchanged. START_TIME 2026-10-02 11:21:38 -03:00; END_TIME 2026-10-02 12:20:16 -03:00; duration 0:58:38; GPT-6.1SolHighhuman-authorized/runtimeidentitynotindependentlyverified. Full42-fieldreport quality/v10-s2r5-resume-result.md. STOP.
+
+## Historical checkpoints retained below
+
+# Current checkpoint — S2R5 BLOCKED / HUMAN_DECISION_REQUIRED (2026-10-01 23:23:06 -03:00)
+
+S2R5 AUTHORIZED but BLOCKED on PRES-01:11 original historical synthetic target DBs in a numbered pytest temporary root missing after focused test run;162 remaining raw files match original hashes and now have protected copies.33 sanitized reports and92 protected original repository paths unchanged. Executor hashed but did not back up temporary originals before testing; default pytest retention is the inferred cause. No byte-identical original copies found. Preservation criterion not met; no S2R5_COMPLETED or completed archive.
+
+CP-01 FIX_VERIFIED, final acceptance pending: new exact target rejects string17 before attempted/completedDML, native delta0, counts/semantic/schema/physical hashes equal. Original CP-01 FAIL with24 committed INSERTs/checker25/0/source intact retained.47newtests;179focusedPASS/692.04s;44invalidZIP/directparitycases; F01-F04freshzero-writePASS; historicalV0.5valid21setsPASS. Own gate interrupted intentionally at preservation blocker:679collected, exit-1, final tests/coverage/secrets/pip-audit not observed; A8INCONCLUSIVE/1Blocker. No new migration/format/SETS/producers/policies/schema/models/dependencies.
+
+CHECKPOINT_BLOCKED. S6_REVALIDATION_REQUIRED because functional code changed after historical FINAL S6 gate/A8; no new S6 completion. Historical S6_COMPLETED/S2R2-S2R4_COMPLETED/F01-F04RESOLVED/PRIV-01_RESOLVED remain facts. tasks/current.md retains AUTHORIZED contract with Phase BLOCKED / HUMAN_DECISION_REQUIRED and STOP instruction; S7-S10NOTAUTHORIZED. Explicit human preservation decision required before resuming. No new staging/commit/push/tag/release; inherited baseline index intact; published HEAD/origin/main SHA1:5eb6930aba35a0d1083c92816a83c7c4c2451830. START_TIME 2026-10-01 22:21:18 -03:00; END_TIME 2026-10-01 23:23:06 -03:00; duration 1:01:48. Full41-field report quality/v10-s2r5-result.md. STOP.
+
+## Historical checkpoints retained below
+
+# Current checkpoint — S6_COMPLETED (2026-10-01 20:21:10 -03:00)
+
+S1–S6 COMPLETED; S2R1–S2R4 COMPLETED; S6-F01–F04 RESOLVED. New exact F01/N9/F02/F03/F04 retests rejected before any attempted/completed INSERT/UPDATE/DELETE; native delta0; counts and all fingerprints equal. Fresh real historical-runtime V0.5→V1 import PASS,21sets/UUID/relationships/history/policies/derived equal, SQLiteok/FKempty/checker25/0. Structural and applicable semantic preflight proven against unchanged approved matrix25 A14/B8/C1/D1/E1; physical DB-001, variable-clock AUD-002 and excluded-receipt OPS-001 remain explicit boundaries.
+
+Own FINAL S6 gate GREEN/exit0/632PASS/1273.081s/86.7866230462%coverage/pip-audit0;132focusedPASS/571.09s. Own A8 deep FINAL S6 APPROVED, Blocker/Major/Minor0/0/0, no new reproducible finding. Retained historical V0.4.4→V0.5→V1 upgrade, clean install, backup, isolated restore, recovery/automatic return, isolated RPO0.378565s/RTO1.707174s, second round-trip and N1–N8 verified unchanged. No new migration/CEIformat/SETS/producers/policy/model/schema change. All prior FAIL/PASS evidence,85protectedfiles and389artifacts retained byte-for-byte.
+
+Full49-field report quality/v10-s6-after-s2r4-result.md; own evidence quality/v10-s6-after-s2r4-*; archived contract tasks/completed/v10-s6-upgrade-recovery.md. tasks/current.md = NO_TASK_AUTHORIZED; S7–S10 NOT AUTHORIZED. Published HEAD/origin/main SHA1:5eb6930aba35a0d1083c92816a83c7c4c2451830 unchanged; baseline bytes/detectors/filters/index and prior staging exception preserved. No additional staging, commit, push, tag, release or checkpoint. START_TIME 2026-10-01 19:38:56 -03:00; END_TIME 2026-10-01 20:21:10 -03:00; duration 0:42:14; GPT-6.1 Sol High. STOP.
+
+## Historical checkpoints retained below
+
+# Current checkpoint — S2R4_COMPLETED / S6 resume (2026-10-01 13:48:34 -03:00)
+
+S2R4 controlled CEI expansion COMPLETED; S6-F03/F04 RESOLVED prospectively, all original RED evidence with 24 committed INSERTs immutable. Matrix of 25 checks A14/B8/C1/D1/E1 completed before functional expansion; private RAM projection of 21 sets, 19 unchanged shared SQL rules, 3 existing helpers and the same explicit local owner context. No new rules, migrations, model, schema, CEI format, producers or policies.
+
+Fresh F01–F04 zero-write PASS, valid historical real V0.5 import with 21 sets and checker 25/0; 132 focused PASS; 24 adversarial cases using the preserved separate probe with zero DML and no new commit finding. Own S2R4 gate GREEN, exit 0, 632 PASS, 86.7866230462% coverage, pip-audit 0; A8 deep APPROVED, 0 Blocker/0 Major/0 Minor. Evidence quality/v10-s2r4-expanded-*; contract tasks/completed/v10-s2r4-cei-semantic-prewrite.md. Preserved 61 repository files, 154 historical artifacts, prior metrics byte prefix and baseline bytes/index.
+
+tasks/current.md is restored V1.0-S6 AUTHORIZED / IN EXECUTION / RESUME AFTER S2R4; S6 not completed. Next authorized S6 execution must repeat only affected CEI and its own FINAL gate/A8, preserving unaffected upgrade, clean install, backup, restore, recovery, RPO/RTO and round-trip. No functional S6 ran in this S2R4 turn. S7–S10 NOT AUTHORIZED. No additional staging, commit, push, tag or release.
+
+## Historical checkpoints retained below
+
 # Project State
 
 ## Estado atual
+
+- V1.0-S2R4: **AUTHORIZED / IN EXECUTION — CONTROLLED CEI SEMANTIC EXPANSION**.
+  Decisão humana explícita 01/10/2026; START_TIME 2026-10-01 12:22:46 -03:00; GPT-6.1 Sol High.
+  Matriz completa dos25checks obrigatória antes de ampliar produto; proteger apenas categoriasA/B.
+  S6 **BLOCKED / PAUSED / RETOMÁVEL**, F03FIX_VERIFIED/F04MajorOPEN; histórico íntegro.
+  Mesmo S2R4, sem S2R5/S6funcional/S7–S10; contratos bloqueados preservados em tasks/paused/.
+  S1–S5/S2R1/S2R2/S2R3COMPLETED; S7–S10NOTAUTHORIZED; baseline/staging anteriores preservados.
+
+### Checkpoint anterior à ampliação humana S2R4
+
+- V1.0-S2R4: **AUTHORIZED / BLOCKED / HUMAN_DECISION_REQUIRED**, 2026-10-01 11:58:39 -03:00.
+  START_TIME 2026-10-01 11:19:45 -03:00; duração 0:38:54; GPT-6.1 Sol High. QUE-003/F03 fix verified:
+  freshzero-write0/0/0/fpsiguais; F01/F02PASS, válidoV0.5/21sets/checker25/0PASS;69focados únicosPASS.
+  Gate próprio GREEN/exit0/569PASS/86.6284362%coverage/audit0.
+  A8 deep CHANGES_REQUIRED por novo **S6-F04 Major/P1 OPEN / REV-003** na auditoria solicitada:
+  QuestionARCHIVED/cicloACTIVE/reviewPENDING aceito e24INSERTcommitados;checker25/1REV-003ERROR.
+  Ampliação geral das invariantes CEI determinísticas necessita autorização própria; sem broaderfix.
+  S2R4nãoCOMPLETED/nãoarquivada;F03formalresolutionpendingacceptance. S6BLOCKED/PAUSED/RETOMÁVEL;
+  contrato preservado tasks/paused/v10-s6-upgrade-recovery-after-s2r3.md. S1–S5/S2R1/S2R2/S2R3COMPLETED;
+  S7–S10NOTAUTHORIZED;baseline/staging/Gitpublicação intactos. Evidências quality/v10-s2r4-cei-que003-result.md.
+
+### Checkpoint anterior à decisão de revisão S2R4
+
+- V1.0-S2R4: **AUTHORIZED / IN EXECUTION**, START_TIME 2026-10-01 11:19:45 -03:00; GPT-6.1 Sol High.
+  Remediação exclusiva QUE-003/S6-F03; S6 **BLOCKED / PAUSED / RETOMÁVEL** até aceite próprio S2R4.
+  S1–S5/S2R1/S2R2/S2R3 COMPLETED; S7–S10 NOT AUTHORIZED. Contrato S6 bloqueado preservado
+  em tasks/paused/v10-s6-upgrade-recovery-after-s2r3.md; provas/FAILs/targets/A4/gates intactos.
+  Baseline publicada/staging anteriores preservados; sem migration/formato/Git publicação.
+
+### Checkpoint anterior à S2R4
+
+- V1.0-S6 retomada final: **AUTHORIZED / BLOCKED — S6-F03 Major/P1 OPEN**.
+  START_TIME 2026-10-01 10:31:03 -03:00; END_TIME 2026-10-01 11:00:52 -03:00; duração 0:29:49; GPT-6.1 Sol High.
+  F01/N9 e F02 exato novamente PASS zero-write; import válido V0.5→V1/21 conjuntos/derivados/checker 25/0 PASS;
+  43 focados PASS/135,05 s. A8 deep CHANGES_REQUIRED: pacote checksum-valid com Question ACTIVE sem revisão
+  corrente aceito/commitado (24 INSERTs, total_changes +24); checker pós-commit QUE-003 ERROR.
+  S6-F01/F02 permanecem RESOLVED; novo finding distinto S6-F03 OPEN. Parada aplicada antes do gate final próprio,
+  NÃO EXECUTADO; gates anteriores não substituídos. Sem fix de produto/migration/schema/formato.
+  Provas anteriores, 36 arquivos/104 artefatos protegidos e target novo NON-CANDIDATE preservados.
+  S6 NÃO COMPLETED/não arquivada; tasks/current AUTHORIZED/BLOCKED; Blocker/Major/Minor 0/1/0.
+  S1–S5/S2R1/S2R2/S2R3 COMPLETED; S7–S10 NOT AUTHORIZED. Evidência quality/v10-s6-final-result.md
+  e quality/v10-s6-final-a8-f03-result.json. Baseline/staging anteriores intactos; sem Git publicação/checkpoint.
+
+### Checkpoint anterior à parada da retomada final S6
+
+- V1.0-S6: **AUTHORIZED / IN EXECUTION — FINAL RESUMPTION AFTER S2R3** em 01/10/2026.
+  START_TIME 2026-10-01 10:31:03 -03:00; modelo humano autorizado GPT-6.1 Sol High. Somente provas CEI afetadas,
+  suíte focada, gate integral e A8 deep finais próprios. S6-F01/F02 RESOLVED; provas válidas
+  e FAILs históricos preservados. S1–S5/S2R1/S2R2/S2R3 COMPLETED; S7–S10 NOT AUTHORIZED.
+  Sem migrations/formato/policies/Git publicação ou staging adicional. Fechamento ainda pendente.
+
+### Checkpoint anterior à retomada final S6
+
+- V1.0-S2R3: **COMPLETED — S2R3_COMPLETED** em 2026-09-30 23:05:20 -03:00. START_TIME 2026-09-30 22:29:35 -03:00; duração 0:35:45; GPT-6.1 Sol High.
+  S6-F02 RESOLVED: pacote histórico exato rejeitado antes de qualquer tentativa de INSERT/UPDATE/DELETE (0/0/0), completed 0/0/0,
+  total_changes 0, todas as contagens e fingerprints iguais. 43 focados PASS; gate próprio GREEN/exit 0,
+  543 PASS, coverage 86.6284362%, pip-audit 0; A8 deep APPROVED, Blocker/Major/Minor 0/0/0.
+  Sem migration/schema/formato/policy novos; baseline/staging anteriores intactos; sem Git publicação.
+  Contrato arquivado em tasks/completed/v10-s2r3-cei-semantic-prewrite.md; evidência quality/v10-s2r3-cei-semantic-result.md.
+- V1.0-S6: **AUTHORIZED / IN EXECUTION / RESUME AFTER S2R3**, retomável em execução futura, não concluída/não arquivada.
+  S6-F01 e S6-F02 RESOLVED; N9 essencial novamente PASS. Contrato restaurado em tasks/current.md; duas pausas históricas preservadas.
+  Próxima execução repete somente provas CEI diretamente afetadas, depois gate integral próprio e A8 deep final próprios.
+  Provas válidas anteriores preservadas sem repetição automática; RED dos 24 INSERTs/quatro findings permanece histórico.
+  S1–S5/S2R1/S2R2/S2R3 COMPLETED; S7–S10 NOT AUTHORIZED. Nenhuma retomada funcional S6 na S2R3.
+
+### Checkpoint histórico de autorização S2R3
+
+- V1.0-S2R3: **AUTHORIZED / IN EXECUTION** por decisão humana de 30/09/2026.
+  START_TIME 22:29:35 -03:00, GPT-6.1 Sol High. Remediação exclusiva de
+  validação semântica CEI pré-escrita para S6-F02. S6 BLOCKED / PAUSED /
+  RETOMÁVEL; contrato preservado em
+  tasks/paused/v10-s6-upgrade-recovery-after-s2r2.md. Evidências S6/S2R2,
+  pacote incoerente e target dos 24 INSERTs permanecem intactos.
+  S1–S5/S2R1/S2R2 COMPLETED; S7–S10 NOT AUTHORIZED. Sem Git publicação,
+  staging adicional, migration/schema/formato/producer policy novos.
+
+### Checkpoint anterior à remediação S2R3
+
+- V1.0-S6 retomada: **AUTHORIZED / BLOCKED — S6-F02 Major OPEN**.
+  START_TIME 2026-09-30 21:31:07 -03:00; END_TIME 2026-09-30 22:16:47 -03:00; duração 0:45:40; modelo
+  humano autorizado GPT-6.1 Sol High. N1–N8, cadeia V0.4.4→V0.5→V1,
+  clean install, backup/restore/recovery e CEI positivo/round-trip PASS.
+  Gate próprio S6 GREEN/exit 0 antes da A8, 532 PASS, 86.5746664%
+  coverage, pip-audit limpo, 491.4 s. A8 deep **CHANGES_REQUESTED**,
+  finding S6-F02: CEI semanticamente incoerente aceito/commitado (24 INSERTs,
+  total_changes +24); checker pós-commit 25 checks / 4 findings
+  ATT-001/ERR-001/REV-001/REV-002. Validator omite coerência semântica e
+  checker em outra conexão não vê linhas não commitadas dentro do atomic.
+  Parada aplicada, sem correção de produto/migration; target NON-CANDIDATE
+  e todas as evidências anteriores preservados. Blocker/Major/Minor 0/1/0.
+  S6 NÃO COMPLETED/não arquivada; tasks/current.md AUTHORIZED / BLOCKED.
+  S6-F01 continua RESOLVED; S1–S5/S2R1/S2R2 COMPLETED. S7–S10 NOT
+  AUTHORIZED. Sem commit/push/tag/release ou staging novo; somente baseline
+  de segredos mantém a exceção anterior. Evidência quality/v10-s6-resume-result.md
+  e quality/v10-s6-resume-a8-invariant-result.json. Remediação própria pendente
+  de autorização humana, sem presumir migration/alteração estrutural CEI.
+
+### Checkpoints anteriores à parada final da retomada S6
+
+- Retomada funcional S6 explicitamente autorizada em 30/09/2026,
+  START_TIME 21:31:07 -03:00, GPT-6.1 Sol High. S6 AUTHORIZED / IN EXECUTION /
+  RESUME AFTER S2R2; S6-F01 RESOLVED. Evidência anterior preservada;
+  N9 final S2R2 incorporado sem repetição formal. S1–S5/S2R1/S2R2
+  COMPLETED; S7–S10 NOT AUTHORIZED. Sem commit/push/tag/release.
+
+- V1.0-S2R2: **COMPLETED — S2R2_COMPLETED** em 30/09/2026.
+  S6-F01 RESOLVED por validação CEI pré-escrita de migrations aplicadas e
+  schema real; N9 novo PASS, zero tentativas INSERT/UPDATE/DELETE,
+  contagens/fingerprints preservados. 32 focados PASS; gate integral final
+  GREEN, exit 0 observado, 532 testes, 86.5747% coverage,
+  Ruff/mypy/checks/migration/secrets/pip-audit PASS. A8 deep APPROVED,
+  Blocker/Major/Minor 0/0/0, migrations novas 0. Modelo autorizado GPT-6.1
+  Sol High; START_TIME 2026-09-30 20:04:05 -03:00; END_TIME 2026-09-30 20:57:39 -03:00; duração 0:53:34.
+  Evidências quality/v10-s2r2-cei-destination-result.md e
+  quality/v10-s2r2-n9-retest.json; contrato arquivado em
+  tasks/completed/v10-s2r2-cei-destination-compatibility.md.
+- V1.0-S6 no checkpoint S2R2: **AUTHORIZED / IN EXECUTION / RESUME AFTER S2R2**.
+  Contrato restaurado em tasks/current.md; cópia BLOCKED original intacta
+  em tasks/paused/v10-s6-upgrade-recovery.md. A4/probe/FAIL histórico
+  preservados byte a byte. N9 final S2R2 é reteste candidato; N1–N8 e
+  demais provas, gate final integral e A8 deep da própria S6 permanecem
+  pendentes. Esta remediação não iniciou tais provas. S1–S5 e S2R1/S2R2
+  COMPLETED; S7–S10 NOT AUTHORIZED. Apenas .secrets.baseline staged por
+  exceção humana específica para o hook oficial; nenhum commit/push/tag/release.
+
+### Registro histórico da parada S6, antes da remediação S2R2
+
+- V1.0-S6: **AUTHORIZED / BLOCKED** em 30/09/2026 após início funcional
+  autorizado sob GPT-6.1 Sol High (human-authorized execution-model
+  override for V1.0-S6). S6-F01 Major: importação CEI em destino sintético
+  vazio com migrations/schema incompatíveis executou oito INSERTs antes
+  de OperationalError; rollback preservou fingerprints, mas não comprova
+  rejeição antes de escrita. Parada obrigatória aplicada; nenhuma correção
+  funcional ou migration nova. Cadeia de upgrade, instalação limpa,
+  backup/restore/recovery e CEI positivo permanecem sem prova S6 concluída;
+  gate e A8 deep NOT_EXECUTED. Blocker 0 / Major 1 / Minor 0.
+  Evidência em quality/v10-s6-cei-result.json e
+  quality/v10-s6-upgrade-recovery-result.md. Contrato ativo AUTHORIZED /
+  BLOCKED, não arquivado. S1–S5 e S2R1 COMPLETED; S7–S10 NOT AUTHORIZED.
+  A4 aprovado preservado; L/high, impacto HIGH, migration expectation NO.
+  Somente targets sintéticos isolados foram usados e preservados como
+  não candidatos. Nenhum banco real tocado; nenhum Git add, commit, push,
+  tag ou release. START_TIME: 2026-09-30 19:32:27 -03:00.
 
 - Estado V1 após o fechamento de `V1.0-S5` (30/09/2026): S1–S5 concluídas.
   S5 `S5_COMPLETED`: BCR-1 final PASS nos três runs (FAIL inicial preservado),
@@ -605,11 +800,16 @@ baseline V0.3, Architecture v1.0 ou gate.
   `docs/V1.0_Adendo_V10-D2_Matriz_de_Browsers_S4.md` e
   `tasks/completed/v10-s4-accessibility-browser-usability.md`: evidência manual,
   browser V1 validado, A8 standard, gate e encerramento S4.
-- `tasks/current.md`: `NO_TASK_AUTHORIZED`. Contrato S5 concluído em
-  `tasks/completed/v10-s5-performance-bcr.md`; evidência final em
-  `quality/v10-s5-performance-bcr-result.md`. S2R1 permanece arquivada em
-  `tasks/completed/v10-s2r1-dependency-security-remediation.md`; cópia do
-  contrato S5 pré-remediação preservada em `tasks/paused/v10-s5-performance-bcr.md`.
+- tasks/current.md: AUTHORIZED / IN EXECUTION / RESUME AFTER S2R2 para S6;
+  cópia BLOCKED original preservada em tasks/paused/v10-s6-upgrade-recovery.md;
+  S2R2 concluída em tasks/completed/v10-s2r2-cei-destination-compatibility.md,
+  evidências quality/v10-s2r2-cei-destination-result.md e
+  quality/v10-s2r2-n9-retest.json; A4 em
+  tasks/plans/v10-s6-upgrade-recovery-plan.md. Contrato S5 concluído em
+  tasks/completed/v10-s5-performance-bcr.md; evidência final em
+  quality/v10-s5-performance-bcr-result.md. S2R1 permanece arquivada em
+  tasks/completed/v10-s2r1-dependency-security-remediation.md; cópia do
+  contrato S5 pré-remediação preservada em tasks/paused/v10-s5-performance-bcr.md.
 
 Os detalhes cronológicos anteriores permanecem nos ADRs, artefatos de
 `quality/` e contratos em `tasks/completed/`; este arquivo registra somente o
@@ -617,8 +817,9 @@ estado operacional corrente.
 
 ## Próximo passo possível
 
-Nenhuma tarefa está autorizada: `tasks/current.md` = `NO_TASK_AUTHORIZED`.
-V1.0-S1–S5 estão concluídas; o contrato S5 e sua evidência estão arquivados.
-S6–S10 permanecem `NOT AUTHORIZED` e exigem autorização humana persistida em
-novo contrato antes de qualquer execução. Migration NO; sem commit, push, tag
-ou release.
+Retomar V1.0-S6 sob tasks/current.md: AUTHORIZED / IN EXECUTION /
+RESUME AFTER S2R2. S6-F01 RESOLVED; N9 original permanece FAIL histórico,
+novo N9 S2R2 PASS é reteste candidato. Continuar provas S6 pendentes
+N1–N8 e demais cadeias independentes; posteriormente gate integral final
+e A8 deep próprios da S6. Esta remediação encerrou sem executar a retomada.
+S7–S10 NOT AUTHORIZED; nenhuma migration nova ou ação Git autorizada.

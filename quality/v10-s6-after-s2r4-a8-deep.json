@@ -1,0 +1,136 @@
+{
+  "task": "V1.0-S6 final after S2R4",
+  "review": "A8 deep FINAL S6",
+  "decision": "APPROVED",
+  "provenance": "Executing agent under docs/review/code-review.md; no claim of independent reviewer",
+  "Blocker": 0,
+  "Major": 0,
+  "Minor": 0,
+  "new_reproducible_findings": 0,
+  "F01": "RESOLVED /freshN9zero-writePASS",
+  "F02": "RESOLVED /exactZIPfreshzero-writePASS",
+  "F03": "RESOLVED /exactZIPfreshQUE-003zero-writePASS",
+  "F04": "RESOLVED /exactZIPfreshREV-003zero-writePASS",
+  "matrix": {
+    "A": 14,
+    "B": 8,
+    "C": 1,
+    "D": 1,
+    "E": 1
+  },
+  "applicable_A_B_preflight": "PASS per unchanged approved shared SQL/helper/structural source",
+  "boundaries": [
+    "DB-001 physical file not CEI semantic proof",
+    "AUD-002 variable-clock retention remains runtime-dependent",
+    "OPS-001 excluded receipts not applicable to CEI import"
+  ],
+  "fresh_V05_import": "VALID_IMPORT_PASS /21sets/UUID/relations/history/policies/derived/SQLiteok/FKempty/checker25_0",
+  "final_focused_tests": 132,
+  "own_FINAL_S6_gate": "GREEN /exit0 /632PASS",
+  "coverage_percent": 86.78662304616503,
+  "new_migrations": 0,
+  "format_sets_producers_policies_unchanged": true,
+  "historical_red_preserved": true,
+  "old_findings_not_reinterpreted": true,
+  "whole_chain_contradiction_search": {
+    "status": "PASS",
+    "scope": "Read-only search for material contradictions in whole retained S6 chain; no new fuzzing or repeated upgrade/recovery",
+    "A4": "Preserved byte-equal and scope/guards consistent with current authorization",
+    "upgrade": {
+      "status": "PASS retained",
+      "V044_checker": "17/0 in historical runtime, 24 applied migrations",
+      "V05_checker": "25/0,34 migrations",
+      "V1_checker": "25/0,34 migrations",
+      "additive_V044_to_V05": 10,
+      "new_V05_to_V1_migrations": 0,
+      "legacy_tables_all_fields_IDs_counts_fingerprints_preserved": 15,
+      "V05_V1_all_tables_snapshots_equal": true,
+      "existing_analytics_queue_equal": true,
+      "prebackup_unchanged": true
+    },
+    "clean_install": "Independent historical candidate V1 proof retained /smoke200 /SQLiteok/FKempty/checker25/0",
+    "backup_restore_recovery": {
+      "status": "PASS retained",
+      "corrupt_pair_rejected": true,
+      "occupied_destination_unchanged": true,
+      "recovered_full_snapshot_tables_and_derived_equal_chosen_source": true,
+      "injected_failure_automatic_return_equal_altered_active": true,
+      "adopted_physical_hash_equals_validated_backup": true,
+      "source_vs_backup_header_counter_difference": "Previously explained technical SQLite header counters; chosen backup/adopted/recovered physical identity is exact, source logical facts unchanged",
+      "RPO_seconds": 0.378565,
+      "RTO_seconds": 1.707174,
+      "scope": "Historical isolated exercise only; no production SLA inference"
+    },
+    "N1_N8": "8 exact negatives plus2 supplementary negatives retained /zero attempted-completed/native DML /counts/fingerprints equal; structural validators unchanged",
+    "second_roundtrip": "PASS retained; V0.5-runtime production→V1 import→V1 second round-trip,21 sets/UUID/history/policies/derived equal; OperationReceipt and regenerated local user credential excluded by existing CEI contract",
+    "historical_RED": [
+      {
+        "finding": "S6-F01",
+        "original_completed_INSERTs_before_rollback": 8,
+        "native_delta_before_rollback": 8,
+        "attempted_DML": "Not instrumented by original probe; no attempted count inferred",
+        "rollback_restored_logical_and_physical_fingerprints": true,
+        "history_not_reinterpreted": true,
+        "source": "quality/v10-s6-cei-result.json"
+      },
+      {
+        "finding": "S6-F02",
+        "original_committed_INSERTs": 24,
+        "original_codes": [
+          "ATT-001",
+          "ERR-001",
+          "REV-001",
+          "REV-002"
+        ],
+        "history_not_reinterpreted": true,
+        "source": "quality/v10-s6-resume-a8-invariant-result.json"
+      },
+      {
+        "finding": "S6-F03",
+        "original_committed_INSERTs": 24,
+        "original_codes": [
+          "QUE-003"
+        ],
+        "history_not_reinterpreted": true,
+        "source": "quality/v10-s6-final-a8-f03-result.json"
+      },
+      {
+        "finding": "S6-F04",
+        "original_committed_INSERTs": 24,
+        "original_codes": [
+          "REV-003"
+        ],
+        "history_not_reinterpreted": true,
+        "source": "quality/v10-s2r4-audit-f04-result.json"
+      }
+    ],
+    "matrix": {
+      "A": 14,
+      "B": 8,
+      "C": 1,
+      "D": 1,
+      "E": 1
+    },
+    "catalog_SQL_existing_helpers_AST_unchanged": true,
+    "new_reproducible_commit_findings": 0,
+    "no_material_contradiction_found_in_inspected_evidence": true,
+    "own_FINAL_S6_gate_and_A8_decision": "PENDING; this read-only review is supporting evidence, not stage acceptance"
+  },
+  "observer_producer_distinction": "Retained positive source.runtime denotes V1 observer. Historical v05 producer runtime emitted exact matching manifest/ZIP before V1 migration, and producer/observer all source tables are equal. Apparent label discrepancy resolved by reading original harness, not a new product finding.",
+  "review_topics": [
+    "A4/synthetic isolation",
+    "upgrade/clean install",
+    "backup/corrupt pair/isolated restore/offline recovery/automatic return/RPO-RTO",
+    "real-runtime V05 CEI and second round-trip",
+    "N1-N9/F01-S2R2/F02-S2R3/F03-F04-S2R4",
+    "matrix25/categoriesA-E/structural and semantic preflight/zero-write",
+    "IDs/counts/fingerprints/history/policies/derived",
+    "SQLite/FK/checker/migrations/format",
+    "own final S6 gate and whole-chain evidence consistency"
+  ],
+  "findings": [],
+  "no_unbounded_fuzzing_or_unaffected_proof_repetition": true,
+  "reviewed_at": "2026-10-01T20:16:41.575830-03:00",
+  "own_gate_ended_at": "2026-10-01T20:14:51.406105-03:00",
+  "review_after_own_gate_observed": true
+}

@@ -1,0 +1,328 @@
+{
+  "case": "A8-INV-ATT-001",
+  "status": "FAILED_REJECT_BEFORE_WRITE",
+  "generated_at": "2026-10-01T01:06:00.185742+00:00",
+  "package_validation": "validate_export accepted before import",
+  "mutation": "Only Attempt.is_correct false -> true while selected alternative remains different from revision correct alternative; manifest member checksum/size updated; producer/format/migrations/policies/UUIDs/references unchanged",
+  "attempted": {
+    "INSERT": 24,
+    "UPDATE": 0,
+    "DELETE": 0
+  },
+  "completed": {
+    "INSERT": 24,
+    "UPDATE": 0,
+    "DELETE": 0
+  },
+  "total_changes_delta": 24,
+  "before": {
+    "semantic_sha256": "SHA256:09e9b2aab516178efeee7bdfd3db29347a3f1e8a861191a8e7f477d8c6a6c83b",
+    "schema_sha256": "SHA256:5faccaf07aa61ecec85bab63142b5c7acb92778129250b983a396efa84095c5e",
+    "counts": {
+      "accounts_user": 0,
+      "accounts_workspace": 0,
+      "attempts_attempt": 0,
+      "attempts_operationreceipt": 0,
+      "auth_group": 0,
+      "auth_group_permissions": 0,
+      "auth_permission": 0,
+      "django_content_type": 0,
+      "django_migrations": 34,
+      "domain_masterystateevent": 0,
+      "errors_error_category": 0,
+      "errors_errorclassification": 0,
+      "errors_errorclassificationrevision": 0,
+      "operations_auditevent": 0,
+      "questions_alternative": 0,
+      "questions_board": 0,
+      "questions_exam": 0,
+      "questions_question": 0,
+      "questions_questionorigin": 0,
+      "questions_questionrevision": 0,
+      "questions_source": 0,
+      "reviews_review": 0,
+      "reviews_reviewcycle": 0,
+      "reviews_reviewschedulechange": 0,
+      "search_savedfilter": 0,
+      "sqlite_sequence": 4,
+      "taxonomy_discipline": 0,
+      "taxonomy_subject": 0,
+      "taxonomy_subsubject": 0
+    },
+    "migrations": [
+      "accounts.0001_initial",
+      "attempts.0001_learning_foundation",
+      "attempts.0002_review_receipt_constraints",
+      "auth.0001_initial",
+      "auth.0002_alter_permission_name_max_length",
+      "auth.0003_alter_user_email_max_length",
+      "auth.0004_alter_user_username_opts",
+      "auth.0005_alter_user_last_login_null",
+      "auth.0006_require_contenttypes_0002",
+      "auth.0007_alter_validators_add_error_messages",
+      "auth.0008_alter_user_username_max_length",
+      "auth.0009_alter_user_last_name_max_length",
+      "auth.0010_alter_group_name_max_length",
+      "auth.0011_update_proxy_permissions",
+      "auth.0012_alter_user_first_name_max_length",
+      "contenttypes.0001_initial",
+      "contenttypes.0002_remove_content_type_name",
+      "domain.0001_initial",
+      "errors.0001_initial",
+      "errors.0002_learning_classification",
+      "errors.0003_errorcategory_category_kind_and_more",
+      "operations.0001_initial",
+      "operations.0002_attempt_audit_events",
+      "operations.0003_answer_key_correction_audit",
+      "operations.0004_remove_auditevent_audit_event_code_valid_and_more",
+      "questions.0001_origin_catalog",
+      "questions.0002_question_catalog",
+      "reviews.0001_learning_foundation",
+      "reviews.0002_activation_review_cycle",
+      "reviews.0003_reviewschedulechange_and_more",
+      "reviews.0004_attempt_correction_projection",
+      "reviews.0005_reviewcycle_manual_purpose_and_more",
+      "search.0001_initial",
+      "taxonomy.0001_initial"
+    ],
+    "integrity_check": [
+      [
+        "ok"
+      ]
+    ],
+    "foreign_key_check": []
+  },
+  "after": {
+    "semantic_sha256": "SHA256:109971494be9c2c1e0f4c6db76e9b3f5e684b23cdc5e4e266c8a551612dea7cf",
+    "schema_sha256": "SHA256:5faccaf07aa61ecec85bab63142b5c7acb92778129250b983a396efa84095c5e",
+    "counts": {
+      "accounts_user": 1,
+      "accounts_workspace": 1,
+      "attempts_attempt": 1,
+      "attempts_operationreceipt": 0,
+      "auth_group": 0,
+      "auth_group_permissions": 0,
+      "auth_permission": 0,
+      "django_content_type": 0,
+      "django_migrations": 34,
+      "domain_masterystateevent": 0,
+      "errors_error_category": 10,
+      "errors_errorclassification": 1,
+      "errors_errorclassificationrevision": 0,
+      "operations_auditevent": 0,
+      "questions_alternative": 2,
+      "questions_board": 0,
+      "questions_exam": 0,
+      "questions_question": 1,
+      "questions_questionorigin": 1,
+      "questions_questionrevision": 1,
+      "questions_source": 1,
+      "reviews_review": 1,
+      "reviews_reviewcycle": 1,
+      "reviews_reviewschedulechange": 0,
+      "search_savedfilter": 0,
+      "sqlite_sequence": 4,
+      "taxonomy_discipline": 1,
+      "taxonomy_subject": 1,
+      "taxonomy_subsubject": 0
+    },
+    "migrations": [
+      "accounts.0001_initial",
+      "attempts.0001_learning_foundation",
+      "attempts.0002_review_receipt_constraints",
+      "auth.0001_initial",
+      "auth.0002_alter_permission_name_max_length",
+      "auth.0003_alter_user_email_max_length",
+      "auth.0004_alter_user_username_opts",
+      "auth.0005_alter_user_last_login_null",
+      "auth.0006_require_contenttypes_0002",
+      "auth.0007_alter_validators_add_error_messages",
+      "auth.0008_alter_user_username_max_length",
+      "auth.0009_alter_user_last_name_max_length",
+      "auth.0010_alter_group_name_max_length",
+      "auth.0011_update_proxy_permissions",
+      "auth.0012_alter_user_first_name_max_length",
+      "contenttypes.0001_initial",
+      "contenttypes.0002_remove_content_type_name",
+      "domain.0001_initial",
+      "errors.0001_initial",
+      "errors.0002_learning_classification",
+      "errors.0003_errorcategory_category_kind_and_more",
+      "operations.0001_initial",
+      "operations.0002_attempt_audit_events",
+      "operations.0003_answer_key_correction_audit",
+      "operations.0004_remove_auditevent_audit_event_code_valid_and_more",
+      "questions.0001_origin_catalog",
+      "questions.0002_question_catalog",
+      "reviews.0001_learning_foundation",
+      "reviews.0002_activation_review_cycle",
+      "reviews.0003_reviewschedulechange_and_more",
+      "reviews.0004_attempt_correction_projection",
+      "reviews.0005_reviewcycle_manual_purpose_and_more",
+      "search.0001_initial",
+      "taxonomy.0001_initial"
+    ],
+    "integrity_check": [
+      [
+        "ok"
+      ]
+    ],
+    "foreign_key_check": []
+  },
+  "physical_before": "SHA256:5a4f5262644ea01e789452e6b697fcc1eacf277d1aa574c694cac07b3817a3ad",
+  "physical_after": "SHA256:f450ec95120b5b84198d905ec80e14157c181b14404a0d501de453ae03f778e6",
+  "exception": null,
+  "statements_without_payload": [
+    "INSERT INTO \"accounts_user\" (\"password\", \"last_login\", \"id\", \"display_name\", \"email\", \"status\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"accounts_workspace\" (\"id\", \"name\", \"timezone_name\", \"locale\", \"lock_version\", \"created_at\", \"updated_at\", \"owner_user_id\")",
+    "INSERT INTO \"taxonomy_discipline\" (\"id\", \"workspace_id\", \"name\", \"name_key\", \"status\", \"sort_order\", \"archived_at\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"taxonomy_subject\" (\"id\", \"workspace_id\", \"discipline_id\", \"name\", \"name_key\", \"status\", \"sort_order\", \"archived_at\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"questions_source\" (\"id\", \"workspace_id\", \"name\", \"name_key\", \"status\", \"archived_at\", \"lock_version\", \"created_at\", \"updated_at\", \"source_type\", \"locator_url\", \"notes\")",
+    "INSERT INTO \"questions_question\" (\"id\", \"workspace_id\", \"discipline_id\", \"subject_id\", \"subsubject_id\", \"question_type\", \"status\", \"difficulty\", \"draft_title\", \"activated_at\", \"archived_at\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"questions_questionrevision\" (\"id\", \"workspace_id\", \"question_id\", \"version_number\", \"is_current\", \"stem\", \"explanation\", \"trap_note\", \"notes\", \"correct_alternative_id\", \"change_kind\", \"change_reason\", \"created_at\")",
+    "INSERT INTO \"questions_alternative\" (\"id\", \"workspace_id\", \"question_revision_id\", \"position\", \"label\", \"text\", \"text_key\", \"created_at\")",
+    "INSERT INTO \"questions_alternative\" (\"id\", \"workspace_id\", \"question_revision_id\", \"position\", \"label\", \"text\", \"text_key\", \"created_at\")",
+    "INSERT INTO \"questions_questionorigin\" (\"id\", \"workspace_id\", \"question_id\", \"source_id\", \"exam_id\", \"board_id\", \"reference_year\", \"reference_text\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"attempts_attempt\" (\"id\", \"workspace_id\", \"question_id\", \"question_revision_id\", \"review_id\", \"attempt_type\", \"selected_alternative_id\", \"is_correct\", \"perceived_ease\", \"occurred_at\", \"timezone_name\", \"local_date\", \"status\", \"replaces_attempt_id\", \"voided_at\", \"void_reason\", \"idempotency_key\", \"created_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_error_category\" (\"id\", \"workspace_id\", \"code\", \"display_name\", \"name_key\", \"description\", \"category_kind\", \"state\", \"merged_into_id\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"errors_errorclassification\" (\"id\", \"workspace_id\", \"attempt_id\", \"category_id\", \"other_description\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"reviews_reviewcycle\" (\"id\", \"workspace_id\", \"question_id\", \"origin_attempt_id\", \"origin_question_revision_id\", \"origin_kind\", \"manual_purpose\", \"policy_code\", \"state\", \"started_at\", \"completed_at\", \"suspended_at\", \"superseded_at\", \"suspension_reason\", \"lock_version\", \"created_at\", \"updated_at\")",
+    "INSERT INTO \"reviews_review\" (\"id\", \"workspace_id\", \"review_cycle_id\", \"question_id\", \"sequence_number\", \"stage_code\", \"state\", \"first_due_date\", \"current_due_date\", \"scheduled_from_attempt_id\", \"transition_code\", \"policy_code\", \"completed_at\", \"suspended_at\", \"lock_version\", \"created_at\", \"updated_at\")"
+  ],
+  "source": "work/s6-resume-20260930-run1/real-v05-export.zip",
+  "source_sha256": "SHA256:44b5df22e0c21ce1ad0635b6be761b1862fab394e798c28ea83a7c253bab2d67",
+  "source_unchanged": true,
+  "package": "work/s6-resume-20260930-a8-invariant/valid-checksum-inconsistent-attempt.zip",
+  "target": "work/s6-resume-20260930-a8-invariant/invariant-target.sqlite3",
+  "duration_seconds": 0.6802905998192728,
+  "rollback_is_not_prewrite_rejection": true,
+  "post_commit_readonly_checker": {
+    "checks_executed": 25,
+    "total_findings": 4,
+    "findings": [
+      {
+        "invariant_id": "ATT-001",
+        "severity": "CRITICAL",
+        "entity_type": "Attempt",
+        "technical_id": "f35fea72-af48-4b56-ada9-673710188f77",
+        "message": "O contexto persistido da tentativa \u00e9 incompat\u00edvel.",
+        "technical_context": [
+          [
+            "question_id",
+            "5f336ede-44f3-4ffe-8502-60f997f3302f"
+          ],
+          [
+            "attempt_type",
+            "INITIAL"
+          ],
+          [
+            "status",
+            "VALID"
+          ]
+        ],
+        "operational_action": "Interrompa restore ou promo\u00e7\u00e3o, preserve um backup e investigue a entidade antes de qualquer corre\u00e7\u00e3o manual autorizada."
+      },
+      {
+        "invariant_id": "ERR-001",
+        "severity": "CRITICAL",
+        "entity_type": "ErrorClassification",
+        "technical_id": "44b6d5bb-305a-43e5-8c5e-2d84edf4df5e",
+        "message": "A classifica\u00e7\u00e3o de erro \u00e9 incompat\u00edvel.",
+        "technical_context": [
+          [
+            "attempt_id",
+            "f35fea72-af48-4b56-ada9-673710188f77"
+          ],
+          [
+            "category_code",
+            "ATTENTION"
+          ]
+        ],
+        "operational_action": "Interrompa restore ou promo\u00e7\u00e3o, preserve um backup e investigue a entidade antes de qualquer corre\u00e7\u00e3o manual autorizada."
+      },
+      {
+        "invariant_id": "REV-001",
+        "severity": "CRITICAL",
+        "entity_type": "ReviewCycle",
+        "technical_id": "a8c3f429-9723-4d6d-8499-d031fddebe40",
+        "message": "A origem do ciclo de revis\u00e3o \u00e9 incompat\u00edvel.",
+        "technical_context": [
+          [
+            "question_id",
+            "5f336ede-44f3-4ffe-8502-60f997f3302f"
+          ],
+          [
+            "origin_kind",
+            "INITIAL_ERROR"
+          ]
+        ],
+        "operational_action": "Interrompa restore ou promo\u00e7\u00e3o, preserve um backup e investigue a entidade antes de qualquer corre\u00e7\u00e3o manual autorizada."
+      },
+      {
+        "invariant_id": "REV-002",
+        "severity": "CRITICAL",
+        "entity_type": "Review",
+        "technical_id": "362c67cf-e2a4-4b50-966a-a46ca322f2ca",
+        "message": "A revis\u00e3o ou sua \u00e2ncora \u00e9 incompat\u00edvel.",
+        "technical_context": [
+          [
+            "cycle_id",
+            "a8c3f429-9723-4d6d-8499-d031fddebe40"
+          ],
+          [
+            "sequence_number",
+            "1"
+          ]
+        ],
+        "operational_action": "Interrompa restore ou promo\u00e7\u00e3o, preserve um backup e investigue a entidade antes de qualquer corre\u00e7\u00e3o manual autorizada."
+      }
+    ],
+    "severity_counts": [
+      [
+        "CRITICAL",
+        4
+      ]
+    ],
+    "queries_executed": 26
+  },
+  "checker_reads_target_unchanged": true,
+  "finding": {
+    "id": "S6-F02",
+    "severity": "Major",
+    "status": "OPEN",
+    "detail": "Validator accepts is_correct inconsistent with answer key, and import commits all rows. In-transaction checker opens a separate read-only SQLite connection and cannot see uncommitted imported rows; post-commit checker observes real invariant findings."
+  },
+  "target_classification": "NON-CANDIDATE",
+  "diagnostic_uuid_representation": "Checker technical UUIDs rendered in canonical hyphenated notation without changing identity. Raw checker output preserved in work/s6-resume-20260930-a8-invariant/finding.json.",
+  "raw_a8_artifacts": [
+    {
+      "path": "work/s6-resume-20260930-a8-invariant/finding.json",
+      "bytes": 16078,
+      "sha256": "SHA256:127545b85560d51e19357be5ce583527cc84790c5a29e04dbf55ccdf76bcce88"
+    },
+    {
+      "path": "work/s6-resume-20260930-a8-invariant/invariant-target.sqlite3",
+      "bytes": 770048,
+      "sha256": "SHA256:f450ec95120b5b84198d905ec80e14157c181b14404a0d501de453ae03f778e6"
+    },
+    {
+      "path": "work/s6-resume-20260930-a8-invariant/result.json",
+      "bytes": 12739,
+      "sha256": "SHA256:91cd4c5aa6a5957794b059e32dad0a3c1be05f849f93b46175d83102a7bfdbc3"
+    },
+    {
+      "path": "work/s6-resume-20260930-a8-invariant/valid-checksum-inconsistent-attempt.zip",
+      "bytes": 17697,
+      "sha256": "SHA256:848f3a2c19ea4e90f37c6ad2b8f30ed79e91a7b4321b94cbe307eaf6e4ddbd1f"
+    }
+  ]
+}

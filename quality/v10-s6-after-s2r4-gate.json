@@ -1,0 +1,45 @@
+{
+  "task": "FINAL V1.0-S6 after S2R4",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\quality.ps1",
+  "exit_code": 0,
+  "duration_seconds": 1273.080735299969,
+  "started_at": "2026-10-01T19:53:38.325368-03:00",
+  "ended_at": "2026-10-01T20:14:51.406105-03:00",
+  "own_gate": true,
+  "log": "work/s6-after-s2r4-gate.log",
+  "coverage_report": "work/s6-after-s2r4-gate-coverage.json",
+  "coverage_percent": 86.78662304616503,
+  "pip_audit_reports": [
+    "work/s6-after-s2r4-gate-pip-audit-0.json"
+  ],
+  "status": "GREEN",
+  "gate_identity": "FINAL S6 GATE after S2R4; own execution, no previous gate substituted",
+  "tests_passed": 632,
+  "pytest_duration_seconds": 1156.32,
+  "pip_audit_vulnerabilities": 0,
+  "pip_audit_skipped_dependencies": 0,
+  "steps": {
+    "lock": "PASS",
+    "sync": "PASS",
+    "runtime": "PASS",
+    "traceability/documentary baseline": "PASS",
+    "Django development": "PASS",
+    "Django test": "PASS",
+    "Django production local": "PASS",
+    "migration check": "PASS",
+    "isolated migration": "PASS",
+    "Ruff format": "PASS",
+    "Ruff check": "PASS",
+    "mypy": "PASS",
+    "pytest": "PASS",
+    "global/domain coverage": "PASS",
+    "repository content scan": "PASS",
+    "pip-audit": "PASS"
+  },
+  "warnings": [
+    "Git CRLF normalization advisory for existing metrics file; no diff-check failure"
+  ],
+  "pytest_warnings": "None reported",
+  "coverage_snapshot": "work/s6-after-s2r4-gate-coverage.json",
+  "audit_snapshot": "work/s6-after-s2r4-gate-pip-audit-0.json"
+}

@@ -1,0 +1,43 @@
+{
+  "task": "V1.0-S2R4",
+  "invariant": "QUE-003",
+  "source": "src/modules/operations/integrity.py:654",
+  "sql_unchanged": "SHA256:3759a44af27a77f5fb4518cced9811e32ed7fd128b0c22474d62047512e1e195",
+  "entities": [
+    "Question",
+    "QuestionRevision",
+    "Alternative"
+  ],
+  "clauses": {
+    "sequence": "Every QuestionRevision of every state: version_number equals ROW_NUMBER ordered by version_number/id per question; starts at1, contiguous; duplicates rejected",
+    "current": "ACTIVE/ARCHIVED require exactly one is_current=1 QuestionRevision; not just at most1",
+    "complete": "ACTIVE current requires stem IS NOT NULL, correct_alternative_id IS NOT NULL, >=2 alternatives. Empty string is not NULL; do not redefine checker here",
+    "exceptions": "DRAFT may have no revision/no current/incomplete current. ARCHIVED still requires exactly1 current, but completeness is not tested by QUE-003. Old non-current history may be incomplete; all version sequences remain checked"
+  },
+  "existing_physical_constraints": "Current partial unique constraint prevents >1 only after attempted INSERT; version uniqueness/positive constraint cannot replace pre-write sequence check",
+  "history": "No comparison of historical Attempt to latest/current revision added; ATT-001 correction exceptions unchanged; no repair or automatic selection",
+  "implementation": "Reuse entire unchanged QUE-003 SQL via invariant_sql_rules in existing private :memory: eight-table CEI projection. No new table, model, migration or checker behavior; no architectural expansion needed for this finding",
+  "other_invariants_audit": "Inventory other existing rules separately before closure; complete checker equivalence is not inferred from five scoped rules",
+  "all_existing_sql_rule_ids": [
+    "WS-001",
+    "WS-002",
+    "QUE-001",
+    "QUE-002",
+    "QUE-003",
+    "ATT-001",
+    "ATT-003",
+    "REV-001",
+    "REV-002",
+    "REV-003",
+    "REV-004",
+    "ERR-001",
+    "ERR-002",
+    "OPS-001",
+    "CAT-001",
+    "REV-005",
+    "REV-006",
+    "AUD-001",
+    "SAV-001",
+    "DOM-001"
+  ]
+}

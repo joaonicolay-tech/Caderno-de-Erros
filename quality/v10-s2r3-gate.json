@@ -1,0 +1,29 @@
+{
+  "started_at": "2026-09-30 22:51:41 -03:00",
+  "finished_at": "2026-09-30 23:00:34 -03:00",
+  "exit_code": 0,
+  "elapsed_seconds": 533.1117479,
+  "status": "GREEN",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\quality.ps1",
+  "tests": 543,
+  "pytest_duration_seconds": 440.29,
+  "coverage_percent": 86.62843619151647,
+  "pip_audit_vulnerabilities": 0,
+  "pip_audit_report": "C:\\src\\Projeto\\.tools\\quality\\pip-audit-c6530881a1b243f382c6b23cd008382b.json",
+  "checks": {
+    "lock": "PASS",
+    "sync": "PASS",
+    "runtime": "PASS",
+    "repository": "PASS",
+    "Django_profiles": "PASS",
+    "migration_check": "PASS",
+    "empty_migration": "PASS",
+    "Ruff_format": "PASS",
+    "Ruff_lint": "PASS",
+    "mypy": "PASS",
+    "pytest": "PASS",
+    "coverage": "PASS",
+    "pip_audit": "PASS",
+    "credential_scan": "PASS"
+  }
+}

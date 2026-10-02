@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "all_sql_rules_unchanged": true,
+  "all_existing_checker_functions_classes_ast_unchanged": true,
+  "added_accessor_only": "invariant_sql_rules",
+  "semantic_preflight_scope": [
+    "ATT-001",
+    "ERR-001",
+    "REV-001",
+    "REV-002"
+  ],
+  "queries": {
+    "ATT-001": "SHA256:cee928ee36fc329ba9c908c29820e87212e4c09d1cc0ac66918e19b8ea6b2053",
+    "REV-001": "SHA256:704f9a0aac84195f3c041217f210949dffc4077c24565833b80e6de72a9d379a",
+    "REV-002": "SHA256:4866a11f11d6d5ec5177551561e5c6e190f9dff019ee2567d280a7ad5fde7b2b",
+    "ERR-001": "SHA256:1b42926b11b319535512f915ebdb14d8261629ad2c09c90ed24c5458edddaba1"
+  },
+  "projection": "private sqlite3 :memory:; eight closed CEI record sets; no file/Django alias/user/migration/destination writes",
+  "limit": "The extension evaluates the four S6-F02 invariants; it does not claim to execute the whole 25-check catalog on the package. Existing structural and destination validation are retained."
+}

@@ -1,0 +1,2416 @@
+{
+  "sets": 21,
+  "total_fields": 242,
+  "ORM_type_counts": {
+    "UUIDField": 27,
+    "CharField": 67,
+    "PositiveIntegerField": 17,
+    "DateTimeField": 51,
+    "ForeignKey": 49,
+    "IntegerField": 3,
+    "SmallIntegerField": 2,
+    "TextField": 7,
+    "BooleanField": 2,
+    "PositiveSmallIntegerField": 2,
+    "OneToOneField": 4,
+    "DateField": 8,
+    "JSONField": 1,
+    "DecimalField": 2
+  },
+  "normative_source": "src/modules/data_management/portability.py::_decoded and trusted closed SETS/model metadata",
+  "native_adapter_does_not_normalize_datetime_or_numeric_types": true,
+  "matrix": [
+    {
+      "set": "workspace",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "timezone_name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "locale",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "pt-BR"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "disciplines",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name_key",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "status",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "ACTIVE",
+            "ARCHIVED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "sort_order",
+          "ORM_type": "IntegerField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "archived_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "subjects",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "discipline",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name_key",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "status",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "ACTIVE",
+            "ARCHIVED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "sort_order",
+          "ORM_type": "IntegerField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "archived_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "subsubjects",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "subject",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name_key",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "status",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "ACTIVE",
+            "ARCHIVED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "sort_order",
+          "ORM_type": "IntegerField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "archived_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "boards",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name_key",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "status",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "ACTIVE",
+            "ARCHIVED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "archived_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "website_url",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 2048,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "exams",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "board",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name_key",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "status",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "ACTIVE",
+            "ARCHIVED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "archived_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "year",
+          "ORM_type": "SmallIntegerField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "sources",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name_key",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "status",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "ACTIVE",
+            "ARCHIVED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "archived_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "source_type",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 24,
+          "choices": [
+            "BOOK",
+            "PDF",
+            "WEBSITE",
+            "COURSE",
+            "QUESTION_BANK",
+            "OTHER"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "locator_url",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 2048,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "notes",
+          "ORM_type": "TextField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "questions",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "discipline",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "subject",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "subsubject",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "question_type",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 24,
+          "choices": [
+            "OBJECTIVE_SINGLE"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "status",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "DRAFT",
+            "ACTIVE",
+            "ARCHIVED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "difficulty",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 16,
+          "choices": [
+            "EASY",
+            "MEDIUM",
+            "HARD"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "draft_title",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 200,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "activated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "archived_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "question_revisions",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "question",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "version_number",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "is_current",
+          "ORM_type": "BooleanField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "stem",
+          "ORM_type": "TextField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "explanation",
+          "ORM_type": "TextField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "trap_note",
+          "ORM_type": "TextField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "notes",
+          "ORM_type": "TextField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "correct_alternative",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "change_kind",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 24,
+          "choices": [
+            "INITIAL",
+            "ENRICHMENT",
+            "NON_CRITICAL_EDIT",
+            "CRITICAL_CORRECTION"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "change_reason",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 1000,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "alternatives",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "question_revision",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "position",
+          "ORM_type": "PositiveSmallIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "label",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 10,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "text",
+          "ORM_type": "TextField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "text_key",
+          "ORM_type": "TextField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "question_origins",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "question",
+          "ORM_type": "OneToOneField",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "source",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "exam",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "board",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "reference_year",
+          "ORM_type": "SmallIntegerField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "reference_text",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 1000,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "attempts",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "question",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "question_revision",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "review",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "attempt_type",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "INITIAL",
+            "REVIEW"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "selected_alternative",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "is_correct",
+          "ORM_type": "BooleanField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "perceived_ease",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 16,
+          "choices": [
+            "EASY",
+            "MEDIUM",
+            "HARD"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "occurred_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "timezone_name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "local_date",
+          "ORM_type": "DateField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "status",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "VALID",
+            "VOIDED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "replaces_attempt",
+          "ORM_type": "OneToOneField",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "voided_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "void_reason",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 1000,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "idempotency_key",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "error_categories",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "display_name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name_key",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 120,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "description",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 500,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "category_kind",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "STANDARD",
+            "PERSONAL"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "state",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "ACTIVE",
+            "ARCHIVED",
+            "MERGED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "merged_into",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "error_classifications",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "attempt",
+          "ORM_type": "OneToOneField",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "category",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "other_description",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 500,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "error_classification_revisions",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "error_classification",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "revision_number",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "category",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "other_description",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 500,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "change_reason",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 1000,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "review_cycles",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "question",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "origin_attempt",
+          "ORM_type": "OneToOneField",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "origin_question_revision",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "origin_kind",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 24,
+          "choices": [
+            "INITIAL_ERROR",
+            "QUESTION_ACTIVATION",
+            "MANUAL",
+            "ATTEMPT_CORRECTION"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "manual_purpose",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 24,
+          "choices": [
+            "INCLUSION",
+            "MASTERY_REOPEN"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "policy_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "state",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "ACTIVE",
+            "COMPLETED",
+            "SUSPENDED",
+            "SUPERSEDED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "started_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "completed_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "suspended_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "superseded_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "suspension_reason",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 1000,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "reviews",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "review_cycle",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "question",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "sequence_number",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "stage_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 8,
+          "choices": [
+            "D1",
+            "D7",
+            "D14",
+            "D30"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "state",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 16,
+          "choices": [
+            "PENDING",
+            "COMPLETED",
+            "SUSPENDED",
+            "CANCELLED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "first_due_date",
+          "ORM_type": "DateField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "current_due_date",
+          "ORM_type": "DateField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "scheduled_from_attempt",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "transition_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "policy_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "completed_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "suspended_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "lock_version",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "review_schedule_changes",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "review",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "previous_due_date",
+          "ORM_type": "DateField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "new_due_date",
+          "ORM_type": "DateField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "timezone_name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "reason_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "correlation_id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "saved_filters",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 80,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "name_key",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 160,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "context_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [
+            "QUESTIONS_LIST"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "schema_version",
+          "ORM_type": "PositiveSmallIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "payload",
+          "ORM_type": "JSONField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "updated_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "mastery_events",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "question",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "sequence",
+          "ORM_type": "PositiveIntegerField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "event_type",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 24,
+          "choices": [
+            "DOMINATED",
+            "AUTO_REOPENED",
+            "MANUAL_REOPENED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "formula_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "evaluated_on",
+          "ORM_type": "DateField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "domain_index",
+          "ORM_type": "DecimalField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "confidence",
+          "ORM_type": "DecimalField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "trigger_attempt",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "manual_cycle",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "reason_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "occurred_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    },
+    {
+      "set": "audit_events",
+      "fields": [
+        {
+          "name": "id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "workspace",
+          "ORM_type": "ForeignKey",
+          "relation": true,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "event_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 40,
+          "choices": [
+            "REVIEW_RESCHEDULED",
+            "MANUAL_REVIEW_INCLUDED",
+            "PERSONAL_CATEGORY_RENAMED",
+            "PERSONAL_CATEGORY_ARCHIVED",
+            "PERSONAL_CATEGORY_MERGED",
+            "ATTEMPT_VOIDED",
+            "ATTEMPT_REPLACED",
+            "ANSWER_KEY_CORRECTED",
+            "QUESTION_PERMANENTLY_DELETED"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "entity_type",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [
+            "REVIEW",
+            "REVIEW_CYCLE",
+            "ERROR_CATEGORY",
+            "ATTEMPT",
+            "QUESTION"
+          ],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "entity_id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "previous_entity_id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "related_entity_id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "correlation_id",
+          "ORM_type": "UUIDField",
+          "relation": false,
+          "nullable": false,
+          "max_length": 32,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "reason_code",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "previous_date",
+          "ORM_type": "DateField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "new_date",
+          "ORM_type": "DateField",
+          "relation": false,
+          "nullable": true,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "timezone_name",
+          "ORM_type": "CharField",
+          "relation": false,
+          "nullable": true,
+          "max_length": 64,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        },
+        {
+          "name": "created_at",
+          "ORM_type": "DateTimeField",
+          "relation": false,
+          "nullable": false,
+          "max_length": null,
+          "choices": [],
+          "source": "shared _decoded with native typed representation only for UUID, UTC datetime, date, Decimal"
+        }
+      ]
+    }
+  ],
+  "representative_cases": 18,
+  "per_set_missing_field_cases": 21,
+  "structure_cases": 5,
+  "parity": "ZIP and direct snapshot reject before DML",
+  "supported_native_values": "UUID, UTC aware datetime, date, finite Decimal; same _decoded governs nullable/int/bool/enum/string/JSON"
+}

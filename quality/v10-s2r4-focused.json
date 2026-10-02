@@ -1,0 +1,596 @@
+{
+  "status": "PASS after scoped fixture correction and two-case rerun",
+  "unique_tests_pass": 69,
+  "initial": {
+    "tests": 69,
+    "passed": 67,
+    "failed": 2,
+    "duration_seconds": 254.13,
+    "exit": 1,
+    "preserved_log": "work/s2r4-focused.log",
+    "preserved_xml": "work/s2r4-focused.xml"
+  },
+  "rerun": {
+    "tests": 2,
+    "passed": 2,
+    "failed": 0,
+    "duration_seconds": 14.57,
+    "exit": 0,
+    "log": "work/s2r4-focused-rerun.log",
+    "xml": "work/s2r4-focused-rerun.xml"
+  },
+  "focused_duration_seconds_sum": 268.7,
+  "failed_initial_cases": [
+    "test_que003_normative_valid_edges_import[archived_incomplete]",
+    "test_que003_normative_valid_edges_import[archived_one_current]"
+  ],
+  "fixture_correction": "ARCHIVED fixture initially retained an ACTIVE cycle/PENDING review. Updated fixture to unchanged archive_question SUSPENDED lifecycle; did not change product rules or relax assertions. Original FAIL not overwritten",
+  "QUE003_negative_cases": 20,
+  "QUE003_valid_edges": 6,
+  "properties": [
+    {
+      "case": "active_zero_current",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_zero_current",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "archived_zero_current",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "archived_zero_current",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_two_current",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_two_current",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "archived_two_current",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "archived_two_current",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "sequence_start_two",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "sequence_start_two",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "sequence_gap",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "sequence_gap",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "duplicate_version",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "duplicate_version",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_missing_stem",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_missing_stem",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_missing_answer",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_missing_answer",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_one_alternative",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_one_alternative",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_semantic_schema_physical_equal": true
+    },
+    {
+      "case": "active_one_current",
+      "checks": 25,
+      "findings": 0,
+      "import": "PASS"
+    },
+    {
+      "case": "draft_zero_current",
+      "checks": 25,
+      "findings": 0,
+      "import": "PASS"
+    },
+    {
+      "case": "draft_no_revision",
+      "checks": 25,
+      "findings": 0,
+      "import": "PASS"
+    },
+    {
+      "case": "draft_incomplete",
+      "checks": 25,
+      "findings": 0,
+      "import": "PASS"
+    },
+    {
+      "case": "ATT-001",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ATT-001"
+      ]
+    },
+    {
+      "case": "ATT-001",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ATT-001"
+      ]
+    },
+    {
+      "case": "ERR-001",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ERR-001"
+      ]
+    },
+    {
+      "case": "ERR-001",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ERR-001"
+      ]
+    },
+    {
+      "case": "REV-001",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "REV-001"
+      ]
+    },
+    {
+      "case": "REV-001",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "REV-001"
+      ]
+    },
+    {
+      "case": "REV-002",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "REV-002"
+      ]
+    },
+    {
+      "case": "REV-002",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "REV-002"
+      ]
+    },
+    {
+      "case": "combined",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ATT-001",
+        "ERR-001",
+        "REV-001",
+        "REV-002"
+      ]
+    },
+    {
+      "case": "combined",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ATT-001",
+        "ERR-001",
+        "REV-001",
+        "REV-002"
+      ]
+    },
+    {
+      "case": "archived_one_current",
+      "checks": 25,
+      "findings": 0,
+      "import": "PASS"
+    },
+    {
+      "case": "archived_incomplete",
+      "checks": 25,
+      "findings": 0,
+      "import": "PASS"
+    }
+  ],
+  "warnings": "none reported; junit_family=legacy",
+  "final_entire_suite_gate": "record separately; focused result aggregates initial passing cases and exact affected rerun, not a fictitious single 69-PASS execution"
+}

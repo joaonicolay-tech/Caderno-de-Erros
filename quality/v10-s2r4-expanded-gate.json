@@ -1,0 +1,40 @@
+{
+  "task": "V1.0-S2R4 controlled expansion",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\quality.ps1",
+  "exit_code": 0,
+  "duration_seconds": 1308.2869380000047,
+  "started_at": "2026-10-01T13:17:35.983059-03:00",
+  "ended_at": "2026-10-01T13:39:24.270001-03:00",
+  "own_gate": true,
+  "log": "work/s2r4-expanded-gate.log",
+  "coverage_report": "work/s2r4-expanded-gate-coverage.json",
+  "coverage_percent": 86.78662304616503,
+  "pip_audit_reports": [
+    "work/s2r4-expanded-gate-pip-audit-0.json"
+  ],
+  "status": "GREEN",
+  "tests_passed": 632,
+  "pytest_duration_seconds": 1218.33,
+  "pip_audit_vulnerabilities": 0,
+  "pip_audit_skipped_dependencies": 0,
+  "steps": {
+    "lock": "PASS",
+    "sync": "PASS",
+    "runtime": "PASS",
+    "Django development": "PASS",
+    "Django test": "PASS",
+    "Django production local": "PASS",
+    "makemigrations check": "PASS",
+    "isolated migrate": "PASS",
+    "Ruff format": "PASS",
+    "Ruff check": "PASS",
+    "mypy": "PASS",
+    "pytest": "PASS",
+    "coverage global/domain": "PASS",
+    "pip-audit": "PASS",
+    "repository content scan": "PASS"
+  },
+  "coverage_report_snapshot": "work/s2r4-expanded-gate-coverage.json",
+  "pip_audit_report_snapshot": "work/s2r4-expanded-gate-pip-audit-0.json",
+  "does_not_substitute_final_S6_gate": true
+}

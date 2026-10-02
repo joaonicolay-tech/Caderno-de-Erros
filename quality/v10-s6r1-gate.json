@@ -1,0 +1,52 @@
+{
+  "task": "V1.0-S6R1",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\quality.ps1",
+  "status": "GREEN",
+  "exit_code": 0,
+  "started_at": "2026-10-02T13:27:47.3060943-03:00",
+  "ended_at": "2026-10-02T13:54:40.1218552-03:00",
+  "duration_seconds": 1612.8137872,
+  "log": "work/s6r1-gate.log",
+  "stderr_log": "work/s6r1-gate-stderr.log",
+  "coverage_snapshot": "work/s6r1-gate-coverage.json",
+  "audit_snapshots": [
+    "work/s6r1-gate-pip-audit-f62f26b92e884b5683462367bb90d15d.json"
+  ],
+  "own_gate": true,
+  "previous_non_candidate": "work/s2r5-gate-result.json; interrupted after PRES-01; historical record retained",
+  "execution": "S6R1 own new complete gate after S2R5",
+  "tests_passed": 679,
+  "pytest_duration_seconds": 1488.84,
+  "coverage_percent": 87.15073695632516,
+  "coverage_domain_check": "PASS",
+  "pip_audit_vulnerabilities": 0,
+  "pip_audit_skipped_dependencies": 0,
+  "audit_reports": [
+    {
+      "report": "work/s6r1-gate-pip-audit-f62f26b92e884b5683462367bb90d15d.json",
+      "dependency_count": 53,
+      "vulnerabilities": 0,
+      "skipped_dependencies": 0
+    }
+  ],
+  "pytest_warnings": "None reported",
+  "migrations_check": "No changes detected",
+  "functional_hashes_equal_execution_and_gate_start": true,
+  "functional_files_verified": 277,
+  "functional_hash_manifest": "work/s6r1-before.json",
+  "official_hook": "PASS in complete unchanged gate",
+  "checks": {
+    "lock": "PASS",
+    "runtime": "PASS",
+    "repository_traceability": "PASS",
+    "Django_development_test_production_local": "PASS",
+    "migration_and_empty_install": "PASS",
+    "Ruff_format_lint": "PASS",
+    "mypy": "PASS",
+    "pytest_coverage_and_domains": "PASS",
+    "pip_audit": "PASS",
+    "official_hook": "PASS"
+  },
+  "test_scratch_classification": "DISPOSABLE / NOT_REQUIRED_FOR_FINAL_EVIDENCE registered before execution",
+  "no_historical_gate_result_reuse": true
+}

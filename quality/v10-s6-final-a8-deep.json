@@ -1,0 +1,56 @@
+{
+  "task": "V1.0-S6 final resumption",
+  "depth": "deep",
+  "decision": "CHANGES_REQUIRED / NOT APPROVED",
+  "reviewer": "Executing agent; no independent reviewer/subagent requested",
+  "START_TIME": "2026-10-01 10:31:03 -03:00",
+  "END_TIME": "2026-10-01 10:53:20 -03:00",
+  "duration": "0:22:17",
+  "finding_counts": {
+    "Blocker": 0,
+    "Major": 1,
+    "Minor": 0
+  },
+  "findings": [
+    {
+      "id": "S6-F03",
+      "severity": "Major",
+      "priority": "P1",
+      "status": "OPEN",
+      "invariant": "QUE-003",
+      "question": "5f336ede-44f3-4ffe-8502-60f997f3302f",
+      "revision": "35f771bb-ad9b-4973-b8f1-5c4d4af21673",
+      "impact": "ACTIVE Question has no current revision; question presentation and attempt semantics cease to be deterministic",
+      "root_cause": "Semantic preflight covers ATT-001/ERR-001/REV-001/REV-002 only; QUE-003 omitted. File-based checker in transaction still reads committed empty target through independent mode=ro connection.",
+      "code_locations": [
+        "src/modules/data_management/portability.py:642",
+        "src/modules/data_management/portability.py:792",
+        "src/modules/operations/integrity.py:654"
+      ],
+      "no_product_fix": true,
+      "stop_applied": true,
+      "target": "NON-CANDIDATE, preserved, never reused"
+    }
+  ],
+  "resolved_findings": {
+    "S6-F01": "RESOLVED: new fresh N9 zero-write PASS",
+    "S6-F02": "RESOLVED: exact original invalid package/four codes zero-write PASS"
+  },
+  "reviewed": {
+    "A4_isolation": "Original approved A4 preserved; only fresh synthetic targets/new roots. No original/active/user DB. Bad QUE-003 target NON-CANDIDATE preserved, not reused.",
+    "N1_N8": "Direct historical negatives hash-equal, accepted; six structural validator ASTs match published HEAD after removing only the added semantic call. All N1\u2013N8 reject before that call; automated related regressions PASS.",
+    "F01_S2R2": "Historical eight INSERTs + rollback retained; S2R2 completed evidence retained; new final N9 zero attempts/changes and unchanged counts/fingerprints.",
+    "F02_S2R3": "Historical 24 committed INSERTs/four CRITICAL findings retained; S2R3 completed evidence/code/tests retained; exact package rejects with ATT-001/ERR-001/REV-001/REV-002, zero final destination writes.",
+    "structural_semantic_order": "Destination preflight and four-rule preflight still precede DML. Additional existing QUE-003 invariant is absent, demonstrated by new checksum-valid package accepted and 24 INSERTs committed.",
+    "root_cause": "The four-invariant projection does not validate current revision cardinality. File-based independent mode=ro checker called inside atomic sees old committed empty target, cannot see new rows, so commit is allowed; post-commit sees QUE-003.",
+    "upgrade_clean": "Historical real V0.4.4 24 migrations/17 checks; ten real additive migrations to V0.5 34/25 checks; V1 migration plan empty/equal facts. Clean install defaults/smoke verified in retained JSON. Not re-executed formally.",
+    "backup_restore_recovery": "Independent backup/corrupt rejection/isolated restore/offline adoption/automatic return/final recovery snapshots and hashes retained; RPO 0.378565 s/RTO 1.707174 s only isolated exercise, no real SLA extrapolation.",
+    "CEI_roundtrip": "Actual historical V0.5 producer package verified independently and imported anew; all 21 sets/IDs/counts/relationships/history/policies and functional hash equal; derived analytics/queue/domain/priority equal retained source. Previous second V1 import roundtrip preserved without formal re-execution.",
+    "SQLite_FK_checker": "Valid targets integrity_check ok/FK empty/checker 25/0; new F03 target physical integrity/FK still PASS but semantic checker 25/1 QUE-003 ERROR. Physical correctness is insufficient for semantic acceptability.",
+    "migrations_format": "Product code/schema/models/migrations/CEI policies/producers untouched during final resumption; no merge/conversion/remapping/repair/new dependency.",
+    "tests": "43 focused PASS / 135.05 s, including ten four-invariant negatives and valid history/corrections. New QUE-003 adversarial automated regression separately RED, showing focused GREEN is insufficient.",
+    "gate": "Final own integral S6 gate NOT_EXECUTED: mandatory stop on material semantic/integrity finding under tasks/current Constraints and A4 section 7. Previous GREEN S6/S2R2/S2R3 gates not substituted.",
+    "scope": "Only authorized S6 proof harness/evidence/contracts/state/metrics. No product fix or S7\u2013S10, no staging/publication. S6 remains AUTHORIZED/BLOCKED, not archived and not NO_TASK_AUTHORIZED."
+  },
+  "safe_next_direction": "Separately authorize remediation that inventories CEI-demonstrable invariants and reuses normative rules, at least QUE-003 before any destination DML; preserve valid historical imports, F01/F02 and zero-write regression. No migration/format/architecture change shown necessary; no fix applied in this stopped execution."
+}

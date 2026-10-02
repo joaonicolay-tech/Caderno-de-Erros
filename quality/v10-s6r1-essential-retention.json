@@ -1,0 +1,168 @@
+{
+  "task": "V1.0-S6R1",
+  "status": "PASS",
+  "files": [
+    {
+      "source": "work/s6r1-cp01-20261002-run2/result.json",
+      "sha256": "SHA256:6de9e62b933148352f545d6d92a6f82b4665e1980e3cff21f22482429a1f3c78",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6r1-cp01-20261002-run2/same-invalid-field-checksum-valid.zip",
+      "sha256": "SHA256:340e8c25f471c82ac1121a7d6b1f27ebfad787fccaace147437ef8a05f387af8",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6r1-cp01-20261002-run2/target.sqlite3",
+      "sha256": "SHA256:aef3ef26faa85414962bf63daae712d2d39115cf30820fddc39817a9a156b19d",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6-cei-prewrite-s6r1-f01-20261002/result.json",
+      "sha256": "SHA256:3e92135ed38de591c62d0b901c1d5540dd394153dc93e01f958792fc5690c537",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6-cei-prewrite-s6r1-f01-20261002/source-v1.sqlite3",
+      "sha256": "SHA256:f285566070739237924c29f25d4570f3034d2db7a4f2a37c69647cba6cd7f585",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6-cei-prewrite-s6r1-f01-20261002/target-v044-empty-N9.sqlite3",
+      "sha256": "SHA256:caf27aa95e9268a71e4374d85e5f076859f5b83a8432fac67b37ab32917c0f03",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6-cei-prewrite-s6r1-f01-20261002/valid-v1-export.zip",
+      "sha256": "SHA256:d53b3ea27aac76111cd242497ec283dbff2b397fba7723d18c9c308e5415c419",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s2r3-s6r1-f02-20261002/result.json",
+      "sha256": "SHA256:b4e8db91b7072e644ba6fb150bd31b992e25290bb7466e822f62d5b0d2c55ba9",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s2r3-s6r1-f02-20261002/target.sqlite3",
+      "sha256": "SHA256:7012df8367963750171ef2cc5c5102dce0aa32cd97adeba5f61203d5eaa0a1d6",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s2r3-s6r1-f03-20261002/result.json",
+      "sha256": "SHA256:6527949c2ab2f1c17d97a239f184942ba37711a7913be350c19352fabfdc298b",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s2r3-s6r1-f03-20261002/target.sqlite3",
+      "sha256": "SHA256:5464d7b78dd153836642e6ff6ea6e6cbcdda28521460fc9a49ff90fd945c98f9",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s2r3-s6r1-f04-20261002/result.json",
+      "sha256": "SHA256:2a74a679de2753a4e292f5f1ebe3603d0808194736febf5bf36901c8a6a2d754",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s2r3-s6r1-f04-20261002/target.sqlite3",
+      "sha256": "SHA256:89e2f06a0e5fbcfb58db68c95386a356de89a523499ef24ce0482cc126e12571",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6-final-s6r1-valid-20261002/result.json",
+      "sha256": "SHA256:20c0d591da3e6315dc0a485c148aecdf9300dd80ca456e1a8983603308b2af18",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6-final-s6r1-valid-20261002/v1-reexport.zip",
+      "sha256": "SHA256:d1333a1c43e08c28a046d5f06220c0a777b76fa9eebff36060e013aa378d2373",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6-final-s6r1-valid-20261002/valid-v05-to-v1.sqlite3",
+      "sha256": "SHA256:2b94e16085034ac6f78483fdb186794342328d69fb64e204872a5b0050648227",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6r1-roundtrip-20261002/result.json",
+      "sha256": "SHA256:3840a5d56de4b494a826c18d90693dcee21ba35e6efcb86fa15565109a37a1d0",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6r1-roundtrip-20261002/v1-roundtrip.sqlite3",
+      "sha256": "SHA256:f03f55ef12bf86eff92fd93cb3239a8106b49723578b6e9f66bdf86fb7c5a8c4",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6r1-roundtrip-20261002/v1-second-reexport.zip",
+      "sha256": "SHA256:400a724310db2f4e886550ff3a56d512a5512b900432c91bebf4ae6487d55bb7",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6r1-f01-proof.json",
+      "sha256": "SHA256:f509487488b1376145d310e44e19cdd24b305eeea7795a11173a7a9629aea27c",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6r1_cp01.py",
+      "sha256": "SHA256:6f291394620793c8a2921b43364e4a7ca78a5b81b7675fd8e2685fa3810a537a",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6r1_f01.py",
+      "sha256": "SHA256:d309ac7a77b5281f36824f347fdeb27f12d35c19c39f7fe6ef6bbeb9ba9181d6",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    },
+    {
+      "source": "work/s6r1_roundtrip.py",
+      "sha256": "SHA256:c36e904d9c582e8b305d2414846a840ecc3fa604709f06296e0b8271ed2696b4",
+      "copy_area": "work/s6r1-retained-essential",
+      "copy_name_rule": "SHA256 hexadecimal digest without prefix",
+      "retention": "DESIGNATED_FOR_RETENTION"
+    }
+  ],
+  "copies_verified_before_any_cleanup": true
+}

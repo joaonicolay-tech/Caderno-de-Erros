@@ -1,0 +1,15 @@
+{
+  "task": "V1.0-S2R5",
+  "execution": "resumption2026-10-02",
+  "registered_before_tests": true,
+  "artifact_classes": {
+    "historical162raw": "DESIGNATED_FOR_RETENTION; original hashes+protected copies verified before execution",
+    "historical11missing": "TEMP_ARTIFACT_MISSING / HUMAN_EXEMPTED; no reconstruction",
+    "fresh_CP01_F01_F04_valid_roots": "DESIGNATED_FOR_RETENTION; unique new work roots, never reused, hashes captured and backup copies before anycleanup",
+    "focused11destination_targets": "DESIGNATED_FOR_RETENTION; copy with exact fresh hashes from never-reused explicitbasetemp after completedrun before anycleanup",
+    "other_focused_pytest_scratch": "DISPOSABLE / NOT_REQUIRED_FOR_FINAL_EVIDENCE; necessary final property records/log/XML preserved",
+    "full_gate_pytest_scratch": "DISPOSABLE / NOT_REQUIRED_FOR_FINAL_EVIDENCE; unchangedquality.ps1uniqueexplicitbasetemp; gate stdout/stderr/exit/timing/coverage/audit retained"
+  },
+  "no_temporaries_versioned": true,
+  "procedure": "docs/operations/temporary-test-evidence.md"
+}

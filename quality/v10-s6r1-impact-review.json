@@ -1,0 +1,63 @@
+{
+  "task": "V1.0-S6R1",
+  "status": "PASS supporting review; final A8 pending own new gate",
+  "affected": "S2R5 _validate_manifest/_validated_rows plus private deepcopy(package) are on ZIP/direct/import paths; fresh CP01,F01-F04,valid import and focused round-trip required",
+  "unaffected": {
+    "upgrade_clean_install_backup_restore_recovery_RPO_RTO_isolation": "Retain historical PASS: S2R5 did not modify upgrade/migrations, physical backup/restore/recovery, installed schema or policies; all functional bytes unchanged since this execution started",
+    "historical_second_roundtrip": "Historical original retained unchanged; newly focused CEI proof independently revalidates the changed import path",
+    "supporting_chain": "quality/v10-s6-after-s2r4-retained-chain-review.json",
+    "historical_closure": "quality/v10-s6-after-s2r4-result.md"
+  },
+  "current_inventory": {
+    "SETS": 21,
+    "fields": 242,
+    "ORM_kinds": 14,
+    "type_counts": {
+      "UUIDField": 27,
+      "CharField": 67,
+      "PositiveIntegerField": 17,
+      "DateTimeField": 51,
+      "ForeignKey": 49,
+      "IntegerField": 3,
+      "SmallIntegerField": 2,
+      "TextField": 7,
+      "BooleanField": 2,
+      "PositiveSmallIntegerField": 2,
+      "OneToOneField": 4,
+      "DateField": 8,
+      "JSONField": 1,
+      "DecimalField": 2
+    }
+  },
+  "format": "CEI-EXPORT-1.0",
+  "format_version": "1.0",
+  "producers": [
+    "V0.5",
+    "V1.0"
+  ],
+  "unchanged_normative_AST_vs_published": [
+    "_decoded",
+    "_valid_instant",
+    "_schema_migrations",
+    "_parse_json",
+    "_unique_keys",
+    "_validate_relations",
+    "_encode",
+    "_record_chunks",
+    "RecordSet",
+    "SETS"
+  ],
+  "no_new_migrations": true,
+  "no_functional_change_S6R1": true,
+  "matrix": {
+    "A": 14,
+    "B": 8,
+    "C": 1,
+    "D": 1,
+    "E": 1
+  },
+  "boundary": "No semantic PASS inferred for physical DB-001, clock-dependent AUD-002 or excluded OPS-001; bounded permanent regressions verify applicable semantics and exclusions",
+  "PRES01": "Exact11 remain HUMAN_EXEMPTED; no unavailable bytes considered preserved",
+  "harness_diagnostic": "First CP01 ZIP-preparation root NON-CANDIDATE: incorrect member prefix, exception before MigrationExecutor/import; preserved empty setup directory, fresh successful run2 used",
+  "review_limits": "No complete Git checkpoint audit; no independent review claim; current gate/A8 still pending"
+}

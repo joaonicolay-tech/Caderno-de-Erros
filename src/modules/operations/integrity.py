@@ -1220,6 +1220,11 @@ _SQL_RULES: Final[dict[str, str]] = {
 }
 
 
+def invariant_sql_rules(invariant_ids: tuple[str, ...]) -> tuple[tuple[str, str], ...]:
+    """Expose existing relational rules without copying SQL or changing the checker."""
+    return tuple((code, _SQL_RULES[code]) for code in invariant_ids)
+
+
 def _database_path(using: str) -> Path:
     connection = connections[using]
     if connection.vendor != "sqlite":
@@ -1464,6 +1469,31 @@ def _append_inaugural_schedule_findings(
                 )
             )
     return total
+
+
+def invariant_python_violations(
+    database: sqlite3.Connection, invariant_ids: tuple[str, ...]
+) -> tuple[str, ...]:
+    """Reuse deterministic checker helpers on a caller-owned read-only projection.
+
+    This adapter does not open files, read wall-clock now, mutate the connection,
+    or replace any checker rule. REV-004 here is its IANA inaugural-date addendum;
+    its relational SQL must also be evaluated through invariant_sql_rules.
+    """
+    helpers = {
+        "WS-003": _append_workspace_timezone_findings,
+        "ATT-002": _append_attempt_time_findings,
+        "REV-004": _append_inaugural_schedule_findings,
+    }
+    specs = {spec.invariant_id: spec for spec in INVARIANT_CATALOG}
+    violations = []
+    for code in invariant_ids:
+        if code not in helpers:
+            raise ValueError("Not a deterministic projection helper: " + code)
+        findings: list[IntegrityFinding] = []
+        if helpers[code](database, specs[code], findings, limit=1):
+            violations.append(code)
+    return tuple(violations)
 
 
 def _append_expired_audit_findings(

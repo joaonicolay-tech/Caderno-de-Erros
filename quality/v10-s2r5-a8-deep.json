@@ -1,0 +1,23 @@
+{
+  "task": "V1.0-S2R5",
+  "depth": "deep",
+  "decision": "INCONCLUSIVE",
+  "reviewer": "Executing Codex agent; not independent",
+  "policy": "docs/review/code-review.md",
+  "severity_counts": {
+    "Blocker": 1,
+    "Major": 0,
+    "Minor": 0
+  },
+  "findings": [
+    {
+      "id": "PRES-01",
+      "severity": "Blocker",
+      "impact": "Literal protected raw preservation criterion not satisfied; historical11 synthetic target files missing, originals unrecovered. Acceptance cannot be approved."
+    }
+  ],
+  "functional_review": "Shared normative decoder, exact closed structure, private metadata/rows snapshot, native typed representation preserving actual offsets, final rows used for DML, ordering and destination transaction reviewed.179 focused tests including47 new permanent tests pass; CP01/F01-F04fresh zero-write and historicalV0.5valid21sets proofs pass. No product/format/schema/migration/dependency change beyond scoped portability remediation. Functional proof does not resolve preservation violation or substitute own completed gate.",
+  "gate": "INTERRUPTED_NON_CANDIDATE exit-1,679collected, final count/coverage/secrets/audit not observed.",
+  "CP01": "FIX_VERIFIED; final RESOLVED/completion acceptance pending",
+  "required_next": "Human preservation decision before any resumed gate/A8/closure; CHECKPOINT_BLOCKED."
+}

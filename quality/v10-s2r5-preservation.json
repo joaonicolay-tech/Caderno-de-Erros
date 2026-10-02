@@ -1,0 +1,74 @@
+{
+  "task": "V1.0-S2R5",
+  "status": "BLOCKED",
+  "finding": "PRES-01",
+  "severity": "Blocker",
+  "fact": "11 historical synthetic destination SQLite files referenced by preserved reports are missing. All existed and matched hashes in the pre-focused-suite preservation check; final check detects absence.162 remaining raw files match and now have protected copies.33 canonical sanitized files and92 protected original repository paths remain byte-equal.",
+  "probable_cause": "Focused pytest sessions used default numbered temporary root. pytest default retention_count3 and cleanup of older numbered directories explains absence of pytest-181 after pytest-184. Causal timing inferred from local implementation and observed directory transition; no direct deletion audit captured. Official gate uses a unique explicit basetemp and does not share that numbered root.",
+  "responsibility": "Executor hashed referenced temporary raw files but did not back them up before focused tests. This did not satisfy the literal original-raw preservation requirement.",
+  "original_raw_files": 173,
+  "remaining_raw_files_byte_equal": 162,
+  "missing_raw_files": [
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_0/destination.sqlite3",
+      "expected_sha256": "SHA256:d20fc3054267fc56af4626a72d378dfc8048c6e0b349f009b6689ed23596c162"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_1/destination.sqlite3",
+      "expected_sha256": "SHA256:f7ece249f429a3fc154b37606db0e9980ca9874740efd645886f131c8180e42e"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_2/destination.sqlite3",
+      "expected_sha256": "SHA256:1c52a67ea7857f2b4b32914ccccbbaef11d427a5610013fba497064a8ba98e8d"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_3/destination.sqlite3",
+      "expected_sha256": "SHA256:dbede8fb3d13716b67f0054fbaeb4c203601ec1297c0452ca796f1e531d5a15d"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_4/destination.sqlite3",
+      "expected_sha256": "SHA256:309a53806df8d0f1550a4b099b2e78f26ff199ca0fbc855ad4ea2515d1c0c72a"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_5/destination.sqlite3",
+      "expected_sha256": "SHA256:391e5088f190f91540d4c49b6f792c16985e9d40e1081daaa38410439d102763"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_6/destination.sqlite3",
+      "expected_sha256": "SHA256:6d20b878054a0317af1b74a8a27a47bfe8d5dbba32f583983652bde56bc3c09d"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_7/destination.sqlite3",
+      "expected_sha256": "SHA256:0b21664aa990ea93dc2e330e0b8214e264537cc0aec32ec83459f06d34ffaa15"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_8/destination.sqlite3",
+      "expected_sha256": "SHA256:8c7365c2d252b1ce8d0258ac0bf818512590bb82bc1e7171e38b46e48b3b82d9"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_9/destination.sqlite3",
+      "expected_sha256": "SHA256:3f5ec12c3e7e5141e41781a003da0788141c1c89ebb4697d33323f4e847f208a"
+    },
+    {
+      "historical_path": "<local-temp>/pytest-of-<local-user>/pytest-181/test_incompatible_destination_10/destination.sqlite3",
+      "expected_sha256": "SHA256:6758363d4338b42ef3be5006eed84b907fbc5ec5944ff2a256fe5d0a3e00da20"
+    }
+  ],
+  "changed_remaining_files": 0,
+  "recovery_search": {
+    "candidates_hashed": 11,
+    "byte_identical_matches": 0,
+    "scope": "Existing incompatible-destination databases under known pytest roots and task workspaces"
+  },
+  "original96paths_present": true,
+  "protected_original_paths_byte_equal": 92,
+  "33_sanitized_artifacts_byte_equal": true,
+  "CP01_original_FAIL_retained": true,
+  "CP01_target_source_unchanged": true,
+  "baseline_bytes_index_unchanged": true,
+  "published_HEAD_origin_main": "SHA1:5eb6930aba35a0d1083c92816a83c7c4c2451830",
+  "gate_start_preservation_proof_is_historical_not_current": true,
+  "raw_detailed_evidence": "work/s2r5-raw-preservation-incident.json",
+  "human_decision_required": "Provide an existing byte-identical backup of the11 original raw DBs, or explicitly revise this preservation acceptance criterion for disposable historical targets. No reconstructed/retested target can be labeled as original bytes.",
+  "decision": "BLOCKED / HUMAN_DECISION_REQUIRED; no further implementation, tests, completion archive or Git egress."
+}

@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "source": "quality/v10-s2r4-expanded-matrix.json",
+  "source_sha256": "SHA256:0a6f7b5f51f0b929fc7cb145c3f836aa27386a1f147be33f4c32b096349c5943",
+  "counts": {
+    "A": 14,
+    "B": 8,
+    "C": 1,
+    "D": 1,
+    "E": 1
+  },
+  "checks": 25,
+  "catalog_SQL_helpers_classification_CEI_contract_unchanged": true,
+  "source_code_test_bytes_match_approved_expansion": true,
+  "full_inventory_not_repeated": true,
+  "boundaries": {
+    "DB-001": "C physical file not CEI",
+    "AUD-002": "D runtime-dependent retention warning",
+    "OPS-001": "E excluded receipts not imported"
+  },
+  "A_B": "Applicable structural/semantic preflight protections per approved matrix; DB-002 relationship existence is structural, not a guarantee of all physical DB constraints",
+  "physical_target_checks": "Retained independently and checked on final valid imported target; never declared CEI-only predicates"
+}

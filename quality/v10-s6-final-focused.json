@@ -1,0 +1,216 @@
+{
+  "status": "PASS",
+  "tests": 43,
+  "duration_seconds": 135.05,
+  "command": ".venv/Scripts/python.exe -B -m pytest tests/test_cei_semantic_prewrite.py tests/test_cei_destination_compatibility.py tests/test_v05_s7_portability.py -q -o junit_family=legacy (isolated basetemp/cache and own JUnit)",
+  "semantic_negatives": [
+    {
+      "case": "ATT-001",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ATT-001"
+      ]
+    },
+    {
+      "case": "ATT-001",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ATT-001"
+      ]
+    },
+    {
+      "case": "ERR-001",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ERR-001"
+      ]
+    },
+    {
+      "case": "ERR-001",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ERR-001"
+      ]
+    },
+    {
+      "case": "REV-001",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "REV-001"
+      ]
+    },
+    {
+      "case": "REV-001",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "REV-001"
+      ]
+    },
+    {
+      "case": "REV-002",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "REV-002"
+      ]
+    },
+    {
+      "case": "REV-002",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "REV-002"
+      ]
+    },
+    {
+      "case": "combined",
+      "entry_point": "reader",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ATT-001",
+        "ERR-001",
+        "REV-001",
+        "REV-002"
+      ]
+    },
+    {
+      "case": "combined",
+      "entry_point": "direct_mutated_object",
+      "attempted": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "completed": {
+        "INSERT": 0,
+        "UPDATE": 0,
+        "DELETE": 0
+      },
+      "total_changes_delta": 0,
+      "counts_equal": true,
+      "semantic_schema_physical_equal": true,
+      "codes": [
+        "ATT-001",
+        "ERR-001",
+        "REV-001",
+        "REV-002"
+      ]
+    }
+  ],
+  "warnings": "none reported; JUnit legacy used",
+  "limitations": "Focused suite covers the four S2R3 invariants and existing destination/portability cases; new QUE-003 adversarial regression RED is additional and blocks closure."
+}
