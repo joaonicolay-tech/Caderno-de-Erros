@@ -4,7 +4,8 @@
 - S7R2 proved a documentation-led update from a synthetic V0.5.0 installation: locked sync passed, no migrations were pending or created, checker 25/0, UI smoke healthy, and database/schema/semantic fingerprints unchanged. Details: `quality/v10-s7r2-update-proof.json` and `quality/v10-s7r2-execution-report.md`.
 - S7 documentation and earlier CT-127, backup, isolated restore, and offline recovery evidence are recorded in the archived contract and `quality/v10-s7-operational-documentation-result.md`. Historical failures and blocked A8 evidence remain preserved as history.
 - `tasks/current.md`: NO_TASK_AUTHORIZED. S8–S10 remain NOT AUTHORIZED.
-- CHECKPOINT_REQUIRED for a separately authorized administrative checkpoint. No git add, commit, push, tag, or release was performed.
+- S7_CHECKPOINT_COMPLETED. Commit `6879e6ad80dff4a4061233933e28dd3cd0386066` (`docs: complete v1.0 operational release candidate validation`) was pushed normally to `main`; staging audit and checkpoint A8 were APPROVED.
+- Immediately after publication, `HEAD == origin/main` and the working tree was clean. No tag or release was created; `v1.0.0` remains untagged. S8–S10 remain NOT AUTHORIZED; the next stage requires separate authorization.
 
 ## Historical checkpoint — S7R1 completed; parent S7 resumed
 
@@ -20,7 +21,7 @@
 - Parent V1.0-S7 remains BLOCKED / PAUSED / RETOMÁVEL by S7-F01. V1.0-S7R1 is AUTHORIZED / IN EXECUTION solely to expose the existing canonical `PRODUCT_VERSION` in the shared HTML UI and verify the bounded correction.
 - Preserve S1–S6 COMPLETED; S2R1–S2R5 COMPLETED; S6R1 COMPLETED / S6_REVALIDATED; F01–F04, CP-01, PRIV-01 RESOLVED; PRES-01 scoped HUMAN_EXEMPTED; S7 A4, inventory, original S7-F01, and original S7 stop report.
 - At this authorization checkpoint no code change had yet been made. S8–S10 remained NOT AUTHORIZED; no add/commit/push/tag/release.
-# Project State — V1.0-S7 execution stopped on S7-F01
+# Historical checkpoint — V1.0-S7 execution stopped on S7-F01
 
 - V1.0-S7 remains AUTHORIZED but is BLOCKED on S7-F01 (Major): the V1.0 product version is not visible in the HTML UI, contrary to the S1 identity contract. Evidence and stop rationale: `quality/v10-s7-operational-documentation-result.md`.
 - Execution START_TIME 2026-10-02 19:54:22 -03:00; END_TIME 2026-10-02 19:57:56 -03:00; observed duration 0:03:34.
