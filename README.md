@@ -1,38 +1,49 @@
-# Caderno de Erros
+# Caderno de Erros Inteligente — V1.0 release candidate
 
 Aplicação web desenvolvida em Django para registrar, organizar e consultar erros cometidos durante os estudos, criando uma base estruturada de questões, disciplinas, assuntos e classificações de erro.
 
 O projeto também é utilizado como exercício prático de engenharia de software, com arquitetura documentada, testes automatizados, controle de qualidade, decisões arquiteturais (ADRs), ambientes separados e evolução incremental por versões.
 
-## Estado atual
+## Estado e identidade da versão
 
-A V0.5 é a versão beta atual e está `PROMOTION_APPROVED`. A tag anotada
-[`v0.5.0`](https://github.com/joaonicolay-tech/Caderno-de-Erros/releases/tag/v0.5.0)
-e o GitHub Pre-release **Caderno de Erros v0.5.0 — Beta** foram publicados.
-O gate final ficou GREEN, com A8 deep `APPROVED`, 505 testes e 86% de
-cobertura; não há Blocker, Major ou P0/P1 aplicável aberto. O piloto técnico
-P01–P18 foi concluído em base sintética. A evidência está em
-[`quality/v05-s10-controlled-pilot-result.md`](quality/v05-s10-controlled-pilot-result.md).
-V1 não foi iniciada e permanece `NOT AUTHORIZED`.
+Este checkout contém a documentação candidata da V1.0. A V1.0 ainda não foi
+promovida: não existe tag `v1.0.0` nem GitHub Release estável autorizado. A
+V0.5.0 publicada continua sendo a versão anterior; não use sua tag como fonte
+da candidata V1.0. Obtenha o checkout candidato que acompanha esta documentação
+por um canal fornecido pelo responsável antes de seguir o [guia operacional
+V1.0](docs/V1.0_Operacao_Local.md).
 
-A V0.5 reúne gestão de taxonomia e categorias pessoais, consolidação/merge,
-filtros salvos e reagendamento, inclusão manual em revisão, correção de
-Attempts por void/replacement, correção prospectiva de gabarito e exclusão
-permanente controlada. Domain `DOM-HEUR-1.0` oferece avaliação e reabertura
-automática ou manual; Priority `PRI-HEUR-1.0` recomenda assuntos e identifica
-`COLLECT_MORE_EVIDENCE` quando falta evidência. A página `/dados/` oferece
-exportação/importação CEI, backup, validação, preview/restore e recovery; o
-checker de integridade é read-only. Os contratos estão em
-[`docs/V0.5_S7_Portabilidade_e_Restore.md`](docs/V0.5_S7_Portabilidade_e_Restore.md)
-e [`docs/CEI_EXPORT_1_0.md`](docs/CEI_EXPORT_1_0.md). Para a operação local
-Windows, use [`scripts/start-local.ps1`](scripts/start-local.ps1) e o guia
-[`docs/V0.4_S7_Operacao_Windows.md`](docs/V0.4_S7_Operacao_Windows.md).
-A tag histórica `v0.4.0` permanece preservada. O estado de tarefa está em
-[`tasks/current.md`](tasks/current.md); a documentação oficial em [`docs/`](docs/).
+- Produto para pessoas: **V1.0**.
+- Pacote/aplicação técnica: **1.0.0**.
+- Portabilidade: **CEI-EXPORT-1.0**, `format_version = 1.0`.
+
+O produto é destinado a Windows 11 x64 e uso local individual em loopback. Não
+há promessa de hospedagem pública nem de uso remoto multiusuário.
+
+### Documentos V1
+
+- [Instalação, primeiro uso e operação local](docs/V1.0_Operacao_Local.md)
+- [Atualização, backup, restore e recovery](docs/V1.0_Operacao_Local.md#atualização-local)
+- [Troubleshooting e limites](docs/V1.0_Operacao_Local.md#solução-de-problemas)
+- [Contrato CEI](docs/CEI_EXPORT_1_0.md)
+- [Matriz de browsers S4](docs/V1.0_Adendo_V10-D2_Matriz_de_Browsers_S4.md)
+- [Notas V1.0 — release candidate](docs/RELEASE_NOTES_V1.0.md)
+- [Suporte e limitações](docs/RELEASE_NOTES_V1.0.md#suporte-e-limitações)
+- [Índice documental](docs/README.md)
+
+A V0.5.0 e suas notas permanecem como história publicada, não como instruções
+da candidata V1.0.
+
+A aplicação reúne catálogo de questões e tentativas, ciclos de revisão,
+taxonomia, recomendações explicáveis, exportação/importação CEI e operações
+locais de backup/restauração/recovery. Os procedimentos V1 estão no
+[guia operacional](docs/V1.0_Operacao_Local.md); o formato CEI e os guias
+V0.x preservam seus contratos e contexto históricos.
 
 ## 1. Pré-requisitos
 
-Ambiente suportado e validado:
+Ambiente documentado para a candidata (a validação de browser é restrita à
+matriz S4; não implica validação de toda instalação):
 
 - Windows 11 x64;
 - PowerShell 5.1 ou posterior;
@@ -61,8 +72,8 @@ Feche e abra o PowerShell se o comando ainda não estiver no `PATH`.
 
 ## 3. Obter e sincronizar o projeto
 
-Depois de clonar o repositório, entre em sua raiz — onde estão `pyproject.toml`,
-`uv.lock` e `manage.py` — e execute:
+Depois de obter o checkout candidato indicado acima, entre em sua raiz — onde
+estão `pyproject.toml`, `uv.lock` e `manage.py` — e execute:
 
 ```powershell
 uv sync --locked
@@ -246,12 +257,10 @@ Checksum inválido, versão desconhecida, migração divergente ou reconciliaç�
 incompleta — incluindo taxonomia, origem, questões, revisões, alternativas, gabarito e
 referências do catálogo — falham antes da publicação do destino.
 
-Na V0.5, a adoção de um backup no banco de uma instalação existente segue o
-fluxo **Dados e backup** em `/dados/`: validação e preview em staging, nova
-confirmação, pré-backup validado e aplicação offline com o servidor parado.
-O fluxo reconcilia estado e protege contra adoção parcial; consulte o
-[procedimento operacional V0.5](docs/V0.5_S7_Portabilidade_e_Restore.md).
-Backup SQLite e exportação funcional `CEI-EXPORT-1.0` são formatos e propósitos
+O procedimento vigente de V1 para backup, validação, restore isolado e recovery
+offline está em [Operação local V1](docs/V1.0_Operacao_Local.md#backup-e-restore).
+O guia [V0.5-S7](docs/V0.5_S7_Portabilidade_e_Restore.md) é histórico. Backup
+SQLite e exportação funcional `CEI-EXPORT-1.0` são formatos e propósitos
 distintos. Mantenha juntos e protegidos o banco de backup e seu manifesto; o
 manifesto inclui SHA-256, que detecta alteração, mas não autentica o autor.
 
@@ -290,20 +299,21 @@ o perfil de teste em ambiente isolado e descarte o banco ao encerrar.
 - **Teste temporário bloqueado pelo Windows:** encerre processos Python que ainda
   mantenham arquivos abertos e execute novamente; não redirecione testes para banco real.
 
-## 13. Limitações conhecidas da V0.5
+## 13. Limitações conhecidas da V1.0
 
-- A operação suportada é local; não há autenticação remota, API pública,
+- A operação suportada é local; não há hospedagem pública, API pública,
   notificações, PWA nem implantação remota oficial.
-- Backup/restauração têm interface local, mas não há agenda, rotação automática
-  ou armazenamento em nuvem. RPO/RTO são objetivos operacionais documentados,
-  não SLA automático.
-- A evidência de acessibilidade é assistida e explicitamente limitada; não constitui
-  declaração de conformidade WCAG integral nem evidência observada de teste com
-  leitor de tela. A evidência manual da V0.5 também registra limitações de
-  precisão sobre navegador e detalhes por página.
+- Backup/restauração são operações locais iniciadas pelo operador; não há agenda,
+  rotação automática ou armazenamento em nuvem. Não há SLA de RPO/RTO.
+- A evidência manual histórica da V0.5 é assistida e explicitamente limitada;
+  não constitui declaração de conformidade WCAG integral nem evidência
+  independente de leitor de tela para todas as páginas da V1.
 - O HTMX está versionado, mas não é carregado até existir interação que o justifique.
-- O workflow de CI de um provedor será definido somente após escolha formal; o gate
-  Windows local é a fonte única atual.
+- A aplicação é individual/local; acesso remoto multiusuário não é suportado.
+- A instalação não é um instalador nativo, serviço residente ou atualização
+  automática. Não há downgrade automático.
+- Consulte o [guia operacional V1](docs/V1.0_Operacao_Local.md) para os passos
+  seguros de atualização, backup, restauração e recovery.
 
 ## Decisões técnicas
 

@@ -16,6 +16,7 @@ from modules.accounts.services import LOCAL_WORKSPACE_ID
 from modules.errors.models import ErrorCategory
 from modules.operations.correlation import current_correlation_id
 from shared.application.bootstrap import bootstrap_local_workspace
+from shared.application.version import PRODUCT_VERSION
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_HTMX_SRI = "sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"  # pragma: allowlist secret -- SRI público
@@ -68,12 +69,27 @@ def test_first_access_is_semantic_labeled_and_does_not_assume_timezone() -> None
     assert '<html lang="pt-BR">' in html
     assert "Configure seu espaço local" in html
     assert "America/Sao_Paulo" in html
+    assert f"Versão {PRODUCT_VERSION}" in html
     assert '<option value="" selected>Selecione um fuso horário</option>' in html
     assert {"header", "nav", "main", "section", "footer", "h1", "form"} <= set(parsed.tags)
     assert any(label.get("for") == "id_timezone_name" for label in parsed.labels)
     assert 'aria-describedby="timezone-help timezone-errors"' in html
     assert 'name="timezone_name"' in html
     assert 'name="csrfmiddlewaretoken"' in html
+
+
+@pytest.mark.django_db
+def test_product_version_context_is_rendered_from_canonical_source(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from shared.application import context_processors
+
+    monkeypatch.setattr(context_processors, "PRODUCT_VERSION", "TEST-PRODUCT-VERSION")
+    response = Client().get(reverse("accounts:initial-setup"))
+    html = response.content.decode("utf-8")
+
+    assert response.status_code == 200
+    assert '<span class="product-version">Versão TEST-PRODUCT-VERSION</span>' in html
 
 
 @pytest.mark.django_db

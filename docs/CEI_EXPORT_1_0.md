@@ -1,26 +1,30 @@
 # CEI-EXPORT-1.0 — contrato funcional de portabilidade
 
-Decisão humana de V0.5-S7 registrada em `tasks/plans/v05-s7-portability-plan.md`. Este formato é um ZIP com JSON UTF-8; não é o backup SQLite operacional. Um leitor comum de ZIP e JSON basta para interpretá-lo. A importação S7 exige instalação compatível com destino funcional vazio e preserva UUIDs, sem merge.
+Decisão humana de V0.5-S7 registrada em `tasks/plans/v05-s7-portability-plan.md`. Este formato é um ZIP com JSON UTF-8; não é o backup SQLite operacional. Um leitor comum de ZIP e JSON basta para interpretá-lo. A importação exige instalação compatível com destino funcional vazio e preserva UUIDs, sem merge.
 
 ## Contêiner e manifesto
 
 O nome sugerido é `cei-export-AAAA-MM-DD.zip`. A raiz contém exatamente `manifest.json`, `README.txt` e os JSON da tabela abaixo. Não há diretórios nem membros extras. Todos os JSON usam UTF-8 sem BOM; cada conjunto é um array de objetos, inclusive quando vazio. Registros são ordenados pelo UUID `id`. Chaves dos objetos têm ordem lexicográfica na emissão; a ordem das chaves não é semântica. Referências são UUIDs em texto canônico com hífens. A ausência é `null`; não se omitem campos definidos. Datas civis usam `YYYY-MM-DD`; instantes, ISO 8601 com offset UTC. Decimais são strings para preservar precisão. Booleanos são booleanos JSON. Inteiros são inteiros JSON.
 
-`manifest.json` é um objeto com os campos obrigatórios:
+`manifest.json` é um objeto com os campos obrigatórios. Na aplicação V1, o
+exportador emite `application_version: V1.0`; o importador reconhece produtores
+`V0.5` e `V1.0` somente quando os metadados restantes e o destino passam a
+validação estrita. O produtor identifica o produto de origem, não altera o
+formato CEI nem habilita conversão entre schemas.
 
 | Campo | Tipo e significado |
 | --- | --- |
 | `format` | string fixa `CEI-EXPORT` |
 | `format_version` | string fixa `1.0` |
 | `generated_at` | instante UTC de geração |
-| `application_version` | string fixa `V0.5` |
+| `application_version` | identidade do produto que gerou o export: `V0.5` ou `V1.0`, conforme produtor compatível; não é a versão do formato nem do pacote |
 | `schema_migrations` | array ordenado de nomes `app.migration` requeridos; compatibilidade estrita |
 | `workspace_id` | UUID do Workspace exportado |
 | `workspace_timezone` | fuso IANA atual do Workspace |
 | `policies` | objeto com `review`, `domain`, `priority`; nesta versão `REV-FIXA-1.0`, `DOM-HEUR-1.0`, `PRI-HEUR-1.0` |
 | `files` | array com uma entrada para cada JSON e `README.txt`, sem duplicatas |
 
-Cada entrada `files` contém exatamente `name` (nome simples), `count` (número de objetos no JSON; zero para README), `size_bytes` (bytes descomprimidos) e `sha256` (64 dígitos hexadecimais minúsculos sobre os bytes descomprimidos). O manifesto não contém checksum de si ou do ZIP. SHA-256 detecta alteração, mas não autentica o autor. Versão/formato/migrations/policies desconhecidos são recusados antes de escrita. Não há conversão silenciosa.
+Cada entrada `files` contém exatamente `name` (nome simples), `count` (número de objetos no JSON; zero para README), `size_bytes` (bytes descomprimidos) e `sha256` (64 dígitos hexadecimais minúsculos sobre os bytes descomprimidos). O manifesto não contém checksum de si ou do ZIP. SHA-256 detecta alteração, mas não autentica o autor. Produtor, formato, migrations e policies fora dos valores compatíveis são recusados antes de escrita. Não há conversão silenciosa.
 
 ## Arquivos e campos
 

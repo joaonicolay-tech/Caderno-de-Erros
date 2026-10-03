@@ -1,0 +1,26 @@
+{
+  "task_id": "V1.0-S7",
+  "review_type": "A8 standard",
+  "reviewed_after_implementation": true,
+  "reviewed_at": "2026-10-03",
+  "decision": "BLOCKED",
+  "findings": {"blocker": 0, "major": 1, "minor": 2},
+  "checks": {
+    "scope_and_stage_boundary": "PASS - S7 only; no publication or S8-S10 work",
+    "product_package_and_cei_identity": "PASS - distinct identities and claims map to source/contract",
+    "installation_and_first_use": "PASS - isolated Windows 11 25H2 x64 target, locked dependencies, migrations, local startup/health, setup and synthetic entry recorded",
+    "code_dependency_migration_update": "LIMITED - documented update commands inspected; repeat locked sync/migration check passed, but no prior candidate installation was upgraded in CT-127",
+    "backup_and_isolated_restore": "PASS - synthetic SQLite+manifest created/validated; isolated restore hashes and integrity matched",
+    "ui_restore_and_offline_recovery": "PASS_WITH_METHOD_LIMIT - actual Django UI endpoint preview/confirmation exercised through test client because browser automation did not expose file upload; offline command returned RESTORED and hashes matched",
+    "troubleshooting_and_support": "PASS - documented safe diagnostic boundaries and support limits reviewed; not every failure branch fault-injected",
+    "browser_claims": "PASS - candidate wording follows S4 validated browser scope and does not claim additional browser support",
+    "cei_contract_and_release_notes": "PASS - CEI format and producer identities reconciled to implementation/tests; candidate and non-promotion status explicit",
+    "changelog_and_known_limits": "PASS - no existing changelog convention found; release notes carry candidate history and support/operation limits",
+    "links_anchors_commands_paths": "PASS - local Markdown destinations/anchors and command help reviewed",
+    "migrations": "PASS - makemigrations --check --dry-run: No changes detected",
+    "privacy_and_git_scope": "PASS - synthetic data only; no add/commit/push/tag/release"
+  },
+  "major_findings": ["The A4 and live S7 contract require a code/dependency/migration update proof; CT-127 installed the candidate from a clean snapshot but did not upgrade a prior candidate installation. S7 exit criteria are therefore not met."],
+  "review_summary": "A separate A8 pass found the reconciled claims consistent with inspected code, contracts, scripts, and observed evidence. S7 completion remains blocked by the missing required prior-install update proof. Two minor limitations remain: restore endpoint preview/confirmation used Django's test client because browser automation did not expose file upload, and not all troubleshooting failure branches were fault-injected.",
+  "git_publication": "none"
+}

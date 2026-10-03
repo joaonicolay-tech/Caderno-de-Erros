@@ -44,7 +44,7 @@ TEMPLATES = [
         "DIRS": [BASE_DIR / "src" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
-            "context_processors": [],
+            "context_processors": ["shared.application.context_processors.product_identity"],
         },
     },
 ]

@@ -12,6 +12,40 @@ As regras gerais de trabalho do repositório permanecem definidas em `../AGENTS.
 
 ---
 
+# 0. Documentação operacional vigente e fronteiras
+
+## Candidata de release V1.0
+
+- Guia de instalação, primeiro uso, atualização, backup, restore, recovery e troubleshooting: [`V1.0_Operacao_Local.md`](V1.0_Operacao_Local.md).
+- Notas de release ainda não promovidas: [`RELEASE_NOTES_V1.0.md`](RELEASE_NOTES_V1.0.md).
+- Contrato de portabilidade funcional: [`CEI_EXPORT_1_0.md`](CEI_EXPORT_1_0.md).
+- Browser V1: [`V1.0_Adendo_V10-D2_Matriz_de_Browsers_S4.md`](V1.0_Adendo_V10-D2_Matriz_de_Browsers_S4.md).
+- README da raiz: visão geral e entrada rápida para os guias acima.
+
+Produto `V1.0`, pacote/aplicação `1.0.0` e formato `CEI-EXPORT-1.0` são
+identidades distintas. A candidata não foi promovida nem publicada como
+`v1.0.0`.
+
+## Contratos técnicos e normativos
+
+Consulte os contratos S1 e CEI, ADRs e documentos de arquitetura para requisitos
+e invariantes. O adendo S4 de browsers é a fonte vigente para as declarações de
+browser; a tabela antiga no contrato S1 não substitui o adendo.
+
+## Histórico V0.x
+
+`V0.4_*`, `V0.5_*` e `RELEASE_NOTES_V0.1.md` registram a história e os contratos
+daquelas versões. Não use guias operacionais V0.x como instruções atuais da
+candidata V1.0; consulte o guia V1 acima.
+
+## Evidências e auditoria
+
+Arquivos em `quality/` e `tasks/` são evidência interna de execução, planos e
+estado administrativo; não são guias de usuário. `operations/temporary-test-evidence.md`
+é política interna de retenção de evidências, não procedimento de produto.
+
+---
+
 # 1. Documentação principal do produto
 
 Os documentos das Etapas 1 a 10 formam a especificação principal do Caderno de Erros Inteligente.

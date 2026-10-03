@@ -1,0 +1,9 @@
+{
+  "task_id": "V1.0-S7",
+  "classified_before_creation": true,
+  "retention": {
+    "DISPOSABLE_NOT_REQUIRED_FOR_FINAL_EVIDENCE": ["isolated CT-127 checkout and worktree metadata", "CT-127-local uv executable and download/cache", "local managed Python runtime and .venv", "synthetic var/database files and SQLite sidecars", "synthetic backup/manifest, restore targets, UI staging/ticket and local logs", "temporary update/recovery copies and browser profile"],
+    "DESIGNATED_FOR_RETENTION": ["quality/v10-s7-a4-review.json", "quality/v10-s7-temporary-retention-map.json", "quality/v10-s7-ct127-result.json", "quality/v10-s7-update-result.json", "quality/v10-s7-backup-restore-recovery-result.json", "quality/v10-s7-document-audit.json", "quality/v10-s7-a8-standard.json", "quality/v10-s7-operational-documentation-result.md"]
+  },
+  "data_policy": "Synthetic data only; no user database, credentials or private environment configuration is copied."
+}

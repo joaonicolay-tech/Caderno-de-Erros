@@ -1,0 +1,16 @@
+{
+  "task_id": "V1.0-S7",
+  "proof": "CT-127 documentation-based clean install and first use",
+  "observed_at": "2026-10-03",
+  "host": {"os": "Windows 11 25H2", "build": "26200.9457", "architecture": "AMD64", "target": "isolated synthetic disposable copy"},
+  "source": {"kind": "provided source snapshot", "git_metadata": false, "inherited_venv_database_or_private_config": false},
+  "installation": {"uv": "0.12.7 x86_64-pc-windows-msvc", "python": "3.13.15", "django": "5.2.17", "sync_locked_exit": 0, "migrate_exit": 0, "database_before_install": false},
+  "first_use": {"guided_setup": "PASS", "dashboard_and_settings": "PASS", "synthetic_discipline_subject_question_attempt": "PASS", "health_endpoint": "PASS"},
+  "integrity_backup_restore": {"checker": "HEALTHY; 25 checks; 0 findings", "backup": "PASS; 778240 bytes; synthetic", "manifest_validation": "PASS", "isolated_restore": "PASS; SHA256 matched; SQLite integrity ok; foreign key violations 0"},
+  "ui_recovery": {"preview": "PASS", "confirmation": "PASS", "offline_apply": "RESTORED", "active_candidate_prebackup_sha256_match": true, "transport": "Django test client; in-app browser did not expose a supported file chooser API"},
+  "migration_check": "PASS - No changes detected",
+  "update": "NOT EXERCISED from prior installed candidate; documented source and locked sync/migrate procedure reviewed",
+  "runtime_reuse_basis": "SHA-256 of S7R1 functional gate inputs (settings, template, focused interface test, context processor, pyproject, uv.lock) matched recorded pre-execution hashes; no full gate rerun",
+  "limitations": ["No browser-native file upload proof", "No prior candidate update exercise", "Not all troubleshooting failure branches were fault-injected"],
+  "privacy": "Synthetic records only; no personal application data retained in evidence"
+}

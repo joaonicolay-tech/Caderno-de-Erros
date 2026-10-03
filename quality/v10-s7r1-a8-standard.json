@@ -1,0 +1,25 @@
+{
+  "task_id": "V1.0-S7R1",
+  "review_type": "A8 standard",
+  "decision": "APPROVED",
+  "reviewed_after_implementation": true,
+  "scope": "Canonical product version visibility in shared Django HTML layout only",
+  "findings": {"blocker": 0, "major": 0, "minor": 0},
+  "checks": {
+    "S1_contract": "PASS",
+    "canonical_PRODUCT_VERSION_source": "PASS",
+    "global_context_processor": "PASS",
+    "base_template_visibility": "PASS",
+    "independent_version_hardcode": "NONE",
+    "product_package_CEI_identity_distinction": "PASS",
+    "semantic_accessible_text": "PASS",
+    "responsive_layout": "PASS - existing responsive shell/layout tests passed; CSS unchanged; inline label wraps naturally at 360px, desktop widths, and 1920px shell max width",
+    "focused_tests": "PASS - 4 passed",
+    "migration_check": "PASS - No changes detected",
+    "full_quality_gate": "PASS - exit 0; 680 passed; 87% total coverage; Ruff, mypy, Django checks, migration validation, secret scan and pip-audit passed",
+    "privacy_and_scope": "PASS"
+  },
+  "review_summary": "The canonical constant is exposed through a common context processor registered in base settings and rendered as real text inside the existing semantic footer. The focused integration test confirms the production value, and a sentinel substitution proves the displayed text follows the context processor value. No CSS, route, model, schema, migration, dependency, or CEI change was introduced.",
+  "review_limitations": ["No manual cross-browser screenshot session was performed; responsive review used unchanged shared-shell CSS and the existing automated viewport/layout structure test."],
+  "git_publication": "none"
+}

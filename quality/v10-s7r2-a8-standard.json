@@ -1,0 +1,35 @@
+{
+  "blocker": 0,
+  "review_type": "A8 standard",
+  "minor": 2,
+  "task_id": "V1.0-S7",
+  "review_basis": [
+    "Final candidate update guide and release docs",
+    "S7R2 isolated synthetic proof",
+    "S7 earlier CT-127, backup, restore and recovery evidence",
+    "Historical BLOCKED A8 retained without rewrite"
+  ],
+  "decision": "APPROVED WITH NOTES",
+  "major": 0,
+  "acceptance": {
+    "documentation_reconciled": true,
+    "update_from_prior_install": true,
+    "database_unchanged": true,
+    "F01": "RESOLVED",
+    "backup_validated": true,
+    "F02": "RESOLVED",
+    "migrations_unchanged": true,
+    "integrity_healthy": true,
+    "post_update_smoke": true
+  },
+  "findings": [
+    {
+      "finding": "Manual browser file upload was not validated; Django client and offline recovery coverage are documented.",
+      "severity": "Minor"
+    },
+    {
+      "finding": "Not every troubleshooting failure branch was fault-injected; claims remain bounded.",
+      "severity": "Minor"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "source": {
+    "tag": "v0.5.0",
+    "git_metadata_present": false,
+    "commit": "c772a341f5cc25e270da8811d93074beb2506f95",
+    "synthetic_only": true
+  },
+  "next_stages": {
+    "S8": "NOT AUTHORIZED",
+    "S9": "NOT AUTHORIZED",
+    "S10": "NOT AUTHORIZED"
+  },
+  "integrity": {
+    "foreign_key_violations": 0,
+    "checker_after": {
+      "findings": 0,
+      "exit": 0,
+      "checks": 25
+    },
+    "sqlite": "ok",
+    "checker_before": {
+      "findings": 0,
+      "exit": 0,
+      "checks": 25
+    }
+  },
+  "task_id": "V1.0-S7R2",
+  "observations": [
+    "No restore needed for update proof; prior isolated restore and offline recovery PASS remain recorded in S7 history.",
+    "Manual browser file upload remains unverified (Minor).",
+    "Not every troubleshooting negative branch was fault-injected (Minor)."
+  ],
+  "publication": {
+    "push": false,
+    "release": false,
+    "git_add": false,
+    "commit": false,
+    "tag": false
+  },
+  "decision": "PASS",
+  "migrations": {
+    "after": 34,
+    "makemigrations": "No changes detected",
+    "migrate": "No migrations to apply",
+    "before": 34
+  },
+  "reconciliation": {
+    "ids_counts_equal": true,
+    "schema_sha256": "e356ee932525f3e5202114068dc54ec67b400771dd249472fceef76c0520535b",
+    "semantic_rows_sha256": "898b2b54545ae472d6a6f975df30a9e774bf9fbaa749f0db7347ba2e8cbf2c36",
+    "pre_post_equal": true,
+    "database_sha256": "edc5e076724c79920d4999a88ce48dfc22cf2d7ecebd81b07ff2c315e1b53dee"
+  },
+  "smoke": {
+    "data_http": 200,
+    "questions_http": 200,
+    "synthetic_question_visible": true,
+    "server_stopped": true,
+    "home_http": 200,
+    "health": "healthy",
+    "version_visible": true
+  },
+  "candidate": {
+    "uv": "0.12.7",
+    "lock_hash_matches_bundle": true,
+    "locked_sync_exit": 0,
+    "python": "3.13.15",
+    "sha256": "2CD75AD46819E07CBDCB2205091F5711C07445BC31BBD33B25D861055BF100BC",
+    "bundle_bytes": 1312098
+  }
+}

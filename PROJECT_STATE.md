@@ -1,3 +1,62 @@
+# Project State — V1.0-S7 completed
+
+- V1.0-S7 COMPLETED on 2026-10-03. S7-F01 and S7-F02 RESOLVED. Final A8 standard: APPROVED WITH NOTES (0 Blocker / 0 Major / 2 Minor); see `quality/v10-s7r2-a8-standard.json`.
+- S7R2 proved a documentation-led update from a synthetic V0.5.0 installation: locked sync passed, no migrations were pending or created, checker 25/0, UI smoke healthy, and database/schema/semantic fingerprints unchanged. Details: `quality/v10-s7r2-update-proof.json` and `quality/v10-s7r2-execution-report.md`.
+- S7 documentation and earlier CT-127, backup, isolated restore, and offline recovery evidence are recorded in the archived contract and `quality/v10-s7-operational-documentation-result.md`. Historical failures and blocked A8 evidence remain preserved as history.
+- `tasks/current.md`: NO_TASK_AUTHORIZED. S8–S10 remain NOT AUTHORIZED.
+- CHECKPOINT_REQUIRED for a separately authorized administrative checkpoint. No git add, commit, push, tag, or release was performed.
+
+## Historical checkpoint — S7R1 completed; parent S7 resumed
+
+
+- S7R1_COMPLETED. S7-F01 FIX_VERIFIED / RESOLVED; A8 standard APPROVED with 0 Blocker / 0 Major / 0 Minor. See quality/v10-s7r1-ui-product-version-result.md and quality/v10-s7r1-a8-standard.json.
+- S7R1 START_TIME 2026-10-02 20:42:06 -03:00; END_TIME 2026-10-02 21:28:56 -03:00; observed duration 0:46:50.
+- Parent V1.0-S7 is AUTHORIZED / IN EXECUTION / RESUME AFTER S7R1. Its documentation reconciliation and CT-127/update/backup/restore/recovery proofs were not started in this S7R1 turn.
+- Change is limited to the canonical product-version context processor, common base settings, shared HTML footer and focused interface tests. No CSS, models, migrations, CEI/package/product version, dependency, lock, or business behavior changed.
+- Focused tests 4/4 passed; `makemigrations --check --dry-run`: No changes detected. Full `scripts/quality.ps1` gate exit 0: 680 passed, 87% coverage, 1746.17s tests, 1845.5s total; Ruff, mypy, Django checks, migrations, detect-secrets and pip-audit passed (`No known vulnerabilities found`).
+- S8–S10 remain NOT AUTHORIZED. No git add, commit, push, tag or release.
+# Historical checkpoint — V1.0-S7R1 authorization
+
+- Parent V1.0-S7 remains BLOCKED / PAUSED / RETOMÁVEL by S7-F01. V1.0-S7R1 is AUTHORIZED / IN EXECUTION solely to expose the existing canonical `PRODUCT_VERSION` in the shared HTML UI and verify the bounded correction.
+- Preserve S1–S6 COMPLETED; S2R1–S2R5 COMPLETED; S6R1 COMPLETED / S6_REVALIDATED; F01–F04, CP-01, PRIV-01 RESOLVED; PRES-01 scoped HUMAN_EXEMPTED; S7 A4, inventory, original S7-F01, and original S7 stop report.
+- At this authorization checkpoint no code change had yet been made. S8–S10 remained NOT AUTHORIZED; no add/commit/push/tag/release.
+# Project State — V1.0-S7 execution stopped on S7-F01
+
+- V1.0-S7 remains AUTHORIZED but is BLOCKED on S7-F01 (Major): the V1.0 product version is not visible in the HTML UI, contrary to the S1 identity contract. Evidence and stop rationale: `quality/v10-s7-operational-documentation-result.md`.
+- Execution START_TIME 2026-10-02 19:54:22 -03:00; END_TIME 2026-10-02 19:57:56 -03:00; observed duration 0:03:34.
+- No code/configuration change, migration, CT-127, first-use, update, backup, restore, recovery, troubleshooting drill, A8 review, or functional test was performed. Stop occurred before documentation reconciliation after the user’s explicit functional-finding rule.
+- S8–S10 remain NOT AUTHORIZED. No add/commit/push/tag/release.
+# Historical checkpoint — V1.0-S7 A4 authorization
+
+## State at A4 authorization (2026-10-02)
+
+- At this A4 checkpoint V1.0-S7 was **AUTHORIZED / PLANNING** under explicit user authorization. Baseline verified at `ac13fb2c5023fbb1c6ccc69ab4059d0367f899ea`; initial worktree clean.
+- Preserve S1–S6 COMPLETED; S2R1–S2R5 COMPLETED; S6R1 COMPLETED / S6_REVALIDATED; F01–F04, CP-01, PRIV-01 RESOLVED; PRES-01 scoped HUMAN_EXEMPTED. The S6R1 checkpoint records its own gate GREEN and A8 deep approved; this does not establish S7 completion.
+- V1.0-S7: M / medium / migration NO / real data NO / planned A7 GPT-6 Luna Medium / A8 standard. A7 is the user-authorized plan selection; runtime model identity was not independently observable in this audit.
+- S7 objective: reconcile operational documentation and prove candidate docs by isolated synthetic procedures; no V1 promotion or release.
+- A4 and document inventory: `tasks/plans/v10-s7-operational-documentation-plan.md` and `tasks/plans/v10-s7-document-inventory.md`.
+- At that checkpoint, `tasks/current.md` was synchronized to `AUTHORIZED`, V1.0-S7, planning. S8–S10 remain `NOT AUTHORIZED`.
+- No migration/schema/model/code/dependency/CEI contract or release change. No CT-127 install, update, backup/restore/recovery drill had been executed at this A4 checkpoint.
+- No GitHub Release, tag, commit, push or promotion authorized or performed. No Git publication performed.
+
+## Initial documentary findings
+
+- README is the current broad installation/operations guide but describes the V0.5 beta as current. Update as release candidate and prove its commands before treating it as installation authority.
+- Existing Windows operations guide is historical V0.4-S7 and partly operationally reusable; preserve history and reconcile applicable instructions.
+- `docs/CEI_EXPORT_1_0.md` currently claims the producer is fixed at V0.5. S1 and source code/test fixtures document V0.5 and V1.0 producers; reconcile documentation without changing the CEI format or policies.
+- Only V0.1 release notes were located; no Markdown changelog located. Confirm full convention before adding a changelog; planned release candidate notes are `docs/RELEASE_NOTES_V1.0.md`.
+- Version surfaces are product `V1.0`, package `1.0.0`, CEI `CEI-EXPORT-1.0` / `format_version=1.0`.
+- Current browser policy is the S4 addendum: Brave 1.96.59 official validation; Chrome not executed/not validated; Edge and Firefox current/previous not executed/optional; Safari N/A on official Windows 11 x64 platform.
+- User-support boundary, public Issue enablement, all current links/anchors/commands, setup/update/troubleshooting and CT-127 independent reproducibility remain to verify during execution.
+
+## Prohibited scope and stop conditions
+
+No GitHub Release, `v1.0.0` tag, promotion, installer/launcher/service/tray/auto-installer, new packaging, one-click workflow, redesign, feature, schema/model/migration, CEI contract change, S8, S9 or S10. Do not use real personal data. Stop on undocumented command, unsafe restore, version/browser/support contradiction, critical link, implicit operator knowledge, migration need or material normative conflict; escalate material normative conflict to GPT-6 Luna High.
+
+## Historical record
+
+Prior S6/S6R1 entries below remain unchanged. Their state and evidence are historical checkpoints; this current header records the newly authorized S7 planning state only.
+
 # Current checkpoint — S6_REVALIDATED_AFTER_S2R5 (2026-10-02 13:59:24 -03:00)
 
 S6_REVALIDATED_AFTER_S2R5; CP-01/F01-F04 RESOLVED, fresh negatives reject before attempted/completed INSERT/UPDATE/DELETE0/0/0, native delta0 and equal fingerprints. 179 focusedPASS/780.2s;88ZIP/directnegative decisions;matrixA14/B8/C1/D1/E1 regressionsPASS; historicalV0.5validimport and focusedaffectedCEIroundtripPASS/all21sets/UUID/references/history/policies/derived/SQLiteok/FKempty/checker25/0. Own new integralS6R1gateGREEN/exit0/679PASS/87.15073695632516%coverage/pip-audit0; AFTER-gateownA8deepAPPROVED/0Blocker/0Major/0Minor. No newmaterialfindings.

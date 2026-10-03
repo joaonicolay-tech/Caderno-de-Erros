@@ -1,0 +1,14 @@
+{
+  "task_id": "V1.0-S7R2",
+  "classified_before_creation": true,
+  "targets": {
+    "S7R2-UPDATE-ORIGIN-A": "DESIGNATED_FOR_RETENTION; historical V0.5.0 synthetic installation, database, source snapshot, backup/manifest, logs",
+    "S7R2-CANDIDATE-A": "DESIGNATED_FOR_RETENTION; initial bundle/extraction, corrected-document bundle/extraction, final verified bundle/extraction",
+    "S7R2-UPDATE-EVIDENCE-A": "DESIGNATED_FOR_RETENTION; before/after sanitized evidence and checksums"
+  },
+  "disposable": [
+    "browser profile created only for this proof",
+    "uv download cache and managed Python runtime may be reused only inside S7R2-UPDATE-ORIGIN-A"
+  ],
+  "data_policy": "Synthetic data only. No existing user database, credentials, .env file, private configuration, or user-profile path is copied into the evidence."
+}
