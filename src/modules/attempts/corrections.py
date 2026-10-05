@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from django.core.exceptions import ValidationError
 from django.db import DatabaseError, IntegrityError, transaction
 
+from modules.accounts.models import Workspace
 from modules.operations.models import AuditEntityType, AuditEvent, AuditEventCode
 from modules.operations.services import record_audit_event
 from modules.operations.validators import normalize_reason_code
@@ -176,9 +177,15 @@ class AttemptCorrectionService:
                     raise AttemptCorrectionConflictError(
                         "A alternativa não pertence à revisão e ao Workspace da ponta."
                     )
+                workspace = (
+                    Workspace.objects.select_for_update()
+                    .only("timezone_name")
+                    .get(pk=self.workspace_id)
+                )
+                timezone_name = workspace.timezone_name
+                occurred_at = self.clock.now().value
                 voided = self._void_tip(tip, reason)
                 self._fault(fault_hook, "after_void")
-                occurred_at = self.clock.now().value
                 replacement = Attempt.objects.create(
                     workspace_id=self.workspace_id,
                     question_id=tip.question_id,
@@ -189,8 +196,8 @@ class AttemptCorrectionService:
                     is_correct=alternative.id == tip.question_revision.correct_alternative_id,
                     perceived_ease=ease,
                     occurred_at=occurred_at,
-                    timezone_name=tip.timezone_name,
-                    local_date=occurred_at.astimezone(TimeZoneId(tip.timezone_name).zone).date(),
+                    timezone_name=timezone_name,
+                    local_date=occurred_at.astimezone(TimeZoneId(timezone_name).zone).date(),
                     replaces_attempt=voided,
                     idempotency_key=key,
                 )

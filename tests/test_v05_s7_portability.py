@@ -102,6 +102,7 @@ def test_v05_producer_is_accepted_when_metadata_is_compatible(package: bytes) ->
         entries = {name: archive.read(name) for name in archive.namelist()}
     manifest = json.loads(entries["manifest.json"])
     manifest["application_version"] = "V0.5"
+    manifest["policies"]["priority"] = "PRI-HEUR-1.0"
     entries["manifest.json"] = json.dumps(manifest).encode("utf-8")
     changed = io.BytesIO()
     with zipfile.ZipFile(changed, "w") as archive:

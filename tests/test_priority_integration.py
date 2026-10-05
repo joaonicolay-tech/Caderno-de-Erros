@@ -57,7 +57,7 @@ def test_ranked_subject_uses_s5_facts_and_read_has_no_mutation(
     monkeypatch.setattr("modules.accounts.views._local_workspace", lambda: workspace)
     response = Client().get("/prioridades/")
     assert response.status_code == 200
-    assert b"PRI-HEUR-1.0" in response.content
+    assert b"PRI-HEUR-1.1" in response.content
     assert b"/reviews/" in response.content
     assert counts_before == (
         Question.objects.count(),

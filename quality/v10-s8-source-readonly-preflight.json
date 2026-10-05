@@ -1,0 +1,250 @@
+{
+  "task_id": "V1.0-S8",
+  "source_alias": "SOURCE",
+  "profile": "development",
+  "source_path_confirmed_privately": true,
+  "pilot_execution": "NOT YET AUTHORIZED",
+  "s9_s10": "NOT AUTHORIZED",
+  "source_readonly_preflight": "SOURCE_READONLY_PREFLIGHT_EXECUTED",
+  "roots_state": "ROOTS_APPROVED_BUT_NOT_CREATED",
+  "retention_policy": "UNTIL_S8_A8_AND_HUMAN_DISPOSAL_APPROVAL",
+  "recovery_policy": "ISOLATED_RECOVERY_TARGET_ONLY; ORIGINAL_RECOVERY_IS_MATERIAL_INCIDENT_STOP",
+  "consent": {
+    "ownership_control_confirmed": true,
+    "exact_source_readonly": true,
+    "copy_authorized": false,
+    "pilot_authorized": false
+  },
+  "source_mutated": false,
+  "db_copied": false,
+  "backup_executed": false,
+  "pilot_created": false,
+  "roots_created": false,
+  "migration_executed": false,
+  "content_fields_read_for_reporting": false,
+  "raw_ids_or_names_persisted": false,
+  "sensitive_small_counts_published": false,
+  "approved_versionable_counts": [
+    "WORKSPACE_COUNT",
+    "MIGRATION_COUNT",
+    "CHECKER_TOTALS",
+    "FK_FINDINGS"
+  ],
+  "decision": "HUMAN_DECISION_REQUIRED",
+  "physical_pre": {
+    "sha256": "SHA256:fbc21fd544d7115cc6cb15342949090822e0e01c44d8d2047e9c729939de4156",
+    "size_bytes": 802816,
+    "sidecars": {
+      "-wal": false,
+      "-shm": false,
+      "-journal": false
+    },
+    "mtime_ns_exact": "1790693702707649700"
+  },
+  "sqlite_integrity": "ok",
+  "fk_findings": 0,
+  "migrations": {
+    "applied_count": 34,
+    "expected_count": 34,
+    "missing_count": 0,
+    "extra_count": 0,
+    "matches_candidate": true,
+    "candidate_migration_ids": [
+      "accounts.0001_initial",
+      "attempts.0001_learning_foundation",
+      "attempts.0002_review_receipt_constraints",
+      "auth.0001_initial",
+      "auth.0002_alter_permission_name_max_length",
+      "auth.0003_alter_user_email_max_length",
+      "auth.0004_alter_user_username_opts",
+      "auth.0005_alter_user_last_login_null",
+      "auth.0006_require_contenttypes_0002",
+      "auth.0007_alter_validators_add_error_messages",
+      "auth.0008_alter_user_username_max_length",
+      "auth.0009_alter_user_last_name_max_length",
+      "auth.0010_alter_group_name_max_length",
+      "auth.0011_update_proxy_permissions",
+      "auth.0012_alter_user_first_name_max_length",
+      "contenttypes.0001_initial",
+      "contenttypes.0002_remove_content_type_name",
+      "domain.0001_initial",
+      "errors.0001_initial",
+      "errors.0002_learning_classification",
+      "errors.0003_errorcategory_category_kind_and_more",
+      "operations.0001_initial",
+      "operations.0002_attempt_audit_events",
+      "operations.0003_answer_key_correction_audit",
+      "operations.0004_remove_auditevent_audit_event_code_valid_and_more",
+      "questions.0001_origin_catalog",
+      "questions.0002_question_catalog",
+      "reviews.0001_learning_foundation",
+      "reviews.0002_activation_review_cycle",
+      "reviews.0003_reviewschedulechange_and_more",
+      "reviews.0004_attempt_correction_projection",
+      "reviews.0005_reviewcycle_manual_purpose_and_more",
+      "search.0001_initial",
+      "taxonomy.0001_initial"
+    ],
+    "candidate_leafs": [
+      "accounts.0001_initial",
+      "attempts.0002_review_receipt_constraints",
+      "auth.0012_alter_user_first_name_max_length",
+      "contenttypes.0002_remove_content_type_name",
+      "domain.0001_initial",
+      "errors.0003_errorcategory_category_kind_and_more",
+      "operations.0004_remove_auditevent_audit_event_code_valid_and_more",
+      "questions.0002_question_catalog",
+      "reviews.0005_reviewcycle_manual_purpose_and_more",
+      "search.0001_initial",
+      "taxonomy.0001_initial"
+    ],
+    "all_candidate_leafs_applied": true
+  },
+  "schema_fingerprint": {
+    "algorithm": "SHA-256 over UTF-8 canonical JSON sorted sqlite_master(type,name,tbl_name,sql)",
+    "sha256": "SHA256:5098767a32dec3a5d57f67bcc56375b99322cc2edb60c1ee1061eda9fdc4e686"
+  },
+  "schema_compatibility": {
+    "candidate_compatible": true,
+    "managed_model_tables_checked": 27,
+    "normative_basis": "portability._validate_destination table definitions and conditional unique indexes; metadata only",
+    "schema_editor_entered": false,
+    "ddl_executed": false
+  },
+  "checker": {
+    "checks_executed": 25,
+    "total_findings": 0,
+    "queries_executed": 26,
+    "invariant_ids": [
+      "DB-001",
+      "DB-002",
+      "WS-001",
+      "WS-002",
+      "WS-003",
+      "QUE-001",
+      "QUE-002",
+      "QUE-003",
+      "ATT-001",
+      "ATT-002",
+      "ATT-003",
+      "REV-001",
+      "REV-002",
+      "REV-003",
+      "REV-004",
+      "ERR-001",
+      "ERR-002",
+      "OPS-001",
+      "CAT-001",
+      "REV-005",
+      "REV-006",
+      "AUD-001",
+      "SAV-001",
+      "DOM-001",
+      "AUD-002"
+    ],
+    "severity_counts": {},
+    "finding_invariant_ids": [],
+    "readonly_enforcement": "native SQLite mode=ro&immutable=1 with SQL authorizer; normal Django connect denied"
+  },
+  "cross_workspace": "NO_FINDING_IN_EXISTING_NORMATIVE_CHECKER",
+  "workspace_count": 1,
+  "workspace_aliases": [
+    "W01"
+  ],
+  "workspace_scope_candidate": "W01",
+  "workspace_selection_for_mutations": "NOT AUTHORIZED",
+  "timezone_match": false,
+  "stop_reason": "TIMEZONE_MISMATCH",
+  "physical_post": {
+    "sha256": "SHA256:fbc21fd544d7115cc6cb15342949090822e0e01c44d8d2047e9c729939de4156",
+    "size_bytes": 802816,
+    "sidecars": {
+      "-wal": false,
+      "-shm": false,
+      "-journal": false
+    },
+    "mtime_ns_exact": "1790693702707649700"
+  },
+  "source_physically_unchanged": true,
+  "read_only_guard_receipt": {
+    "readonly_connections_opened": 2,
+    "writable_connection_attempts": 0,
+    "denied_sql_operations": 0,
+    "normal_django_connection_attempts": 0,
+    "sqlite_native_total_changes": 0
+  },
+  "start_time": "2026-10-03 23:11:34 -03:00",
+  "model_authorized": "GPT-6.1 Sol High",
+  "runtime_model_identity": "NOT INDEPENDENTLY OBSERVABLE",
+  "baseline_git": {
+    "head": "COMMIT:dcccb8950a7752d03461665e0a4952c8a9bc663b",
+    "origin_main": "COMMIT:dcccb8950a7752d03461665e0a4952c8a9bc663b",
+    "initial_changed_paths": "EXACTLY SIX PRIOR S8 PLANNING ARTIFACTS",
+    "initial_diff_check_exit": 0
+  },
+  "offline_preflight": {
+    "relevant_processes_inspected": 9,
+    "possible_product_processes": 0,
+    "unreadable_python_commandlines": 0,
+    "product_port_8000_listeners": 0,
+    "sidecars_absent": true,
+    "stable_prior_metadata_and_hash": true,
+    "scope": "KNOWN PRODUCT PROCESS/LISTENER AND EXACT SOURCE METADATA; NO CLAIM OF EXHAUSTIVE MACHINE LOCK"
+  },
+  "representativity_precheck": "NOT ASSESSED — IMMEDIATE STOP AT TIMEZONE_MISMATCH",
+  "review_stage_availability": {
+    "D1": "NOT ASSESSED",
+    "D7": "NOT ASSESSED",
+    "D14": "NOT ASSESSED",
+    "D30": "NOT ASSESSED"
+  },
+  "aggregate_functional_counts": "NOT QUERIED AFTER TIMEZONE STOP",
+  "counts_sensitivity_review": {
+    "workspace_count": "explicit user allowance for one Workspace reported as W01",
+    "migration_schema_checker_fk_counts": "technical metadata, no personal-content inference",
+    "other_small_functional_counts": "not observed, not published"
+  },
+  "private_real_workspace_names_published": false,
+  "timezone_expected_confirmation": "CONFIRMED PRIVATELY IN HUMAN AUTHORIZATION",
+  "timezone_observed": "PRIVATE CONVERSATION ONLY",
+  "git_mutations": {
+    "add": false,
+    "commit": false,
+    "push": false,
+    "tag": false,
+    "release": false
+  },
+  "human_timezone_decision": {
+    "expected_confirmation_retained": true,
+    "mismatch_left_pending": true,
+    "separate_future_decision_required": true,
+    "source_timezone_change_authorized": false,
+    "pilot_execution_authorized": false
+  },
+  "end_time": "2026-10-03 23:30:09 -03:00",
+  "observed_duration": "00:18:35",
+  "administrative_authorization": "Direct human approval received for exactly three documentary files after automatic review rejection; no SOURCE operation authorized.",
+  "final_git_expected": [
+    " M PROJECT_STATE.md",
+    " M tasks/current.md",
+    "?? quality/v10-s8-planning-result.md",
+    "?? quality/v10-s8-source-readonly-preflight.json",
+    "?? tasks/plans/v10-s8-controlled-real-pilot-plan.md",
+    "?? tasks/plans/v10-s8-data-protection.md",
+    "?? tasks/plans/v10-s8-pilot-route.md"
+  ],
+  "final_git_observed": [
+    " M PROJECT_STATE.md",
+    " M tasks/current.md",
+    "?? quality/v10-s8-planning-result.md",
+    "?? quality/v10-s8-source-readonly-preflight.json",
+    "?? tasks/plans/v10-s8-controlled-real-pilot-plan.md",
+    "?? tasks/plans/v10-s8-data-protection.md",
+    "?? tasks/plans/v10-s8-pilot-route.md"
+  ],
+  "final_diff_check_exit": 0,
+  "final_staged_paths": [],
+  "final_physical_metadata_equal": true,
+  "final_last_write_time_utc": "2026-09-29T14:55:02.7076497Z",
+  "documentary_persistence": "EXACT THREE HUMAN-APPROVED DOCUMENTS WRITTEN; HISTORICAL STATE PRESERVED"
+}

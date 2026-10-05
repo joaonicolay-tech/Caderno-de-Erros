@@ -9,9 +9,8 @@ from datetime import date, datetime, timedelta
 from django.core.exceptions import ValidationError
 from django.db.models import F, Q
 
-from modules.accounts.models import Workspace
 from modules.attempts.models import Attempt, AttemptStatus, AttemptType
-from shared.domain.time import Calendar, Clock, LocalDate, TimeZoneId
+from shared.domain.time import Clock, FixedClock, Instant, LocalDate, TimeZoneId
 
 from .models import (
     Review,
@@ -37,8 +36,6 @@ class AttemptDerivedStateRebuilder:
     def __init__(self, *, workspace_id: uuid.UUID, clock: Clock) -> None:
         self.workspace_id = workspace_id
         self.clock = clock
-        self.calendar = Calendar(clock)
-        self.schedule = ReviewSchedulePolicy(clock=clock, calendar=self.calendar)
 
     def rebuild(
         self,
@@ -152,11 +149,15 @@ class AttemptDerivedStateRebuilder:
             cycle, review = self._retry_projection(voided=voided, target=target)
             return ReconstructionResult(superseded, cancelled, cycle.id, review.id)
 
-        workspace = Workspace.objects.only("timezone_name").get(pk=self.workspace_id)
-        decision = self.schedule.decide(
+        # Scheduling follows the captured context of this NEW replacement fact.
+        from shared.domain.time import Calendar
+
+        operation_clock = FixedClock(Instant(replacement.occurred_at))
+        schedule = ReviewSchedulePolicy(clock=operation_clock, calendar=Calendar(operation_clock))
+        decision = schedule.decide(
             current_stage=ReviewStage(target.stage_code),
             is_correct=replacement.is_correct,
-            time_zone_id=TimeZoneId(workspace.timezone_name),
+            time_zone_id=TimeZoneId(replacement.timezone_name),
             policy_code=target.policy_code,
         )
         if decision.next_stage is None:

@@ -1,0 +1,18 @@
+{
+  "decision": "RED_REPRODUCED_BEFORE_ANY_FUNCTIONAL_FIX",
+  "baseline": "COMMIT:dcccb8950a7752d03461665e0a4952c8a9bc663b",
+  "source_access": "NO",
+  "settings": "config.settings.test",
+  "exit_code": 1,
+  "tests_failed": 5,
+  "duration_seconds": 13.14,
+  "raw_log_sha256": "SHA256:A782439A30CF69BA48B023F47A3FD8571A73FCD1BFD46C16E3724F0A1C1A94F2",
+  "raw_junit_sha256": "SHA256:43AC6340F2A3C50E9B0003D7D59011F8D13B5DE5D3875A38713ADA52CEC46C55",
+  "test_source_sha256": "SHA256:84D568E8223CCF9273F4B0F377A85F4DFFB415AE62E9A603D4F0319F9C47AF29",
+  "R1": "REV-004 adds 1 false finding after Acre-to-SP boundary inaugural fact",
+  "R2_29_30": "comparable Questions 3 to 0 with same evaluation date",
+  "R2_59_60": "comparable Questions 0 to 3 with same evaluation date",
+  "R2_89_90": "recurrence eligible Questions 0 to 3 with same evaluation date",
+  "R3": "replacement keeps Brazil/Acre when current Workspace is America/Sao_Paulo",
+  "retention": "Raw synthetic logs, JUnit and original RED tests preserved outside versioned evidence; no deletion"
+}

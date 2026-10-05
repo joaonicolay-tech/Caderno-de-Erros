@@ -1,0 +1,51 @@
+{
+  "decision": "HUMAN_APPROVED_METADATA_ONLY",
+  "observed_at": "2026-10-05T12:21:46.269033-03:00",
+  "human_reply_verbatim": "Autorizar somente essa qualificação de metadata",
+  "scope": "Only SHA256:/COMMIT: qualification of literal hash strings in the five reviewed versionable JSON files",
+  "originals": "Complete immutable byte copies retained outside Git in work/s8r1-execution/metadata-proposal/*.original",
+  "facts_source_baseline_gate_schema_cei": "UNCHANGED",
+  "automatic_review_rejection": "Prior inventory edit was rejected because byte-preservation applied; explicit human exception received before retry.",
+  "entries": [
+    {
+      "path": "quality/v10-s7r2-update-proof.json",
+      "metadata_strings_changed": 5,
+      "before_sha256": "SHA256:4d53d8154b76676579e6b012b3f95c6396b066e5f1a3d51498b11df5b091dc30",
+      "after_sha256": "SHA256:76af25a03e58e7fda3ef55684499b4d53d0aa5e5791f1ae36feafa0c5cd6a69c",
+      "reversible_exactly": true,
+      "original_protected_outside_git": true
+    },
+    {
+      "path": "quality/v10-s8-source-readonly-preflight.json",
+      "metadata_strings_changed": 5,
+      "before_sha256": "SHA256:668a369b6e107be9ec7659163f2bc7d5058840dd27ab0767f09e457db66dcc85",
+      "after_sha256": "SHA256:ebecd5a4b7293b6888f7aa7160a89bad6f3972970754e6865952725996aab80b",
+      "reversible_exactly": true,
+      "original_protected_outside_git": true
+    },
+    {
+      "path": "quality/v10-s8-timezone-impact.json",
+      "metadata_strings_changed": 4,
+      "before_sha256": "SHA256:a1a5461dc237a97b949cfbc40c6ca950e6b453435c72073b07fa29b26fd5242b",
+      "after_sha256": "SHA256:7e5c68e1d96b398c38da9bc431ca9495268fd5a534d9220b51687803a3e3055a",
+      "reversible_exactly": true,
+      "original_protected_outside_git": true
+    },
+    {
+      "path": "quality/v10-s8r1-initial-paths.json",
+      "metadata_strings_changed": 8,
+      "before_sha256": "SHA256:6122bf01f8ae71b8d38cad1ba99d6cd08e8b8e85b3408d854970eee06c7cc5a5",
+      "after_sha256": "SHA256:82adb84e8987325c5980b575e9461952254e6b50ccf188b759ee4759f3905bcd",
+      "reversible_exactly": true,
+      "original_protected_outside_git": true
+    },
+    {
+      "path": "quality/v10-s8r1-execution-initial-paths.json",
+      "metadata_strings_changed": 14,
+      "before_sha256": "SHA256:9bbaf1ee7bf723063abf9165206ee1a38a4005c9fda9e87ce9ab36b9d0cf82b1",
+      "after_sha256": "SHA256:7ff207a0002c1302fbb1f7ae2f158412f8c6fec11d8ffc5024f3d3396e318387",
+      "reversible_exactly": true,
+      "original_protected_outside_git": true
+    }
+  ]
+}

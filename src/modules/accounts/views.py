@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from modules.analytics import AnalyticsService
+from modules.priority.policy import POLICY_VERSION as PRIORITY_POLICY
 from modules.priority.services import list_subject_priorities
 from shared.application.bootstrap import bootstrap_local_workspace
 
@@ -124,6 +125,7 @@ def priority(request: HttpRequest) -> HttpResponse:
         {
             "workspace": workspace,
             "evaluated_on": recommendation.evaluated_on,
+            "priority_policy": PRIORITY_POLICY,
             "ranked": tuple(display(row) for row in recommendation.ranked),
             "collecting": tuple(display(row) for row in recommendation.collect_more_evidence),
         },

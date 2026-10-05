@@ -6,9 +6,7 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import date
-from zoneinfo import ZoneInfo
 
-from modules.accounts.models import Workspace
 from modules.analytics.read_models import AttemptFilters
 from modules.analytics.selectors import eligible_reviews, review_reference_date, valid_attempts
 from modules.attempts.models import AttemptType
@@ -44,8 +42,6 @@ class PriorityList:
 
 def list_subject_priorities(*, workspace_id: uuid.UUID, clock: Clock | None = None) -> PriorityList:
     """Read existing facts in batches and leave Review Queue untouched."""
-    workspace = Workspace.objects.only("timezone_name").get(pk=workspace_id)
-    zone = ZoneInfo(workspace.timezone_name)
     today = review_reference_date(workspace_id=workspace_id, clock=clock)
     subjects = tuple(
         Subject.objects.filter(
@@ -91,15 +87,14 @@ def list_subject_priorities(*, workspace_id: uuid.UUID, clock: Clock | None = No
         attempts = (
             valid_attempts(workspace_id=workspace_id, filters=AttemptFilters())
             .filter(question_id__in=question_ids)
-            .values_list("question_id", "attempt_type", "occurred_at", "is_correct")
+            .values_list("question_id", "attempt_type", "local_date", "is_correct")
         )
-        for question_id, kind, occurred_at, correct in attempts:
+        for question_id, kind, local_date, correct in attempts:
             if kind == AttemptType.INITIAL:
                 performed.add(question_id)
                 continue
             if kind != AttemptType.REVIEW:
                 continue
-            local_date = occurred_at.astimezone(zone).date()
             age = (today - local_date).days
             if 0 <= age <= 89:
                 recurrence[question_id][0] += 1

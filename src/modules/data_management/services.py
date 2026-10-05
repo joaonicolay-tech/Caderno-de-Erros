@@ -814,6 +814,7 @@ def _check_restored_integrity(path: Path) -> IntegrityCheckResult:
         context={
             "checks_executed": result.checks_executed,
             "total_findings": result.total_findings,
+            "limited_verifications": result.total_limited_verifications,
             "queries_executed": result.queries_executed,
         },
     )

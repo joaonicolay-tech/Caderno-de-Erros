@@ -36,7 +36,7 @@ def _input() -> PriorityInput:
 
 def test_formula_components_explanations_and_boundary() -> None:
     result = evaluate_priority(_input())
-    assert result.policy_version == "PRI-HEUR-1.0"
+    assert result.policy_version == "PRI-HEUR-1.1"
     assert result.state == PriorityState.ELIGIBLE
     assert (result.w, result.o, result.r, result.d) == (
         Fraction(80),

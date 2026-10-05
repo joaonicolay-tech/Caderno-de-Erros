@@ -1,3 +1,73 @@
+# V1.0-S8R1 — verified functional closure (2026-10-05T13:10:05.041702-03:00)
+
+S8R1_COMPLETED. Synthetic only; H1–H4 implemented and verified. PRI-HEUR-1.1
+uses historical Attempt.local_date; REV-004 shares exact canonical SQL and typed
+LIMITED_VERIFICATION / TIMEZONE_CONTEXT_UNAVAILABLE. New replacements use
+captured current context, preserving old factual fields and normal lifecycle.
+
+Own gate GREEN / exit 0: 741 PASS, coverage 87.157780979827%,
+pip-audit 0 known vulnerabilities; focused 325 PASS, matrix file 61 PASS.
+A8 deep APPROVED: 0 Blocker / 0 Major / 0 Minor. CEI-EXPORT-1.0 remains intact;
+genuine synthetic V0.5→V1 import/upgrade/round-trip PASS; 0 new migrations.
+Planning originals, REDs and historical evidence preserved. Nine initial paths
+remain byte-identical; three initial JSON versionable copies are hash-qualified
+under explicit human metadata-only exception. All five approved JSON copies
+have complete protected originals and exactly reversible transformations.
+See quality/v10-s8r1-metadata-approval.json. SOURCE was never
+opened/copied/queried/modified in S8R1; no real fingerprints were read.
+
+V1.0-S8: AUTHORIZED / PLANNING / RESUMABLE AFTER S8R1.
+PILOT_EXECUTION: NOT YET AUTHORIZED. Real timezone correction in the future
+isolated PILOT still requires specific human authorization. S9–S10 NOT AUTHORIZED.
+No Git staging/commit/push/tag/release. HEAD/local origin/main remain dcccb895.
+S8R1 closure stops here and performs no parent-stage execution.
+
+Evidence: quality/v10-s8r1-execution-result.md; quality/v10-s8r1-verification.json;
+quality/v10-s8r1-a8-deep.json; quality/v10-s8r1-final-paths.json.
+
+---
+
+# Project State — V1.0-S8R1 AUTHORIZED / IN EXECUTION
+
+- H1–H4 approved by explicit human authorization on 2026-10-05; synthetic functional execution only. H3 clarification approved: preserve canonical VALID→VOIDED and AuditEvents; protect old factual fields.
+- V1.0-S8 = AUTHORIZED / PAUSED / RESUMABLE AFTER S8R1. SOURCE access PROHIBITED; REAL_DATA NO; PILOT_EXECUTION NOT YET AUTHORIZED; S9–S10 NOT AUTHORIZED.
+- H1 typed limited verification separated from findings; H2 PRI-HEUR-1.1, historical local_date membership and unchanged formula; H3 coherent current context for NEW replacement; H4 no context persistence/schema/migration/backfill/CEI field/set.
+- Baseline HEAD == local origin/main == dcccb8950a7752d03461665e0a4952c8a9bc663b. Fourteen initial paths classified and preserved; own R1/R2/R3 RED, T1–T14, full GREEN gate and A8 deep still required.
+- Modelo autorizado GPT-6.1 Sol High; effective runtime identity unobservable. No Git publication. Contract tasks/current.md; original A4/investigation/matrices remain immutable historical artifacts.
+
+## Historical S8R1 planning state — preserved verbatim
+
+# Project State — V1.0-S8R1 AUTHORIZED / PLANNING
+
+- A4_DECISION = HUMAN_DECISION_REQUIRED. A4/investigação/matrizes produzidos; H1 limite do checker legado, H2 base/versionamento Priority, H3 replacement e H4 contexto futuro/schema/CEI pendentes. Nenhuma implementação autorizada. Severity: Major / latent semantic risk; corrupção real não observada no histórico e SOURCE não reconsultada.
+
+- V1.0-S8R1 = AUTHORIZED / PLANNING. Autorização humana de 2026-10-05: contrato, investigação estática, A4 e matrizes apenas; implementação não autorizada.
+- V1.0-S8 = AUTHORIZED / PAUSED / RESUMABLE AFTER S8R1. TIMEZONE_CORRECTION_REQUIRES_SEPARATE_REMEDIATION permanece aberto; nenhuma retomada automática.
+- REAL_DATA = NO; SOURCE_ACCESS = NOT AUTHORIZED. PILOT_EXECUTION = NOT YET AUTHORIZED. S9–S10 = NOT AUTHORIZED.
+- Baseline observada: HEAD == origin/main == dcccb8950a7752d03461665e0a4952c8a9bc663b. Oito paths S8 iniciais classificados; conteúdo histórico preservado.
+- Modelo/esforço autorizado GPT-6.1 Sol High; identidade efetiva não verificável nesta sessão. Migration expectation NO; A8 futura deep. Não há gate/A8 funcional executado neste planejamento.
+- Contrato: tasks/current.md. A4: tasks/plans/v10-s8r1-timezone-semantics-plan.md. Matrizes: tasks/plans/v10-s8r1-timezone-surfaces.md e tasks/plans/v10-s8r1-synthetic-test-matrix.md. Investigação/resultado: quality/v10-s8r1-timezone-investigation.md e quality/v10-s8r1-planning-result.md.
+- Preservar o preflight e a avaliação S8 como observações históricas: SOURCE fisicamente inalterada, checker 25/0, SQLite ok, FK 0, migrations 34/34, W01 único, zero divergências observadas; isso não elimina risco latente nem autoriza acesso futuro.
+
+## Historical S8 planning state — preserved verbatim; paused by S8R1 above
+
+# Project State — V1.0-S8 AUTHORIZED / PLANNING
+
+- V1.0-S8 = AUTHORIZED / PLANNING under explicit human authorization on 2026-10-03. Scope: read-only source/document audit, contract, A4, route, protection, checkpoints and human gate only.
+- REAL_DATA_ACCESS = EXACT SOURCE READ-ONLY PREFLIGHT AND TIMEZONE IMPACT ASSESSMENT EXECUTED; FURTHER ACCESS NOT AUTHORIZED. PILOT_EXECUTION = NOT YET AUTHORIZED. S9–S10 = NOT AUTHORIZED. Exact SOURCE was selected by the human and read only in the separately authorized microstep; no copy, backup, pilot or data mutation.
+- Planning decision: S8_A4_READY_FOR_HUMAN_DATA_AUTHORIZATION; not S8_COMPLETED, not pilot PASS, not promotion. PILOT_SOURCE = human-confirmed exact SOURCE (private identification); Workspace W01 completed read-only timezone assessment; correction remains pending separate remediation.
+- S8 classification: L / critical / migration expectation NO; GPT-6.1 Sol High explicitly authorized as override of the V1 plan; runtime identity not independently observable; future execution A8 deep.
+- Contract: tasks/current.md. A4: tasks/plans/v10-s8-controlled-real-pilot-plan.md. Route: tasks/plans/v10-s8-pilot-route.md. Protection/preflight/temporary classes: tasks/plans/v10-s8-data-protection.md. Planning audit: quality/v10-s8-planning-result.md.
+- Baseline verified: HEAD == local origin/main == dcccb8950a7752d03461665e0a4952c8a9bc663b; initial tree clean. S7 publication checkpoint 6879e6ad and post-checkpoint documentary reconciliation dcccb895 remain distinct historical commits.
+- Preserve S1–S7 COMPLETED, S2R1–S2R5 COMPLETED, S6R1 COMPLETED / S6_REVALIDATED, S7R1/S7R2 COMPLETED, S7-F01/F02 RESOLVED, S7 checkpoint COMPLETED, final S7 A8 APPROVED WITH NOTES (0 Blocker / 0 Major / 2 Minor). Historical FAIL/blocked/retention exceptions remain unchanged below.
+- No source/code/config/test/dependency/schema/migration changes, functional test/gate, app start, real export/backup/restore/recovery, Git add/commit/push/tag/release or S9/S10 execution in this planning task.
+
+- SOURCE_READONLY_PREFLIGHT_EXECUTED: HUMAN_DECISION_REQUIRED / TIMEZONE_MISMATCH. SOURCE physically unchanged; SQLite ok/FK 0; migrations 34/34 and normative schema compatible; checker 25/0; Workspace count 1 / W01. Functional counts and representativity were not queried after immediate stop. No root creation or Git publication. Human decision after the stop: keep the originally confirmed expected timezone and leave the mismatch pending for a separate decision. No timezone correction, source-access resumption or pilot authorized. Sanitized result: quality/v10-s8-source-readonly-preflight.json. Retention until S8+A8 deep APPROVED+explicit human disposal approval; recovery only future isolated RECOVERY_TARGET.
+
+- TIMEZONE_IMPACT_ASSESSMENT_EXECUTED (W01, read-only): TIMEZONE_CORRECTION_REQUIRES_SEPARATE_REMEDIATION. SOURCE physically unchanged/native total_changes 0; SQLite ok/FK 0; current-source checker 25/0. Pending 9, agenda classification delta 0; observed inaugural REV-004 counterfactual mismatches 0/5. Static risk: REV-004 validates historical dates using current Workspace zone; Priority relocalizes historical instants. Historical timezone rewrite required NO; official configuration service requires no historical recomputation or migration. REPRESENTATIVITY_PRECHECK=LIMITED; D14/D30, SavedFilters and correction/reschedule/audit histories absent. Authorized microstep model GPT-6 Luna High; runtime identity unobservable. Result: quality/v10-s8-timezone-impact.json. No correction, copy, backup, PILOT or future access authorized; S9–S10 remain NOT AUTHORIZED.
+
+## Historical record — previous state preserved verbatim
+
 # Project State — V1.0-S7 completed
 
 - V1.0-S7 COMPLETED on 2026-10-03. S7-F01 and S7-F02 RESOLVED. Final A8 standard: APPROVED WITH NOTES (0 Blocker / 0 Major / 2 Minor); see `quality/v10-s7r2-a8-standard.json`.

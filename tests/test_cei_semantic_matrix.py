@@ -11,7 +11,7 @@ from collections.abc import Callable
 from copy import deepcopy
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from django.db import connections
@@ -58,7 +58,6 @@ A_CODES = (
 )
 NEGATIVE_CASES = (
     *A_CODES,
-    "REV-004-inaugural",
     "ATT-002-invalid-zone",
     "ATT-003-cycle",
     "CAT-001-merge-cycle",
@@ -508,3 +507,53 @@ def test_retention_is_not_invented_as_package_semantic_rule(rich_package: bytes)
             archive.writestr(name, data)
     package = validate_export(io.BytesIO(buffer.getvalue()))
     assert len(package.rows["audit_events"]) == len(events)
+
+
+@pytest.mark.parametrize("entry_point", ["reader", "direct_mutated_object"])
+def test_s8r1_inaugural_date_without_context_reports_limitation_not_exact_pass(
+    rich_package: bytes,
+    tmp_path: Path,
+    django_db_blocker: Any,
+    caplog: pytest.LogCaptureFixture,
+    entry_point: str,
+) -> None:
+    # H1 supersedes the old false-negative label: the persisted columns cannot
+    # prove this changed date invalid independently of mutable Workspace context.
+    direct, raw = variant(rich_package, "REV-004-inaugural", True)
+    package = validate_export(io.BytesIO(raw)) if entry_point == "reader" else direct
+    validated = validate_export(io.BytesIO(raw))
+    assert len(validated.limited_verifications) == 1
+    limited = validated.limited_verifications[0]
+    assert limited.outcome == "LIMITED_VERIFICATION"
+    assert limited.reason_code == "TIMEZONE_CONTEXT_UNAVAILABLE"
+    alias = "s8r1_limited_" + uuid.uuid4().hex
+    connections.databases[alias] = {
+        **connections["default"].settings_dict,
+        "NAME": str(tmp_path / "limited.sqlite3"),
+    }
+    try:
+        with django_db_blocker.unblock():
+            database = connections[alias]
+            executor = MigrationExecutor(database)
+            executor.migrate(executor.loader.graph.leaf_nodes())
+            import_into_empty(package=package, database_alias=alias)
+            checked = run_integrity_check(using=alias)
+            assert checked.checks_executed == 25 and checked.total_findings == 0
+            assert checked.total_limited_verifications == 1
+            reports = [
+                record
+                for record in caplog.records
+                if getattr(record, "operation", None) == "cei.import.integrity"
+            ]
+            assert (
+                reports and cast(Any, reports[-1]).technical_context["limited_verifications"] == 1
+            )
+            replay = io.BytesIO()
+            export_workspace(
+                workspace_id=LOCAL_WORKSPACE_ID, destination=replay, database_alias=alias
+            )
+            assert validate_export(io.BytesIO(replay.getvalue())).rows == validated.rows
+    finally:
+        connections[alias].close()
+        del connections[alias]
+        del connections.databases[alias]

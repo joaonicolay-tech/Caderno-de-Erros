@@ -1,0 +1,81 @@
+{
+  "task": "V1.0-S8R1",
+  "depth": "deep",
+  "decision": "APPROVED",
+  "review_started_at": "2026-10-05T13:07:39.685515-03:00",
+  "review_completed_at": "2026-10-05T13:10:04.862191-03:00",
+  "gate_completed_before_review": "2026-10-05T13:07:24.6580215-03:00",
+  "reviewer": "Root execution agent; self-review explicitly disclosed, no independent human/external reviewer claimed",
+  "policy": "docs/review/code-review.md; live authorized task criteria and explicit human H1-H4/H3/metadata decisions",
+  "counts": {
+    "Blocker": 0,
+    "Major": 0,
+    "Minor": 0
+  },
+  "open_findings": [],
+  "scope_reviewed": {
+    "H1_REV004": "Typed non-error limitations count/report separately; no current Workspace retroprojection or circular due-date inference. Canonical SQL and 25-check catalog unchanged. Exact anchored offsets and structural/relational checks retain negative detection.",
+    "canonical_consumers": "CLI checker, CEI pre-DML and native post-import snapshot, restore/recovery share canonical semantics. Post-import reads its own atomic uncommitted connection, not an empty external snapshot; final observed pre/post/external 25/0/1 agree.",
+    "H2_Priority": "Membership uses persisted Attempt.local_date; pure formula differs only in policy identifiers, weights/windows/sufficiency/ties/UNAVAILABLE remain. 1.1 prospective dated addendum, historical1.0 unchanged; current reference day may legitimately affect O/aging.",
+    "H3_replacement": "Current Workspace context and UTC captured before void; new Attempt and schedule use same captured timezone/instant. User clarified normal predecessor VALID-to-VOIDED and appended audit lifecycle; old factual fields unchanged. INITIAL/REVIEW and actual races covered.",
+    "H4": "No new field/model/schema/migration/context/CEI set/backfill/repair; future inaugurals remain explicitly limited when independent context absent.",
+    "CEI_compatibility": "Closed metadata/21 sets/fields/format1.0 preserved. Explicit V0.5+1.0 and V1+1.0/1.1 allowlist; unknown/V0.5+1.1 rejected before destination DML. ZIP/direct immutable snapshot revalidation preserved, no remapping/coercion.",
+    "REDs_boundaries_false_positives_false_negatives": "Original five RED failures retained before fix. T1-T14 selected from current741-case JUnit: midnight both zones, 29/30/59/60/89/90, Domain aging, year/leap/IANA, anchored corruption and unprovable inaugural distinction. No skip/xfail.",
+    "zero_DML": "Canonical checker/projection positive and negative instrumentation verifies attempted/completed DML0, native total_changes0, fingerprints equal. Eleven destination compatibility negatives and unknown policy proofs separate reject-before-write from rollback and CEI RAM materialization writes.",
+    "upgrade_restore": "Synthetic backup/restore and genuine unchanged historical V0.5 code under test profile PASS. All physical tables/21 sets/history equal, migration plan empty. 223 historical Python files equal verified tag archive; actual process versions observed, not original deployment recreation.",
+    "history_metadata": "Nine initial planning paths byte-equal; three original initial JSONs preserved in raw copies with approved versionable qualification. Five copies/36 strings exactly reversible. User metadata-only exception recorded; raw REDs and earlier FAIL/incomplete runs retained. Optional admin exception prefixes were rejected and not applied.",
+    "privacy_source_git": "Executed DB commands bound to synthetic guarded targets; no real SOURCE open/query/copy/hash/ORM/checker/backup/restore. No personal content in new artifacts, destination paths sanitized. Baseline/gate/dependencies unchanged; no staging/publication; baseline local refs unchanged.",
+    "documentation_and_UI": "New addendum states vigency/history/limits/compatibility; frozen documents intact. Live UI reads current policy label. Reviewed latest real diff after GREEN and tests at relevant assertions; no browser validation claimed."
+  },
+  "resolved_observed_issues": [
+    "UI policy label still1.0: actual focused failure retained, view/template fixed, final focused and full gate PASS.",
+    "External post-import checker saw empty snapshot: canonical native reader fixed, observed pre/post/external limitations agree.",
+    "Two obsolete inaugural CEI rejection expectations: preserved observed failures, replaced by explicit limited reader/direct round-trip tests; anchored negatives and total63cases retained.",
+    "T13 equal timestamps caused random UUID latest-evidence selection: retained740PASS/1FAIL gate and source; distinct fixed instants keep rejection/rollback oracle strong, matrix61PASS/full741PASS.",
+    "Hashes flagged by official hook: specific human metadata-only qualification approved, complete originals preserved, official hook/fullgatePASS; no detector/baseline change.",
+    "Wrapper normal stderr caused premature capture abort: incident preserved, capture-only preference corrected, child real exit0 required; no authoritative gate modification.",
+    "Supplementary historical-code proof profile: initial guarded synthetic development run preserved; final BOTH phases repeated under config.settings.test to meet literal current contract."
+  ],
+  "evidence": {
+    "verification": "quality/v10-s8r1-verification.json",
+    "red": "quality/v10-s8r1-red-evidence.json",
+    "metadata_approval": "quality/v10-s8r1-metadata-approval.json",
+    "post_gate_preservation": {
+      "status": "PASS",
+      "observed_at": "2026-10-05T13:07:39.685515-03:00",
+      "after_gate_end": "2026-10-05T13:07:24.6580215-03:00",
+      "canonical_sql_byte_equal": true,
+      "cei_21_sets_fields_ast_equal": true,
+      "red_raw_hashes_equal": true,
+      "prior_admin_byte_suffixes_equal": true,
+      "baseline_equal": true,
+      "staged_paths": 0,
+      "model_migration_schema_dependency_baseline_gate_changes": 0,
+      "functional_source_tests_controls_equal_final_gate_snapshot": true,
+      "source_access": "NO; only synthetic artifacts and code/metadata read"
+    },
+    "full_suite": {
+      "tests": 741,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 1515.682,
+      "sha256": "SHA256:dc6622de9b0b5848befa806e5eeaf6feb85fff0ff37ead16ac536397eafc1bd0"
+    },
+    "final_matrix": {
+      "tests": 61,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 65.569,
+      "sha256": "SHA256:89ff506e4282ccaed2d9387112ea323fefc1dbba1b3bdfacd03425fd88e7d05e"
+    },
+    "coverage_percent": 87.1577809798271
+  },
+  "limitations": [
+    "H1/H4 lack independent inaugural context by approved design; not exact temporal PASS.",
+    "Runtime model/effort not independently exposed; no invented quota/runtime identity.",
+    "No claim that pytest-ended ephemeral databases are retained; preserved logs/XML/raw evidence and standalone synthetic upgrade artifacts are identified.",
+    "S8/PILOT/S9-S10 and Git publication remain separately gated; this review does not authorize them."
+  ]
+}

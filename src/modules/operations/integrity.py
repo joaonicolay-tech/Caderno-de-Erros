@@ -159,6 +159,29 @@ class IntegrityFinding:
     operational_action: str
 
 
+class VerificationOutcome(StrEnum):
+    """Non-error outcomes that must never be confused with exact verification."""
+
+    LIMITED_VERIFICATION = "LIMITED_VERIFICATION"
+
+
+@dataclass(frozen=True, slots=True)
+class IntegrityLimitedVerification:
+    """An independent historical timezone was never persisted for this fact."""
+
+    invariant_id: str
+    entity_type: str
+    technical_id: str
+    outcome: VerificationOutcome = VerificationOutcome.LIMITED_VERIFICATION
+    reason_code: str = "TIMEZONE_CONTEXT_UNAVAILABLE"
+
+
+@dataclass(frozen=True, slots=True)
+class InvariantProjectionResult:
+    violations: tuple[str, ...]
+    limited_verifications: tuple[IntegrityLimitedVerification, ...]
+
+
 @dataclass(frozen=True, slots=True)
 class IntegrityCheckResult:
     """Resultado determinístico com contagem total independente do limite visual."""
@@ -168,6 +191,11 @@ class IntegrityCheckResult:
     findings: tuple[IntegrityFinding, ...]
     severity_counts: tuple[tuple[InvariantSeverity, int], ...]
     queries_executed: int
+    limited_verifications: tuple[IntegrityLimitedVerification, ...] = ()
+
+    @property
+    def total_limited_verifications(self) -> int:
+        return len(self.limited_verifications)
 
     @property
     def has_blocking_findings(self) -> bool:
@@ -1427,73 +1455,54 @@ def _append_workspace_timezone_findings(
     return total
 
 
-def _append_inaugural_schedule_findings(
+def _inaugural_limited_verifications(
     database: sqlite3.Connection,
-    spec: InvariantSpec,
-    findings: list[IntegrityFinding],
-    *,
-    limit: int,
-) -> int:
-    total = 0
-    rows = database.execute(
-        "SELECT r.id, c.started_at, w.timezone_name, r.first_due_date "
-        "FROM reviews_review r "
-        "JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id "
-        "JOIN accounts_workspace w ON w.id = r.workspace_id "
-        "WHERE c.origin_kind IN ('QUESTION_ACTIVATION', 'MANUAL') AND r.sequence_number = 1 "
-        "ORDER BY r.id"
-    )
-    for technical_id, started_at, timezone_name, first_due_date in rows:
-        try:
-            instant = datetime.fromisoformat(str(started_at))
-            if instant.tzinfo is None:
-                instant = instant.replace(tzinfo=UTC)
-            expected = (
-                instant.astimezone(TimeZoneId(str(timezone_name)).zone).date() + timedelta(days=1)
-            ).isoformat()
-        except (TypeError, ValueError):
-            continue
-        if str(first_due_date) == expected:
-            continue
-        total += 1
-        if len(findings) < limit:
-            findings.append(
-                _finding(
-                    spec,
-                    entity_type="Review",
-                    technical_id=str(technical_id),
-                    context=(
-                        ("first_due_date", str(first_due_date)),
-                        ("expected_first_due_date", expected),
-                    ),
-                )
-            )
-    return total
+) -> tuple[IntegrityLimitedVerification, ...]:
+    """Report absent context without using mutable Workspace or circular dates.
 
-
-def invariant_python_violations(
-    database: sqlite3.Connection, invariant_ids: tuple[str, ...]
-) -> tuple[str, ...]:
-    """Reuse deterministic checker helpers on a caller-owned read-only projection.
-
-    This adapter does not open files, read wall-clock now, mutate the connection,
-    or replace any checker rule. REV-004 here is its IANA inaugural-date addendum;
-    its relational SQL must also be evaluated through invariant_sql_rules.
+    A MANUAL origin Attempt predates the command and is not its timezone context.
+    Exact anchored temporal and structural rules remain in canonical REV-004 SQL.
     """
+    rows = database.execute(
+        "SELECT r.id FROM reviews_review r "
+        "JOIN reviews_reviewcycle c ON c.id = r.review_cycle_id "
+        "WHERE c.origin_kind IN ('QUESTION_ACTIVATION', 'MANUAL') "
+        "AND r.sequence_number = 1 ORDER BY r.id"
+    )
+    return tuple(
+        IntegrityLimitedVerification("REV-004", "Review", _safe_technical_value(technical_id))
+        for (technical_id,) in rows
+    )
+
+
+def invariant_python_result(
+    database: sqlite3.Connection, invariant_ids: tuple[str, ...]
+) -> InvariantProjectionResult:
+    """Canonical read-only projection: violations and limitations stay separate."""
     helpers = {
         "WS-003": _append_workspace_timezone_findings,
         "ATT-002": _append_attempt_time_findings,
-        "REV-004": _append_inaugural_schedule_findings,
     }
     specs = {spec.invariant_id: spec for spec in INVARIANT_CATALOG}
     violations = []
+    limited: tuple[IntegrityLimitedVerification, ...] = ()
     for code in invariant_ids:
+        if code == "REV-004":
+            limited = _inaugural_limited_verifications(database)
+            continue
         if code not in helpers:
             raise ValueError("Not a deterministic projection helper: " + code)
         findings: list[IntegrityFinding] = []
         if helpers[code](database, specs[code], findings, limit=1):
             violations.append(code)
-    return tuple(violations)
+    return InvariantProjectionResult(tuple(violations), limited)
+
+
+def invariant_python_violations(
+    database: sqlite3.Connection, invariant_ids: tuple[str, ...]
+) -> tuple[str, ...]:
+    """Compatibility view; reporting consumers use invariant_python_result."""
+    return invariant_python_result(database, invariant_ids).violations
 
 
 def _append_expired_audit_findings(
@@ -1541,56 +1550,68 @@ def run_integrity_check(
     if instant.tzinfo is None or instant.utcoffset() is None:
         raise ValueError("now precisa ser um instante com fuso.")
     path = _database_path(using)
-    findings: list[IntegrityFinding] = []
-    totals: Counter[InvariantSeverity] = Counter()
-    queries_executed = 0
     try:
         with closing(
             sqlite3.connect(f"{path.as_uri()}?mode=ro", uri=True, timeout=5.0)
         ) as database:
             database.execute("BEGIN")
-            for spec in INVARIANT_CATALOG:
-                if spec.invariant_id == "DB-001":
-                    count = _append_integrity_findings(
-                        database, spec, findings, limit=finding_limit
-                    )
-                elif spec.invariant_id == "DB-002":
-                    count = _append_foreign_key_findings(
-                        database, spec, findings, limit=finding_limit
-                    )
-                elif spec.invariant_id == "ATT-002":
-                    count = _append_attempt_time_findings(
-                        database, spec, findings, limit=finding_limit
-                    )
-                elif spec.invariant_id == "WS-003":
-                    count = _append_workspace_timezone_findings(
-                        database, spec, findings, limit=finding_limit
-                    )
-                elif spec.invariant_id == "AUD-002":
-                    count = _append_expired_audit_findings(
-                        database, spec, findings, limit=finding_limit, now=instant
-                    )
-                else:
-                    count = _append_sql_findings(
-                        database,
-                        spec,
-                        _SQL_RULES[spec.invariant_id],
-                        findings,
-                        limit=finding_limit,
-                    )
-                    if spec.invariant_id == "REV-004":
-                        count += _append_inaugural_schedule_findings(
-                            database, spec, findings, limit=finding_limit
-                        )
-                        queries_executed += 1
-                queries_executed += 1
-                totals[spec.severity] += count
+            result = check_integrity_projection(database, finding_limit=finding_limit, now=instant)
             database.rollback()
+            return result
     except (OSError, sqlite3.Error, KeyError, TypeError, ValueError) as error:
         raise IntegrityCheckOperationalError(
             "O checker não conseguiu concluir a leitura consistente do banco."
         ) from error
 
+
+def check_integrity_projection(
+    database: sqlite3.Connection,
+    *,
+    finding_limit: int = DEFAULT_FINDING_LIMIT,
+    now: datetime | None = None,
+) -> IntegrityCheckResult:
+    """Read all canonical checks on the caller's consistent native snapshot.
+
+    No DML, transaction management or connection changes are performed here.
+    Import uses its own uncommitted connection; the CLI supplies a mode=ro snapshot.
+    """
+    if not 1 <= finding_limit <= MAX_FINDING_LIMIT:
+        raise ValueError(f"finding_limit deve estar entre 1 e {MAX_FINDING_LIMIT}.")
+    instant = now or datetime.now(UTC)
+    if instant.tzinfo is None or instant.utcoffset() is None:
+        raise ValueError("now precisa ser um instante com fuso.")
+    findings: list[IntegrityFinding] = []
+    totals: Counter[InvariantSeverity] = Counter()
+    queries_executed = 0
+    limited: tuple[IntegrityLimitedVerification, ...] = ()
+    for spec in INVARIANT_CATALOG:
+        if spec.invariant_id == "DB-001":
+            count = _append_integrity_findings(database, spec, findings, limit=finding_limit)
+        elif spec.invariant_id == "DB-002":
+            count = _append_foreign_key_findings(database, spec, findings, limit=finding_limit)
+        elif spec.invariant_id == "ATT-002":
+            count = _append_attempt_time_findings(database, spec, findings, limit=finding_limit)
+        elif spec.invariant_id == "WS-003":
+            count = _append_workspace_timezone_findings(
+                database, spec, findings, limit=finding_limit
+            )
+        elif spec.invariant_id == "AUD-002":
+            count = _append_expired_audit_findings(
+                database, spec, findings, limit=finding_limit, now=instant
+            )
+        else:
+            count = _append_sql_findings(
+                database,
+                spec,
+                _SQL_RULES[spec.invariant_id],
+                findings,
+                limit=finding_limit,
+            )
+            if spec.invariant_id == "REV-004":
+                limited = _inaugural_limited_verifications(database)
+                queries_executed += 1
+        queries_executed += 1
+        totals[spec.severity] += count
     ordered_findings = tuple(
         sorted(findings, key=lambda item: (item.invariant_id, item.entity_type, item.technical_id))
     )
@@ -1603,4 +1624,5 @@ def run_integrity_check(
         findings=ordered_findings,
         severity_counts=severity_counts,
         queries_executed=queries_executed,
+        limited_verifications=limited,
     )

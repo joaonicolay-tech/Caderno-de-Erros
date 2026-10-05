@@ -1,0 +1,86 @@
+[
+  {
+    "path": "PROJECT_STATE.md",
+    "status": " M",
+    "sha256": "SHA256:FAF01E25ABD789CE522A9801C3BB413E7A589E9691B6E76EB288A5D7E6BFB7E9",
+    "decision": "PRESERVE_HISTORY_AND_PREPEND_EXECUTION_AUTHORITY"
+  },
+  {
+    "path": "tasks/current.md",
+    "status": " M",
+    "sha256": "SHA256:37893A04DB54D729F4EBA30A8260D4AAFACC4A82A1489E858775EAB5B2D0F4C7",
+    "decision": "PRESERVE_HISTORY_AND_PREPEND_EXECUTION_AUTHORITY"
+  },
+  {
+    "path": "quality/v10-s8-planning-result.md",
+    "status": "??",
+    "sha256": "SHA256:A33780BDE037FC67C11B1AB960C972D7891A4037D290C972CD6E249D1E008614",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "quality/v10-s8-source-readonly-preflight.json",
+    "status": "??",
+    "sha256": "SHA256:668A369B6E107BE9EC7659163F2BC7D5058840DD27AB0767F09E457DB66DCC85",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "quality/v10-s8-timezone-impact.json",
+    "status": "??",
+    "sha256": "SHA256:A1A5461DC237A97B949CFBC40C6CA950E6B453435C72073B07FA29B26FD5242B",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "quality/v10-s8r1-initial-paths.json",
+    "status": "??",
+    "sha256": "SHA256:6122BF01F8AE71B8D38CAD1BA99D6CD08E8B8E85B3408D854970EEE06C7CC5A5",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "quality/v10-s8r1-planning-result.md",
+    "status": "??",
+    "sha256": "SHA256:0FC2B6CA9982AE8F98558B519FEA06B68929B5A8CF5E1E517B59D14764CB1AEE",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "quality/v10-s8r1-timezone-investigation.md",
+    "status": "??",
+    "sha256": "SHA256:617C9FFB11C2879DFA9C6433EB3EFF508B4903D8E3BE3E9E93A4E4D5D37C11EA",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "tasks/plans/v10-s8-controlled-real-pilot-plan.md",
+    "status": "??",
+    "sha256": "SHA256:E20BB7F9BEBD570B519E2425433697297C57CA48D6137292E1E07241B443D2FC",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "tasks/plans/v10-s8-data-protection.md",
+    "status": "??",
+    "sha256": "SHA256:A5CA236671DB76076FD7EE7A3C8F5108E21784AEE3C320014D850DE5C80B4981",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "tasks/plans/v10-s8-pilot-route.md",
+    "status": "??",
+    "sha256": "SHA256:80A912B4B708AC6034C6A38A8A999539EA4C61F7C4C83227CA70808648CE2F09",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "tasks/plans/v10-s8r1-synthetic-test-matrix.md",
+    "status": "??",
+    "sha256": "SHA256:3FB73906F4B08AE309A0E86D388549800E7D29A3A03246EC915A16E76F543D36",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "tasks/plans/v10-s8r1-timezone-semantics-plan.md",
+    "status": "??",
+    "sha256": "SHA256:A8F6F449A3E0CE1B9050319A2335FD694621BE299687BBFD33988BBA4BD37E9A",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  },
+  {
+    "path": "tasks/plans/v10-s8r1-timezone-surfaces.md",
+    "status": "??",
+    "sha256": "SHA256:EED6AC617529AD713943AC62121A5946D58C1D94088E5CD834C35652532BB74F",
+    "decision": "PRESERVE_BYTE_FOR_BYTE"
+  }
+]

@@ -1,0 +1,341 @@
+{
+  "task": "V1.0-S8R1",
+  "decision": "S8R1_COMPLETED",
+  "final_verification_time": "2026-10-05T13:11:15.260923-03:00",
+  "head": "COMMIT:dcccb8950a7752d03461665e0a4952c8a9bc663b",
+  "local_origin_main": "COMMIT:dcccb8950a7752d03461665e0a4952c8a9bc663b",
+  "diff_check_exit": 0,
+  "staged_paths": 0,
+  "status_command": "git status --short --untracked-files=all",
+  "dirty_tree_expected": true,
+  "path_count": 40,
+  "paths": [
+    {
+      "path": "PROJECT_STATE.md",
+      "status": " M",
+      "decision": "PREPEND_VERIFIED_CLOSURE_PRESERVING_ALL_PRIOR_BYTES",
+      "sha256": "SHA256:ff286175fa359944dd34f97503396bd853fe6a0b9784259ebcba78f5b835e86e"
+    },
+    {
+      "path": "quality/operational-execution-metrics.jsonl",
+      "status": " M",
+      "decision": "A7_REQUIRED_APPEND_ONE_PROSPECTIVE_EXECUTION_LINE_PRESERVING_ALL_PRIOR_BYTES",
+      "sha256": "SHA256:783c5ba3187234ba1e86077c1c2bf2870356038885b50b51aae1e292c21fbf4a"
+    },
+    {
+      "path": "quality/v10-s7r2-update-proof.json",
+      "status": " M",
+      "decision": "HUMAN_APPROVED_METADATA_ONLY_QUALIFICATION_WITH_ORIGINAL_BYTES_PROTECTED",
+      "sha256": "SHA256:76af25a03e58e7fda3ef55684499b4d53d0aa5e5791f1ae36feafa0c5cd6a69c"
+    },
+    {
+      "path": "src/modules/accounts/views.py",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:1578ec5c2811f93ca826d54a1f53b1820632c15ce03fc92d0ba7181a624506c6"
+    },
+    {
+      "path": "src/modules/attempts/corrections.py",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:09f0bdea51fd759e9fada20b3918f51623e84e84711e4c105d4070b0b78c52f7"
+    },
+    {
+      "path": "src/modules/data_management/portability.py",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:df0fce5b2ff5e1294e30992b46cae0821d4b133213d09af27ad3f6e9b8342c4b"
+    },
+    {
+      "path": "src/modules/data_management/services.py",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:9c1191203a8cf1ed89b281069330f111b3264c50d49dd995f1b0631a46ae506e"
+    },
+    {
+      "path": "src/modules/operations/integrity.py",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:91de1417e081dcfc646b99bc651f6e7637c0524f0cca98e22562e24c2180c955"
+    },
+    {
+      "path": "src/modules/operations/management/commands/check_integrity.py",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:5c91c9a10a6849d33ad976230c0771083e6224e9d421041176381fcb2583b145"
+    },
+    {
+      "path": "src/modules/priority/policy.py",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:9ca64033c5892bd67d61ef42e48101eede8734f806671d417f2725ca4e41d90d"
+    },
+    {
+      "path": "src/modules/priority/services.py",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:d2ea69fb0bde79020cc40e1d8437c3d5b40ca43bd5d84e4d87a328ecc0d39474"
+    },
+    {
+      "path": "src/modules/reviews/reconstruction.py",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:03ba4bf3ad2b744d3ea22418ba5b35b152649bf9f3e2d913a77414f9c985b776"
+    },
+    {
+      "path": "src/templates/accounts/priority.html",
+      "status": " M",
+      "decision": "AUTHORIZED_H1_H2_H3_FUNCTIONAL_CHANGE",
+      "sha256": "SHA256:2ec7c5a09cf661534a5a55c78f1c2bed7108ae0dc3e253088204bdcc89aa85ea"
+    },
+    {
+      "path": "tasks/current.md",
+      "status": " M",
+      "decision": "RESTORE_AUTHORIZED_S8_PLANNING_AND_PRESERVE_FULL_EXECUTION_IN_ARCHIVE",
+      "sha256": "SHA256:c419d1504723059c63b084f2062d853287bbacb47def841d289c8fe0da7735d2"
+    },
+    {
+      "path": "tests/test_cei_semantic_matrix.py",
+      "status": " M",
+      "decision": "AUTHORIZED_SYNTHETIC_REGRESSION_AND_APPROVED_SEMANTIC_EXPECTATION",
+      "sha256": "SHA256:93d171d9cbb89b25a81a6f8887e2d1bc36ec820b3745ad34893af614a886ef59"
+    },
+    {
+      "path": "tests/test_priority_integration.py",
+      "status": " M",
+      "decision": "AUTHORIZED_SYNTHETIC_REGRESSION_AND_APPROVED_SEMANTIC_EXPECTATION",
+      "sha256": "SHA256:da8ed25e0e5aca129f7980b2c685e6b2126ef38fb18e611f0ac6cbdac5e4daa5"
+    },
+    {
+      "path": "tests/test_priority_policy.py",
+      "status": " M",
+      "decision": "AUTHORIZED_SYNTHETIC_REGRESSION_AND_APPROVED_SEMANTIC_EXPECTATION",
+      "sha256": "SHA256:9d30b253e16b96e91841d6efeb0a87c2ae0e91aa6780bd639ca8e9b3a122cdb9"
+    },
+    {
+      "path": "tests/test_v05_s7_portability.py",
+      "status": " M",
+      "decision": "AUTHORIZED_SYNTHETIC_REGRESSION_AND_APPROVED_SEMANTIC_EXPECTATION",
+      "sha256": "SHA256:2e533975e6c64450b2a3eda6bf8d2e0c916a970d682021080ef8a458f1c89dab"
+    },
+    {
+      "path": "docs/V1.0_S8R1_Adendo_Semantica_Temporal.md",
+      "status": "??",
+      "decision": "AUTHORIZED_EVIDENCE_ADDENDUM_OR_CONTRACT_ARCHIVE",
+      "sha256": "SHA256:a43ebb028d4bb44a9b9db13e87e387bef47dda2945be4be924dd4b371499f152"
+    },
+    {
+      "path": "quality/v10-s8-planning-result.md",
+      "status": "??",
+      "decision": "PRESERVE_EXISTING_S8_PLANNING_BYTE_FOR_BYTE",
+      "sha256": "SHA256:a33780bde037fc67c11b1ab960c972d7891a4037d290c972cd6e249d1e008614"
+    },
+    {
+      "path": "quality/v10-s8-source-readonly-preflight.json",
+      "status": "??",
+      "decision": "HUMAN_APPROVED_METADATA_ONLY_QUALIFICATION_WITH_ORIGINAL_BYTES_PROTECTED",
+      "sha256": "SHA256:ebecd5a4b7293b6888f7aa7160a89bad6f3972970754e6865952725996aab80b"
+    },
+    {
+      "path": "quality/v10-s8-timezone-impact.json",
+      "status": "??",
+      "decision": "HUMAN_APPROVED_METADATA_ONLY_QUALIFICATION_WITH_ORIGINAL_BYTES_PROTECTED",
+      "sha256": "SHA256:7e5c68e1d96b398c38da9bc431ca9495268fd5a534d9220b51687803a3e3055a"
+    },
+    {
+      "path": "quality/v10-s8r1-a8-deep.json",
+      "status": "??",
+      "decision": "AUTHORIZED_EVIDENCE_ADDENDUM_OR_CONTRACT_ARCHIVE",
+      "sha256": "SHA256:1cc58d06839707dd85bdea9273cb3b3acc0c4c3d0acc9b82c3d005526e15bb45"
+    },
+    {
+      "path": "quality/v10-s8r1-execution-initial-paths.json",
+      "status": "??",
+      "decision": "HUMAN_APPROVED_METADATA_ONLY_QUALIFICATION_WITH_ORIGINAL_BYTES_PROTECTED",
+      "sha256": "SHA256:7ff207a0002c1302fbb1f7ae2f158412f8c6fec11d8ffc5024f3d3396e318387"
+    },
+    {
+      "path": "quality/v10-s8r1-execution-result.md",
+      "status": "??",
+      "decision": "AUTHORIZED_EVIDENCE_ADDENDUM_OR_CONTRACT_ARCHIVE",
+      "sha256": "SHA256:1419adab8bd17d8f3f29fb6d3b28dab1069c4a471b903bd08bed2d30a2d04eb7"
+    },
+    {
+      "path": "quality/v10-s8r1-initial-paths.json",
+      "status": "??",
+      "decision": "HUMAN_APPROVED_METADATA_ONLY_QUALIFICATION_WITH_ORIGINAL_BYTES_PROTECTED",
+      "sha256": "SHA256:82adb84e8987325c5980b575e9461952254e6b50ccf188b759ee4759f3905bcd"
+    },
+    {
+      "path": "quality/v10-s8r1-metadata-approval.json",
+      "status": "??",
+      "decision": "AUTHORIZED_EVIDENCE_ADDENDUM_OR_CONTRACT_ARCHIVE",
+      "sha256": "SHA256:1a494ea5043748ec6a88d8f9b085f58f70ab51599bebab3ad6e1f0c44a2a8a53"
+    },
+    {
+      "path": "quality/v10-s8r1-planning-result.md",
+      "status": "??",
+      "decision": "PRESERVE_EXISTING_S8_PLANNING_BYTE_FOR_BYTE",
+      "sha256": "SHA256:0fc2b6ca9982ae8f98558b519fea06b68929b5a8cf5e1e517b59d14764cb1aee"
+    },
+    {
+      "path": "quality/v10-s8r1-red-evidence.json",
+      "status": "??",
+      "decision": "AUTHORIZED_EVIDENCE_ADDENDUM_OR_CONTRACT_ARCHIVE",
+      "sha256": "SHA256:8d4e3d4baba54f3be76be5e2ad73e533daf078a1108fb0d917c7a5c0f4d36538"
+    },
+    {
+      "path": "quality/v10-s8r1-timezone-investigation.md",
+      "status": "??",
+      "decision": "PRESERVE_EXISTING_S8_PLANNING_BYTE_FOR_BYTE",
+      "sha256": "SHA256:617c9ffb11c2879dfa9c6433eb3eff508b4903d8e3be3e9e93a4e4d5d37c11ea"
+    },
+    {
+      "path": "quality/v10-s8r1-verification.json",
+      "status": "??",
+      "decision": "AUTHORIZED_EVIDENCE_ADDENDUM_OR_CONTRACT_ARCHIVE",
+      "sha256": "SHA256:029e478cebe134b5326f3fb3520807c3f22c8013bc61493b6063554bde1a8539"
+    },
+    {
+      "path": "tasks/completed/v10-s8r1-timezone-semantics-remediation.md",
+      "status": "??",
+      "decision": "AUTHORIZED_EVIDENCE_ADDENDUM_OR_CONTRACT_ARCHIVE",
+      "sha256": "SHA256:70d6ba31169e20a10bb95159e8c40cce5cef88d1e01b57968bfb1083449ecd8c"
+    },
+    {
+      "path": "tasks/plans/v10-s8-controlled-real-pilot-plan.md",
+      "status": "??",
+      "decision": "PRESERVE_EXISTING_S8_PLANNING_BYTE_FOR_BYTE",
+      "sha256": "SHA256:e20bb7f9bebd570b519e2425433697297c57ca48d6137292e1e07241b443d2fc"
+    },
+    {
+      "path": "tasks/plans/v10-s8-data-protection.md",
+      "status": "??",
+      "decision": "PRESERVE_EXISTING_S8_PLANNING_BYTE_FOR_BYTE",
+      "sha256": "SHA256:a5ca236671db76076fd7ee7a3c8f5108e21784aee3c320014d850de5c80b4981"
+    },
+    {
+      "path": "tasks/plans/v10-s8-pilot-route.md",
+      "status": "??",
+      "decision": "PRESERVE_EXISTING_S8_PLANNING_BYTE_FOR_BYTE",
+      "sha256": "SHA256:80a912b4b708ac6034c6a38a8a999539ea4c61f7c4c83227ca70808648ce2f09"
+    },
+    {
+      "path": "tasks/plans/v10-s8r1-synthetic-test-matrix.md",
+      "status": "??",
+      "decision": "PRESERVE_EXISTING_S8_PLANNING_BYTE_FOR_BYTE",
+      "sha256": "SHA256:3fb73906f4b08ae309a0e86d388549800e7d29a3a03246ec915a16e76f543d36"
+    },
+    {
+      "path": "tasks/plans/v10-s8r1-timezone-semantics-plan.md",
+      "status": "??",
+      "decision": "PRESERVE_EXISTING_S8_PLANNING_BYTE_FOR_BYTE",
+      "sha256": "SHA256:a8f6f449a3e0ce1b9050319a2335fd694621be299687bbfd33988bba4bd37e9a"
+    },
+    {
+      "path": "tasks/plans/v10-s8r1-timezone-surfaces.md",
+      "status": "??",
+      "decision": "PRESERVE_EXISTING_S8_PLANNING_BYTE_FOR_BYTE",
+      "sha256": "SHA256:eed6ac617529ad713943ac62121a5946d58c1d94088e5cd834c35652532bb74f"
+    },
+    {
+      "path": "tests/test_v10_s8r1_timezone.py",
+      "status": "??",
+      "decision": "AUTHORIZED_SYNTHETIC_REGRESSION_AND_APPROVED_SEMANTIC_EXPECTATION",
+      "sha256": "SHA256:abb9613253b7db60b3b975ed6e225fec3b03f1ad7b9a14b812e122df6f226bf8"
+    },
+    {
+      "path": "quality/v10-s8r1-final-paths.json",
+      "status": "??",
+      "decision": "AUTHORIZED_EVIDENCE_FINAL_MANIFEST",
+      "sha256": "SELF_REFERENTIAL_DIGEST_OMITTED"
+    }
+  ],
+  "all_initial_artifacts_preserved": true,
+  "preservation_meaning": "Nine initial planning paths byte-equal, three initial JSON copies qualified by human exception with complete raw originals preserved; all five approved transformations exactly reversible.",
+  "metadata_exception": {
+    "status": "PASS",
+    "metadata_exception": {
+      "decision": "HUMAN_APPROVED_METADATA_ONLY",
+      "observed_at": "2026-10-05T12:21:46.269033-03:00",
+      "human_reply_verbatim": "Autorizar somente essa qualifica\u00e7\u00e3o de metadata",
+      "scope": "Only SHA256:/COMMIT: qualification of literal hash strings in the five reviewed versionable JSON files",
+      "originals": "Complete immutable byte copies retained outside Git in work/s8r1-execution/metadata-proposal/*.original",
+      "facts_source_baseline_gate_schema_cei": "UNCHANGED",
+      "automatic_review_rejection": "Prior inventory edit was rejected because byte-preservation applied; explicit human exception received before retry.",
+      "entries": [
+        {
+          "path": "quality/v10-s7r2-update-proof.json",
+          "metadata_strings_changed": 5,
+          "before_sha256": "SHA256:4d53d8154b76676579e6b012b3f95c6396b066e5f1a3d51498b11df5b091dc30",
+          "after_sha256": "SHA256:76af25a03e58e7fda3ef55684499b4d53d0aa5e5791f1ae36feafa0c5cd6a69c",
+          "reversible_exactly": true,
+          "original_protected_outside_git": true
+        },
+        {
+          "path": "quality/v10-s8-source-readonly-preflight.json",
+          "metadata_strings_changed": 5,
+          "before_sha256": "SHA256:668a369b6e107be9ec7659163f2bc7d5058840dd27ab0767f09e457db66dcc85",
+          "after_sha256": "SHA256:ebecd5a4b7293b6888f7aa7160a89bad6f3972970754e6865952725996aab80b",
+          "reversible_exactly": true,
+          "original_protected_outside_git": true
+        },
+        {
+          "path": "quality/v10-s8-timezone-impact.json",
+          "metadata_strings_changed": 4,
+          "before_sha256": "SHA256:a1a5461dc237a97b949cfbc40c6ca950e6b453435c72073b07fa29b26fd5242b",
+          "after_sha256": "SHA256:7e5c68e1d96b398c38da9bc431ca9495268fd5a534d9220b51687803a3e3055a",
+          "reversible_exactly": true,
+          "original_protected_outside_git": true
+        },
+        {
+          "path": "quality/v10-s8r1-initial-paths.json",
+          "metadata_strings_changed": 8,
+          "before_sha256": "SHA256:6122bf01f8ae71b8d38cad1ba99d6cd08e8b8e85b3408d854970eee06c7cc5a5",
+          "after_sha256": "SHA256:82adb84e8987325c5980b575e9461952254e6b50ccf188b759ee4759f3905bcd",
+          "reversible_exactly": true,
+          "original_protected_outside_git": true
+        },
+        {
+          "path": "quality/v10-s8r1-execution-initial-paths.json",
+          "metadata_strings_changed": 14,
+          "before_sha256": "SHA256:9bbaf1ee7bf723063abf9165206ee1a38a4005c9fda9e87ce9ab36b9d0cf82b1",
+          "after_sha256": "SHA256:7ff207a0002c1302fbb1f7ae2f158412f8c6fec11d8ffc5024f3d3396e318387",
+          "reversible_exactly": true,
+          "original_protected_outside_git": true
+        }
+      ]
+    },
+    "initial_planning_byte_equal_at_path": [
+      "quality/v10-s8-planning-result.md",
+      "quality/v10-s8r1-planning-result.md",
+      "quality/v10-s8r1-timezone-investigation.md",
+      "tasks/plans/v10-s8-controlled-real-pilot-plan.md",
+      "tasks/plans/v10-s8-data-protection.md",
+      "tasks/plans/v10-s8-pilot-route.md",
+      "tasks/plans/v10-s8r1-synthetic-test-matrix.md",
+      "tasks/plans/v10-s8r1-timezone-semantics-plan.md",
+      "tasks/plans/v10-s8r1-timezone-surfaces.md"
+    ],
+    "initial_planning_qualified_copy_original_bytes_preserved": [
+      "quality/v10-s8-source-readonly-preflight.json",
+      "quality/v10-s8-timezone-impact.json",
+      "quality/v10-s8r1-initial-paths.json"
+    ],
+    "versionable_files_qualified": 5,
+    "metadata_strings_qualified": 36,
+    "all_five_raw_originals_byte_equal": true,
+    "all_five_transformations_exactly_reversible": true,
+    "operational_admin_prefix_attempt": "REJECTED BY AUTOMATIC REVIEW; NOT APPLIED. Safer application touched only the five approved JSON copies and new approval evidence.",
+    "facts_source_gate_baseline_cei_schema": "UNCHANGED"
+  },
+  "original_contract_history_preserved_in_archive": true,
+  "original_s8_restored_as_byte_suffix": true,
+  "a7_metrics_prior_bytes_preserved_one_new_line": true,
+  "source_access": "NO; no real database hash/read",
+  "git_add_commit_push_tag_release": "NONE",
+  "s8": "AUTHORIZED / PLANNING / RESUMABLE AFTER S8R1",
+  "pilot": "NOT YET AUTHORIZED",
+  "s9_s10": "NOT AUTHORIZED",
+  "manifest_note": "This manifest records all preceding paths; its own new path has the same authorized evidence disposition and cannot include its own SHA recursively."
+}

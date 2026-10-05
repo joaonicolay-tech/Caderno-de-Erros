@@ -73,6 +73,7 @@ class Command(BaseCommand):
             context = {
                 "checks_executed": result.checks_executed,
                 "total_findings": result.total_findings,
+                "limited_verifications": result.total_limited_verifications,
                 "critical_findings": self._severity_count(result, InvariantSeverity.CRITICAL),
                 "error_findings": self._severity_count(result, InvariantSeverity.ERROR),
                 "findings_shown": len(result.findings),
@@ -108,6 +109,12 @@ class Command(BaseCommand):
             f"Findings: {result.total_findings} "
             f"(CRITICAL={critical}, ERROR={errors}, exibidos={len(result.findings)})"
         )
+        self.stdout.write(f"Limited verifications: {result.total_limited_verifications}")
+        for limited in result.limited_verifications:
+            self.stdout.write(
+                f"[{limited.outcome.value}] {limited.invariant_id} "
+                f"{limited.entity_type} id={limited.technical_id} - {limited.reason_code}"
+            )
         for finding in result.findings:
             self.stdout.write(
                 f"[{finding.severity.value}] {finding.invariant_id} "

@@ -1,4 +1,4 @@
-"""Pure PRI-HEUR-1.0 calculation over selected Workspace facts."""
+"""Pure PRI-HEUR-1.1 calculation over selected Workspace facts."""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ from decimal import Decimal
 from enum import StrEnum
 from fractions import Fraction
 
-POLICY_VERSION = "PRI-HEUR-1.0"
+HISTORICAL_POLICY_VERSION = "PRI-HEUR-1.0"
+POLICY_VERSION = "PRI-HEUR-1.1"
 
 
 class PriorityState(StrEnum):

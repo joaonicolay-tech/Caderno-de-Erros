@@ -28,11 +28,15 @@ from django.db.models import Model
 from modules.accounts.models import User, Workspace
 from modules.accounts.services import LOCAL_USER_ID, LOCAL_WORKSPACE_ID
 from modules.domain.policy import POLICY_VERSION as DOMAIN_POLICY
+from modules.operations.events import EventCode, EventOutcome
 from modules.operations.integrity import (
-    invariant_python_violations,
+    IntegrityLimitedVerification,
+    check_integrity_projection,
+    invariant_python_result,
     invariant_sql_rules,
-    run_integrity_check,
 )
+from modules.operations.structured_logging import emit_event
+from modules.priority.policy import HISTORICAL_POLICY_VERSION
 from modules.priority.policy import POLICY_VERSION as PRIORITY_POLICY
 from modules.reviews.models import ReviewCycle
 from modules.search.saved_filter_services import (
@@ -45,6 +49,10 @@ FORMAT = "CEI-EXPORT"
 VERSION = "1.0"
 APPLICATION_VERSION = PRODUCT_VERSION
 SUPPORTED_APPLICATION_VERSIONS = frozenset({"V0.5", APPLICATION_VERSION})
+SUPPORTED_PRIORITY_POLICIES = {
+    "V0.5": frozenset({HISTORICAL_POLICY_VERSION}),
+    APPLICATION_VERSION: frozenset({HISTORICAL_POLICY_VERSION, PRIORITY_POLICY}),
+}
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 
 
@@ -391,6 +399,17 @@ def _decoded(value: object, field: Any) -> object:
     raise ExportValidationError("Campo funcional desconhecido.")
 
 
+def _compatible_policies(producer: str, policies: object) -> bool:
+    if not isinstance(policies, dict) or set(policies) != {"review", "domain", "priority"}:
+        return False
+    return (
+        policies["review"] == ReviewCycle.POLICY_CODE
+        and policies["domain"] == DOMAIN_POLICY
+        and isinstance(policies["priority"], str)
+        and policies["priority"] in SUPPORTED_PRIORITY_POLICIES[producer]
+    )
+
+
 def _validate_manifest(manifest: object) -> uuid.UUID:
     """Use the unchanged CEI identity/schema/policy rules for either entry point."""
     required = {
@@ -414,12 +433,7 @@ def _validate_manifest(manifest: object) -> uuid.UUID:
         or manifest["application_version"] not in SUPPORTED_APPLICATION_VERSIONS
         or manifest["schema_migrations"] != _schema_migrations()
         or not isinstance(manifest["workspace_timezone"], str)
-        or manifest["policies"]
-        != {
-            "review": ReviewCycle.POLICY_CODE,
-            "domain": DOMAIN_POLICY,
-            "priority": PRIORITY_POLICY,
-        }
+        or not _compatible_policies(manifest["application_version"], manifest["policies"])
     ):
         raise ExportValidationError("Schema ou metadata incompatível.")
     try:
@@ -484,6 +498,7 @@ def _validated_rows(
 class ValidatedExport:
     manifest: dict[str, Any]
     rows: dict[str, list[dict[str, object]]]
+    limited_verifications: tuple[IntegrityLimitedVerification, ...] = ()
 
 
 def validate_export(source: BinaryIO) -> ValidatedExport:
@@ -588,8 +603,8 @@ def validate_export(source: BinaryIO) -> ValidatedExport:
             ):
                 raise ExportValidationError("Identidade do Workspace não coincide.")
             _validate_relations(rows)
-            _validate_semantics(rows)
-            return ValidatedExport(manifest, rows)
+            limited = _validate_semantics(rows)
+            return ValidatedExport(manifest, rows, limited)
     except (zipfile.BadZipFile, EOFError, OSError, UnicodeError) as error:
         raise ExportValidationError("Pacote CEI inválido.") from error
 
@@ -632,7 +647,9 @@ def _validate_relations(rows: dict[str, list[dict[str, object]]]) -> None:
                     raise ExportValidationError("Referência funcional ausente.")
 
 
-def _validate_semantics(rows: dict[str, list[dict[str, object]]]) -> None:
+def _validate_semantics(
+    rows: dict[str, list[dict[str, object]]],
+) -> tuple[IntegrityLimitedVerification, ...]:
     """Evaluate scoped semantic rules on a private RAM projection, never on the destination.
 
     Reuse the checker's SQL verbatim, including historical correction exceptions.
@@ -712,11 +729,19 @@ def _validate_semantics(rows: dict[str, list[dict[str, object]]]) -> None:
             )
             if projection.execute(sql).fetchone() is not None
         ]
-        violations.extend(invariant_python_violations(projection, ("WS-003", "ATT-002", "REV-004")))
+        result = invariant_python_result(projection, ("WS-003", "ATT-002", "REV-004"))
+        violations.extend(result.violations)
     if violations:
         raise ExportValidationError(
             "Invariantes semânticas CEI incompatíveis: " + ", ".join(dict.fromkeys(violations))
         )
+    emit_event(
+        EventCode.INTEGRITY_CHECK_SUCCEEDED,
+        operation="cei.validate.integrity",
+        outcome=EventOutcome.SUCCEEDED,
+        context={"limited_verifications": len(result.limited_verifications)},
+    )
+    return result.limited_verifications
 
 
 # sqlparse's existing lexer API is unannotated; describe its iterable boundary.
@@ -863,9 +888,22 @@ def import_into_empty(
             cursor.execute("PRAGMA foreign_key_check")
             if cursor.fetchone() is not None:
                 raise ExportValidationError("Relações importadas não reconciliam.")
-        integrity = run_integrity_check(using=database_alias)
+        native_connection = connection.connection
+        if not isinstance(native_connection, sqlite3.Connection):
+            raise ExportValidationError("Importação S7 requer conexão SQLite nativa.")
+        integrity = check_integrity_projection(native_connection)
         if integrity.has_blocking_findings:
             raise ExportValidationError("Fatos importados violam invariantes funcionais.")
+        emit_event(
+            EventCode.INTEGRITY_CHECK_SUCCEEDED,
+            operation="cei.import.integrity",
+            outcome=EventOutcome.SUCCEEDED,
+            context={
+                "checks_executed": integrity.checks_executed,
+                "total_findings": integrity.total_findings,
+                "limited_verifications": integrity.total_limited_verifications,
+            },
+        )
     return {spec.name: len(rows[spec.name]) for spec in SETS}
 
 

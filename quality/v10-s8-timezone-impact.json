@@ -1,0 +1,1046 @@
+{
+  "task_id": "V1.0-S8",
+  "assessment": "TIMEZONE_IMPACT_READ_ONLY",
+  "source_alias": "SOURCE",
+  "workspace_scope": "W01",
+  "current_timezone": "Brazil/Acre",
+  "expected_timezone": "America/Sao_Paulo",
+  "now_utc": "2026-10-04T02:53:31.283045+00:00",
+  "civil_dates": {
+    "CURRENT": "2026-10-03",
+    "EXPECTED": "2026-10-03"
+  },
+  "civil_dates_equal": true,
+  "pilot_execution": "NOT YET AUTHORIZED",
+  "s9_s10": "NOT AUTHORIZED",
+  "source_mutated": false,
+  "copy_created": false,
+  "pilot_created": false,
+  "backup_created": false,
+  "timezone_changed": false,
+  "migration_executed": false,
+  "functional_operations_executed": false,
+  "content_fields_read": false,
+  "personal_ids_names_timestamps_persisted": false,
+  "decision": "TIMEZONE_CORRECTION_REQUIRES_SEPARATE_REMEDIATION",
+  "physical_pre": {
+    "sha256": "SHA256:fbc21fd544d7115cc6cb15342949090822e0e01c44d8d2047e9c729939de4156",
+    "size_bytes": 802816,
+    "mtime_ns": "1790693702707649700",
+    "mtime_utc": "2026-09-29T14:55:02.707650+00:00",
+    "sidecars": {
+      "-wal": false,
+      "-shm": false,
+      "-journal": false
+    }
+  },
+  "sqlite_integrity": "ok",
+  "fk_findings": 0,
+  "checker": {
+    "checks_executed": 25,
+    "queries_executed": 26,
+    "total_findings": 0,
+    "finding_codes": [],
+    "counterfactual_checker_executed": false
+  },
+  "aggregate_counts": {
+    "disciplines": 3,
+    "subjects": 3,
+    "subsubjects": 3,
+    "questions": 11,
+    "question_revisions": 11,
+    "attempts": 16,
+    "error_categories": 10,
+    "error_classifications": 10,
+    "error_classification_revisions": 0,
+    "review_cycles": 9,
+    "reviews": 16,
+    "review_schedule_changes": 0,
+    "saved_filters": 0,
+    "mastery_events": 0,
+    "audit_events": 0
+  },
+  "pending_reviews_total": 9,
+  "agenda": {
+    "eligible_pending_count": 9,
+    "classifications": {
+      "CURRENT": {
+        "OVERDUE": 9,
+        "DUE": 0,
+        "FUTURE": 0
+      },
+      "EXPECTED": {
+        "OVERDUE": 9,
+        "DUE": 0,
+        "FUTURE": 0
+      }
+    },
+    "deltas_expected_minus_current": {
+      "OVERDUE": 0,
+      "DUE": 0,
+      "FUTURE": 0
+    },
+    "changed_classification_count": 0,
+    "transitions": {},
+    "stored_dates_or_states_changed": false
+  },
+  "stages": {
+    "D1": {
+      "reviews": 14,
+      "cycles_with_phase": 9,
+      "pending_stored": 8,
+      "completed_history": 6,
+      "eligible_pending": 8,
+      "temporal_classification_changed": 0,
+      "stored_phase_changed": false,
+      "pilot_pass": false
+    },
+    "D7": {
+      "reviews": 2,
+      "cycles_with_phase": 2,
+      "pending_stored": 1,
+      "completed_history": 1,
+      "eligible_pending": 1,
+      "temporal_classification_changed": 0,
+      "stored_phase_changed": false,
+      "pilot_pass": false
+    },
+    "D14": {
+      "reviews": 0,
+      "cycles_with_phase": 0,
+      "pending_stored": 0,
+      "completed_history": 0,
+      "eligible_pending": 0,
+      "temporal_classification_changed": 0,
+      "stored_phase_changed": false,
+      "pilot_pass": false
+    },
+    "D30": {
+      "reviews": 0,
+      "cycles_with_phase": 0,
+      "pending_stored": 0,
+      "completed_history": 0,
+      "eligible_pending": 0,
+      "temporal_classification_changed": 0,
+      "stored_phase_changed": false,
+      "pilot_pass": false
+    }
+  },
+  "rev004_counterfactual": {
+    "inaugural_reviews_checked": 5,
+    "mismatch_counts": {
+      "CURRENT": 0,
+      "EXPECTED": 0
+    },
+    "delta_expected_minus_current": 0,
+    "uses_current_workspace_zone_to_validate_historical_fact": true,
+    "cycle_captures_original_timezone": false,
+    "static_invariant_risk": true,
+    "historical_due_date_rewrite_permitted": false
+  },
+  "timestamp_comparison": {
+    "fields": [
+      {
+        "table_code": "accounts_workspace",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 1,
+        "civil_date_different_count": 1
+      },
+      {
+        "table_code": "accounts_workspace",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 1,
+        "civil_date_different_count": 1
+      },
+      {
+        "table_code": "attempts_attempt",
+        "field_code": "occurred_at",
+        "category": "Attempts",
+        "non_null_count": 16,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "attempts_attempt",
+        "field_code": "voided_at",
+        "category": "Attempts",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "attempts_attempt",
+        "field_code": "created_at",
+        "category": "Attempts",
+        "non_null_count": 16,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "attempts_operationreceipt",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 16,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_board",
+        "field_code": "archived_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_board",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_board",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_exam",
+        "field_code": "archived_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_exam",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_exam",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_source",
+        "field_code": "archived_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_source",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_source",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_question",
+        "field_code": "activated_at",
+        "category": "other_relevant",
+        "non_null_count": 11,
+        "civil_date_different_count": 2
+      },
+      {
+        "table_code": "questions_question",
+        "field_code": "archived_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_question",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 11,
+        "civil_date_different_count": 2
+      },
+      {
+        "table_code": "questions_question",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 11,
+        "civil_date_different_count": 2
+      },
+      {
+        "table_code": "questions_questionrevision",
+        "field_code": "created_at",
+        "category": "audit_history",
+        "non_null_count": 11,
+        "civil_date_different_count": 2
+      },
+      {
+        "table_code": "questions_alternative",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 43,
+        "civil_date_different_count": 8
+      },
+      {
+        "table_code": "questions_questionorigin",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "questions_questionorigin",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "domain_masterystateevent",
+        "field_code": "occurred_at",
+        "category": "audit_history",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "taxonomy_discipline",
+        "field_code": "archived_at",
+        "category": "other_relevant",
+        "non_null_count": 1,
+        "civil_date_different_count": 1
+      },
+      {
+        "table_code": "taxonomy_discipline",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 3,
+        "civil_date_different_count": 2
+      },
+      {
+        "table_code": "taxonomy_discipline",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 3,
+        "civil_date_different_count": 2
+      },
+      {
+        "table_code": "taxonomy_subject",
+        "field_code": "archived_at",
+        "category": "other_relevant",
+        "non_null_count": 1,
+        "civil_date_different_count": 1
+      },
+      {
+        "table_code": "taxonomy_subject",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 3,
+        "civil_date_different_count": 2
+      },
+      {
+        "table_code": "taxonomy_subject",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 3,
+        "civil_date_different_count": 2
+      },
+      {
+        "table_code": "taxonomy_subsubject",
+        "field_code": "archived_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "taxonomy_subsubject",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 3,
+        "civil_date_different_count": 1
+      },
+      {
+        "table_code": "taxonomy_subsubject",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 3,
+        "civil_date_different_count": 1
+      },
+      {
+        "table_code": "errors_error_category",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 10,
+        "civil_date_different_count": 10
+      },
+      {
+        "table_code": "errors_error_category",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 10,
+        "civil_date_different_count": 10
+      },
+      {
+        "table_code": "errors_errorclassification",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 10,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "errors_errorclassification",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 10,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "errors_errorclassificationrevision",
+        "field_code": "created_at",
+        "category": "audit_history",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_reviewcycle",
+        "field_code": "started_at",
+        "category": "other_relevant",
+        "non_null_count": 9,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_reviewcycle",
+        "field_code": "completed_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_reviewcycle",
+        "field_code": "suspended_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_reviewcycle",
+        "field_code": "superseded_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_reviewcycle",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 9,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_reviewcycle",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 9,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_review",
+        "field_code": "completed_at",
+        "category": "Reviews",
+        "non_null_count": 7,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_review",
+        "field_code": "suspended_at",
+        "category": "Reviews",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_review",
+        "field_code": "created_at",
+        "category": "Reviews",
+        "non_null_count": 16,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_review",
+        "field_code": "updated_at",
+        "category": "Reviews",
+        "non_null_count": 16,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "reviews_reviewschedulechange",
+        "field_code": "created_at",
+        "category": "audit_history",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "operations_auditevent",
+        "field_code": "created_at",
+        "category": "audit_history",
+        "non_null_count": 0,
+        "civil_date_different_count": 0
+      },
+      {
+        "table_code": "search_savedfilter",
+        "field_code": "created_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0,
+        "basis_code": "EXACT_TOTAL_ZERO_NO_ADDITIONAL_QUERY_NEEDED"
+      },
+      {
+        "table_code": "search_savedfilter",
+        "field_code": "updated_at",
+        "category": "other_relevant",
+        "non_null_count": 0,
+        "civil_date_different_count": 0,
+        "basis_code": "EXACT_TOTAL_ZERO_NO_ADDITIONAL_QUERY_NEEDED"
+      }
+    ],
+    "category_records": {
+      "Attempts": {
+        "timestamped_records": 16,
+        "records_with_any_date_difference": 0
+      },
+      "Reviews": {
+        "timestamped_records": 16,
+        "records_with_any_date_difference": 0
+      },
+      "audit_history": {
+        "timestamped_records": 11,
+        "records_with_any_date_difference": 2
+      },
+      "other_relevant": {
+        "timestamped_records": 109,
+        "records_with_any_date_difference": 26
+      }
+    },
+    "individual_timestamps_persisted": false,
+    "record_deduplication": "PER_TABLE_ROW_WITHIN_CATEGORY"
+  },
+  "historical_timezones": {
+    "attempts_attempt": {
+      "total": 16,
+      "with_timezone": 16,
+      "without_timezone": 0,
+      "counts_by_timezone": {
+        "Brazil/Acre": 16
+      },
+      "historical_fact_immutable": true
+    },
+    "reviews_reviewschedulechange": {
+      "total": 0,
+      "with_timezone": 0,
+      "without_timezone": 0,
+      "counts_by_timezone": {},
+      "historical_fact_immutable": true
+    },
+    "operations_auditevent": {
+      "total": 0,
+      "with_timezone": 0,
+      "without_timezone": 0,
+      "counts_by_timezone": {},
+      "historical_fact_immutable": true
+    }
+  },
+  "priority_window_membership": {
+    "RECURRENCE_0_89": {
+      "counts": {
+        "CURRENT": 7,
+        "EXPECTED": 7
+      },
+      "changed_membership_records": 0
+    },
+    "DECLINE_RECENT_0_29": {
+      "counts": {
+        "CURRENT": 7,
+        "EXPECTED": 7
+      },
+      "changed_membership_records": 0
+    },
+    "DECLINE_PREVIOUS_30_59": {
+      "counts": {
+        "CURRENT": 0,
+        "EXPECTED": 0
+      },
+      "changed_membership_records": 0
+    }
+  },
+  "representativity_precheck": "LIMITED",
+  "representativity_basis": {
+    "absent_core_kinds": [],
+    "missing_optional_kinds": [
+      "saved_filters",
+      "audit_events",
+      "error_classification_revisions",
+      "review_schedule_changes"
+    ],
+    "absent_phase_history": [
+      "D14",
+      "D30"
+    ],
+    "artificial_minimum_or_duration_used": false,
+    "pilot_pass": false
+  },
+  "historical_timezone_fact_rewrite_required": false,
+  "recomputation_required_by_official_service": false,
+  "migration_required_by_official_service": false,
+  "official_service_changes_only_workspace": true,
+  "historical_interpretation_effect_exists": true,
+  "decision_reason_codes": [
+    "REV004_HISTORICAL_DATE_USES_CURRENT_ZONE",
+    "PRIORITY_RELOCALIZES_HISTORICAL_INSTANTS",
+    "NO_HISTORY_REWRITE_AUTHORIZED"
+  ],
+  "physical_post": {
+    "sha256": "SHA256:fbc21fd544d7115cc6cb15342949090822e0e01c44d8d2047e9c729939de4156",
+    "size_bytes": 802816,
+    "mtime_ns": "1790693702707649700",
+    "mtime_utc": "2026-09-29T14:55:02.707650+00:00",
+    "sidecars": {
+      "-wal": false,
+      "-shm": false,
+      "-journal": false
+    }
+  },
+  "source_physically_unchanged": true,
+  "read_only_guard_receipt": {
+    "readonly_connections_opened": 2,
+    "writable_connection_attempts": 0,
+    "denied_sql_operations": 0,
+    "normal_django_connection_attempts": 0,
+    "orm_mutation_attempts": 0,
+    "sqlite_native_total_changes": 0
+  },
+  "authorized_model_effort": "GPT-6 Luna High",
+  "runtime_model_effort": "NOT_INDEPENDENTLY_OBSERVABLE",
+  "timing": {
+    "start_time": "2026-10-03T23:45:06-03:00",
+    "end_time": "2026-10-04T00:00:02-03:00",
+    "duration_seconds": 896
+  },
+  "offline_precheck": {
+    "app_candidates": 0,
+    "product_port": 8000,
+    "product_listeners": 0,
+    "sidecars_present": false,
+    "sha_equal_previous_preflight": true,
+    "size_equal_previous_preflight": true,
+    "mtime_equal_previous_preflight": true,
+    "metadata_mtime_utc": "2026-09-29T14:55:02.7076497Z"
+  },
+  "physical_precision": "MTIME_NS_DECIMAL_STRING_IS_EXACT_PYTHON_MTIME_UTC_IS_MICROSECOND_ROUNDED",
+  "official_timezone_mechanism": {
+    "exists": true,
+    "route_code": "accounts:settings",
+    "service_code": "accounts.services.change_workspace_timezone",
+    "iana_validation": true,
+    "owner_check": true,
+    "human_confirmation_required": true,
+    "lock_version_compare_and_swap": true,
+    "changed_field_codes": [
+      "Workspace.timezone_name",
+      "Workspace.lock_version",
+      "Workspace.updated_at"
+    ],
+    "structured_operational_events": true,
+    "persisted_audit_event_for_timezone_change": false,
+    "updates_agenda": false,
+    "updates_history": false,
+    "recomputes_history": false,
+    "migration_required": false,
+    "executed": false,
+    "configuration_update_is_prospective": true,
+    "all_derived_interpretations_are_prospective_only": false
+  },
+  "tests_audited": {
+    "executed": false,
+    "existing_coverage_codes": [
+      "TIMEZONE_CONFIRMATION_PERSISTENCE",
+      "TIMEZONE_CANCEL_NO_WRITE",
+      "TIMEZONE_INVALID_AND_STALE_VERSION_REJECTION",
+      "TIMEZONE_OWNER_SCOPE",
+      "STRUCTURED_LOG_PAYLOAD_PRIVACY",
+      "CIVIL_REVIEW_SCHEDULING_AND_STRUCTURAL_STATUS",
+      "PRIORITY_CIVIL_WINDOW_BOUNDARIES"
+    ],
+    "populated_inaugural_cycles_timezone_change_boundary_checker_regression_found": false,
+    "coverage_gap_code": "NO_CROSS_ZONE_POPULATED_REV004_REGRESSION_FOUND"
+  },
+  "static_timezone_audit": [
+    {
+      "usage_code": "CALENDAR_AND_CLOCK",
+      "classification_codes": [
+        "CURRENT/FUTURE BEHAVIOR",
+        "NOT AFFECTED"
+      ],
+      "field_codes": [
+        "NOW_UTC",
+        "civil_date"
+      ],
+      "effect_codes": [
+        "WORKSPACE_LOCAL_TODAY",
+        "UTC_INSTANT_UNCHANGED",
+        "CIVIL_DAY_ADDITION"
+      ],
+      "source_refs": [
+        "src/shared/domain/time.py"
+      ]
+    },
+    {
+      "usage_code": "WORKSPACE_CONFIG_AND_BOOTSTRAP",
+      "classification_codes": [
+        "CURRENT/FUTURE BEHAVIOR"
+      ],
+      "field_codes": [
+        "Workspace.timezone_name",
+        "Workspace.lock_version",
+        "Workspace.updated_at"
+      ],
+      "effect_codes": [
+        "CONFIRMED_CAS_CONFIG_CHANGE",
+        "NO_AUTOMATIC_HISTORY_OR_AGENDA_UPDATE"
+      ],
+      "source_refs": [
+        "src/modules/accounts/services.py:127",
+        "src/modules/accounts/forms.py",
+        "src/modules/accounts/views.py",
+        "src/shared/application/bootstrap.py"
+      ]
+    },
+    {
+      "usage_code": "NEW_ATTEMPT_CAPTURE",
+      "classification_codes": [
+        "CURRENT/FUTURE BEHAVIOR",
+        "HISTORICAL IMMUTABLE FACT"
+      ],
+      "field_codes": [
+        "Attempt.occurred_at",
+        "Attempt.timezone_name",
+        "Attempt.local_date"
+      ],
+      "effect_codes": [
+        "NEW_CAPTURE_USES_CURRENT_WORKSPACE_ZONE",
+        "OLD_INSTANT_AND_CAPTURED_ZONE_DATE_PRESERVED"
+      ],
+      "source_refs": [
+        "src/modules/attempts/context.py",
+        "src/modules/attempts/services.py:259",
+        "src/modules/attempts/models.py:116"
+      ]
+    },
+    {
+      "usage_code": "ATTEMPT_CORRECTION_CAPTURE",
+      "classification_codes": [
+        "HISTORICAL IMMUTABLE FACT",
+        "CURRENT/FUTURE BEHAVIOR"
+      ],
+      "field_codes": [
+        "replacement.timezone_name",
+        "replacement.local_date"
+      ],
+      "effect_codes": [
+        "CORRECTION_USES_ORIGINAL_TIP_ZONE",
+        "NO_WORKSPACE_ZONE_REINTERPRETATION_OF_REPLACEMENT_FACT"
+      ],
+      "source_refs": [
+        "src/modules/attempts/corrections.py:192",
+        "src/modules/reviews/reconstruction.py"
+      ]
+    },
+    {
+      "usage_code": "REVIEW_NEW_SCHEDULE_AND_ELIGIBILITY",
+      "classification_codes": [
+        "CURRENT/FUTURE BEHAVIOR",
+        "HISTORICAL IMMUTABLE FACT"
+      ],
+      "field_codes": [
+        "Review.stage_code",
+        "Review.first_due_date",
+        "Review.current_due_date",
+        "Review.state",
+        "ReviewCycle.state"
+      ],
+      "effect_codes": [
+        "D1_TODAY_PLUS_1",
+        "SUCCESS_NEXT_D7_D14_D30_FROM_RESPONSE_CIVIL_DATE",
+        "ERROR_RESET_D1_TODAY_PLUS_1",
+        "D30_SUCCESS_COMPLETES_CYCLE",
+        "ELIGIBILITY_OVERDUE_DUE_FUTURE_FROM_CURRENT_TODAY",
+        "OLD_STAGE_AND_STORED_DATES_UNCHANGED"
+      ],
+      "source_refs": [
+        "src/modules/reviews/policies.py",
+        "src/modules/reviews/services.py",
+        "src/modules/reviews/selectors.py:81",
+        "src/modules/domain/services.py:313"
+      ]
+    },
+    {
+      "usage_code": "MANUAL_RESCHEDULE_HISTORY",
+      "classification_codes": [
+        "CURRENT/FUTURE BEHAVIOR",
+        "HISTORICAL IMMUTABLE FACT"
+      ],
+      "field_codes": [
+        "ReviewScheduleChange.timezone_name",
+        "ReviewScheduleChange.previous_due_date",
+        "ReviewScheduleChange.new_due_date",
+        "AuditEvent.timezone_name"
+      ],
+      "effect_codes": [
+        "NEW_RESCHEDULE_CURRENT_ZONE_TODAY_VALIDATION",
+        "APPEND_ONLY_CAPTURED_ZONE_AND_DATES",
+        "NO_REWRITE_AFTER_CONFIG_CHANGE"
+      ],
+      "source_refs": [
+        "src/modules/reviews/services.py:106",
+        "src/modules/reviews/models.py:504",
+        "src/modules/operations/models.py:37",
+        "src/modules/operations/services.py"
+      ]
+    },
+    {
+      "usage_code": "TIMELINE_AND_HISTORY_PRESENTATION",
+      "classification_codes": [
+        "HISTORICAL DISPLAY",
+        "HISTORICAL IMMUTABLE FACT",
+        "NOT AFFECTED"
+      ],
+      "field_codes": [
+        "Attempt.local_date",
+        "TimelineEvent.occurred_at",
+        "Review.current_due_date",
+        "Review.first_due_date"
+      ],
+      "effect_codes": [
+        "STORED_CIVIL_DATES_DISPLAYED_UNCHANGED",
+        "TIMELINE_ORDER_BY_INSTANT_UNCHANGED",
+        "TEMPLATE_DATETIME_DEFAULT_UTC_NO_WORKSPACE_ACTIVATION_FOUND",
+        "COUNTERFACTUAL_DATE_DIFFERENCE_COUNTS_DO_NOT_PROVE_UI_RELABELING"
+      ],
+      "source_refs": [
+        "src/modules/reviews/selectors.py:149",
+        "src/templates/reviews/timeline.html:9",
+        "src/templates/attempts/correction_preview.html:14",
+        "src/config/settings/base.py:56"
+      ]
+    },
+    {
+      "usage_code": "ANALYTICS_CURRENT_AND_HISTORICAL",
+      "classification_codes": [
+        "CURRENT/FUTURE BEHAVIOR",
+        "HISTORICAL DISPLAY",
+        "HISTORICAL IMMUTABLE FACT"
+      ],
+      "field_codes": [
+        "reference_date",
+        "Attempt.local_date"
+      ],
+      "effect_codes": [
+        "DASHBOARD_AND_AGENDA_USE_WORKSPACE_TODAY",
+        "PERIOD_FILTERS_USE_STORED_ATTEMPT_LOCAL_DATE",
+        "HISTORICAL_PERIOD_FACTS_NOT_RELOCALIZED"
+      ],
+      "source_refs": [
+        "src/modules/analytics/selectors.py",
+        "src/modules/analytics/services.py:229"
+      ]
+    },
+    {
+      "usage_code": "DOMAIN_CURRENT_DERIVATION_AND_MASTERY",
+      "classification_codes": [
+        "CURRENT/FUTURE BEHAVIOR",
+        "HISTORICAL IMMUTABLE FACT"
+      ],
+      "field_codes": [
+        "evaluated_on",
+        "confidence_age",
+        "has_active_overdue_review",
+        "MasteryStateEvent.evaluated_on",
+        "MasteryStateEvent.occurred_at"
+      ],
+      "effect_codes": [
+        "CURRENT_DATE_AGE_AND_OVERDUE_CRITERIA_CAN_CHANGE",
+        "ATTEMPT_INPUT_USES_STORED_LOCAL_DATE",
+        "OLD_MASTERY_EVENTS_PRESERVED",
+        "NEW_REOPEN_D1_USES_CURRENT_ZONE"
+      ],
+      "source_refs": [
+        "src/modules/domain/selectors.py:56",
+        "src/modules/domain/policy.py:382",
+        "src/modules/domain/services.py"
+      ]
+    },
+    {
+      "usage_code": "PRIORITY_HISTORICAL_INSTANT_INTERPRETATION",
+      "classification_codes": [
+        "CURRENT/FUTURE BEHAVIOR",
+        "HISTORICAL IMMUTABLE FACT"
+      ],
+      "field_codes": [
+        "Attempt.occurred_at",
+        "reference_date",
+        "recurrence",
+        "decline"
+      ],
+      "effect_codes": [
+        "HISTORICAL_REVIEW_INSTANT_RELOCALIZED_TO_CURRENT_WORKSPACE_ZONE",
+        "CIVIL_0_89_0_29_30_59_MEMBERSHIP_CAN_CHANGE",
+        "NO_SCORE_OR_HISTORY_WRITE",
+        "OBSERVED_MEMBERSHIP_DELTAS_ZERO"
+      ],
+      "source_refs": [
+        "src/modules/priority/services.py:48",
+        "src/modules/priority/services.py:102"
+      ]
+    },
+    {
+      "usage_code": "QUESTION_YEAR_VALIDATION",
+      "classification_codes": [
+        "CURRENT/FUTURE BEHAVIOR"
+      ],
+      "field_codes": [
+        "current_year",
+        "question_year",
+        "origin_year"
+      ],
+      "effect_codes": [
+        "UPPER_BOUND_WORKSPACE_CIVIL_YEAR_PLUS_2_CAN_CHANGE_AT_YEAR_BOUNDARY"
+      ],
+      "source_refs": [
+        "src/modules/questions/validators.py:84",
+        "src/modules/questions/validators.py:155"
+      ]
+    },
+    {
+      "usage_code": "INTEGRITY_AND_CEI_SEMANTIC_VALIDATION",
+      "classification_codes": [
+        "HISTORICAL IMMUTABLE FACT",
+        "CURRENT/FUTURE BEHAVIOR"
+      ],
+      "field_codes": [
+        "Attempt.timezone_name",
+        "Attempt.local_date",
+        "ReviewCycle.started_at",
+        "Review.first_due_date",
+        "Workspace.timezone_name"
+      ],
+      "effect_codes": [
+        "ATT002_USES_CAPTURED_ATTEMPT_ZONE_SAFE",
+        "REV004_VALIDATES_INAUGURAL_HISTORY_USING_CURRENT_WORKSPACE_ZONE",
+        "REV004_CAN_FAIL_AFTER_ZONE_CHANGE_AT_CIVIL_BOUNDARY",
+        "OBSERVED_COUNTERFACTUAL_FIVE_INAUGURAL_REVIEWS_ZERO_MISMATCHES",
+        "CEI_VALIDATOR_REUSES_REV004",
+        "NO_MUTATED_CHECKER_OR_CEI_EXECUTED"
+      ],
+      "source_refs": [
+        "src/modules/operations/integrity.py:1377",
+        "src/modules/operations/integrity.py:1438",
+        "src/modules/data_management/portability.py:715"
+      ]
+    },
+    {
+      "usage_code": "UTC_RETENTION_BACKUP_METADATA_AND_PORTABILITY",
+      "classification_codes": [
+        "NOT AFFECTED",
+        "HISTORICAL IMMUTABLE FACT",
+        "CURRENT/FUTURE BEHAVIOR"
+      ],
+      "field_codes": [
+        "UTC.created_at",
+        "retention_cutoff",
+        "CEI.workspace_timezone",
+        "historical_timezone_fields"
+      ],
+      "effect_codes": [
+        "UTC_INSTANT_STORAGE_AND_RETENTION_UNCHANGED",
+        "NEW_CEI_MANIFEST_REFLECTS_CURRENT_CONFIG",
+        "SERIALIZED_HISTORICAL_ZONES_PRESERVED",
+        "NO_EXPORT_BACKUP_RESTORE_EXECUTED"
+      ],
+      "source_refs": [
+        "src/modules/operations/retention.py:19",
+        "src/modules/data_management/portability.py:206",
+        "src/modules/data_management/portability.py:300",
+        "src/modules/data_management/services.py:353"
+      ]
+    },
+    {
+      "usage_code": "SAVED_FILTERS_AND_SYNTHETIC_BENCHMARKS",
+      "classification_codes": [
+        "NOT AFFECTED"
+      ],
+      "field_codes": [
+        "SavedFilter.payload",
+        "synthetic_benchmark_timezone"
+      ],
+      "effect_codes": [
+        "SAVED_FILTER_STORAGE_NO_WORKSPACE_ZONE_REWRITE",
+        "BENCHMARK_HAS_FIXED_SYNTHETIC_ZONE_NOT_SOURCE",
+        "NO_BENCHMARK_EXECUTED"
+      ],
+      "source_refs": [
+        "src/modules/search/models.py",
+        "src/shared/application/bcr1.py:42",
+        "src/shared/application/bcr1_reads.py:253"
+      ]
+    }
+  ],
+  "privacy_review": {
+    "status_code": "SANITIZED_ALLOWLIST_REVIEWED",
+    "aggregate_counts_authorized": true,
+    "source_path_present": false,
+    "workspace_name_uuid_present": false,
+    "question_text_answer_alternatives_present": false,
+    "individual_personal_timestamp_present": false,
+    "personal_path_username_email_secret_present": false
+  },
+  "technical_limits": [
+    "NO_POST_MUTATION_CHECKER_CLAIM",
+    "NO_PILOT_PASS",
+    "NO_RUNTIME_MODEL_PROOF",
+    "CURRENT_DATA_REV004_COUNTERFACTUAL_ZERO_DOES_NOT_REMOVE_STATIC_GENERAL_RISK",
+    "NO_FUNCTIONAL_TESTS_EXECUTED",
+    "REMEDIATION_DESIGN_MIGRATION_NEED_NOT_DECIDED"
+  ],
+  "git": {
+    "mutations_executed": false,
+    "diff_check_exit": 0,
+    "status_expected_path_count": 8,
+    "baseline_head": "COMMIT:dcccb8950a7752d03461665e0a4952c8a9bc663b",
+    "head_equal_local_origin_main": true,
+    "status_paths": [
+      "PROJECT_STATE.md",
+      "quality/v10-s8-planning-result.md",
+      "quality/v10-s8-source-readonly-preflight.json",
+      "quality/v10-s8-timezone-impact.json",
+      "tasks/current.md",
+      "tasks/plans/v10-s8-controlled-real-pilot-plan.md",
+      "tasks/plans/v10-s8-data-protection.md",
+      "tasks/plans/v10-s8-pilot-route.md"
+    ],
+    "staged_paths_count": 0
+  },
+  "source_final_physical_confirmation": {
+    "sha256": "SHA256:fbc21fd544d7115cc6cb15342949090822e0e01c44d8d2047e9c729939de4156",
+    "size_bytes": 802816,
+    "mtime_ns": "1790693702707649700",
+    "sidecars": {
+      "-wal": false,
+      "-shm": false,
+      "-journal": false
+    }
+  },
+  "protected_planning_and_preflight_artifacts_unchanged": true
+}

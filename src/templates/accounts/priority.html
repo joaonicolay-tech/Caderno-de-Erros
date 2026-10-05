@@ -6,7 +6,7 @@
 <section aria-labelledby="priority-title">
   <h1 id="priority-title">O que estudar agora?</h1>
   <p>Recomendação opcional por assunto, calculada em {{ evaluated_on|date:"d/m/Y" }} no fuso deste espaço. Você pode escolher outro assunto ou ignorar a sugestão. A <a href="{% url 'reviews:queue' %}">fila de revisões</a> permanece independente.</p>
-  <p>Política PRI-HEUR-1.0: 40% fraqueza, 30% atraso, 20% recorrência e 10% queda recente. Pontuações exibidas com duas casas; a ordenação usa o valor completo.</p>
+  <p>Política {{ priority_policy }}: 40% fraqueza, 30% atraso, 20% recorrência e 10% queda recente. Pontuações exibidas com duas casas; a ordenação usa o valor completo.</p>
 </section>
 
 <section aria-labelledby="ranked-title">
