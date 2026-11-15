@@ -15,7 +15,6 @@ from typing import Any
 import pytest
 from django.db import connections
 from django.db.migrations.executor import MigrationExecutor
-from probe_v10_s6_cei_prewrite import V044, snapshot
 
 from modules.accounts.services import LOCAL_WORKSPACE_ID
 from modules.data_management.portability import (
@@ -27,6 +26,7 @@ from modules.data_management.portability import (
 from modules.questions.services import create_active
 from modules.taxonomy.services import create_discipline, create_subject
 from shared.application.bootstrap import bootstrap_local_workspace
+from tests.local_snapshot import V044, snapshot
 
 
 @pytest.fixture

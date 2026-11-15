@@ -42,3 +42,12 @@ ID, checkpoint, alias do alvo/perfil efetivo, pré-condição, ação consentida
 Sem mínimo de registros, duração ou participantes. Avaliação qualitativa deve mostrar que dados/estado permitiram jornadas centrais e recuperação. P08–P11 legítimos podem ser história/ausência, com justificativa; se isso ou outras lacunas impedir representatividade, PILOT_NOT_REPRESENTATIVE sem PASS, sem criar dados no original. Histórico S3–S7 continua histórico e não substitui uso real S8.
 
 Cross-Workspace indicado, privacidade exposta, checker crítico/inexplicado, corrupção/perda, backup/restore inválido, original mudado, fonte/alvo/consentimento ambíguos ou migration nova: IMMEDIATE_STOP; preservar evidência privada, classificar Blocker/Major e pedir remediação separada. Não executar próximo cenário para confirmar novamente.
+
+
+## Adendo prospectivo — distribuição de fonte Local r1
+
+A preparação pública 1.0.0 Local r1 usa build e verificação sintética por lista
+positiva; não transfere ativação privada nem autoriza dados históricos. Para o
+escopo atual, consultar docs/V1.0_Local_r1_Adendo_e_Plano.md e os guias Local r1.
+Chrome somente; Edge não qualificado; CT-126 adiada. Estados, STOPs e retenção
+históricos permanecem nos seus recortes. Nenhum push/tag/Release autorizado.

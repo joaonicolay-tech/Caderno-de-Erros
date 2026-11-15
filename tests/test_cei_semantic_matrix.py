@@ -16,8 +16,6 @@ from typing import Any, cast
 import pytest
 from django.db import connections
 from django.db.migrations.executor import MigrationExecutor
-from probe_v10_s6_cei_prewrite import snapshot
-from test_cei_semantic_prewrite import semantic_package as semantic_package
 
 from modules.accounts.services import LOCAL_USER_ID, LOCAL_WORKSPACE_ID
 from modules.attempts.models import Attempt
@@ -39,6 +37,8 @@ from modules.reviews.models import Review, ReviewScheduleChange
 from modules.search.models import SavedFilter
 from modules.taxonomy.models import Subsubject
 from modules.taxonomy.services import create_discipline
+from tests.local_snapshot import snapshot
+from tests.test_cei_semantic_prewrite import semantic_package as semantic_package
 
 A_CODES = (
     "WS-003",

@@ -164,3 +164,12 @@ O A4 está pronto para decisão humana. Não acessar dados até autorização po
 8. **Retenção/descarte:** escolher local protegido/ACL/responsável, evento ou prazo para retained artifacts, tratamento de incidente; nenhuma limpeza designada antes de aceite humano e hashes verificados.
 9. **Backup:** aprovar SOURCE/pré-PILOT/pré-operação, manifesto/SHA e restore pré-uso RNF-038, local e condições de remoção; nenhuma mutação sem recuperação validada.
 10. **Retorno/recovery:** aprovar ensaio offline somente RECOVERY_TARGET novo isolado, ticket/prebackup preservados, medição RNF-035 e retorno do PILOT a novo arquivo validado; Blocker/Major param para remediação própria. Original não é alvo de recovery; necessidade disso é incidente material.
+
+
+## Adendo prospectivo — distribuição de fonte Local r1
+
+A preparação pública 1.0.0 Local r1 usa build e verificação sintética por lista
+positiva; não transfere ativação privada nem autoriza dados históricos. Para o
+escopo atual, consultar docs/V1.0_Local_r1_Adendo_e_Plano.md e os guias Local r1.
+Chrome somente; Edge não qualificado; CT-126 adiada. Estados, STOPs e retenção
+históricos permanecem nos seus recortes. Nenhum push/tag/Release autorizado.

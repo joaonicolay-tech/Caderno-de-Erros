@@ -1,5 +1,7 @@
 """Catálogo padrão e bootstrap completo exigidos por CT-129."""
 
+import hashlib
+import json
 import uuid
 from pathlib import Path
 from typing import Any
@@ -14,6 +16,7 @@ from modules.errors.catalog import STANDARD_ERROR_CATEGORIES, normalize_name_key
 from modules.errors.models import ErrorCategory, ErrorCategoryCode
 from modules.errors.services import seed_standard_error_categories
 from shared.application.bootstrap import bootstrap_local_workspace
+from shared.infrastructure.local_boundary import admit
 
 EXPECTED_CATEGORIES = {
     definition.code: (definition.display_name, definition.description)
@@ -37,19 +40,24 @@ def test_complete_bootstrap_creates_exactly_the_canonical_ten_categories() -> No
     assert set(persisted) == set(ErrorCategoryCode.values)
 
 
-def test_catalog_exactly_matches_controlled_errata() -> None:
-    requirements = (
-        PROJECT_ROOT / "docs" / "Caderno_de_Erros_Inteligente_Etapa_3_Requisitos_Funcionais.md"
-    ).read_text(encoding="utf-8")
-    documented: dict[str, tuple[str, str]] = {}
-    for line in requirements.splitlines():
-        if line.startswith("| `") and line.count("|") == 4:
-            _, raw_code, name, description, _ = line.split("|")
-            code = raw_code.strip().strip("`")
-            if code in ErrorCategoryCode.values:
-                documented[code] = (name.strip(), description.strip())
-
-    assert documented == EXPECTED_CATEGORIES
+def test_catalog_matches_exported_approved_baseline() -> None:
+    # Public baseline pins the qualified catalog without opening private evidence.
+    source = json.loads(
+        admit(
+            PROJECT_ROOT / "quality/source-baseline.json", slots=frozenset({"candidate"})
+        ).read_text(encoding="utf-8")
+    )
+    expected = next(
+        row["sha256"]
+        for row in source["source_files"]
+        if row["path"] == "src/modules/errors/catalog.py"
+    )
+    current = admit(
+        PROJECT_ROOT / "src/modules/errors/catalog.py", slots=frozenset({"candidate", "validation"})
+    )
+    assert hashlib.sha256(current.read_bytes()).hexdigest() == expected
+    assert len(STANDARD_ERROR_CATEGORIES) == 10
+    assert set(EXPECTED_CATEGORIES) == set(ErrorCategoryCode.values)
 
 
 @pytest.mark.django_db

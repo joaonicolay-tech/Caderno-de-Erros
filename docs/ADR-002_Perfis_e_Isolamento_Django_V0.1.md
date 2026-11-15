@@ -68,3 +68,12 @@ e aciona os requisitos de implantação remota de `RNF-012`.
 User customizado, Workspace, primeiro acesso, Clock/Calendar, categorias, seed,
 logging definitivo, health, layout, backup e todas as capacidades posteriores
 continuam fora desta etapa.
+
+
+## Adendo prospectivo — distribuição de fonte Local r1
+
+A preparação pública 1.0.0 Local r1 usa build e verificação sintética por lista
+positiva; não transfere ativação privada nem autoriza dados históricos. Para o
+escopo atual, consultar docs/V1.0_Local_r1_Adendo_e_Plano.md e os guias Local r1.
+Chrome somente; Edge não qualificado; CT-126 adiada. Estados, STOPs e retenção
+históricos permanecem nos seus recortes. Nenhum push/tag/Release autorizado.

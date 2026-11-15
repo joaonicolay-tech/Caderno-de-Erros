@@ -953,3 +953,11 @@ novo N9 S2R2 PASS é reteste candidato. Continuar provas S6 pendentes
 N1–N8 e demais cadeias independentes; posteriormente gate integral final
 e A8 deep próprios da S6. Esta remediação encerrou sem executar a retomada.
 S7–S10 NOT AUTHORIZED; nenhuma migration nova ou ação Git autorizada.
+
+
+## Local r1 public source preparation
+
+Private v014 was accepted within its qualified installation. Public source is a
+separate derivation: local commits and synthetic checks only, no real-data
+activation, push, tag or Release. Historical states above remain unchanged.
+See docs/V1.0_Local_r1_Adendo_e_Plano.md.

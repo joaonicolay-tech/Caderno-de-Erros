@@ -33,6 +33,7 @@ from modules.operations.integrity import (
 )
 from modules.operations.structured_logging import emit_event
 from shared.domain.time import TimeZoneId
+from shared.infrastructure.local_boundary import admit, sqlite_path
 
 from .exceptions import (
     BackupCreationError,
@@ -104,25 +105,28 @@ class RestoreResult:
 
 def manifest_path_for(backup_path: Path | str) -> Path:
     """Derive o sidecar sem armazenar o caminho dentro do manifesto."""
-    backup = Path(backup_path)
+    backup = admit(backup_path, require_existing=False)
     return backup.with_name(f"{backup.name}{MANIFEST_SUFFIX}")
 
 
 def _database_path(database_alias: str, *, require_existing: bool = True) -> Path:
     configuration = connections[database_alias].settings_dict
-    if configuration.get("ENGINE") != "django.db.backends.sqlite3":
+    if configuration.get("ENGINE") not in {
+        "django.db.backends.sqlite3",
+        "shared.infrastructure.sqlite_backend",
+    }:
         raise BackupCreationError("O mecanismo da V0.1 aceita somente SQLite.")
     configured_name = configuration.get("NAME")
     if not isinstance(configured_name, (str, Path)) or str(configured_name) == ":memory:":
         raise BackupCreationError("O banco SQLite precisa ser um arquivo local.")
-    database_path = Path(configured_name).resolve()
+    database_path = sqlite_path(configured_name)
     if require_existing and not database_path.is_file():
         raise BackupCreationError("O banco SQLite não está disponível para backup.")
     return database_path
 
 
 def _resolved_output(path: Path | str) -> Path:
-    requested = Path(path).expanduser().absolute()
+    requested = sqlite_path(path)
     if any(part.is_symlink() or part.is_junction() for part in (requested, *requested.parents)):
         raise ValueError("Use um destino direto, sem links ou junctions.")
     resolved = requested.resolve()
@@ -141,6 +145,7 @@ def _resolved_output(path: Path | str) -> Path:
 
 
 def _temporary_file(directory: Path, suffix: str) -> Path:
+    directory = admit(directory)
     descriptor, raw_path = tempfile.mkstemp(prefix=".cei-", suffix=suffix, dir=directory)
     os.close(descriptor)
     return Path(raw_path)
@@ -149,6 +154,7 @@ def _temporary_file(directory: Path, suffix: str) -> Path:
 def _remove_created_file(path: Path | None) -> bool:
     if path is None:
         return True
+    path = admit(path, require_existing=False)
     try:
         path.unlink(missing_ok=True)
     except OSError:
@@ -169,6 +175,8 @@ def _remove_temporary_sidecars(path: Path | None) -> bool:
 
 def _publish_new_file(temporary_path: Path, destination: Path) -> None:
     """Publique sem a semântica de sobrescrita de ``os.replace``."""
+    temporary_path = admit(temporary_path)
+    destination = admit(destination, require_existing=False)
     if os.name == "nt":
         os.rename(temporary_path, destination)
         return
@@ -177,11 +185,14 @@ def _publish_new_file(temporary_path: Path, destination: Path) -> None:
 
 
 def _readonly_connection(path: Path, *, immutable: bool = False) -> sqlite3.Connection:
+    path = sqlite_path(path)
     suffix = "&immutable=1" if immutable else ""
     return sqlite3.connect(f"{path.as_uri()}?mode=ro{suffix}", uri=True, timeout=5.0)
 
 
 def _sqlite_backup(source: Path, destination: Path) -> None:
+    source = sqlite_path(source)
+    destination = sqlite_path(destination)
     deadline = time.monotonic() + _BACKUP_TIMEOUT_SECONDS
 
     def progress(status: int, remaining: int, total: int) -> None:
@@ -202,6 +213,7 @@ def _sqlite_backup(source: Path, destination: Path) -> None:
 
 
 def _sha256(path: Path) -> str:
+    path = admit(path)
     digest = hashlib.sha256()
     with path.open("rb") as artifact:
         while chunk := artifact.read(_BUFFER_SIZE):
@@ -210,6 +222,7 @@ def _sha256(path: Path) -> str:
 
 
 def _flush_file(path: Path) -> None:
+    path = admit(path)
     with path.open("r+b") as artifact:
         os.fsync(artifact.fileno())
 
@@ -235,6 +248,7 @@ def _reject_duplicate_json_keys(pairs: list[tuple[str, object]]) -> dict[str, ob
 
 
 def _parse_manifest(path: Path) -> BackupManifest:
+    path = admit(path)
     try:
         raw_document = json.loads(
             path.read_text(encoding="utf-8"),
@@ -412,11 +426,11 @@ def validate_sqlite_backup(
             outcome=EventOutcome.STARTED,
         )
         try:
-            backup = Path(backup_path).expanduser().resolve()
+            backup = admit(backup_path)
             manifest_file = (
-                Path(manifest_path).expanduser().resolve()
+                admit(manifest_path)
                 if manifest_path is not None
-                else manifest_path_for(backup).resolve()
+                else admit(manifest_path_for(backup))
             )
             manifest = _validate_backup_files(backup, manifest_file)
         except Exception as error:
@@ -786,7 +800,7 @@ def _check_restored_integrity(path: Path) -> IntegrityCheckResult:
         outcome=EventOutcome.STARTED,
     )
     try:
-        result = run_integrity_check(using=alias)
+        result = run_integrity_check(using=alias, immutable=True)
     except IntegrityCheckOperationalError as error:
         _event_failure(
             EventCode.INTEGRITY_CHECK_FAILED,
@@ -846,11 +860,11 @@ def restore_sqlite_backup(
         )
         try:
             active_database = _database_path(database_alias, require_existing=False)
-            backup = Path(backup_path).expanduser().resolve()
+            backup = admit(backup_path)
             manifest_file = (
-                Path(manifest_path).expanduser().resolve()
+                admit(manifest_path)
                 if manifest_path is not None
-                else manifest_path_for(backup).resolve()
+                else admit(manifest_path_for(backup))
             )
             destination = _resolved_output(destination_path)
             if destination in {active_database, backup, manifest_file}:

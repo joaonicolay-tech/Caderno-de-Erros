@@ -82,6 +82,9 @@ def test_ui_get_read_only_and_downloads_use_distinct_formats(live_backup: Path) 
     response = client.get(url)
     assert response.status_code == 200
     assert b"RESTAU" in response.content.upper()
+    page = response.content.decode("utf-8")
+    assert "todo o material de estudo deste espaço" in page
+    assert "arquivos como privados" in page and "pasta sob seu controle" in page
     assert _sha(active) == before
     csrf = client.cookies["csrftoken"].value
     missing = client.post(url, {"action": "backup"})

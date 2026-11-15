@@ -11,7 +11,14 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import BinaryIO
 
+from django.core import signing
 from django.db import connections
+
+from shared.infrastructure.local_boundary import (
+    admit,
+    recovery_directory,
+    runtime_temporary_dir,
+)
 
 from .exceptions import BackupCreationError, BackupValidationError, RestoreError
 from .services import (
@@ -43,15 +50,12 @@ class RestorePreview:
 
 
 def _private_root() -> Path:
-    active = _database_path("default")
-    root = active.parent / "cei-recovery"
-    root.mkdir(mode=0o700, exist_ok=True)
-    if root.is_symlink() or root.is_junction():
-        raise UIRecoveryError("Diretório de recuperação inseguro.")
-    return root
+    _database_path("default")
+    return recovery_directory()
 
 
 def _stream_copy(source: BinaryIO, target: Path) -> None:
+    target = admit(target, require_existing=False)
     with target.open("xb") as output:
         shutil.copyfileobj(source, output, length=1024 * 1024)
         output.flush()
@@ -85,7 +89,9 @@ def _stage_upload(
 def create_backup_download(destination: BinaryIO) -> dict[str, object]:
     """Return existing SQLite/sidecar format in a two-member transport ZIP."""
     try:
-        with tempfile.TemporaryDirectory(prefix="cei-backup-") as directory:
+        with tempfile.TemporaryDirectory(
+            dir=runtime_temporary_dir(), prefix="cei-backup-"
+        ) as directory:
             backup = Path(directory) / BACKUP_MEMBER
             result = create_sqlite_backup(backup)
             # The transfer ZIP does not redefine the backup's SQLite+sidecar contract.
@@ -100,7 +106,9 @@ def create_backup_download(destination: BinaryIO) -> dict[str, object]:
 def preview_restore(backup_file: BinaryIO, manifest_file: BinaryIO) -> RestorePreview:
     """Stage and validate uploaded pair, then report its isolated reconciliation."""
     try:
-        with tempfile.TemporaryDirectory(prefix="cei-preview-") as directory:
+        with tempfile.TemporaryDirectory(
+            dir=runtime_temporary_dir(), prefix="cei-preview-"
+        ) as directory:
             folder = Path(directory)
             backup, manifest = _stage_upload(backup_file, manifest_file, folder)
             validate_sqlite_backup(backup, manifest_path=manifest)
@@ -125,10 +133,12 @@ def prepare_restore(
     """Revalidate input/active state and prepare durable candidate plus pre-backup."""
     root = _private_root()
     ticket = uuid.uuid4().hex
-    pending = root / ticket
+    pending = admit(root / ticket, require_existing=False)
     prebackup = root / f"pre-{ticket}.sqlite3"
     try:
-        with tempfile.TemporaryDirectory(prefix="cei-confirm-") as directory:
+        with tempfile.TemporaryDirectory(
+            dir=runtime_temporary_dir(), prefix="cei-confirm-"
+        ) as directory:
             folder = Path(directory)
             backup, manifest = _stage_upload(backup_file, manifest_file, folder)
             validate_sqlite_backup(backup, manifest_path=manifest)
@@ -159,17 +169,19 @@ def prepare_restore(
                 "prebackup_sha256": _sha256(prebackup),
                 "candidate_counts": asdict(result.reconciliation),
             }
-            (pending / "ticket.json").write_text(json.dumps(document), encoding="utf-8")
+            document["authorization"] = signing.dumps(document, salt="cei.local.restore.ticket.v1")
+            admit(pending / "ticket.json", require_existing=False).write_text(
+                json.dumps(document), encoding="utf-8"
+            )
             return ticket
     except (OSError, BackupValidationError, RestoreError, BackupCreationError) as error:
         raise UIRecoveryError(
             "Não foi possível preparar o restore; o destino não foi alterado."
         ) from error
     finally:
-        if not (pending / "ticket.json").exists():
-            shutil.rmtree(pending, ignore_errors=True)
-            prebackup.unlink(missing_ok=True)
-            manifest_path_for(prebackup).unlink(missing_ok=True)
+        if pending.exists() and not admit(pending / "ticket.json", require_existing=False).exists():
+            # Preserve failed staging for diagnosis; never recursively remove a ticket tree.
+            pass
 
 
 def cancel_prepared_restore(ticket: str) -> None:
@@ -179,16 +191,18 @@ def cancel_prepared_restore(ticket: str) -> None:
     except ValueError as error:
         raise UIRecoveryError("Identificador de restore inválido.") from error
     root = _private_root()
-    pending = root / ticket_id
-    if pending.is_symlink() or not (pending / "ticket.json").is_file():
+    pending = admit(root / ticket_id, require_existing=False)
+    if not pending.is_dir() or not admit(pending / "ticket.json", require_existing=False).is_file():
         raise UIRecoveryError("Ticket de restore inexistente ou inseguro.")
-    if (pending / "result.json").exists():
+    if admit(pending / "result.json", require_existing=False).exists():
         raise UIRecoveryError("Restore já aplicado; pré-backup preservado.")
     prebackup = root / f"pre-{ticket_id}.sqlite3"
     try:
-        shutil.rmtree(pending)
-        prebackup.unlink(missing_ok=True)
-        manifest_path_for(prebackup).unlink(missing_ok=True)
+        for name in ("candidate.sqlite3", "candidate.sqlite3.manifest.json", "ticket.json"):
+            admit(pending / name, require_existing=False).unlink(missing_ok=True)
+        pending.rmdir()
+        admit(prebackup, require_existing=False).unlink(missing_ok=True)
+        admit(manifest_path_for(prebackup), require_existing=False).unlink(missing_ok=True)
     except OSError as error:
         raise UIRecoveryError("Não foi possível limpar o restore pendente.") from error
 
@@ -200,12 +214,31 @@ def apply_prepared_restore(ticket: str) -> dict[str, object]:
     except ValueError as error:
         raise UIRecoveryError("Identificador de restore inválido.") from error
     root = _private_root()
-    pending = root / ticket_id
+    pending = admit(root / ticket_id, require_existing=False)
     if pending.is_symlink():
         raise UIRecoveryError("Ticket de restore inseguro.")
-    if (pending / "result.json").exists():
+    if admit(pending / "result.json", require_existing=False).exists():
         raise UIRecoveryError("Este restore já foi aplicado.")
-    document = json.loads((pending / "ticket.json").read_text(encoding="utf-8"))
+    document = json.loads(admit(pending / "ticket.json").read_text(encoding="utf-8"))
+    if not isinstance(document, dict):
+        raise UIRecoveryError("Ticket de restore inválido.")
+    token = document.pop("authorization", None)
+    try:
+        authenticated = (
+            signing.loads(token, salt="cei.local.restore.ticket.v1")
+            if isinstance(token, str)
+            else None
+        )
+    except signing.BadSignature as error:
+        raise UIRecoveryError(
+            "Ticket adulterado ou de outra instância; restore recusado."
+        ) from error
+    if not isinstance(authenticated, dict) or json.dumps(
+        authenticated, sort_keys=True, separators=(",", ":")
+    ) != json.dumps(document, sort_keys=True, separators=(",", ":")):
+        raise UIRecoveryError(
+            "Ticket adulterado ou sem autorização da instância; restore recusado."
+        )
     if document["ticket"] != ticket_id:
         raise UIRecoveryError("Ticket de restore inconsistente.")
     active = _database_path("default")
@@ -218,8 +251,8 @@ def apply_prepared_restore(ticket: str) -> dict[str, object]:
         raise UIRecoveryError(
             "Encerre a aplicação e remova sidecars somente por procedimento seguro."
         )
-    candidate = pending / "candidate.sqlite3"
-    prebackup = root / f"pre-{ticket_id}.sqlite3"
+    candidate = admit(pending / "candidate.sqlite3")
+    prebackup = admit(root / f"pre-{ticket_id}.sqlite3")
     if (
         _sha256(candidate) != document["candidate_sha256"]
         or _sha256(prebackup) != document["prebackup_sha256"]
@@ -228,7 +261,7 @@ def apply_prepared_restore(ticket: str) -> dict[str, object]:
     validate_sqlite_backup(candidate)
     validate_sqlite_backup(prebackup)
     # Recheck application compatibility and S5 in a fresh isolated copy.
-    with tempfile.TemporaryDirectory(prefix="cei-adopt-") as directory:
+    with tempfile.TemporaryDirectory(dir=runtime_temporary_dir(), prefix="cei-adopt-") as directory:
         folder = Path(directory)
         restore_sqlite_backup(candidate, folder / "candidate-verified.sqlite3")
         restore_sqlite_backup(prebackup, folder / "return-verified.sqlite3")
@@ -249,7 +282,11 @@ def apply_prepared_restore(ticket: str) -> dict[str, object]:
             os.replace(temporary, active)
             try:
                 _validate_sqlite_file(active)
-                _check_restored_integrity(active)
+                checked = _check_restored_integrity(active)
+                if checked.total_findings:
+                    raise UIRecoveryError(
+                        "Checker final encontrou inconsistência; retorno necessário."
+                    )
                 report: dict[str, object] = {
                     "status": "RESTORED",
                     "ticket": ticket_id,
@@ -258,7 +295,9 @@ def apply_prepared_restore(ticket: str) -> dict[str, object]:
                     "active_sha256": _sha256(active),
                     "prebackup_sha256": document["prebackup_sha256"],
                 }
-                (pending / "result.json").write_text(json.dumps(report), encoding="utf-8")
+                admit(pending / "result.json", require_existing=False).write_text(
+                    json.dumps(report), encoding="utf-8"
+                )
             except Exception as error:
                 return_copy = folder / "return.sqlite3"
                 try:

@@ -16,6 +16,7 @@ from django.db import connections
 
 from modules.operations.structured_logging import REDACTED
 from shared.domain.time import TimeZoneId
+from shared.infrastructure.local_boundary import sqlite_path
 
 DEFAULT_FINDING_LIMIT: Final = 100
 MAX_FINDING_LIMIT: Final = 1000
@@ -1260,7 +1261,7 @@ def _database_path(using: str) -> Path:
     configured_name = connection.settings_dict.get("NAME")
     if not configured_name or str(configured_name) == ":memory:":
         raise IntegrityCheckOperationalError("O banco SQLite precisa existir em arquivo local.")
-    path = Path(str(configured_name)).resolve()
+    path = sqlite_path(str(configured_name))
     if not path.is_file():
         raise IntegrityCheckOperationalError("O arquivo do banco SQLite não está disponível.")
     return path
@@ -1542,17 +1543,19 @@ def run_integrity_check(
     using: str = "default",
     finding_limit: int = DEFAULT_FINDING_LIMIT,
     now: datetime | None = None,
+    immutable: bool = False,
 ) -> IntegrityCheckResult:
-    """Execute todas as invariantes sobre snapshot lógico e conexão mode=ro."""
+    """Execute invariantes em RO; immutable apenas para artefato offline estável."""
     if not 1 <= finding_limit <= MAX_FINDING_LIMIT:
         raise ValueError(f"finding_limit deve estar entre 1 e {MAX_FINDING_LIMIT}.")
     instant = now or datetime.now(UTC)
     if instant.tzinfo is None or instant.utcoffset() is None:
         raise ValueError("now precisa ser um instante com fuso.")
     path = _database_path(using)
+    suffix = "&immutable=1" if immutable else ""
     try:
         with closing(
-            sqlite3.connect(f"{path.as_uri()}?mode=ro", uri=True, timeout=5.0)
+            sqlite3.connect(f"{path.as_uri()}?mode=ro{suffix}", uri=True, timeout=5.0)
         ) as database:
             database.execute("BEGIN")
             result = check_integrity_projection(database, finding_limit=finding_limit, now=instant)

@@ -266,7 +266,7 @@ def test_settings_explains_impact_and_http_correlation_survives() -> None:
     html = response.content.decode("utf-8")
     assert response.headers["X-Correlation-ID"] == correlation_id
     assert "muda o cálculo de hoje e os novos cálculos" in html
-    assert "Não existem filas ou revisões nesta versão." in html
+    assert "instantes e datas históricas permanecem inalterados." in html
 
 
 @pytest.mark.django_db

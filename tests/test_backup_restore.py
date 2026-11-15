@@ -238,8 +238,13 @@ def test_restored_database_allows_application_initialization(
         "ErrorCategory.objects.count()) == (1, 1, 10)"
     )
     environment = os.environ.copy()
-    environment["DJANGO_SETTINGS_MODULE"] = "config.settings.development"
-    environment["CEI_DEVELOPMENT_DB"] = str(destination)
+    environment["DJANGO_SETTINGS_MODULE"] = "config.settings.test"
+    probe = probe.replace(
+        "django.setup(); ",
+        'django.setup(); from django.db import connection; connection.settings_dict["NAME"] = '
+        + repr(str(destination))
+        + "; ",
+    )
     environment["PYTHONPATH"] = str(PROJECT_ROOT / "src")
 
     completed = subprocess.run(

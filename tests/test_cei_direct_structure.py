@@ -17,9 +17,6 @@ from typing import Any
 import pytest
 from django.db import connections
 from django.db.migrations.executor import MigrationExecutor
-from probe_v10_s6_cei_prewrite import snapshot
-from test_cei_semantic_matrix import rich_package as rich_package
-from test_cei_semantic_prewrite import semantic_package as semantic_package
 
 from modules.accounts.services import LOCAL_WORKSPACE_ID
 from modules.data_management.portability import (
@@ -31,6 +28,9 @@ from modules.data_management.portability import (
     validate_export,
 )
 from modules.operations.integrity import run_integrity_check
+from tests.local_snapshot import snapshot
+from tests.test_cei_semantic_matrix import rich_package as rich_package
+from tests.test_cei_semantic_prewrite import semantic_package as semantic_package
 
 TYPE_CASES = (
     "integer-string",

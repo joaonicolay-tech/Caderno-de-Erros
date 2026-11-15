@@ -990,3 +990,12 @@ Etapa 0 saneamento; Etapa 1 schema; Etapa 2 resposta inicial; Etapa 3 política 
 conclusão; Etapa 4 fila/timeline/diagnóstico/arquivamento; Etapa 5 integração,
 regressão e promoção. A matriz e os limites autoritativos estão em `ADR-011`
 §§2–9. A Etapa 1 só pode iniciar sob nova autorização formal.
+
+
+## Adendo prospectivo — distribuição de fonte Local r1
+
+A preparação pública 1.0.0 Local r1 usa build e verificação sintética por lista
+positiva; não transfere ativação privada nem autoriza dados históricos. Para o
+escopo atual, consultar docs/V1.0_Local_r1_Adendo_e_Plano.md e os guias Local r1.
+Chrome somente; Edge não qualificado; CT-126 adiada. Estados, STOPs e retenção
+históricos permanecem nos seus recortes. Nenhum push/tag/Release autorizado.

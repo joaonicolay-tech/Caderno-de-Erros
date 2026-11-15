@@ -116,3 +116,12 @@ considerada no encerramento quando aplicável, sem criar Skill, checklist
 universal ou pipeline automático. A7 orienta a proporcionalidade operacional e
 o seu JSONL recebe somente fatos disponíveis ao encerrar a tarefa.
 
+
+
+## Adendo prospectivo — distribuição de fonte Local r1
+
+A preparação pública 1.0.0 Local r1 usa build e verificação sintética por lista
+positiva; não transfere ativação privada nem autoriza dados históricos. Para o
+escopo atual, consultar docs/V1.0_Local_r1_Adendo_e_Plano.md e os guias Local r1.
+Chrome somente; Edge não qualificado; CT-126 adiada. Estados, STOPs e retenção
+históricos permanecem nos seus recortes. Nenhum push/tag/Release autorizado.

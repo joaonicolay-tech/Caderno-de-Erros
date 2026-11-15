@@ -5,6 +5,15 @@ from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
+from shared.infrastructure.local_boundary import (
+    configure_process,
+    database_path,
+    production_secret,
+    runtime_temporary_dir,
+)
+
+configure_process()
+
 BASE_DIR = Path(__file__).resolve().parents[3]
 
 LOCAL_ALLOWED_HOSTS = frozenset({"127.0.0.1", "localhost", "[::1]"})
@@ -101,30 +110,28 @@ def local_allowed_hosts() -> list[str]:
 
 
 def configured_path(variable: str, default: Path) -> Path:
-    """Resolva um caminho externo; caminhos relativos partem da raiz do projeto."""
-    configured = Path(os.environ.get(variable, str(default))).expanduser()
-    if not configured.is_absolute():
-        configured = BASE_DIR / configured
-    return configured.resolve()
+    """A rota não aceita troca de banco por variáveis herdadas."""
+    del default
+    if variable in os.environ:
+        raise ImproperlyConfigured("Override de banco recusado na rota Local r1.")
+    return database_path(test=False)
 
 
 def required_production_secret() -> str:
     """Exija uma chave externa suficientemente longa para produção local."""
-    value = os.environ.get("CEI_SECRET_KEY")
-    if not value:
-        raise ImproperlyConfigured("CEI_SECRET_KEY é obrigatória no perfil de produção local.")
-    if len(value) < 50:
-        raise ImproperlyConfigured("CEI_SECRET_KEY deve possuir pelo menos 50 caracteres.")
-    return value
+    return production_secret()
 
 
 def sqlite_database(path: Path, *, test_name: Path | None = None) -> dict[str, object]:
     """Construa a configuração SQLite comum, com timeout explícito."""
     database: dict[str, object] = {
-        "ENGINE": "django.db.backends.sqlite3",
+        "ENGINE": "shared.infrastructure.sqlite_backend",
         "NAME": path,
         "OPTIONS": {"timeout": DATABASE_TIMEOUT_SECONDS},
     }
     if test_name is not None:
         database["TEST"] = {"NAME": test_name}
     return database
+
+
+FILE_UPLOAD_TEMP_DIR = str(runtime_temporary_dir())

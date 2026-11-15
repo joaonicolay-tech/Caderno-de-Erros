@@ -921,3 +921,12 @@ A Etapa 4 será concluída quando:
 - os RNFs puderem ser rastreados até testes e critérios de liberação.
 
 A etapa foi aprovada integralmente em 30 de agosto de 2026. Os requisitos `RNF-001` a `RNF-080` e as decisões `RNF-DEC-001` a `RNF-DEC-012` passam a ser considerados congelados e somente poderão ser alterados mediante registro explícito e análise de impacto.
+
+
+## Adendo prospectivo — distribuição de fonte Local r1
+
+A preparação pública 1.0.0 Local r1 usa build e verificação sintética por lista
+positiva; não transfere ativação privada nem autoriza dados históricos. Para o
+escopo atual, consultar docs/V1.0_Local_r1_Adendo_e_Plano.md e os guias Local r1.
+Chrome somente; Edge não qualificado; CT-126 adiada. Estados, STOPs e retenção
+históricos permanecem nos seus recortes. Nenhum push/tag/Release autorizado.

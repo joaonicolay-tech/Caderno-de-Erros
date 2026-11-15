@@ -1,20 +1,5 @@
-"""Perfil de desenvolvimento estritamente local."""
+"""Development não é um perfil de execução da rota Local r1."""
 
-import hashlib
-import os
+from django.core.exceptions import ImproperlyConfigured
 
-from .base import *
-
-CEI_PROFILE = "development"
-DEBUG = True
-SECRET_KEY = (
-    os.environ.get("CEI_SECRET_KEY")
-    or hashlib.sha256(b"cei-development-profile-not-for-production").hexdigest()
-)
-ALLOWED_HOSTS = local_allowed_hosts()
-
-DATABASES = {
-    "default": sqlite_database(
-        configured_path("CEI_DEVELOPMENT_DB", BASE_DIR / "var" / "development.sqlite3")
-    )
-}
+raise ImproperlyConfigured("Use production_local para uso ou test para validação sintética.")

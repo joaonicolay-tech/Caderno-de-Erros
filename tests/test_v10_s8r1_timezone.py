@@ -12,6 +12,7 @@ from copy import deepcopy
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from threading import Barrier
+from types import SimpleNamespace
 from typing import Any, cast
 from zoneinfo import ZoneInfo
 
@@ -504,7 +505,14 @@ def test_t8_checker_and_projection_zero_native_dml(
         kwargs["factory"] = RecordingConnection
         return cast(sqlite3.Connection, original_connect(*args, **kwargs))
 
-    monkeypatch.setattr(sqlite3, "connect", traced_connect)
+    # Spy only on the checker's module reference. Coverage and Django retain
+    # their real SQLite connection factory; every checker connection still
+    # must pass the strict mode=ro assertion above.
+    checker_sqlite = SimpleNamespace(
+        connect=traced_connect, Connection=sqlite3.Connection, Error=sqlite3.Error
+    )
+    monkeypatch.setattr(integrity, "sqlite3", checker_sqlite)
+    assert sqlite3.connect is original_connect
     check = run_integrity_check(now=EVALUATION)
     with closing(traced_connect(f"{path.as_uri()}?mode=ro", uri=True)) as database:
         full_projection = integrity.check_integrity_projection(database, now=EVALUATION)

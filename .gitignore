@@ -20,3 +20,22 @@ htmlcov/
 logs/
 backups/
 var/
+
+# Instance data and source verification outputs are never source artifacts.
+.local-r1.json
+SOURCE-MANIFEST.json
+secret.txt
+release-authorization*.json
+*.sqlite
+*.db3
+*.sqlite3-*
+*.sqlite-*
+*.db-*
+*.db3-*
+*.sql
+*.bak
+/dist/
+/validation/
+/evidence/
+/installed/
+/user/

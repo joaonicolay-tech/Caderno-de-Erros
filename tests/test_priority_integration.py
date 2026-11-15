@@ -6,7 +6,6 @@ import pytest
 from django.db import connection
 from django.test import Client
 from django.test.utils import CaptureQueriesContext
-from test_v05_s5_domain import _dominated, _question, _workspace
 
 from modules.attempts.corrections import AttemptCorrectionService
 from modules.attempts.models import Attempt, AttemptType
@@ -19,6 +18,7 @@ from modules.reviews.models import Review, ReviewCycle
 from modules.reviews.selectors import list_review_queue
 from modules.taxonomy.services import create_subject
 from shared.domain.time import FixedClock, Instant
+from tests.test_v05_s5_domain import _dominated, _question, _workspace
 
 CLOCK = FixedClock(Instant(datetime(2026, 9, 24, 15, tzinfo=UTC)))
 

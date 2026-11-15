@@ -75,3 +75,12 @@ Screenshots opcionais. Preferir evidência técnica agregada quando suficiente. 
 Manifest privado por artefato: run/scenario/class/alias/private_path/source_alias/created_at/size_bytes/sha256/designation/retained_path/verified_sha/owner/disposition_event/status. Espelho quality/v10-s8-retention-map.json só aliases e metadados permitidos. Nenhum path absoluto privado publicado. Registro antes do run; completar hashes à criação e cópia; conferir após cada prova, antes de cleanup e encerramento.
 
 Retenção/descarte não definido automaticamente: responsável deve escolher local/ACL, quem acessa e evento/prazo. Retained artifacts permanecem até aceite humano, reconciliação/retention verificadas e A8 deep; findings/incident mantêm retenção até decisão específica. Nenhuma exclusão de backup/user DB/raw necessária nesta fase. Futuro descarte só lista explícita aprovada e path resolvido comprovadamente dentro da raiz destinada; sem glob que alcance original, sem suposição de secure erase. Ausência deve ser reportada honestamente e seu impacto avaliado; 11 artefatos sintéticos PRES-01 históricos não isentam qualquer artefato real S8.
+
+
+## Adendo prospectivo — distribuição de fonte Local r1
+
+A preparação pública 1.0.0 Local r1 usa build e verificação sintética por lista
+positiva; não transfere ativação privada nem autoriza dados históricos. Para o
+escopo atual, consultar docs/V1.0_Local_r1_Adendo_e_Plano.md e os guias Local r1.
+Chrome somente; Edge não qualificado; CT-126 adiada. Estados, STOPs e retenção
+históricos permanecem nos seus recortes. Nenhum push/tag/Release autorizado.

@@ -3,7 +3,6 @@
 import hashlib
 import json
 import os
-import shutil
 import sqlite3
 import subprocess
 import sys
@@ -847,14 +846,16 @@ print(json.dumps({"before": before, "after": after, "rollback": rollback}))
     }
 
 
-def test_v01_v02_migrations_match_protected_v020_tag() -> None:
-    git_executable = shutil.which("git")
-    assert git_executable is not None
-    result = subprocess.run(
-        [git_executable, "diff", "--exit-code", "v0.2.0", "--", *V02_MIGRATION_PATHS],
-        cwd=PROJECT_ROOT,
-        capture_output=True,
-        text=True,
-        check=False,
+def test_v01_v02_migrations_match_exported_baseline() -> None:
+    from shared.infrastructure.local_boundary import admit
+
+    source = json.loads(
+        admit(
+            PROJECT_ROOT / "quality/source-baseline.json", slots=frozenset({"candidate"})
+        ).read_text(encoding="utf-8")
     )
-    assert result.returncode == 0, result.stdout + result.stderr
+    expected = {item["path"]: item["sha256"] for item in source["source_files"]}
+    for relative in V02_MIGRATION_PATHS:
+        assert (
+            hashlib.sha256((PROJECT_ROOT / relative).read_bytes()).hexdigest() == expected[relative]
+        )

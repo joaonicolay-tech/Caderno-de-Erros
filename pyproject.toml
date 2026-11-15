@@ -1,7 +1,7 @@
 [project]
 name = "caderno-de-erros-inteligente"
 version = "1.0.0"
-description = "Fundação local do Caderno de Erros Inteligente"
+description = "FundaÃ§Ã£o local do Caderno de Erros Inteligente"
 readme = "README.md"
 requires-python = "==3.13.15"
 dependencies = [
@@ -31,7 +31,7 @@ required-environments = [
 [tool.ruff]
 target-version = "py313"
 line-length = 100
-extend-exclude = [".tools", ".venv"]
+extend-exclude = [".tools", ".venv", "**/migrations/**"]
 
 [tool.ruff.format]
 indent-style = "space"
@@ -90,10 +90,10 @@ python = "3.13.15"
 django = "5.2.17"
 django-templates = "integrado ao Django 5.2.17"
 htmx = "2.0.10"
-htmx-sri = "sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" # pragma: allowlist secret -- SRI público
-sqlite = "3.53.1 (módulo sqlite3 do CPython fixado)"
+htmx-sri = "sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" # pragma: allowlist secret -- SRI pÃºblico
+sqlite = "3.53.1 (mÃ³dulo sqlite3 do CPython fixado)"
 uv = "0.12.7"
 platform = "Windows 11 x64"
-chrome-reference = "152.0.7977.65"
-edge-reference = "152.0.4191.53"
-reference-date = "2026-09-01"
+chrome-reference = "157.0.8103.39"
+edge-reference = "NOT_QUALIFIED_LOCAL_R1"
+reference-date = "2026-11-14"

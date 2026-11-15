@@ -8,4 +8,4 @@ from .version import PRODUCT_VERSION
 def product_identity(request: HttpRequest) -> dict[str, str]:
     """Expose the canonical human-facing product version to shared templates."""
     del request
-    return {"product_version": PRODUCT_VERSION}
+    return {"product_version": PRODUCT_VERSION, "product_route": "V1.0 Local r1"}
