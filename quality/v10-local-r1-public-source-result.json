@@ -1,0 +1,126 @@
+{
+  "status": "PASS_COMPOSED_PUBLIC_SOURCE_VERIFICATION",
+  "scope": "SOURCE_ONLY_SYNTHETIC_REPRODUCTION",
+  "public_operations": "NOT_AUTHORIZED_NOT_EXECUTED",
+  "original_full_gate_status": "FAIL_PRESERVED",
+  "original_full_regression": {
+    "tests": 799,
+    "passed": 798,
+    "failed": 1,
+    "skipped": 0,
+    "coverage_totals": {
+      "covered_lines": 8242,
+      "num_statements": 9200,
+      "percent_covered": 86.56239198064293,
+      "percent_covered_display": "87",
+      "missing_lines": 958,
+      "excluded_lines": 12,
+      "percent_statements_covered": 89.58695652173913,
+      "percent_statements_covered_display": "90",
+      "num_branches": 2372,
+      "num_partial_branches": 497,
+      "covered_branches": 1775,
+      "missing_branches": 597,
+      "percent_branches_covered": 74.83136593591905,
+      "percent_branches_covered_display": "75"
+    },
+    "failure": "test_v01_v02_migrations_match_exported_baseline",
+    "failure_reason": "Private source-manifest fixture absent from public source; migration bytes/oracle did not fail."
+  },
+  "focal_retest": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0,
+    "phases": {
+      "lint": 0,
+      "format": 0,
+      "typing": 0,
+      "source-checks": 0,
+      "focal-tests": 0,
+      "dependency-audit": 0,
+      "source-build": 0
+    }
+  },
+  "effective_original_cases_successful_after_focal_retest": 799,
+  "changed_source_paths": [
+    "README.md",
+    "docs/RELEASE_NOTES_V1.0_LOCAL_R1.md",
+    "quality/source-baseline.json",
+    "tests/test_learning_foundation.py"
+  ],
+  "unchanged_product_and_dependency_bytes": true,
+  "unchanged_other_test_asts": true,
+  "unchanged_pinned_baseline_hashes": true,
+  "source_files": 305,
+  "source_identity": "b08f79d3c5c70de903c3b6fd546c1889b641bff82058e5fc329d30e7e583190f",
+  "zip": {
+    "bytes": 627289,
+    "sha256": "fe0f57028d12f67f9468c2c6e00d49ab327b6ce7504c24e9d2b4fed58a01e168",
+    "deterministic_two_builds": true,
+    "manifest_verified": true
+  },
+  "dependency_packages": 53,
+  "known_dependency_vulnerabilities": 0,
+  "reused_runtime_smoke": {
+    "scope": "EXTRACTED_PUBLIC_SOURCE_SYNTHETIC_ONLY",
+    "zip_sha256": "a8a0bc81008c35b955c3698cc0b0bf7e87aee3402989f3c04b7c08a12b2e7c42",
+    "phases": {
+      "prepare": 0,
+      "offline-sync": 0,
+      "migrate": 0,
+      "bootstrap": 0
+    },
+    "http": {
+      "/health/": 200,
+      "/": 200,
+      "/questions/": 200,
+      "/static/css/app.css": 200
+    },
+    "worker_exit": 0,
+    "user_enabled": false,
+    "personal_storage_provisioned": false,
+    "private_receipts_present": false,
+    "real_data_accessed": false
+  },
+  "reused_launcher_check": {
+    "scope": "SOURCE_SYNTHETIC_INSTANCE",
+    "result": "PASS_EXPECTED_OCCUPIED_PORT_REFUSAL",
+    "exit": 1,
+    "runtime_and_marker_checks_reached": true,
+    "server_started": false,
+    "port_was_held_by_own_socket": true,
+    "powershell_syntax_files_checked": 2
+  },
+  "smoke_reuse_basis": "All product, runtime, dependency, launcher and preparation bytes unchanged; only two guides, one baseline-test function and its provenance note changed. New prepared source and artifact verified.",
+  "privacy_review": {
+    "base": "87547ba94999d7d9785013c4e311b50c3773ce80",
+    "ancestor_review": "REUSED_EXACT_PUBLIC_BASE_AUDIT_TREE_VERIFIED",
+    "public_base_files": 674,
+    "private_local_commits_are_ancestors": {
+      "ab92623": false,
+      "3b1f303": false,
+      "9b44cbf": false,
+      "3a67a1a": false,
+      "26e64a3": false,
+      "b7e0a15": false
+    },
+    "reviewed_planned_files": 321,
+    "new_private_payload_signals": [],
+    "existing_public_home_paths": "Two previously identified historical quality reports remain in public ancestry; no history rewrite and no new private source is introduced. Full GitHub audit remains planned after UI/startup work."
+  },
+  "real_use_provisioned_or_qualified": false,
+  "review_relationship": "Self-review; no independent review claimed.",
+  "verified_source_commit": "23f559c6e30d772f7136fdc5c7fd80b88cc41b61",
+  "recorded_at_utc": "2026-11-15T02:06:37.877669+00:00",
+  "limitations_preserved": [
+    "Chrome only; Edge unqualified",
+    "CT-126 deferred/not qualified; no new human session",
+    "Four original temporal LIMITED results",
+    "Historical BCR synthetic/raw 2x limits",
+    "Recovery of own process only; single device; manual backup",
+    "Historical A8/findings/STOPs/retention unchanged"
+  ],
+  "prior_harness_results": "Initial typing and public-hash scanner failures, and the one full-regression fixture failure, remain retained. No failed original run was renamed PASS.",
+  "verified_source_commit_scope": "Application/dependency integration reference; final package adds only corrected selection provenance.",
+  "selection_provenance_correction": "Unselected inherited Windows-guide test left unchanged; no product, dependency or migration oracle delta."
+}

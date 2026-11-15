@@ -961,3 +961,21 @@ Private v014 was accepted within its qualified installation. Public source is a
 separate derivation: local commits and synthetic checks only, no real-data
 activation, push, tag or Release. Historical states above remain unchanged.
 See docs/V1.0_Local_r1_Adendo_e_Plano.md.
+
+
+## Local r1 — public source preparation verified, publication pending
+
+Source integration commit: `23f559c6e30d772f7136fdc5c7fd80b88cc41b61`.
+Composed verification PASS: 798 full-regression cases passed; one private-manifest
+test was adapted to the unchanged public migration hash oracle and passed in a
+16-case focal retest. The original failed run remains FAIL. Product/dependency
+bytes and all other test ASTs were unchanged. Ruff/type checks, source privacy
+scan, 53-package dependency audit (zero known findings) and deterministic build
+passed. See quality/v10-local-r1-public-source-result.json for exact scope/hashes.
+
+The public source package is a synthetic reproduction route, not a universal
+installer or a transfer of the private installation's real-use qualification.
+Original main, its six unpublished commits, all private histories, STOPs and
+retention remain preserved. No push, tag or Release. No visual or advanced-launcher
+stage started. UI and initialization improvements, then the requested full GitHub
+audit, remain future work under their own authorization.

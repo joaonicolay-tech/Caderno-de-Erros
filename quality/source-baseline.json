@@ -1238,9 +1238,11 @@
     "scripts/start-local.ps1": "Derive root from layout instead of a personal path; retain loopback, profile and activation checks.",
     "tests/test_error_categories.py": "Use public pinned catalog digest instead of private source manifest.",
     "tests/test_local_activation.py": "Remove assertion against a retained private native-ACL receipt; keep behavioral schema, ACL-policy and role-isolation tests. Public synthetic preparation does not claim private storage qualification.",
-    "tests/test_windows_operation.py": "Historical Windows-guide string assertions remain in Git history; public link validation and executable instructions cover source documentation.",
     "pyproject.toml": "Chrome reference updated; Edge explicitly unqualified; dependencies unchanged from v014.",
     "tests/test_learning_foundation.py": "Read the same pinned migration digests from public relative-path baseline instead of the private source manifest; migration list and hash equality oracle unchanged."
   },
-  "private_installation_approval_transferred": false
+  "private_installation_approval_transferred": false,
+  "source_selection_notes": {
+    "tests/test_windows_operation.py": "Not in the positive-list source archive. The inherited historical guide assertions remain unchanged in Git; public source links and executable instructions have their own validation."
+  }
 }
